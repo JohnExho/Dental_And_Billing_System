@@ -320,8 +320,8 @@ return new class extends Migration
         // Table: patient_visits
         Schema::create('patient_visits', function (Blueprint $table) {
             $table->uuid('visit_id')->primary();
-            $table->uuid('patient_id');
-            $table->uuid('associate_id');
+            $table->uuid('patient_id')->nullable();
+            $table->uuid('associate_id')->nullable();
             $table->uuid('clinic_id')->nullable();
             $table->uuid('laboratory_id')->nullable();
             $table->dateTime('visit_date')->nullable();
@@ -330,8 +330,8 @@ return new class extends Migration
             $table->timestamps();
             $table->softDeletes();
 
-            $table->foreign('patient_id')->references('patient_id')->on('patients')->onDelete('cascade');
-            $table->foreign('associate_id')->references('associate_id')->on('associates')->onDelete('cascade');
+            $table->foreign('patient_id')->references('patient_id')->on('patients')->onDelete('set null');
+            $table->foreign('associate_id')->references('associate_id')->on('associates')->onDelete('set null');
             $table->foreign('clinic_id')->references('clinic_id')->on('clinics')->onDelete('set null');
             $table->foreign('laboratory_id')->references('laboratory_id')->on('laboratories')->onDelete('set null');
 
