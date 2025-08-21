@@ -20,6 +20,7 @@ return new class extends Migration
         Schema::create('accounts', function (Blueprint $table) {
             $table->uuid('account_id')->primary();
             $table->string('email')->unique();
+            $table->string('name');
             $table->string('password');
             $table->enum('role', ['admin', 'staff'])->default('staff');
             $table->boolean('is_active')->default(true);
