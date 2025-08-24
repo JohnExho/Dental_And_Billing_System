@@ -24,7 +24,7 @@ return new class extends Migration
             $table->string('password');
             $table->enum('role', ['admin', 'staff'])->default('staff');
             $table->boolean('is_active')->default(true);
-            $table->integer('otp')->nullable();
+            $table->string('otp_hash', 255)->nullable();
             $table->timestamp('otp_expires_at')->nullable();
             $table->index('role');          // frequently filter by role
             $table->index('is_active');     // active/inactive accounts
@@ -255,7 +255,7 @@ return new class extends Migration
 
         Schema::create('logs', function (Blueprint $table) {
             $table->uuid('log_id')->primary();
-            $table->uuid('account_id'); // Account that created the log
+            $table->string('account_id');
             $table->uuid('patient_id')->nullable(); // Nullable if log is not patient-specific
             $table->uuid('associate_id')->nullable(); // Nullable if log is not associate-specific
             $table->uuid('clinic_id')->nullable(); // Nullable if log is not clinic-specific
@@ -263,6 +263,9 @@ return new class extends Migration
             $table->string('log_type'); // e.g., 'appointment', 'bill', 'note'
             $table->string('action'); // e.g., 'created', 'updated', 'deleted'
             $table->text('description')->nullable();
+            $table->ipAddress('ip_address')->nullable();
+            $table->string('user_agent', 512)->nullable();
+
 
             $table->index('account_id');
             $table->index('patient_id');

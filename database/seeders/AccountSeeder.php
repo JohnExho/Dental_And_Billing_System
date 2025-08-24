@@ -20,18 +20,18 @@ class AccountSeeder extends Seeder
             'password' => Hash::make('password'), // Always hash passwords
             'role' => 'admin',
             'is_active' => true,
-                        'otp' => null,
+            'otp_hash' => null,
             'otp_expires_at' => null,
         ]);
 
         // Example of another account
         Account::create([
             'name' => 'John Doe',
-            'email' => 'john@example.com',
+            'email' => 'rci.bsis.hensonjohnvictor@gmail.com',
             'password' => Hash::make('secret123'),
             'role' => 'staff',
             'is_active' => true,
-                        'otp' => null,
+            'otp_hash' => null,
             'otp_expires_at' => null,
         ]);
     }

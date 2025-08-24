@@ -59,16 +59,16 @@
         </ul>
     </div>
 @endif
-    @unless (Route::is('login'))
+    @unless (Route::is(['login','forgot-password']))
         @include('components.navbar')
     @endunless
     <div class="d-flex">
-        @unless (Route::is('login'))
+        @unless (Route::is(['login','forgot-password']))
             @include('components.sidebar')
         @endunless
 
 
-        @if (Route::is('login'))
+        @if (Route::is(['login','forgot-password']))
             <div class=" flex-grow-1">
         @else
                 <div class=" flex-grow-1 main-content">

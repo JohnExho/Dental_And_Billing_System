@@ -2,10 +2,14 @@
 
 namespace App\Http\Controllers;
 
+use Carbon\Carbon;
+use App\Mail\SendEmail;
 use App\Models\Account;
+use App\Models\Logs;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\RateLimiter;
 
 class AccountController extends Controller
@@ -58,7 +62,14 @@ class AccountController extends Controller
             /** @var Account $account */
             $account = $this->guard->user();
             if ($account) {
-                $account->logAction('login', 'auth', 'User has logged in');
+                Logs::record(
+                    $account,
+                    'login',
+                    'auth',
+                    'User has logged in',
+                    $request->ip(),
+                    $request->userAgent()
+                );
             }
 
             return redirect()->route('dashboard')->with('success', 'Welcome back!');
@@ -83,7 +94,7 @@ class AccountController extends Controller
         /** @var Account $account */
 
         if ($account) {
-            $account->logAction('logout', 'auth', 'User has logged out');
+            $account->logAction('logout', 'auth', 'User has logged out', request()->ip(), request()->userAgent());
         }
 
         // Redirect to login page with a message
@@ -110,7 +121,7 @@ class AccountController extends Controller
         /** @var Account $account */
         $account = $this->guard->user();
         if ($account) {
-            $account->logAction('update', 'auth', 'User has changed name');
+            $account->logAction('update', 'auth', 'User has changed name', request()->ip(), request()->userAgent());
         }
 
         return redirect()->back()->with('success', 'Name updated successfully.');
@@ -163,7 +174,7 @@ class AccountController extends Controller
         /** @var Account $account */
         $account = $this->guard->user();
         if ($account) {
-            $account->logAction('update', 'auth', 'User has changed password');
+            $account->logAction('update', 'auth', 'User has changed password', request()->ip(), request()->userAgent());
         }
 
         return redirect()->back()->with('success', 'Password updated successfully.');
@@ -205,8 +216,61 @@ class AccountController extends Controller
         $request->session()->invalidate();
         $request->session()->regenerateToken();
 
-        $account->logAction('delete', 'auth', 'User has deleted their account');
+        $account->logAction('delete', 'auth', 'User has deleted their account', request()->ip(), request()->userAgent());
 
         return redirect()->route('login')->with('success', 'Account deleted successfully.');
+    }
+
+
+    public function sendOtp(Request $request)
+    {
+        $request->validate([
+            'email' => 'required|email|exists:accounts,email',
+        ]);
+
+        $account = Account::where('email', $request->email)->first();
+
+        $otp = random_int(100000, 999999);
+
+        $account->update([
+            'otp' => $otp,
+            'otp_expires_at' => Carbon::now()->addMinutes(5),
+        ]);
+
+        Mail::to($account->email)->send(new SendEmail($otp));
+
+        $account->logAction('otp_send', 'auth', 'User requested OTP for password reset', request()->ip(), request()->userAgent());
+        return redirect()->route('login')->with('success', 'OTP sent to your email.');
+    }
+
+
+    public function verifyOtp(Request $request)
+    {
+        $request->validate([
+            'email' => 'required|email|exists:accounts,email',
+            'otp'   => 'required|numeric',
+        ]);
+
+        $account = Account::where('email', $request->email)->first();
+
+        if (!$account->otp || !$account->otp_expires_at) {
+            return response()->json(['message' => 'No OTP request found'], 400);
+        }
+
+        if ($account->otp != $request->otp) {
+            return response()->json(['message' => 'Invalid OTP'], 400);
+        }
+
+        if (now()->gt($account->otp_expires_at)) {
+            return response()->json(['message' => 'OTP expired'], 400);
+        }
+
+        // Clear OTP after successful use
+        $account->update([
+            'otp' => null,
+            'otp_expires_at' => null,
+        ]);
+
+        return response()->json(['message' => 'OTP verified, proceed to reset password.']);
     }
 }

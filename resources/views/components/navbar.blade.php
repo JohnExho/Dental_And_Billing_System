@@ -38,13 +38,13 @@
         /* Adjust if your navbar is taller/shorter */
     }
 </style>
-        <nav class="navbar navbar-left navbar-expand-lg navbar-light bg-primary navbar-fixed">
+        <nav class="navbar navbar-left navbar-expand-lg navbar-light border border-3 border-primary text-black navbar-fixed">
         <div class="container d-flex align-items-center">
             <div class="d-flex align-items-center margin-start">
                 @if (Route::is('dashboard'))
-                <a class="nav-link fs-5 text-light">Dashboard</a>
+                <a class="nav-link fs-5">Dashboard</a>
                 @elseif (Route::is('settings'))
-                  <a class="nav-link fs-5 text-light">Settings</a>
+                  <a class="nav-link fs-5">Settings</a>
                 @endif
             </div>
 
@@ -55,9 +55,8 @@
 
             <div class="collapse navbar-collapse justify-content-end" id="navbarNav">
                 <ul class="navbar-nav ms-auto" style="margin-right: 0; margin-left: 250px;">
-                    @auth
                         <li class="nav-item dropdown">
-                            <a class="nav-link dropdown-toggle text-light fs-4" href="#" id="userDropdown" role="button"
+                            <a class="nav-link dropdown-toggle fs-4" href="#" id="userDropdown" role="button"
                                 data-bs-toggle="dropdown" aria-expanded="false">
                                 {{ Auth::user()->name }}
                             </a>
@@ -73,11 +72,6 @@
                                 </li>
                             </ul>
                         </li>
-                    @else
-                        <li class="nav-item">
-                            <a class="nav-link fs-4 text-light" href="{{ url('/') }}">Home</a>
-                        </li>
-                    @endauth
                 </ul>
             </div>
         </div>

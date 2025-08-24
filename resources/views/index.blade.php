@@ -38,7 +38,7 @@
                     </div>
                     
                     <div class="mb-3">
-                        <a href="{{-- route('password.request') --}}" class="small text-light">Forgot Password</a>
+                        <a href="{{ route('forgot-password') }}" class="small text-light">Forgot Password</a>
                     </div>
 
                     <button type="submit" class="btn w-100 text-white" style="background-color:#1a73e8; border-radius:8px;">Login</button>

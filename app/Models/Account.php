@@ -2,10 +2,8 @@
 
 namespace App\Models;
 
-use App\Models\Logs;
+use App\Models\Logs as Log;
 use App\Traits\HasUuid;
-use Illuminate\Support\Str;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -39,25 +37,7 @@ class Account extends Authenticatable
         'updated_at' => 'datetime',
         'deleted_at' => 'datetime',
     ];
-
-    //Logs
-    public function logAction(string $action, string $log_type, ?string $description = null): void
-    {
-        $this->logs()->create([
-            'log_id' => Str::uuid(),
-            'patient_id' => null,
-            'associate_id' => null,
-            'clinic_id' => null,
-            'laboratory_id' => null,
-            'log_type' => $log_type,
-            'action' => $action,
-            'description' => $description ?? ucfirst($action) . ' performed.',
-            'created_at' => now(),
-            'updated_at' => now(),
-        ]);
-    }
-
-
+ 
     //Connections
     public function logs()
     {
