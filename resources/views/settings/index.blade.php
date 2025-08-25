@@ -15,10 +15,25 @@
                         @method('PUT')
 
                         <div class="mb-3 form-floating">
-                            <input type="text" id="profile-username" name="name" class="form-control w-50"
-                                value="{{ old('name', $account->name) }}" required>
-                            <label for="name" class="form-label">Name</label>
+                            <input type="text" id="profile-last-name" name="last_name" class="form-control w-50"
+                                value="{{ old('last_name', $account->last_name) }}" required>
+                            <label for="last_name" class="form-label">Last Name</label>
                         </div>
+
+                        <div class="mb-3 form-floating">
+                            <input type="text" id="profile-middle-name" name="middle_name" class="form-control w-50"
+                                value="{{ old('middle_name', $account->middle_name) }}">
+                            <label for="middle_name" class="form-label">First Name</label>
+                        </div>
+
+                                <div class="mb-3 form-floating">
+                            <input type="text" id="profile-first-name" name="first_name" class="form-control w-50"
+                                value="{{ old('first_name', $account->first_name) }}" required>
+                            <label for="first_name" class="form-label">First Name</label>
+                        </div>
+                        
+
+
 
                         <div class="mb-4 form-floating">
                             <input type="email" id="profile-email" name="email" class="form-control w-50" value="{{ preg_replace_callback('/^(.{2})(.*)(.@.*)$/u', function ($matches) {

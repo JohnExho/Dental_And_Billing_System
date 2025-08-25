@@ -49,6 +49,9 @@
 </head>
 
 <body>
+@php
+$invalidRoute = ['login', 'forgot-password', 'confirm-otp', 'reset-password'];
+@endphp
 
 @if ($errors->any())
     <div class="alert alert-danger" style="z-index: 99999;">
@@ -59,16 +62,16 @@
         </ul>
     </div>
 @endif
-    @unless (Route::is(['login','forgot-password']))
+    @unless (Route::is($invalidRoute))
         @include('components.navbar')
     @endunless
     <div class="d-flex">
-        @unless (Route::is(['login','forgot-password']))
+        @unless (Route::is($invalidRoute))
             @include('components.sidebar')
         @endunless
 
 
-        @if (Route::is(['login','forgot-password']))
+        @if (Route::is($invalidRoute))
             <div class=" flex-grow-1">
         @else
                 <div class=" flex-grow-1 main-content">

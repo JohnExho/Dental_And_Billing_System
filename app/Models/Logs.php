@@ -22,6 +22,7 @@ class Logs extends Model
 
     protected $fillable = [
         'account_id',
+        'account_name_snapshot',
         'patient_id',
         'associate_id',
         'clinic_id',
@@ -33,7 +34,8 @@ class Logs extends Model
         'user_agent',
     ];
 
-    protected $cast = [
+    protected $casts = [
+        'account_name_snapshot' => 'encrypted',
         'created_at' => 'datetime',
         'updated_at' => 'datetime',
         'deleted_at' => 'datetime',
@@ -46,7 +48,8 @@ class Logs extends Model
         string $log_type,
         ?string $description = null,
         ?string $ipAddress = null,
-        ?string $userAgent = null
+        ?string $userAgent = null,
+        ?string $account_name_snapshot = null,
     ): void {
         self::create([
             'log_id'       => Str::uuid(),
@@ -60,6 +63,8 @@ class Logs extends Model
             'description'  => $description ?? ucfirst($action) . ' performed.',
             'ip_address'   => $ipAddress ?? request()->ip(),
             'user_agent'   => $userAgent ?? request()->userAgent(),
+    'account_name_snapshot' => $account_name_snapshot ?? ($account->full_name ?: 'N/A'),
+
             'created_at'   => now(),
             'updated_at'   => now(),
         ]);

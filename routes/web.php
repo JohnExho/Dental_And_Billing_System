@@ -10,13 +10,19 @@ Route::middleware('web')->group(function () {
         Route::get('/forgot-password', function () {
             return view('auth.forgot-password');
         })->name('forgot-password');
+        Route::get('/confirm-otp', function () {
+            return view('auth.confirm-otp');
+        })->name('confirm-otp');
+        Route::get('/reset-password',[AccountController::class,'showResetForm'])->name('reset-password'); 
     });
 
     Route::post('/process/login', [AccountController::class, 'login'])->name('process-login');
     Route::post('/process/logout', [AccountController::class, 'logout'])->name('process-logout');
     Route::put('/process/change/name', [AccountController::class, 'changeName'])->name('process-change-name');
     Route::put('/process/change/password', [AccountController::class, 'updatePassword'])->name('process-change-password');
-    Route::post('/process/send/otp', [AccountController::class, 'sendOtp'])->name('send-otp');
+    Route::post('/process/send/otp', [AccountController::class, 'sendOtp'])->name('process-send-otp');
+    Route::post('/process/verify/otp', [AccountController::class, 'verifyOtp'])->name('process-verify-otp');
+    Route::post('/process/reset/password', [AccountController::class, 'resetPassword'])->name('process-reset-password');
     Route::delete('/process/delete/account', [AccountController::class, 'deleteAccount'])->name('process-delete-account');
 
     // Protected routes

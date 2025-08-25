@@ -3,9 +3,10 @@
 namespace App\Http\Controllers;
 
 use Carbon\Carbon;
+use App\Models\Logs;
 use App\Mail\SendEmail;
 use App\Models\Account;
-use App\Models\Logs;
+use App\Models\Patient;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
@@ -50,15 +51,17 @@ class AccountController extends Controller
 
     public function login(Request $request)
     {
-        $credentials = $request->validate([
+        $request->validate([
             'email' => ['required', 'email'],
             'password' => ['required'],
         ]);
 
-        // use the 'account' guard so auth matches the route middleware (auth:account)
-        if ($this->guard->attempt($credentials)) {
-            $request->session()->regenerate();
+        $emailHash = hash('sha256', strtolower($request->email));
+        $account = Account::where('email_hash', $emailHash)->first();
 
+        if ($account && Hash::check($request->password, $account->password)) {
+            $this->guard->login($account);
+            $request->session()->regenerate();
             /** @var Account $account */
             $account = $this->guard->user();
             if ($account) {
@@ -68,11 +71,11 @@ class AccountController extends Controller
                     'auth',
                     'User has logged in',
                     $request->ip(),
-                    $request->userAgent()
+                    $request->userAgent(),
                 );
             }
 
-            return redirect()->route('dashboard')->with('success', 'Welcome back!');
+            return redirect()->route('dashboard')->with('success', 'Welcome back!'. ' ' . $account->full_name);
         }
 
         return back()->with('error', 'Invalid credentials.');
@@ -94,7 +97,14 @@ class AccountController extends Controller
         /** @var Account $account */
 
         if ($account) {
-            $account->logAction('logout', 'auth', 'User has logged out', request()->ip(), request()->userAgent());
+            Logs::record(
+                $account,
+                'logout',
+                'auth',
+                'User has logged out',
+                $request->ip(),
+                $request->userAgent()
+            );
         }
 
         // Redirect to login page with a message
@@ -110,18 +120,29 @@ class AccountController extends Controller
     public function changeName(Request $request)
     {
         $request->validate([
-            'name' => 'required|string|max:255',
+            'last_name' => 'required|string|max:255',
+            'first_name' => 'required|string|max:255',
+            'middle_name' => 'nullable|string|max:255',
         ]);
 
         /** @var Account $account */
         $account = $this->guard->user(); // Use the 'account' guard for consistency
-        $account->name = $request->name;
+        $account->last_name = $request->last_name;
+        $account->first_name = $request->first_name;
+        $account->middle_name = $request->middle_name;
         $account->save();
 
         /** @var Account $account */
         $account = $this->guard->user();
         if ($account) {
-            $account->logAction('update', 'auth', 'User has changed name', request()->ip(), request()->userAgent());
+            Logs::record(
+                $account,
+                'update',
+                'auth',
+                'User has changed name',
+                $request->ip(),
+                $request->userAgent()
+            );
         }
 
         return redirect()->back()->with('success', 'Name updated successfully.');
@@ -174,7 +195,14 @@ class AccountController extends Controller
         /** @var Account $account */
         $account = $this->guard->user();
         if ($account) {
-            $account->logAction('update', 'auth', 'User has changed password', request()->ip(), request()->userAgent());
+            Logs::record(
+                $account,
+                'update',
+                'auth',
+                'User has changed password',
+                $request->ip(),
+                $request->userAgent()
+            );
         }
 
         return redirect()->back()->with('success', 'Password updated successfully.');
@@ -216,7 +244,15 @@ class AccountController extends Controller
         $request->session()->invalidate();
         $request->session()->regenerateToken();
 
-        $account->logAction('delete', 'auth', 'User has deleted their account', request()->ip(), request()->userAgent());
+        /** @var Account $account */
+        Logs::record(
+            $account,
+            'delete',
+            'auth',
+            'User has deleted their account',
+            $request->ip(),
+            $request->userAgent()
+        );
 
         return redirect()->route('login')->with('success', 'Account deleted successfully.');
     }
@@ -225,52 +261,118 @@ class AccountController extends Controller
     public function sendOtp(Request $request)
     {
         $request->validate([
-            'email' => 'required|email|exists:accounts,email',
+            'email' => 'required|email',
         ]);
 
-        $account = Account::where('email', $request->email)->first();
+        $emailHash = hash('sha256', strtolower($request->email));
+        $account = Account::where('email_hash', $emailHash)->firstOrFail();
 
+        session(['otp_email' => $account->email]);
         $otp = random_int(100000, 999999);
 
         $account->update([
-            'otp' => $otp,
+            'otp_hash' => Hash::make((string)$otp),
             'otp_expires_at' => Carbon::now()->addMinutes(5),
         ]);
 
         Mail::to($account->email)->send(new SendEmail($otp));
 
-        $account->logAction('otp_send', 'auth', 'User requested OTP for password reset', request()->ip(), request()->userAgent());
-        return redirect()->route('login')->with('success', 'OTP sent to your email.');
+        /** @var Account $account */
+        Logs::record(
+            $account,
+            'otp_request',
+            'auth',
+            'User has requested OTP for password reset',
+            $request->ip(),
+            $request->userAgent()
+        );
+        return redirect()->route('confirm-otp')->with('success', 'OTP sent to your email.');
     }
 
 
-    public function verifyOtp(Request $request)
+  public function verifyOtp(Request $request)
+{
+    $encryptedEmail = session('otp_email');
+
+    $request->validate([
+        'otp' => 'required',
+    ]);
+
+    $otpInput = is_array($request->otp) 
+        ? implode('', $request->otp) 
+        : $request->otp;
+
+    $emailHash = hash('sha256', strtolower($encryptedEmail));
+    $account = Account::where('email_hash', $emailHash)->firstOrFail();
+
+    if (!$account || !$account->otp_hash || now()->gt($account->otp_expires_at)) {
+        return back()->withErrors(['otp' => 'Invalid or expired OTP']);
+    }
+
+    if (!Hash::check($otpInput, $account->otp_hash)) {
+        return back()->withErrors(['otp' => 'Invalid or expired OTP']);
+    }
+
+    $account->update([
+        'otp_hash' => null,
+        'otp_expires_at' => null,
+    ]);
+
+    Logs::record(
+        $account,
+        'otp_verify',
+        'auth',
+        'User has verified OTP for password reset',
+        $request->ip(),
+        $request->userAgent()
+    );
+
+    session([
+        'otp_verified' => true,
+    ]);
+
+    return redirect()->route('reset-password')->with('success', 'OTP verified. You can now reset your password.');
+}
+
+    public function showResetForm(Request $request)
     {
+        if (!session('otp_verified')) {
+            return redirect()->route('forgot-password')
+                ->withErrors(['otp' => 'You must verify your OTP first.']);
+        }
+
+        $encryptedEmail = session('otp_email');
+
+        return view('auth.reset-password', [
+            'email' => $encryptedEmail, // pass email to the Blade view
+        ]);
+    }
+
+
+
+    public function resetPassword(Request $request)
+    {
+        $encryptedEmail = session('otp_email');
         $request->validate([
-            'email' => 'required|email|exists:accounts,email',
-            'otp'   => 'required|numeric',
+            'email'                 => 'required|email',
+            'password'              => 'required|min:8|confirmed',
+            'password_confirmation' => 'required',
         ]);
 
-        $account = Account::where('email', $request->email)->first();
+        $emailHash = hash('sha256', strtolower(($encryptedEmail)));
+        $account = Account::where('email_hash', $emailHash)->firstOrFail();
 
-        if (!$account->otp || !$account->otp_expires_at) {
-            return response()->json(['message' => 'No OTP request found'], 400);
-        }
+        $account->update(['password' => Hash::make($request->password)]);
+        /** @var Account $account */
+        Logs::record(
+            $account,
+            'password_reset',
+            'auth',
+            'User has reset their password',
+            $request->ip(),
+            $request->userAgent()
+        );
 
-        if ($account->otp != $request->otp) {
-            return response()->json(['message' => 'Invalid OTP'], 400);
-        }
-
-        if (now()->gt($account->otp_expires_at)) {
-            return response()->json(['message' => 'OTP expired'], 400);
-        }
-
-        // Clear OTP after successful use
-        $account->update([
-            'otp' => null,
-            'otp_expires_at' => null,
-        ]);
-
-        return response()->json(['message' => 'OTP verified, proceed to reset password.']);
+        return redirect()->route('login')->with('success', 'Password reset successful.');
     }
 }

@@ -26,12 +26,12 @@
         width: 80px;
         height: 80px;
         border-radius: 50%;
-        background: #2c91c5;
+        background: #28a745;
         display: flex;
         justify-content: center;
         align-items: center;
         margin: 0 auto 1.5rem auto;
-        box-shadow: 0 4px 12px rgba(44,145,197,0.4);
+        box-shadow: 0 4px 12px rgba(40,167,69,0.4);
     }
 
     .auth-icon i {
@@ -48,9 +48,26 @@
         color: #6c757d;
     }
 
-    .form-control {
-        border-radius: 10px;
-        padding: 0.75rem 1rem;
+    .otp-input {
+        display: flex;
+        justify-content: center;
+        gap: 0.5rem;
+        margin: 1.5rem 0;
+    }
+
+    .otp-input input {
+        width: 50px;
+        height: 60px;
+        text-align: center;
+        font-size: 1.5rem;
+        border-radius: 8px;
+        border: 1px solid #ccc;
+    }
+
+    .otp-input input:focus {
+        border-color: #2c91c5;
+        box-shadow: 0 0 0 2px rgba(44,145,197,0.2);
+        outline: none;
     }
 
     .btn-custom {
@@ -88,21 +105,25 @@
 <div class="auth-card">
     <!-- Icon -->
     <div class="auth-icon">
-        <i class="bi bi-envelope-fill"></i>
+        <i class="bi bi-shield-lock-fill"></i>
     </div>
 
     <!-- Title -->
-    <h5>Forgot Password?</h5>
-    <p class="mb-4">Enter your registered email address to receive a reset code.</p>
+    <h5>Enter OTP Code</h5>
+    <p class="mb-4">We’ve sent a verification code to your email. Enter it below to continue.</p>
 
     <!-- Form -->
-    <form method="POST" action="{{ route('process-send-otp') }}">
+    <form method="POST" action="{{ route('process-verify-otp') }}">
         @csrf
-        <div class="mb-3 text-start">
-            <label for="email" class="form-label fw-semibold">Email Address</label>
-            <input type="email" id="email" name="email" class="form-control" placeholder="you@example.com" required>
+        <div class="otp-input">
+            <input type="text" maxlength="1" name="otp[]" required>
+            <input type="text" maxlength="1" name="otp[]" required>
+            <input type="text" maxlength="1" name="otp[]" required>
+            <input type="text" maxlength="1" name="otp[]" required>
+            <input type="text" maxlength="1" name="otp[]" required>
+            <input type="text" maxlength="1" name="otp[]" required>
         </div>
-        <button type="submit" class="btn btn-custom w-100 py-2">Send Reset Link</button>
+        <button type="submit" class="btn btn-custom w-100 py-2">Verify OTP</button>
     </form>
 
     <!-- Back link -->
