@@ -30,6 +30,7 @@ class Logs extends Model
         'log_type',
         'action',
         'description',
+        'private_description',
         'ip_address',
         'user_agent',
     ];
@@ -44,9 +45,11 @@ class Logs extends Model
     //Logs
   public static function record(
         Account $account,
+        ?Clinic $clinic = null,
         string $action,
         string $log_type,
         ?string $description = null,
+        ?string $private_description = null,
         ?string $ipAddress = null,
         ?string $userAgent = null,
         ?string $account_name_snapshot = null,
@@ -56,14 +59,15 @@ class Logs extends Model
             'account_id'   => $account->account_id,
             'patient_id'   => null,
             'associate_id' => null,
-            'clinic_id'    => null,
+            'clinic_id'    => $clinic?->clinic_id,
             'laboratory_id'=> null,
             'log_type'     => $log_type,
             'action'       => $action,
             'description'  => $description ?? ucfirst($action) . ' performed.',
+            'private_description' => $private_description ?? null,
             'ip_address'   => $ipAddress ?? request()->ip(),
             'user_agent'   => $userAgent ?? request()->userAgent(),
-    'account_name_snapshot' => $account_name_snapshot ?? ($account->full_name ?: 'N/A'),
+            'account_name_snapshot' => $account_name_snapshot ?? ($account->full_name ?: 'N/A'),
 
             'created_at'   => now(),
             'updated_at'   => now(),

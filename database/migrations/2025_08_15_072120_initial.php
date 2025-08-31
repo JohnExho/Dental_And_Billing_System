@@ -29,6 +29,9 @@ return new class extends Migration
             $table->boolean('is_active')->default(true);
             $table->string('otp_hash', 255)->nullable();
             $table->timestamp('otp_expires_at')->nullable();
+
+            // Indexes
+            $table->index('email_hash');    // login lookup
             $table->index('role');          // frequently filter by role
             $table->index('is_active');     // active/inactive accounts
 
@@ -42,11 +45,17 @@ return new class extends Migration
             $table->uuid('clinic_id')->primary();
             $table->uuid('account_id')->nullable(); // Account that owns the clinic
             $table->string('name');
+            $table->text('description')->nullable();
+            $table->string('specialty')->nullable();
+            $table->string('mobile_no')->nullable();
             $table->string('contact_no')->nullable();
-            $table->string('email')->nullable();
+            $table->text('email')->nullable();
+            $table->string('email_hash')->nullable()->unique();
+
+            // Indexes
             $table->index('account_id');    // join with accounts
             $table->index('name');          // search by name
-            $table->index('email');         // search by email
+            $table->index('email_hash');
 
 
             $table->timestamps();
@@ -54,6 +63,21 @@ return new class extends Migration
 
             $table->foreign('account_id')->references('account_id')->on('accounts')->onDelete('set null');
         });
+
+        Schema::create('clinic_schedules', function (Blueprint $table) {
+            $table->uuid('clinic_schedule_id')->primary();
+            $table->uuid('clinic_id')->nullable();
+            $table->string('schedule_summary')->nullable();
+            $table->text('day_of_week');
+            $table->string('start_time');
+            $table->string('end_time');
+            $table->timestamps();
+            $table->softDeletes();
+            $table->foreign('clinic_id')
+                ->references('clinic_id')->on('clinics')
+                ->onDelete('set null');
+        });
+
 
 
         Schema::create('laboratories', function (Blueprint $table) {
@@ -259,7 +283,7 @@ return new class extends Migration
         Schema::create('logs', function (Blueprint $table) {
             $table->uuid('log_id')->primary();
             $table->string('account_id')->nullable();
-            $table->text('account_name_snapshot')->nullable();// store name at time of action for audit trail
+            $table->text('account_name_snapshot')->nullable(); // store name at time of action for audit trail
             $table->uuid('patient_id')->nullable(); // Nullable if log is not patient-specific
             $table->uuid('associate_id')->nullable(); // Nullable if log is not associate-specific
             $table->uuid('clinic_id')->nullable(); // Nullable if log is not clinic-specific
@@ -267,6 +291,7 @@ return new class extends Migration
             $table->string('log_type'); // e.g., 'appointment', 'bill', 'note'
             $table->string('action'); // e.g., 'created', 'updated', 'deleted'
             $table->text('description')->nullable();
+            $table->text('private_description')->nullable(); //shown only for audit trail
             $table->ipAddress('ip_address')->nullable();
             $table->string('user_agent', 512)->nullable();
 
@@ -300,17 +325,18 @@ return new class extends Migration
             $table->uuid('patient_id')->nullable();
             $table->uuid('clinic_id')->nullable();
             $table->uuid('laboratory_id')->nullable();
+            //Encrypt
             $table->string('house_no')->nullable();
             $table->string('street')->nullable();
-            $table->string('barangay')->nullable();
-            $table->string('city');
-            $table->string('province')->nullable();
-            $table->string('zipcode')->nullable();
+            $table->unsignedBigInteger('barangay_id')->nullable();
+            $table->unsignedBigInteger('city_id')->nullable();
+            $table->unsignedBigInteger('province_id')->nullable();
+
+            // Indexes
             $table->index('patient_id');
+            $table->index('associate_id');
             $table->index('clinic_id');
             $table->index('laboratory_id');
-            $table->index('city');
-            $table->index('zipcode');
 
 
             $table->timestamps();
@@ -322,6 +348,9 @@ return new class extends Migration
             $table->foreign('patient_id')->references('patient_id')->on('patients')->onDelete('set null');
             $table->foreign('clinic_id')->references('clinic_id')->on('clinics')->onDelete('set null');
             $table->foreign('laboratory_id')->references('laboratory_id')->on('laboratories')->onDelete('set null');
+            $table->foreign('barangay_id')->references('id')->on('barangays')->onDelete('set null');
+            $table->foreign('city_id')->references('id')->on('cities')->onDelete('set null');
+            $table->foreign('province_id')->references('id')->on('provinces')->onDelete('set null');
         });
 
 
@@ -643,6 +672,7 @@ return new class extends Migration
         Schema::dropIfExists('patient_qr_codes');
         Schema::dropIfExists('associates');
         Schema::dropIfExists('laboratories');
+        Schema::dropIfExists('clinic_schedules');
         Schema::dropIfExists('clinics');
         Schema::dropIfExists('accounts');
     }

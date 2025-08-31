@@ -2,7 +2,8 @@
     .sidebar-wrapper {
         /* make the sidebar fixed under the navbar so it fills the viewport on every page */
         position: fixed;
-        top: 0; /* matches navbar height (see navbar CSS) */
+        top: 0;
+        /* matches navbar height (see navbar CSS) */
         left: 0;
         height: calc(100vh - 56px);
         width: 240px;
@@ -10,8 +11,9 @@
         border-right: 1px solid #dee2e6;
         padding: 1rem 0.75rem;
         transition: left 0.28s ease, width 0.28s ease;
-        z-index: 1051;
-        overflow-y: auto; /* allow scrolling if content is taller than viewport */
+        z-index: 1050;
+        overflow-y: auto;
+        /* allow scrolling if content is taller than viewport */
     }
 
     .sidebar .nav a {
@@ -60,12 +62,13 @@
     }
 </style>
 
+
 <aside class="sidebar-wrapper h-100">
+
     {{-- toggle moved here --}}
     <button id="sidebarToggle" aria-label="Toggle sidebar" title="Toggle sidebar">
         <i class="bi bi-list"></i>
     </button>
-
     <nav class="sidebar text-center ">
         <div class="mb-4 sidebar-brand">
             <img src="https://placehold.co/400x400?text=placeholder" alt="Logo" class="mb-3 border-round rounded-3"
@@ -81,7 +84,16 @@
                     <i class="bi bi-speedometer2 ms-1"></i>
                 </a>
             </li>
-            {{-- <li class="nav-item mb-1">
+            <li class="nav-item mb-1">
+                <a class="text-decoration-none fw-bold fs-4  
+                    {{ request()->routeIs('clinics') ? 'active text-primary' : 'text-dark' }}"
+                    href="{{ route('clinics') }}"
+                    style="{{ request()->routeIs('clinics') ? 'background: gray;' : '' }}">
+                    <span class="nav-text">Clinics</span>
+                    <i class="bi bi-building"></i>
+                </a>
+                {{--
+            <li class="nav-item mb-1">
                 <a class="nav-link fw-semibold 
                     {{ request()->routeIs('patients') ? 'active text-red' : 'text-dark' }}"
                     href="{{ route('patients') }}"

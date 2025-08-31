@@ -67,15 +67,17 @@ class AccountController extends Controller
             if ($account) {
                 Logs::record(
                     $account,
+                    null,
                     'login',
                     'auth',
                     'User has logged in',
+                    json_encode($account->account_id),
                     $request->ip(),
-                    $request->userAgent(),
+                    $request->userAgent()
                 );
             }
 
-            return redirect()->route('dashboard')->with('success', 'Welcome back!'. ' ' . $account->full_name);
+            return redirect()->route('dashboard')->with('success', 'Welcome back!' . ' ' . $account->full_name);
         }
 
         return back()->with('error', 'Invalid credentials.');
@@ -99,9 +101,11 @@ class AccountController extends Controller
         if ($account) {
             Logs::record(
                 $account,
+                null,
                 'logout',
                 'auth',
                 'User has logged out',
+                json_encode($account->account_id),
                 $request->ip(),
                 $request->userAgent()
             );
@@ -137,9 +141,11 @@ class AccountController extends Controller
         if ($account) {
             Logs::record(
                 $account,
+                null,
                 'update',
                 'auth',
                 'User has changed name',
+                json_encode($account->account_id),
                 $request->ip(),
                 $request->userAgent()
             );
@@ -197,9 +203,11 @@ class AccountController extends Controller
         if ($account) {
             Logs::record(
                 $account,
+                null,
                 'update',
                 'auth',
                 'User has changed password',
+                json_encode($account->account_id),
                 $request->ip(),
                 $request->userAgent()
             );
@@ -247,9 +255,11 @@ class AccountController extends Controller
         /** @var Account $account */
         Logs::record(
             $account,
+            null,
             'delete',
             'auth',
             'User has deleted their account',
+            json_encode($account->account_id),
             $request->ip(),
             $request->userAgent()
         );
@@ -280,9 +290,11 @@ class AccountController extends Controller
         /** @var Account $account */
         Logs::record(
             $account,
+            null,
             'otp_request',
             'auth',
             'User has requested OTP for password reset',
+            json_encode($account->account_id),
             $request->ip(),
             $request->userAgent()
         );
@@ -290,49 +302,51 @@ class AccountController extends Controller
     }
 
 
-  public function verifyOtp(Request $request)
-{
-    $encryptedEmail = session('otp_email');
+    public function verifyOtp(Request $request)
+    {
+        $encryptedEmail = session('otp_email');
 
-    $request->validate([
-        'otp' => 'required',
-    ]);
+        $request->validate([
+            'otp' => 'required',
+        ]);
 
-    $otpInput = is_array($request->otp) 
-        ? implode('', $request->otp) 
-        : $request->otp;
+        $otpInput = is_array($request->otp)
+            ? implode('', $request->otp)
+            : $request->otp;
 
-    $emailHash = hash('sha256', strtolower($encryptedEmail));
-    $account = Account::where('email_hash', $emailHash)->firstOrFail();
+        $emailHash = hash('sha256', strtolower($encryptedEmail));
+        $account = Account::where('email_hash', $emailHash)->firstOrFail();
 
-    if (!$account || !$account->otp_hash || now()->gt($account->otp_expires_at)) {
-        return back()->withErrors(['otp' => 'Invalid or expired OTP']);
+        if (!$account || !$account->otp_hash || now()->gt($account->otp_expires_at)) {
+            return back()->withErrors(['otp' => 'Invalid or expired OTP']);
+        }
+
+        if (!Hash::check($otpInput, $account->otp_hash)) {
+            return back()->withErrors(['otp' => 'Invalid or expired OTP']);
+        }
+
+        $account->update([
+            'otp_hash' => null,
+            'otp_expires_at' => null,
+        ]);
+
+        Logs::record(
+            $account,
+            null,
+            'otp_verify',
+            'auth',
+            'User has verified OTP for password reset',
+            json_encode($account->account_id),
+            $request->ip(),
+            $request->userAgent()
+        );
+
+        session([
+            'otp_verified' => true,
+        ]);
+
+        return redirect()->route('reset-password')->with('success', 'OTP verified. You can now reset your password.');
     }
-
-    if (!Hash::check($otpInput, $account->otp_hash)) {
-        return back()->withErrors(['otp' => 'Invalid or expired OTP']);
-    }
-
-    $account->update([
-        'otp_hash' => null,
-        'otp_expires_at' => null,
-    ]);
-
-    Logs::record(
-        $account,
-        'otp_verify',
-        'auth',
-        'User has verified OTP for password reset',
-        $request->ip(),
-        $request->userAgent()
-    );
-
-    session([
-        'otp_verified' => true,
-    ]);
-
-    return redirect()->route('reset-password')->with('success', 'OTP verified. You can now reset your password.');
-}
 
     public function showResetForm(Request $request)
     {
@@ -366,9 +380,11 @@ class AccountController extends Controller
         /** @var Account $account */
         Logs::record(
             $account,
+            null,
             'password_reset',
             'auth',
             'User has reset their password',
+            json_encode($account->account_id),
             $request->ip(),
             $request->userAgent()
         );

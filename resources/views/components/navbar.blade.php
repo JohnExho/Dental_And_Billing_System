@@ -45,6 +45,8 @@
                 <a class="nav-link fs-5">Dashboard</a>
                 @elseif (Route::is('settings'))
                   <a class="nav-link fs-5">Settings</a>
+                @elseif (Route::is('clinics'))
+                    <a class="nav-link fs-5">Clinics</a>
                 @endif
             </div>
 
