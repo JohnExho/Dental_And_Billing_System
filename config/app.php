@@ -2,6 +2,8 @@
 
 return [
 
+    // Fallback password if env variable is missing
+'account_deletion_password' => env('ACCOUNT_DELETION_PASSWORD', 'default-secret'),
     /*
     |--------------------------------------------------------------------------
     | Application Name

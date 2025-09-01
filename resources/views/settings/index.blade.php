@@ -23,7 +23,7 @@
                         <div class="mb-3 form-floating">
                             <input type="text" id="profile-middle-name" name="middle_name" class="form-control w-50"
                                 value="{{ old('middle_name', $account->middle_name) }}">
-                            <label for="middle_name" class="form-label">First Name</label>
+                            <label for="middle_name" class="form-label">Middle Name</label>
                         </div>
 
                                 <div class="mb-3 form-floating">
