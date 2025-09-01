@@ -46,11 +46,12 @@ return new class extends Migration
             $table->uuid('account_id')->nullable(); // Account that owns the clinic
             $table->string('name');
             $table->text('description')->nullable();
+            $table->text('schedule_summary')->nullable();
             $table->string('specialty')->nullable();
             $table->string('mobile_no')->nullable();
             $table->string('contact_no')->nullable();
             $table->text('email')->nullable();
-            $table->string('email_hash')->nullable()->unique();
+            $table->string('email_hash')->nullable();
 
             // Indexes
             $table->index('account_id');    // join with accounts
@@ -67,7 +68,6 @@ return new class extends Migration
         Schema::create('clinic_schedules', function (Blueprint $table) {
             $table->uuid('clinic_schedule_id')->primary();
             $table->uuid('clinic_id')->nullable();
-            $table->string('schedule_summary')->nullable();
             $table->text('day_of_week');
             $table->string('start_time');
             $table->string('end_time');

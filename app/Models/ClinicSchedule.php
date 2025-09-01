@@ -10,7 +10,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class ClinicSchedule extends Model
 {
-     use HasFactory, Notifiable, HasUuid;
+     use HasFactory, SoftDeletes, Notifiable, HasUuid;
     protected $table = 'clinic_schedules';
     protected $primaryKey = 'clinic_schedule_id';
     protected $keyType = 'string';
@@ -19,14 +19,12 @@ class ClinicSchedule extends Model
 
     protected $fillable = [
         'clinic_id',
-        'schedule_summary',
         'day_of_week',
         'start_time',
         'end_time',
     ];
 
     protected $casts = [
-        'schedule_summary' => 'encrypted',
         'day_of_week' => 'encrypted',
         'start_time' => 'encrypted',
         'end_time' => 'encrypted',

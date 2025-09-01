@@ -29,6 +29,9 @@ Route::middleware('web')->group(function () {
     Route::post('/process/reset/password', [AccountController::class, 'resetPassword'])->name('process-reset-password');
     Route::delete('/process/delete/account', [AccountController::class, 'deleteAccount'])->name('process-delete-account');
     Route::post('/process/create/clinic', [ClinicController::class, 'create'])->name('process-create-clinic');
+    Route::put('/process/update/clinic', [ClinicController::class, 'update'])->name('process-update-clinic');
+    Route::delete('process/clinics/delete', [ClinicController::class, 'destroy'])->name('process-delete-clinic');
+
     // Protected routes
     Route::middleware('auth:account')->group(function () {
         Route::view('/dashboard', 'dashboard')->name('dashboard');

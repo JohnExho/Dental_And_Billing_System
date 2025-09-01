@@ -2,9 +2,7 @@
 
 <div class="card shadow-sm border-0">
     <div class="card-header bg-primary text-white">
-        <a href="#" class="btn btn-light btn-sm float-end"
-           data-bs-toggle="modal" 
-           data-bs-target="#add-clinic-modal">
+        <a href="#" class="btn btn-light btn-sm float-end" data-bs-toggle="modal" data-bs-target="#add-clinic-modal">
             <i class="bi bi-plus-circle"></i> Add Clinic
         </a>
     </div>
@@ -21,76 +19,87 @@
                             <th>Schedule</th>
                             <th>Address</th>
                             <th>Email</th>
-                            <th>Phone</th>
+                            <th>Contact</th>
                             <th class="text-end">Actions</th>
                         </tr>
                     </thead>
                     <tbody>
                         @foreach($clinics as $clinic)
-                        <tr>
-                            <td class="fw-semibold">{{ $clinic->name }}</td>
-                            <td>{{ Str::limit($clinic->description, 50) ?? 'No Description Given' }}</td>
-                         <td>
-    @php
-        $firstSummary = optional($clinic->clinicSchedules->first())->schedule_summary;
-        $weekDays = ['Monday','Tuesday','Wednesday','Thursday','Friday','Saturday','Sunday'];
-        $schedules = $clinic->clinicSchedules->keyBy('day_of_week');
-        $collapseId = 'clinic-schedule-' . $clinic->clinic_id;
-    @endphp
+                            <tr>
+                                <td class="fw-semibold">{{ $clinic->name }}</td>
+                                <td>{{ Str::limit($clinic->description, 50) ?? 'No Description Given' }}</td>
+                                <td>{{ $clinic->schedule_summary ?? 'N/A' }}</td>
+                                <td>
+                                    {{ optional($clinic->address)->house_no }} {{ optional($clinic->address)->street }}<br>
+                                    {{ optional($clinic->address->barangay)->name ?? '' }}
+                                    {{ optional($clinic->address->city)->name ?? '' }}
+                                    {{ optional($clinic->address->province)->name ?? '' }}
+                                </td>
+                                <td>{{ $clinic->email }}</td>
+<td>
+    <i class="bi bi-telephone-fill me-1"></i>{{ $clinic->contact_no }}<br>
+    <i class="bi bi-phone-fill me-1"></i>{{ $clinic->mobile_no }}
+</td>                                <td class="text-end">
+                                    <a role="button" class="btn btn-sm btn-outline-primary" data-bs-toggle="modal"
+                                        data-bs-target="#clinic-detail-modal" data-name="{{ $clinic->name }}"
+                                        data-description="{{ $clinic->description }}" data-email="{{ $clinic->email }}"
+                                        data-contact="{{ $clinic->contact_no }} / {{ $clinic->mobile_no }}"
+                                        data-address="{{ optional($clinic->address)->house_no }} {{ optional($clinic->address)->street }} {{ optional($clinic->address->barangay)->name ?? '' }} {{ optional($clinic->address->city)->name ?? '' }} {{ optional($clinic->address->province)->name ?? '' }}"
+                                        data-house_no="{{ optional($clinic->address)->house_no }}"
+                                        data-street="{{ optional($clinic->address)->street }}"
+                                        data-schedule="{{ $clinic->schedule_summary ?? 'N/A' }}"
+                                        data-schedules='@json($clinic->clinicSchedules)'>
+                                        <i class="bi bi-eye"></i>
+                                    </a>
 
-    <!-- Show first summary -->
-    <span>{{ $firstSummary ?? 'N/A' }}</span>
+                                    <!-- Edit Button -->
+                                    <button type="button" class="btn btn-sm btn-outline-secondary" data-bs-toggle="modal"
+                                        data-bs-target="#edit-clinic-modal" onclick="event.stopPropagation();"
+                                        data-id="{{ $clinic->clinic_id }}" data-name="{{ $clinic->name }}"
+                                        data-description="{{ $clinic->description }}" data-specialty="{{ $clinic->specialty }}"
+                                        data-email="{{ $clinic->email }}" data-contact_no="{{ $clinic->contact_no }}"
+                                        data-mobile_no="{{ $clinic->mobile_no }}"
+                                        data-house_no="{{ optional($clinic->address)->house_no }}"
+                                        data-street="{{ optional($clinic->address)->street }}"
+                                        data-province_id="{{ optional($clinic->address->province)->province_id }}"
+                                        data-city_id="{{ optional($clinic->address->city)->city_id }}"
+                                        data-barangay_id="{{ optional($clinic->address->barangay)->barangay_id }}"
+                                        data-schedule_summary="{{ $clinic->schedule_summary ?? 'N/A' }}"
+                                        data-schedules='@json($clinic->clinicSchedules)'>
+                                        <i class="bi bi-pencil-square"></i>
+                                    </button>
 
-    @if($clinic->clinicSchedules->count() > 1)
-        <!-- Toggle button -->
-        <button class="btn btn-sm btn-link p-0 ms-2" type="button" data-bs-toggle="collapse" data-bs-target="#{{ $collapseId }}" aria-expanded="false" aria-controls="{{ $collapseId }}">
-            (view all)
-        </button>
-
-        <!-- Collapsible full schedule -->
-        <div class="collapse mt-1" id="{{ $collapseId }}">
-            <ul class="list-unstyled mb-0">
-                @foreach($weekDays as $day)
-                    @php $sched = $schedules[$day] ?? null; @endphp
-                    <li>
-                        <strong>{{ $day }}:</strong>
-                        @if($sched)
-                            {{ $sched->start_time }} - {{ $sched->end_time }}
-                        @else
-                            N/A
-                        @endif
-                    </li>
-                @endforeach
-            </ul>
-        </div>
-    @endif
-</td>
-
-                            <td>
-                                {{ optional($clinic->address)->house_no }} {{ optional($clinic->address)->street }}<br>
-                                {{ optional($clinic->address->barangay)->name ?? '' }} 
-                                {{ optional($clinic->address->city)->name ?? '' }} 
-                                {{ optional($clinic->address->province)->name ?? '' }}
-                            </td>
-                            <td>{{ $clinic->email }}</td>
-                            <td>{{ $clinic->contact_no }}</td>
-                            <td class="text-end">
-                                <a href="#" class="btn btn-sm btn-outline-secondary me-1" data-bs-toggle="modal" data-bs-target="#edit-clinic-modal">
-                                    <i class="bi bi-pencil-square"></i>
-                                </a>
-                                <form action="{{-- route('clinics.destroy', $clinic) --}}" method="POST" class="d-inline">
-                                    @csrf
-                                    @method('DELETE')
-                                    <button type="submit" class="btn btn-sm btn-outline-danger">
+                                    <!-- Delete Button -->
+                                    <button type="button" class="btn btn-outline-danger btn-sm delete-clinic-btn"
+                                        data-id="{{ $clinic->clinic_id }}" onclick="event.stopPropagation();">
                                         <i class="bi bi-trash"></i>
                                     </button>
-                                </form>
-                            </td>
-                        </tr>
+                                </td>
+                            </tr>
                         @endforeach
                     </tbody>
+
                 </table>
             </div>
         @endif
     </div>
 </div>
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        document.querySelectorAll('.delete-clinic-btn').forEach(btn => {
+            btn.addEventListener('click', function (e) {
+                e.stopPropagation();
+                const clinicId = this.dataset.id;
+                document.getElementById('delete_clinic_id').value = clinicId;
+
+                const deleteModalEl = document.getElementById('delete-clinic-modal');
+                const deleteModal = new bootstrap.Modal(deleteModalEl);
+                deleteModal.show();
+            });
+        });
+    });
+
+</script>
+@include('pages.clinics.modals.info')
+@include('pages.clinics.modals.edit')
+@include('pages.clinics.modals.delete')

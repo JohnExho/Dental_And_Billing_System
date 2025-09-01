@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+{{-- php artisan db:seed Yajra\\Address\\Seeders\\AddressSeeder --}}
 
 <head>
     <meta charset="UTF-8">

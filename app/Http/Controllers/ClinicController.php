@@ -9,6 +9,7 @@ use Illuminate\Support\Str;
 use Illuminate\Http\Request;
 use App\Models\ClinicSchedule;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
 
@@ -41,7 +42,7 @@ class ClinicController extends Controller
             'contact_no' => 'nullable|string|max:20',
             'email' => 'nullable|email|max:255',
             'schedules' => 'nullable|array',
-            'schedule_summary' => 'nullable|string|max:255',
+            'schedule_summary' => 'required|string|max:255',
             'schedules.*.day_of_week' => 'required|string',
             'schedules.*.start_time' => 'required|date_format:H:i:s',
             'schedules.*.end_time' => 'required|date_format:H:i:s',
@@ -54,12 +55,19 @@ class ClinicController extends Controller
         ]);
 
         // Prevent duplicate email
-        if ($request->email && Clinic::where('email_hash', hash('sha256', $request->email))->exists()) {
-            return redirect()->route('clinics')->with('error', 'The email has already been taken.');
+        $newEmailHash = $request->email ? hash('sha256', strtolower($request->email)) : null;
+
+        if (
+            $newEmailHash && Clinic::where('email_hash', $newEmailHash)
+            ->whereNull('deleted_at') // ignore soft-deleted
+            ->exists()
+        ) {
+            return redirect()->back()->with('error', 'The email has already been taken.');
         }
 
         return DB::transaction(function () use ($request) {
             $account = $this->guard->user();
+            Log::info($request->all());
 
             // Step 1: Create Clinic
             $clinic = Clinic::create([
@@ -67,6 +75,7 @@ class ClinicController extends Controller
                 'account_id' => $account->account_id,
                 'name' => $request->name,
                 'description' => $request->description,
+                'schedule_summary' => $request->schedule_summary ?: 'No schedule yet',
                 'specialty' => $request->specialty,
                 'mobile_no' => $request->mobile_no,
                 'contact_no' => $request->contact_no,
@@ -80,18 +89,12 @@ class ClinicController extends Controller
                 if (!empty($data['active'])) {
                     $schedules[] = [
                         'clinic_schedule_id' => Str::uuid(),
-                        'schedule_summary' => $request->schedule_summary ?? null,
                         'day_of_week' => $day,
                         'start_time' => $data['start'] ?? null,
                         'end_time' => $data['end'] ?? null,
                     ];
                 }
             }
-
-            if (!empty($schedules)) {
-                $clinic->clinicSchedules()->createMany($schedules);
-            }
-
 
             if (!empty($schedules)) {
                 $clinic->clinicSchedules()->createMany($schedules);
@@ -128,6 +131,152 @@ class ClinicController extends Controller
             );
 
             return redirect()->route('clinics')->with('success', 'Clinic created successfully.');
+        });
+    }
+
+    public function update(Request $request, Clinic $clinic)
+    {
+        // Validation
+        $request->validate([
+            'clinic_id' => 'required|exists:clinics,clinic_id',
+            'name' => 'required|string|max:255',
+            'description' => 'nullable|string',
+            'specialty' => 'nullable|string|max:255',
+            'mobile_no' => 'nullable|string|max:20',
+            'contact_no' => 'nullable|string|max:20',
+            'email' => 'nullable|email|max:255|regex:/^[A-Za-z][A-Za-z0-9._%+-]*@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$/',
+            'schedule_summary' => 'nullable|string|max:255',
+            'schedules' => 'nullable|array',
+            'schedules.*.day_of_week' => 'required|string',
+            'schedules.*.start_time' => 'required|date_format:H:i:s',
+            'schedules.*.end_time' => 'required|date_format:H:i:s',
+            'address' => 'nullable|array',
+            'address.house_no' => 'nullable|string|max:50',
+            'address.street' => 'nullable|string|max:255',
+            'address.barangay_id' => 'nullable',
+            'address.city_id' => 'nullable',
+            'address.province_id' => 'nullable',
+        ]);
+
+        $account = Auth::guard('account')->user();
+        $clinic = Clinic::findOrFail($request->clinic_id);
+
+        $normalizedEmail = $request->email ? strtolower($request->email) : null;
+        $newEmailHash = $normalizedEmail ? hash('sha256', $normalizedEmail) : null;
+
+        // Prevent duplicate email
+        if (
+            $normalizedEmail && Clinic::where('email_hash', $newEmailHash)
+            ->where('clinic_id', '!=', $clinic->clinic_id)
+            ->exists()
+        ) {
+            return redirect()->route('clinics')->with('error', 'The email has already been taken.');
+        }
+
+        return DB::transaction(function () use ($request, $clinic, $account, $normalizedEmail, $newEmailHash) {
+
+            // --- Update clinic basic info ---
+            $clinic->update([
+                'name' => $request->name,
+                'description' => $request->description,
+                'specialty' => $request->specialty,
+                'mobile_no' => $request->mobile_no,
+                'contact_no' => $request->contact_no,
+                'email' => $normalizedEmail,
+                'email_hash' => $newEmailHash,
+                'schedule_summary' => $request->schedule_summary,
+            ]);
+
+            // --- Handle schedules ---
+            $incomingSchedules = $request->schedule ?? [];
+
+            // Delete schedules not in the request or inactive
+            $activeDays = array_keys(array_filter($incomingSchedules, fn($d) => !empty($d['active'])));
+            $clinic->clinicSchedules()
+                ->whereNotIn('day_of_week', $activeDays)
+                ->delete();
+
+            // Update or create active schedules
+            foreach ($incomingSchedules as $day => $data) {
+                if (!empty($data['active'])) {
+                    $clinic->clinicSchedules()->updateOrCreate(
+                        ['clinic_id' => $clinic->clinic_id, 'day_of_week' => $day],
+                        ['start_time' => $data['start'], 'end_time' => $data['end']]
+                    );
+                }
+            }
+
+            // --- Update address ---
+            if ($request->filled('address')) {
+                $clinic->address()->updateOrCreate(
+                    ['clinic_id' => $clinic->clinic_id],
+                    [
+                        'account_id' => $account->account_id,
+                        'house_no' => $request->address['house_no'] ?? null,
+                        'street' => $request->address['street'] ?? null,
+                        'barangay_id' => $request->address['barangay_id'] ?? null,
+                        'city_id' => $request->address['city_id'] ?? null,
+                        'province_id' => $request->address['province_id'] ?? null,
+                    ]
+                );
+            }
+
+            $scheduleIds = $clinic->clinicSchedules()->pluck('clinic_schedule_id')->all();
+            $addressId = optional($clinic->address)->address_id;
+
+            Logs::record(
+                $account,
+                $clinic,
+                'update',
+                'clinic',
+                'User updated a clinic',
+                'clinic: ' . $clinic->clinic_id
+                    . ', address: ' . $addressId
+                    . ', schedules: ' . json_encode($scheduleIds),
+                $request->ip(),
+                $request->userAgent()
+            );
+
+            return redirect()->route('clinics')->with('success', 'Clinic updated successfully.');
+        });
+    }
+
+    public function destroy(Request $request)
+    {
+        $request->validate([
+            'clinic_id' => 'required|exists:clinics,clinic_id',
+            'password' => 'required'
+        ]);
+
+        $account = Auth::guard('account')->user();
+        $clinic = Clinic::findOrFail($request->clinic_id);
+
+        return DB::transaction(function () use ($clinic, $account, $request) {
+
+            $scheduleIds = $clinic->clinicSchedules()->pluck('clinic_schedule_id')->all();
+            $addressId = optional($clinic->address)->address_id;
+
+            // Delete schedules & address
+            $clinic->clinicSchedules()->delete();
+            $clinic->address()->delete();
+            // Delete clinic
+            $clinic->delete();
+
+            // Logging
+            Logs::record(
+                $account,
+                $clinic,
+                'delete',
+                'clinic',
+                'User deleted a clinic',
+                'clinic: ' . $clinic->clinic_id
+                    . ', address: ' . $addressId
+                    . ', schedules: ' . json_encode($scheduleIds),
+                $request->ip(),
+                $request->userAgent()
+            );
+
+            return redirect()->route('clinics')->with('success', 'Clinic deleted successfully.');
         });
     }
 }

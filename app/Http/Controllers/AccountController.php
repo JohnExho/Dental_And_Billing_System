@@ -71,7 +71,7 @@ class AccountController extends Controller
                     'login',
                     'auth',
                     'User has logged in',
-                    json_encode($account->account_id),
+                    'Account: ' . json_encode($account->account_id),
                     $request->ip(),
                     $request->userAgent()
                 );
@@ -105,7 +105,7 @@ class AccountController extends Controller
                 'logout',
                 'auth',
                 'User has logged out',
-                json_encode($account->account_id),
+                'Account: ' . json_encode($account->account_id),
                 $request->ip(),
                 $request->userAgent()
             );
@@ -145,7 +145,7 @@ class AccountController extends Controller
                 'update',
                 'auth',
                 'User has changed name',
-                json_encode($account->account_id),
+                'Account: ' . json_encode($account->account_id),
                 $request->ip(),
                 $request->userAgent()
             );
@@ -207,7 +207,7 @@ class AccountController extends Controller
                 'update',
                 'auth',
                 'User has changed password',
-                json_encode($account->account_id),
+                'Account: ' . json_encode($account->account_id),
                 $request->ip(),
                 $request->userAgent()
             );
@@ -241,6 +241,9 @@ class AccountController extends Controller
         if ($request->input('deletion_password') !== $masterDeletionPassword) {
             return redirect()->back()->with('error', 'Invalid deletion password.');
         }
+        
+
+        $accountId = $account->account_id;
 
         // Delete the account
         $account->delete();
@@ -259,7 +262,7 @@ class AccountController extends Controller
             'delete',
             'auth',
             'User has deleted their account',
-            json_encode($account->account_id),
+            'Account: ' . json_encode($accountId),
             $request->ip(),
             $request->userAgent()
         );
@@ -294,7 +297,7 @@ class AccountController extends Controller
             'otp_request',
             'auth',
             'User has requested OTP for password reset',
-            json_encode($account->account_id),
+            'Account: ' . json_encode($account->account_id),
             $request->ip(),
             $request->userAgent()
         );
@@ -336,7 +339,7 @@ class AccountController extends Controller
             'otp_verify',
             'auth',
             'User has verified OTP for password reset',
-            json_encode($account->account_id),
+            'Account: ' . json_encode($account->account_id),
             $request->ip(),
             $request->userAgent()
         );
@@ -384,7 +387,7 @@ class AccountController extends Controller
             'password_reset',
             'auth',
             'User has reset their password',
-            json_encode($account->account_id),
+            'Account: ' . json_encode($account->account_id),
             $request->ip(),
             $request->userAgent()
         );
