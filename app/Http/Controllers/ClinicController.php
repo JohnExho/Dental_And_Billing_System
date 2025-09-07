@@ -24,8 +24,7 @@ class ClinicController extends Controller
     {
         $clinics = Clinic::with('address.barangay', 'address.city', 'address.province')
             ->latest()
-            ->take(8)
-            ->get();
+            ->paginate(4);
 
 
         return view('pages.clinics.index', compact('clinics'));

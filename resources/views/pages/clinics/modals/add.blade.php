@@ -1,80 +1,104 @@
 <!-- Add Clinic Modal -->
 <div class="modal fade" id="add-clinic-modal" tabindex="-1" aria-hidden="true">
-  <div class="modal-dialog modal-xl">
-    <div class="modal-content">
+  <div class="modal-dialog modal-lg modal-dialog-centered">
+    <div class="modal-content shadow-lg border-0 rounded-3">
       <form action="{{ route('process-create-clinic') }}" method="POST">
         @csrf
-        <div class="modal-header">
-          <h5 class="modal-title">Add Clinic</h5>
-          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        <div class="modal-header bg-success text-white">
+          <h5 class="modal-title">
+            <i class="bi bi-hospital me-2"></i> Add New Clinic
+          </h5>
+          <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
         </div>
 
         <div class="modal-body">
-          <div class="row">
+          <div class="row g-4">
             <!-- Left Column -->
             <div class="col-md-6">
-              <!-- Clinic fields unchanged -->
+              <!-- Clinic Info -->
+              <h6 class="text-muted mb-2"><i class="bi bi-building me-1"></i> Clinic Information</h6>
               <div class="mb-3">
-                <label for="clinic_name" class="form-label">Clinic Name</label>
-                <input type="text" class="form-control" id="clinic_name" name="name"
-                       value="{{ old('name', $clinic->name ?? '') }}" required>
+                <div class="input-group">
+                  <span class="input-group-text"><i class="bi bi-building"></i></span>
+                  <input type="text" class="form-control" id="clinic_name" name="name"
+                         placeholder="Clinic Name"
+                         value="{{ old('name', $clinic->name ?? '') }}" required>
+                </div>
               </div>
 
               <div class="mb-3">
-                <label for="clinic_description" class="form-label">Short Description</label>
-                <input type="text" class="form-control" id="clinic_description" name="description"
-                       value="{{ old('description', $clinic->clinic_description ?? '') }}">
+                <div class="input-group">
+                  <span class="input-group-text"><i class="bi bi-info-circle"></i></span>
+                  <input type="text" class="form-control" id="clinic_description" name="description"
+                         placeholder="Short Description"
+                         value="{{ old('description', $clinic->clinic_description ?? '') }}">
+                </div>
               </div>
 
               <!-- Contact -->
+              <h6 class="text-muted mt-4 mb-2"><i class="bi bi-envelope me-1"></i> Contact</h6>
               <div class="row">
-                <h6 class="text-muted mt-3">☎️ Contact</h6>
                 <div class="col-md-6 mb-3">
-                  <label for="specialty" class="form-label">Specialty</label>
-                  <input type="text" class="form-control form-control-sm" id="specialty" name="specialty"
-                         value="{{ old('specialty', $clinic->specialty ?? '') }}">
+                  <div class="input-group">
+                    <span class="input-group-text"><i class="bi bi-heart-pulse"></i></span>
+                    <input type="text" class="form-control" id="specialty" name="specialty"
+                           placeholder="Specialty"
+                           value="{{ old('specialty', $clinic->specialty ?? '') }}">
+                  </div>
                 </div>
                 <div class="col-md-6 mb-3">
-                  <label for="email" class="form-label">Email</label>
-                  <input type="email" class="form-control" id="email" name="email"
-                         value="{{ old('email', $clinic->email ?? '') }}"
-                          pattern="^[A-Za-z][A-Za-z0-9._%+-]*@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$"
-       title="Email must start with a letter and be valid." required>
+                  <div class="input-group">
+                    <span class="input-group-text"><i class="bi bi-at"></i></span>
+                    <input type="email" class="form-control" id="email" name="email"
+                           placeholder="Email address"
+                           value="{{ old('email', $clinic->email ?? '') }}"
+                           pattern="^[A-Za-z][A-Za-z0-9._%+-]*@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$"
+                           required>
+                  </div>
+                  <div class="form-text">Must start with a letter (e.g. clinic@mail.com)</div>
                 </div>
               </div>
 
               <div class="row">
                 <div class="col-md-6 mb-3">
-                  <label for="contact_no" class="form-label">Phone / Landline</label>
-                  <input type="text" class="form-control form-control-sm phone-number" id="contact_no" name="contact_no"
-                         value="{{ old('contact_no', $clinic->contact_no ?? '') }}"  maxlength="11" required>
+                  <div class="input-group">
+                    <span class="input-group-text"><i class="bi bi-telephone"></i></span>
+                    <input type="text" class="form-control phone-number" id="contact_no" name="contact_no"
+                           placeholder="Phone / Landline"
+                           value="{{ old('contact_no', $clinic->contact_no ?? '') }}" maxlength="11" required>
+                  </div>
+                  <div class="form-text">11-digit format only</div>
                 </div>
                 <div class="col-md-6 mb-3">
-                  <label for="mobile_no" class="form-label">Mobile No</label>
-                  <input type="text" class="form-control phone-number" id="mobile_no" name="mobile_no"
-                         value="{{ old('mobile_no', $clinic->mobile_no ?? '') }}"  maxlength="11" required>
+                  <div class="input-group">
+                    <span class="input-group-text"><i class="bi bi-phone"></i></span>
+                    <input type="text" class="form-control phone-number" id="mobile_no" name="mobile_no"
+                           placeholder="Mobile No"
+                           value="{{ old('mobile_no', $clinic->mobile_no ?? '') }}" maxlength="11" required>
+                  </div>
+                  <div class="form-text">11-digit format only</div>
                 </div>
               </div>
 
               <!-- Address -->
-              <h6 class="text-muted mt-3">📍 Address</h6>
+              <h6 class="text-muted mt-4 mb-2"><i class="bi bi-geo-alt me-1"></i> Address</h6>
               <div class="row">
-                <div class="col-md-3 mb-3">
-                  <label for="house_no" class="form-label">House No.</label>
-                  <input type="text" class="form-control form-control-sm" id="house_no" name="address[house_no]"
+                <div class="col-md-4 mb-3">
+                  <input type="text" class="form-control" id="house_no" name="address[house_no]"
+                         placeholder="House No."
                          value="{{ old('house_no', $clinic->house_no ?? '') }}">
                 </div>
-
-                <div class="col-md-5 mb-3">
-                  <label for="street" class="form-label">Street</label>
-                  <input type="text" class="form-control form-control-sm" id="street" name="address[street]"
+                <div class="col-md-8 mb-3">
+                  <input type="text" class="form-control" id="street" name="address[street]"
+                         placeholder="Street"
                          value="{{ old('street', $clinic->street ?? '') }}">
                 </div>
+              </div>
 
-                <div class="col-md-4 mb-3">
-                  <label for="province-select" class="form-label">Province</label>
+              <div class="row">
+                <div class="col-md-12 mb-3">
                   <select id="province-select" class="form-select" required>
-                    <option value="">-- Select Province --</option>
+                    <option value="" title="">-- Province --</option>
                     @foreach($provinces as $province)
                       <option value="{{ $province->province_id }}" data-id="{{ $province->id }}"
                         {{ old('province_id', $clinic->province_id ?? '') == $province->id ? 'selected' : '' }}>
@@ -84,19 +108,15 @@
                   </select>
                   <input type="hidden" name="address[province_id]" id="province-hidden">
                 </div>
-
-                <div class="col-md-4 mb-3">
-                  <label for="city-select" class="form-label">City</label>
+                <div class="col-md-12 mb-3">
                   <select id="city-select" class="form-select" disabled required>
-                    <option value="">-- Select City --</option>
+                    <option value="">-- City --</option>
                   </select>
                   <input type="hidden" name="address[city_id]" id="city-hidden">
                 </div>
-
-                <div class="col-md-4 mb-3">
-                  <label for="barangay-select" class="form-label">Barangay</label>
+                <div class="col-md-12 mb-3">
                   <select id="barangay-select" class="form-select" disabled required>
-                    <option value="">-- Select Barangay --</option>
+                    <option value="">-- Barangay --</option>
                   </select>
                   <input type="hidden" name="address[barangay_id]" id="barangay-hidden">
                 </div>
@@ -105,9 +125,10 @@
 
             <!-- Right Column: Schedule -->
             <div class="col-md-6">
+              <h6 class="text-muted mb-2"><i class="bi bi-calendar-week me-1"></i> Schedule</h6>
               <div class="mb-3">
-                <label for="schedule_summary" class="form-label">Schedule Summary</label>
                 <input type="text" class="form-control" id="schedule_summary" name="schedule_summary"
+                       placeholder="Summary (e.g. Mon-Fri 9AM-5PM)"
                        value="{{ old('schedule_summary', $clinic->schedule_summary ?? '') }}" required>
               </div>
 
@@ -130,45 +151,73 @@
                     </div>
                   @endforeach
                 </div>
+                <div class="form-text">Select days and set opening/closing hours.</div>
               </div>
             </div>
           </div>
         </div>
 
-        <div class="modal-footer">
-          <button type="submit" class="btn btn-primary">Save Clinic</button>
-          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+        <div class="modal-footer bg-light">
+          <button type="submit" class="btn btn-success">
+            <i class="bi bi-save me-1"></i> Save Clinic
+          </button>
+          <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">
+            <i class="bi bi-x-circle me-1"></i> Cancel
+          </button>
         </div>
       </form>
     </div>
   </div>
 </div>
 
+
 <script>
 (function () {
   const modal = document.getElementById('add-clinic-modal');
   if (!modal) return;
 
-  const form = modal.querySelector('form');
+const form = modal.querySelector('form');
 
-  // --- Weekly schedule toggle ---
-  function syncSchedule() {
-    modal.querySelectorAll('.day-row').forEach(row => {
-      const cb = row.querySelector('.day-check');
-      const times = row.querySelector('.time-inputs');
-      if (!cb || !times) return;
-      times.classList.toggle('d-none', !cb.checked);
-    });
-  }
+// --- Weekly schedule toggle ---
+function syncSchedule() {
+  modal.querySelectorAll('.day-row').forEach(row => {
+    const cb = row.querySelector('.day-check');
+    const times = row.querySelector('.time-inputs');
+    const inputs = times.querySelectorAll('input[type="time"]');
+    if (!cb || !times) return;
 
-  modal.addEventListener('change', function(e) {
-    if (e.target.classList.contains('day-check')) {
-      const row = e.target.closest('.day-row');
-      const times = row.querySelector('.time-inputs');
-      times.classList.toggle('d-none', !e.target.checked);
-      if (!e.target.checked) times.querySelectorAll('input[type="time"]').forEach(i => i.value='');
+    if (cb.checked) {
+      times.classList.remove('d-none');
+      inputs.forEach(i => i.required = true); // ✅ required when active
+    } else {
+      times.classList.add('d-none');
+      inputs.forEach(i => {
+        i.required = false; // ✅ remove required
+        i.value = '';
+      });
     }
   });
+}
+
+modal.addEventListener('change', function(e) {
+  if (e.target.classList.contains('day-check')) {
+    const row = e.target.closest('.day-row');
+    const times = row.querySelector('.time-inputs');
+    const inputs = times.querySelectorAll('input[type="time"]');
+
+    if (e.target.checked) {
+      times.classList.remove('d-none');
+      inputs.forEach(i => i.required = true); // ✅ required
+    } else {
+      times.classList.add('d-none');
+      inputs.forEach(i => {
+        i.required = false; // ✅ not required
+        i.value = '';
+      });
+    }
+  }
+});
+
 
   // --- Address cascading ---
   const provinceSelect = modal.querySelector('#province-select');
@@ -208,6 +257,7 @@
         data.forEach(c => {
           const opt = document.createElement('option');
           opt.value = c.city_id;
+          opt.title = c.name;
           opt.dataset.id = c.id;
           opt.textContent = c.name;
           citySelect.appendChild(opt);

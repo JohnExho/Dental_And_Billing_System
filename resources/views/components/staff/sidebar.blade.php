@@ -78,56 +78,12 @@
         </div>
         <ul class="nav flex-column text-start">
             <li class="nav-item mb-1">
-                <a href="{{ route('dashboard') }}" class="text-decoration-none fw-bold fs-4 
-                   {{ request()->routeIs('dashboard') ? 'text-primary' : 'text-dark' }}">
+                <a href="{{ route('staff.dashboard') }}" class="text-decoration-none fw-bold fs-4 
+                   {{ request()->routeIs('staff.dashboard') ? 'text-primary' : 'text-dark' }}">
                     <span class="nav-text">Dashboard</span>
                     <i class="bi bi-speedometer2 ms-1"></i>
                 </a>
             </li>
-            <li class="nav-item mb-1">
-                <a class="text-decoration-none fw-bold fs-4  
-                    {{ request()->routeIs('clinics') ? 'active text-primary' : 'text-dark' }}"
-                    href="{{ route('clinics') }}"
-                    style="{{ request()->routeIs('clinics') ? 'background: gray;' : '' }}">
-                    <span class="nav-text">Clinics</span>
-                    <i class="bi bi-building"></i>
-                </a>
-                {{--
-            <li class="nav-item mb-1">
-                <a class="nav-link fw-semibold 
-                    {{ request()->routeIs('patients') ? 'active text-red' : 'text-dark' }}"
-                    href="{{ route('patients') }}"
-                    style="{{ request()->routeIs('patients') ? 'background: gray;' : '' }}">
-                    <i class="bi bi-person-lines-fill"></i> Patient Records
-                </a>
-            </li>
-            <li class="nav-item ms-4 mb-1">
-                <a class="nav-link small disabled text-muted
-                    {{ request()->is('procedures/active') ? 'text-primary fw-semibold' : 'text-muted' }}" href="#">
-                    • Active Procedures
-                </a>
-            </li>
-            <li class="nav-item mb-1">
-                <a class="nav-link fw-semibold 
-                    {{ request()->routeIs('procedures') ? 'active text-primary' : 'text-dark' }}"
-                    href="{{ route('procedures') }}">
-                    <i class="bi bi-clipboard-pulse"></i> Procedures
-                </a>
-            </li>
-            <li class="nav-item mb-1">
-                <a class="nav-link fw-semibold 
-                    {{ request()->routeIs('teeth') ? 'active text-primary' : 'text-dark' }}"
-                    href="{{ route('teeth') }}">
-                    <i class="bi bi-grid-3x3-gap"></i> Tooth
-                </a>
-            </li>
-            <li class="nav-item mb-1">
-                <a class="nav-link fw-semibold 
-                    {{ request()->routeIs('dentists') ? 'active text-primary' : 'text-dark' }}"
-                    href="{{ route('dentists') }}">
-                    <i class="bi bi-person-badge"></i> Dentists
-                </a>
-            </li> --}}
         </ul>
     </nav>
 </aside>

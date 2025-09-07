@@ -46,12 +46,17 @@
             background: #fff;
             box-shadow: 0 1px 6px rgba(0, 0, 0, .08);
         }
+
+        .comment{
+            color: green;
+        }
     </style>
 </head>
 
 <body>
     @php
-        $invalidRoute = ['login', 'forgot-password', 'confirm-otp', 'reset-password'];
+        $invalidRoute = ['login', 'forgot-password', 'confirm-otp', 'reset-password', 'dashboard'];
+        $activeRole = session('active_role', auth()->user()?->role);
     @endphp
 
     @if ($errors->any())
@@ -68,7 +73,12 @@
     @endunless
     <div class="d-flex">
         @unless (Route::is($invalidRoute))
-            @include('components.sidebar')
+            @if ($activeRole === 'staff')
+                @include('components.staff.sidebar')
+            @else
+                @include('components.admin.sidebar')
+            @endif
+
         @endunless
 
 

@@ -24,8 +24,11 @@ class Account extends Authenticatable
         'first_name',
         'email',
         'email_hash',
+        'mobile_no',
+        'contact_no', 
         'password',
         'role',
+        'can_act_as_staff',
         'is_active',
         'otp_hash',
         'otp_expires_at',
@@ -38,6 +41,8 @@ class Account extends Authenticatable
         'email' => 'encrypted',
         'role' => 'string',
         'is_active' => 'boolean',
+        'mobile_no' => 'encrypted',
+        'contact_no' => 'encrypted',
         'otp_hash' => 'string',
         'otp_expires_at' => 'datetime',
         'created_at' => 'datetime',
@@ -57,5 +62,10 @@ class Account extends Authenticatable
     public function logs()
     {
         return $this->hasMany(Logs::class, 'account_id', 'account_id');
+    }
+
+        public function address()
+    {
+        return $this->hasOne(Address::class, 'account_id', 'account_id');
     }
 }

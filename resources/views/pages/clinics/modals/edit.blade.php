@@ -1,7 +1,10 @@
+
+
 <!-- Edit Clinic Modal -->
 <div class="modal fade" id="edit-clinic-modal" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog modal-xl">
         <div class="modal-content">
+            <div class="comment fs-5">To Do: Dapat sa may populated data or atleast label ng previous address</div>
             <form id="edit-clinic-form" action="{{ route('process-update-clinic') }}" method="POST">
                 @csrf
                 @method('PUT')
@@ -70,6 +73,7 @@
 
                                 <div class="col-md-4 mb-3">
                                     <label for="edit_province_select" class="form-label">Province</label>
+                                    <label for="edit_province_select" id="province_label"></label>
                                     <select id="edit_province_select" class="form-select" required>
                                         <option value="">-- Select Province --</option>
                                         @foreach($provinces as $province)
@@ -83,6 +87,7 @@
 
                                 <div class="col-md-4 mb-3">
                                     <label for="edit_city_select" class="form-label">City</label>
+                                    <label for="edit_city_select" id="city_label"></label>
                                     <select id="edit_city_select" class="form-select" disabled required>
                                         <option value="">-- Select City --</option>
                                     </select>
@@ -91,6 +96,7 @@
 
                                 <div class="col-md-4 mb-3">
                                     <label for="edit_barangay_select" class="form-label">Barangay</label>
+                                     <label for="edit_barangay_select" id="barangay_label"></label>
                                     <select id="edit_barangay_select" class="form-select" disabled required>
                                         <option value="">-- Select Barangay --</option>
                                     </select>
@@ -316,3 +322,5 @@
 
     })();
 </script>
+
+

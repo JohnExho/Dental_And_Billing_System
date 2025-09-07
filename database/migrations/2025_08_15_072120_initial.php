@@ -21,11 +21,14 @@ return new class extends Migration
             $table->uuid('account_id')->primary();
             $table->text('email')->unique();
             $table->string('email_hash')->unique();
-            $table->string('last_name');
-            $table->string('middle_name')->nullable();
-            $table->string('first_name');
+            $table->text('last_name');
+            $table->text('middle_name')->nullable();
+            $table->text('first_name');
+             $table->text('mobile_no')->nullable();
+            $table->text('contact_no')->nullable();
             $table->string('password');
             $table->enum('role', ['admin', 'staff'])->default('staff');
+            $table->boolean('can_act_as_staff')->default(false);
             $table->boolean('is_active')->default(true);
             $table->string('otp_hash', 255)->nullable();
             $table->timestamp('otp_expires_at')->nullable();
@@ -44,12 +47,12 @@ return new class extends Migration
         Schema::create('clinics', function (Blueprint $table) {
             $table->uuid('clinic_id')->primary();
             $table->uuid('account_id')->nullable(); // Account that owns the clinic
-            $table->string('name');
+            $table->text('name');
             $table->text('description')->nullable();
             $table->text('schedule_summary')->nullable();
-            $table->string('specialty')->nullable();
-            $table->string('mobile_no')->nullable();
-            $table->string('contact_no')->nullable();
+            $table->text('specialty')->nullable();
+            $table->text('mobile_no')->nullable();
+            $table->text('contact_no')->nullable();
             $table->text('email')->nullable();
             $table->string('email_hash')->nullable();
 
@@ -69,8 +72,8 @@ return new class extends Migration
             $table->uuid('clinic_schedule_id')->primary();
             $table->uuid('clinic_id')->nullable();
             $table->text('day_of_week');
-            $table->string('start_time');
-            $table->string('end_time');
+            $table->text('start_time');
+            $table->text('end_time');
             $table->timestamps();
             $table->softDeletes();
             $table->foreign('clinic_id')
@@ -84,7 +87,8 @@ return new class extends Migration
             $table->uuid('laboratory_id')->primary();
             $table->uuid('account_id')->nullable(); // Account that owns/added the laboratory
             $table->string('name');
-            $table->string('contact_no')->nullable();
+            $table->text('mobile_no')->nullable();
+            $table->text('contact_no')->nullable();
             $table->string('email')->nullable();
             $table->index('account_id');    // join with accounts
             $table->index('name');          // search by name
@@ -107,7 +111,8 @@ return new class extends Migration
             $table->string('middle_name')->nullable();
             $table->string('last_name');
             $table->string('speciality')->nullable();
-            $table->string('contact_no')->nullable();
+            $table->text('mobile_no')->nullable();
+            $table->text('contact_no')->nullable();
             $table->boolean('is_active')->default(true);
             $table->string('email')->nullable();
             $table->index('account_id');    // join with accounts
@@ -142,7 +147,8 @@ return new class extends Migration
             $table->string('middle_name')->nullable();
             $table->string('last_name');
             $table->string('sex');
-            $table->string('contact_no')->nullable();
+            $table->text('mobile_no')->nullable();
+            $table->text('contact_no')->nullable();
             $table->date('date_of_birth');
             $table->string('email')->nullable();
             $table->boolean('is_validated')->default(false); // Indicates if the patient has been validated in case of qr code input
@@ -217,7 +223,7 @@ return new class extends Migration
             $table->foreign('laboratory_id')->references('laboratory_id')->on('laboratories')->onDelete('set null');
         });
 
-
+// new table for machine learning
 
         Schema::create('services', function (Blueprint $table) {
             $table->uuid('service_id')->primary();
@@ -326,8 +332,8 @@ return new class extends Migration
             $table->uuid('clinic_id')->nullable();
             $table->uuid('laboratory_id')->nullable();
             //Encrypt
-            $table->string('house_no')->nullable();
-            $table->string('street')->nullable();
+            $table->text('house_no')->nullable();
+            $table->text('street')->nullable();
             $table->unsignedBigInteger('barangay_id')->nullable();
             $table->unsignedBigInteger('city_id')->nullable();
             $table->unsignedBigInteger('province_id')->nullable();

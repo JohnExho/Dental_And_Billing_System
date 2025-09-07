@@ -124,5 +124,3 @@
         });
     });
 </script>
-
-@include('pages.clinics.modals.edit')

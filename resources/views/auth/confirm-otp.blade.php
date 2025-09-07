@@ -14,7 +14,7 @@
     .auth-card {
         background: #fff;
         border-radius: 16px;
-        box-shadow: 0 10px 25px rgba(0,0,0,0.15);
+        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
         padding: 2.5rem;
         width: 100%;
         max-width: 420px;
@@ -76,11 +76,35 @@
         border-radius: 10px;
         font-weight: 600;
         transition: all 0.3s ease;
+        color: #fff;
     }
 
     .btn-custom:hover {
         background: #1b6d91;
         transform: translateY(-1px);
+    }
+
+    .btn-outline {
+        background: #f8f9fa;
+        border: 1px solid #2c91c5;
+        border-radius: 10px;
+        font-weight: 600;
+        transition: all 0.3s ease;
+        color: #2c91c5;
+    }
+
+    .btn-outline:hover {
+        background: #e2e6ea;
+    }
+
+    .btn-row {
+        display: flex;
+        gap: 0.75rem;
+        margin-top: 1rem;
+    }
+
+    .btn-row form {
+        flex: 1;
     }
 
     .back-link {
@@ -112,19 +136,30 @@
     <h5>Enter OTP Code</h5>
     <p class="mb-4">We’ve sent a verification code to your email. Enter it below to continue.</p>
 
-    <!-- Form -->
-    <form method="POST" action="{{ route('process-verify-otp') }}">
-        @csrf
-        <div class="otp-input">
-            <input type="text" maxlength="1" name="otp[]" required>
-            <input type="text" maxlength="1" name="otp[]" required>
-            <input type="text" maxlength="1" name="otp[]" required>
-            <input type="text" maxlength="1" name="otp[]" required>
-            <input type="text" maxlength="1" name="otp[]" required>
-            <input type="text" maxlength="1" name="otp[]" required>
-        </div>
-        <button type="submit" class="btn btn-custom w-100 py-2">Verify OTP</button>
-    </form>
+    <!-- OTP Inputs -->
+    <div class="otp-input">
+        <input type="text" maxlength="1" name="otp[]" required form="verifyForm">
+        <input type="text" maxlength="1" name="otp[]" required form="verifyForm">
+        <input type="text" maxlength="1" name="otp[]" required form="verifyForm">
+        <input type="text" maxlength="1" name="otp[]" required form="verifyForm">
+        <input type="text" maxlength="1" name="otp[]" required form="verifyForm">
+        <input type="text" maxlength="1" name="otp[]" required form="verifyForm">
+    </div>
+
+    <!-- Buttons Row -->
+    <div class="btn-row">
+        <!-- Resend OTP -->
+        <form method="POST" action="{{ route('process-resend-otp') }}" id="resendForm">
+            @csrf
+            <button id="resendBtn" type="submit" class="btn btn-outline w-100 py-2">Resend</button>
+        </form>
+
+        <!-- Verify OTP -->
+        <form method="POST" action="{{ route('process-verify-otp') }}" id="verifyForm">
+            @csrf
+            <button type="submit" class="btn btn-custom w-100 py-2">Verify OTP</button>
+        </form>
+    </div>
 
     <!-- Back link -->
     <a href="{{ route('login')}}" class="back-link">
@@ -132,4 +167,30 @@
         Back to Login
     </a>
 </div>
+
+<script>
+    const resendBtn = document.getElementById("resendBtn");
+    const resendForm = document.getElementById("resendForm");
+
+    resendForm.addEventListener("submit", function (e) {
+        e.preventDefault(); // prevent immediate spam
+
+        resendBtn.disabled = true;
+        let countdown = 30;
+        resendBtn.textContent = `Resend (${countdown}s)`;
+
+        const timer = setInterval(() => {
+            countdown--;
+            resendBtn.textContent = `Resend (${countdown}s)`;
+            if (countdown <= 0) {
+                clearInterval(timer);
+                resendBtn.disabled = false;
+                resendBtn.textContent = "Resend";
+            }
+        }, 1000);
+
+        // actually submit the form
+        this.submit();
+    });
+</script>
 @endsection
