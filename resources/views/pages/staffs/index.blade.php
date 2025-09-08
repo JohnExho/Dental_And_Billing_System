@@ -1,7 +1,7 @@
 @extends('layout')
 @section('title', 'Staffs | Chomply')
 @section('content')
-    <div class="container mt-4">
+    <div class="container-fluid mt-4">
         <div class="card shadow-sm border-0">
             <div class="card-header bg-primary text-white">
                 <a href="#" class="btn btn-light btn-sm float-end" data-bs-toggle="modal" data-bs-target="#add-staff-modal">
@@ -21,7 +21,7 @@
 
         </div>
         <div class="mt-3 px-3">
-            {{-- {{ $staffs->links('vendor.pagination.bootstrap-5') }} --}}
+            {{ $staffs->links('vendor.pagination.bootstrap-5') }}
         </div>
         {{-- Modal lives outside the container but still inside content --}}
         @include('pages.staffs.modals.add')

@@ -46,7 +46,7 @@ class AccountController extends Controller
         $staffs = Account::with('address.barangay', 'address.city', 'address.province')
             ->latest()
             ->where('role', 'staff')
-            ->paginate(4);
+            ->paginate(8);
 
 
         return view('pages.staffs.index', compact('staffs'));

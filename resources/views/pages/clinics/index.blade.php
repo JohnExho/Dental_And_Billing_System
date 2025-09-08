@@ -1,7 +1,7 @@
 @extends('layout')
 @section('title', 'Clinics | Chomply')
 @section('content')
-    <div class="container mt-4">
+    <div class="container-fluid mt-4">
         <div class="card shadow-sm border-0">
             <div class="card-header bg-primary text-white">
                 <a href="#" class="btn btn-light btn-sm float-end" data-bs-toggle="modal"

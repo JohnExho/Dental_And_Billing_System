@@ -4,6 +4,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AccountController;
 use App\Http\Controllers\AddressController;
 use App\Http\Controllers\ClinicController;
+use App\Http\Controllers\LaboratoryController;
 
 Route::middleware('web')->group(function () {
     // Login page
@@ -46,6 +47,7 @@ Route::middleware('web')->group(function () {
         Route::get('/clinics', [ClinicController::class, 'index'])->name('clinics');
         Route::view('/associates', 'pages.associates.index')->name('associates');
         Route::get('/staffs', [AccountController::class,'staffIndex'])->name('staffs');
+        Route::get('/laboratories', [LaboratoryController::class,'index'])->name('laboratories');
            });
     });
 });

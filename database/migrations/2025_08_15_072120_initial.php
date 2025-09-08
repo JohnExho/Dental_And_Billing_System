@@ -43,7 +43,6 @@ return new class extends Migration
         });
 
         // Dependent Tables
-
         Schema::create('clinics', function (Blueprint $table) {
             $table->uuid('clinic_id')->primary();
             $table->uuid('account_id')->nullable(); // Account that owns the clinic
@@ -81,18 +80,21 @@ return new class extends Migration
                 ->onDelete('set null');
         });
 
-
-
         Schema::create('laboratories', function (Blueprint $table) {
             $table->uuid('laboratory_id')->primary();
             $table->uuid('account_id')->nullable(); // Account that owns/added the laboratory
             $table->string('name');
+            $table->text('description')->nullable();
+            $table->string('speciality')->nullable();
             $table->text('mobile_no')->nullable();
             $table->text('contact_no')->nullable();
             $table->string('email')->nullable();
+            $table->string('email_hash')->nullable();
+
+
             $table->index('account_id');    // join with accounts
             $table->index('name');          // search by name
-            $table->index('email');         // search by email
+            $table->index('email_hash');
 
 
             $table->timestamps();
@@ -100,7 +102,6 @@ return new class extends Migration
 
             $table->foreign('account_id')->references('account_id')->on('accounts')->onDelete('set null');
         });
-
 
         Schema::create('associates', function (Blueprint $table) {
             $table->uuid('associate_id')->primary();

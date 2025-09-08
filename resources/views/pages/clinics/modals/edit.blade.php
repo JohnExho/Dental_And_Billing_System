@@ -1,10 +1,7 @@
-
-
 <!-- Edit Clinic Modal -->
 <div class="modal fade" id="edit-clinic-modal" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog modal-xl">
         <div class="modal-content">
-            <div class="comment fs-5">To Do: Dapat sa may populated data or atleast label ng previous address</div>
             <form id="edit-clinic-form" action="{{ route('process-update-clinic') }}" method="POST">
                 @csrf
                 @method('PUT')
@@ -34,8 +31,7 @@
                             <div class="row">
                                 <div class="col-md-6 mb-3">
                                     <label for="edit_specialty" class="form-label">Specialty</label>
-                                    <input type="text" class="form-control form-control-sm" id="edit_specialty"
-                                        name="specialty">
+                                    <input type="text" class="form-control form-control-sm" id="edit_specialty" name="specialty">
                                 </div>
                                 <div class="col-md-6 mb-3">
                                     <label for="edit_email" class="form-label">Email</label>
@@ -46,13 +42,11 @@
                             <div class="row">
                                 <div class="col-md-6 mb-3">
                                     <label for="edit_contact_no" class="form-label">Phone / Landline</label>
-                                    <input type="text" class="form-control form-control-sm phone-number"
-                                        id="edit_contact_no" name="contact_no" maxlength="11" required>
+                                    <input type="text" class="form-control form-control-sm phone-number" id="edit_contact_no" name="contact_no" maxlength="11" required>
                                 </div>
                                 <div class="col-md-6 mb-3">
                                     <label for="edit_mobile_no" class="form-label">Mobile No</label>
-                                    <input type="text" class="form-control phone-number" id="edit_mobile_no"
-                                        name="mobile_no" maxlength="11" required>
+                                    <input type="text" class="form-control phone-number" id="edit_mobile_no" name="mobile_no" maxlength="11" required>
                                 </div>
                             </div>
 
@@ -61,46 +55,44 @@
                             <div class="row">
                                 <div class="col-md-3 mb-3">
                                     <label for="edit_house_no" class="form-label">House No.</label>
-                                    <input type="text" class="form-control form-control-sm" id="edit_house_no"
-                                        name="address[house_no]">
+                                    <input type="text" class="form-control form-control-sm" id="edit_house_no" name="address[house_no]">
                                 </div>
 
                                 <div class="col-md-5 mb-3">
                                     <label for="edit_street" class="form-label">Street</label>
-                                    <input type="text" class="form-control form-control-sm" id="edit_street"
-                                        name="address[street]">
+                                    <input type="text" class="form-control form-control-sm" id="edit_street" name="address[street]">
                                 </div>
 
                                 <div class="col-md-4 mb-3">
                                     <label for="edit_province_select" class="form-label">Province</label>
-                                    <label for="edit_province_select" id="province_label"></label>
                                     <select id="edit_province_select" class="form-select" required>
                                         <option value="">-- Select Province --</option>
-                                        @foreach($provinces as $province)
+                                        @foreach ($provinces as $province)
                                             <option value="{{ $province->province_id }}" data-id="{{ $province->id }}">
                                                 {{ $province->name }}
                                             </option>
                                         @endforeach
                                     </select>
                                     <input type="hidden" name="address[province_id]" id="edit_province_hidden">
+                                    <span id="province_label" class="form-text"></span> <!-- This will show the selected province name -->
                                 </div>
 
                                 <div class="col-md-4 mb-3">
                                     <label for="edit_city_select" class="form-label">City</label>
-                                    <label for="edit_city_select" id="city_label"></label>
                                     <select id="edit_city_select" class="form-select" disabled required>
                                         <option value="">-- Select City --</option>
                                     </select>
                                     <input type="hidden" name="address[city_id]" id="edit_city_hidden">
+                                    <span id="city_label" class="form-text"></span> <!-- This will show the selected city name -->
                                 </div>
 
                                 <div class="col-md-4 mb-3">
                                     <label for="edit_barangay_select" class="form-label">Barangay</label>
-                                     <label for="edit_barangay_select" id="barangay_label"></label>
                                     <select id="edit_barangay_select" class="form-select" disabled required>
                                         <option value="">-- Select Barangay --</option>
                                     </select>
                                     <input type="hidden" name="address[barangay_id]" id="edit_barangay_hidden">
+                                    <span id="barangay_label" class="form-text"></span> <!-- This will show the selected barangay name -->
                                 </div>
                             </div>
                         </div>
@@ -109,35 +101,30 @@
                         <div class="col-md-6">
                             <div class="mb-3">
                                 <label for="edit_schedule_summary" class="form-label">Schedule Summary</label>
-                                <input type="text" class="form-control" id="edit_schedule_summary"
-                                    name="schedule_summary" required>
+                                <input type="text" class="form-control" id="edit_schedule_summary" name="schedule_summary" required>
                             </div>
 
                             <div class="mb-3">
                                 <label class="form-label">Weekly Schedule</label>
                                 <div class="row">
-                                    @foreach(['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'] as $day)
+                                    @foreach (['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'] as $day)
                                         <div class="day-row col-12 mb-2">
                                             <!-- Hidden input ensures unchecked days are sent as 0 -->
                                             <input type="hidden" name="schedule[{{ $day }}][active]" value="0">
 
                                             <div class="form-check mb-1">
-                                                <input class="form-check-input day-check" type="checkbox"
-                                                    id="edit_{{ $day }}" name="schedule[{{ $day }}][active]" value="1">
-                                                <label class="form-check-label fw-bold"
-                                                    for="edit_{{ $day }}">{{ $day }}</label>
+                                                <input class="form-check-input day-check" type="checkbox" id="edit_{{ $day }}" name="schedule[{{ $day }}][active]" value="1">
+                                                <label class="form-check-label fw-bold" for="edit_{{ $day }}">{{ $day }}</label>
                                             </div>
 
                                             <div class="d-flex time-inputs d-none">
-                                                <input type="time" class="form-control me-2"
-                                                    name="schedule[{{ $day }}][start]">
+                                                <input type="time" class="form-control me-2" name="schedule[{{ $day }}][start]">
                                                 <input type="time" class="form-control" name="schedule[{{ $day }}][end]">
                                             </div>
                                         </div>
                                     @endforeach
                                 </div>
                             </div>
-
                         </div>
 
                     </div>
@@ -151,8 +138,9 @@
         </div>
     </div>
 </div>
+
 <script>
-    (function () {
+    (function() {
         const modal = document.getElementById('edit-clinic-modal');
         if (!modal) return;
 
@@ -180,7 +168,11 @@
             citySelect.disabled = true;
             citySelect.innerHTML = '<option>Loading cities…</option>';
             try {
-                const res = await fetch(`/locations/cities/${provinceId}`, { headers: { 'Accept': 'application/json' } });
+                const res = await fetch(`/locations/cities/${provinceId}`, {
+                    headers: {
+                        'Accept': 'application/json'
+                    }
+                });
                 const data = await res.json();
                 citySelect.innerHTML = '<option value="">-- Select City --</option>';
                 data.forEach(c => {
@@ -205,7 +197,11 @@
             barangaySelect.disabled = true;
             barangaySelect.innerHTML = '<option>Loading barangays…</option>';
             try {
-                const res = await fetch(`/locations/barangays/${cityId}`, { headers: { 'Accept': 'application/json' } });
+                const res = await fetch(`/locations/barangays/${cityId}`, {
+                    headers: {
+                        'Accept': 'application/json'
+                    }
+                });
                 const data = await res.json();
                 barangaySelect.innerHTML = '<option value="">-- Select Barangay --</option>';
                 data.forEach(b => {
@@ -227,14 +223,14 @@
         }
 
         // --- Event listeners ---
-        provinceSelect.addEventListener('change', async function () {
+        provinceSelect.addEventListener('change', async function() {
             resetSelects();
             provinceHidden.value = this.selectedOptions[0]?.dataset.id || '';
             if (!this.value) return;
             await loadCities(this.value);
         });
 
-        citySelect.addEventListener('change', async function () {
+        citySelect.addEventListener('change', async function() {
             barangaySelect.innerHTML = '<option value="">-- Select Barangay --</option>';
             barangaySelect.disabled = true;
             cityHidden.value = '';
@@ -244,31 +240,12 @@
             await loadBarangays(this.value);
         });
 
-        barangaySelect.addEventListener('change', function () {
+        barangaySelect.addEventListener('change', function() {
             barangayHidden.value = this.selectedOptions[0]?.dataset.id || '';
         });
 
-        // --- Weekly schedule toggle ---
-        function syncSchedule() {
-            modal.querySelectorAll('.day-row').forEach(row => {
-                const cb = row.querySelector('.day-check');
-                const times = row.querySelector('.time-inputs');
-                if (!cb || !times) return;
-                times.classList.toggle('d-none', !cb.checked);
-            });
-        }
-
-        modal.addEventListener('change', function (e) {
-            if (e.target.classList.contains('day-check')) {
-                const row = e.target.closest('.day-row');
-                const times = row.querySelector('.time-inputs');
-                times.classList.toggle('d-none', !e.target.checked);
-                if (!e.target.checked) row.querySelectorAll('input[type="time"]').forEach(i => i.value = '');
-            }
-        });
-
         // --- Populate modal when opened ---
-        modal.addEventListener('show.bs.modal', async function (event) {
+        modal.addEventListener('show.bs.modal', async function(event) {
             const button = event.relatedTarget;
 
             // Fill basic fields
@@ -282,11 +259,10 @@
             modal.querySelector('#edit_house_no').value = button.getAttribute('data-house_no') || '';
             modal.querySelector('#edit_street').value = button.getAttribute('data-street') || '';
             modal.querySelector('#edit_schedule_summary').value = button.getAttribute('data-schedule_summary') || '';
+            modal.querySelector('#province_label').textContent = button.getAttribute('data-province_name') || '';
+            modal.querySelector('#city_label').textContent = button.getAttribute('data-city_name') || '';
+            modal.querySelector('#barangay_label').textContent = button.getAttribute('data-barangay_name') || '';
 
-            // --- Prefill Province / City / Barangay ---
-            const provinceId = button.getAttribute('data-province_id');
-            const cityId = button.getAttribute('data-city_id');
-            const barangayId = button.getAttribute('data-barangay_id');
             // --- Reset & populate schedule ---
             modal.querySelectorAll('.day-check').forEach(cb => {
                 cb.checked = false;
@@ -310,17 +286,5 @@
 
             syncSchedule();
         });
-
-        // --- Phone formatting ---
-        modal.querySelectorAll('.phone-number').forEach(input => {
-            input.addEventListener('input', function () {
-                let value = this.value.replace(/\D/g, '');
-                if (value.length > 11) value = value.slice(0, 11);
-                this.value = value;
-            });
-        });
-
     })();
 </script>
-
-

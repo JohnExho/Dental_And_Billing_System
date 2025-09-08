@@ -48,9 +48,12 @@
 
                                 <!-- Edit Button -->
                                 <button type="button" class="btn btn-sm btn-outline-secondary" data-bs-toggle="modal"
-                                    data-bs-target="#edit-clinic-modal" data-id="{{ $clinic->clinic_id }}"
-                                    data-name="{{ $clinic->name }}" data-description="{{ $clinic->description }}"
-                                    data-specialty="{{ $clinic->specialty }}" data-email="{{ $clinic->email }}"
+                                    data-bs-target="#edit-clinic-modal" 
+                                    data-id="{{ $clinic->clinic_id }}"
+                                    data-name="{{ $clinic->name }}" 
+                                    data-description="{{ $clinic->description }}"
+                                    data-specialty="{{ $clinic->specialty }}" 
+                                    data-email="{{ $clinic->email }}"
                                     data-contact_no="{{ $clinic->contact_no }}" data-mobile_no="{{ $clinic->mobile_no }}"
                                     data-house_no="{{ optional($clinic->address)->house_no }}"
                                     data-street="{{ optional($clinic->address)->street }}"
