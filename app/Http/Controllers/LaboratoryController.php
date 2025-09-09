@@ -2,10 +2,17 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Address;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Auth;
 use App\Models\Laboratories;
-
+use App\Models\Logs;
+use Illuminate\Support\Str;
+use Yajra\Address\Entities\Barangay;
+use Yajra\Address\Entities\City;
+use Yajra\Address\Entities\Province;
 
 class LaboratoryController extends Controller
 {
@@ -22,5 +29,85 @@ class LaboratoryController extends Controller
 
 
         return view('pages.laboratories.index', compact('laboratories'));
+    }
+
+    public function create(Request $request)
+    {
+        // Validation
+        $request->validate([
+            'name' => 'required|string|max:255',
+            'description' => 'nullable|string',
+            'speciality' => 'nullable|string|max:255',
+            'mobile_no' => 'nullable|string|max:20',
+            'contact_no' => 'nullable|string|max:20',
+            'email' => 'nullable|email|max:255',
+            'address' => 'nullable|array',
+            'address.house_no' => 'nullable|string|max:50',
+            'address.street' => 'nullable|string|max:255',
+            'address.barangay_id' => 'nullable|exists:barangays,id',
+            'address.city_id' => 'nullable|exists:cities,id',
+            'address.province_id' => 'nullable|exists:provinces,id',
+        ]);
+
+        // Prevent duplicate email
+        $newEmailHash = $request->email ? hash('sha256', strtolower($request->email)) : null;
+
+        if (
+            $newEmailHash && Laboratories::where('email_hash', $newEmailHash)
+            ->whereNull('deleted_at') // ignore soft-deleted
+            ->exists()
+        ) {
+            return redirect()->back()->with('error', 'The email has already been taken.');
+        }
+
+        return DB::transaction(function () use ($request) {
+            $account = $this->guard->user();
+            Log::info($request->all());
+
+            // Step 1: Create Clinic
+            $laboratory = Laboratories::create([
+                'laboratory_id' => Str::uuid(),
+                'account_id' => $account->account_id,
+                'name' => $request->name,
+                'description' => $request->description,
+                'speciality' => $request->speciality,
+                'mobile_no' => $request->mobile_no,
+                'contact_no' => $request->contact_no,
+                'email' => $request->email,
+                'email_hash' => $request->email ? hash('sha256', $request->email) : null,
+            ]);
+
+
+            // Step 2: Create Address (if provided)
+            if ($request->filled('address')) {
+                Address::create([
+                    'account_id' => $account->account_id,
+                    'laboratory_id' => $laboratory->laboratory_id,
+                    'house_no' => $request->address['house_no'] ?? null,
+                    'street' => $request->address['street'] ?? null,
+                    'barangay'   => optional(Barangay::find($request->address['barangay_id']))->name,
+                    'city'       => optional(City::find($request->address['city_id']))->name,
+                    'province'   => optional(Province::find($request->address['province_id']))->name,
+                ]);
+            }
+
+            // Step 4: Logging
+            $addressId = optional($laboratory->address)->address_id;
+
+            Logs::record(
+                $account,
+                null,
+                $laboratory,
+                'create',
+                'clinic',
+                'User created a laboratory',
+                'clinic: ' . $laboratory->laboratory_id
+                    . ', address: ' . $addressId,
+                $request->ip(),
+                $request->userAgent()
+            );
+
+            return redirect()->route('laboratories')->with('success', 'Laboratory created successfully.');
+        });
     }
 }

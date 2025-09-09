@@ -24,7 +24,7 @@ return new class extends Migration
             $table->text('last_name');
             $table->text('middle_name')->nullable();
             $table->text('first_name');
-             $table->text('mobile_no')->nullable();
+            $table->text('mobile_no')->nullable();
             $table->text('contact_no')->nullable();
             $table->string('password');
             $table->enum('role', ['admin', 'staff'])->default('staff');
@@ -49,7 +49,7 @@ return new class extends Migration
             $table->text('name');
             $table->text('description')->nullable();
             $table->text('schedule_summary')->nullable();
-            $table->text('specialty')->nullable();
+            $table->text('speciality')->nullable();
             $table->text('mobile_no')->nullable();
             $table->text('contact_no')->nullable();
             $table->text('email')->nullable();
@@ -83,12 +83,12 @@ return new class extends Migration
         Schema::create('laboratories', function (Blueprint $table) {
             $table->uuid('laboratory_id')->primary();
             $table->uuid('account_id')->nullable(); // Account that owns/added the laboratory
-            $table->string('name');
+            $table->text('name');
             $table->text('description')->nullable();
-            $table->string('speciality')->nullable();
+            $table->text('speciality')->nullable();
             $table->text('mobile_no')->nullable();
             $table->text('contact_no')->nullable();
-            $table->string('email')->nullable();
+            $table->text('email')->nullable();
             $table->string('email_hash')->nullable();
 
 
@@ -224,7 +224,7 @@ return new class extends Migration
             $table->foreign('laboratory_id')->references('laboratory_id')->on('laboratories')->onDelete('set null');
         });
 
-// new table for machine learning
+        // new table for machine learning
 
         Schema::create('services', function (Blueprint $table) {
             $table->uuid('service_id')->primary();
@@ -335,9 +335,9 @@ return new class extends Migration
             //Encrypt
             $table->text('house_no')->nullable();
             $table->text('street')->nullable();
-            $table->unsignedBigInteger('barangay_id')->nullable();
-            $table->unsignedBigInteger('city_id')->nullable();
-            $table->unsignedBigInteger('province_id')->nullable();
+            $table->text('barangay')->nullable();
+            $table->text('city')->nullable();
+            $table->text('province')->nullable();
 
             // Indexes
             $table->index('patient_id');
@@ -355,9 +355,6 @@ return new class extends Migration
             $table->foreign('patient_id')->references('patient_id')->on('patients')->onDelete('set null');
             $table->foreign('clinic_id')->references('clinic_id')->on('clinics')->onDelete('set null');
             $table->foreign('laboratory_id')->references('laboratory_id')->on('laboratories')->onDelete('set null');
-            $table->foreign('barangay_id')->references('id')->on('barangays')->onDelete('set null');
-            $table->foreign('city_id')->references('id')->on('cities')->onDelete('set null');
-            $table->foreign('province_id')->references('id')->on('provinces')->onDelete('set null');
         });
 
 

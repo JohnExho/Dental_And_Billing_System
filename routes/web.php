@@ -5,6 +5,7 @@ use App\Http\Controllers\AccountController;
 use App\Http\Controllers\AddressController;
 use App\Http\Controllers\ClinicController;
 use App\Http\Controllers\LaboratoryController;
+use App\Models\Laboratories;
 
 Route::middleware('web')->group(function () {
     // Login page
@@ -31,12 +32,17 @@ Route::middleware('web')->group(function () {
     Route::post('/process/verify/otp', [AccountController::class, 'verifyOtp'])->name('process-verify-otp');
     Route::post('/process/reset/password', [AccountController::class, 'resetPassword'])->name('process-reset-password');
     Route::delete('/process/delete/account', [AccountController::class, 'deleteAccount'])->name('process-delete-account');
+
     Route::post('/process/create/clinic', [ClinicController::class, 'create'])->name('process-create-clinic');
     Route::put('/process/update/clinic', [ClinicController::class, 'update'])->name('process-update-clinic');
     Route::delete('process/delete/clnic', [ClinicController::class, 'destroy'])->name('process-delete-clinic');
+
     Route::post('/process/create/staff', [AccountController::class, 'create'])->name('process-create-staff');
     Route::put('/process/update/staff', [AccountController::class, 'update'])->name('process-update-staff');
     Route::delete('/process/delete/staff', [AccountController::class, 'destroy'])->name('process-delete-staff');
+
+     Route::post('/process/create/laboratory', [LaboratoryController::class, 'create'])->name('process-create-laboratory');
+
     // Protected routes
     Route::middleware('auth:account')->group(function () {
         Route::view('/dashboard', 'dashboard')->name('dashboard');

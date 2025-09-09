@@ -25,7 +25,7 @@ class ClinicFullSeeder extends Seeder
             'account_id' => $account->account_id,
             'name' => $faker->company,
             'description' => $faker->paragraph,
-            'specialty' => $faker->word,
+            'speciality' => $faker->word,
             'mobile_no' => $faker->phoneNumber,
             'contact_no' => $faker->phoneNumber,
             'email' => $email = $faker->unique()->safeEmail,
@@ -52,9 +52,9 @@ class ClinicFullSeeder extends Seeder
             'clinic_id' => $clinic->clinic_id,
             'house_no' => $faker->buildingNumber,
             'street' => $faker->streetName,
-            'barangay_id' => 1, // Replace with actual valid ID
-            'city_id' => 1,     // Replace with actual valid ID
-            'province_id' => 1, // Replace with actual valid ID
+            'barangay' => 1, // Replace with actual valid ID
+            'city' => 1,     // Replace with actual valid ID
+            'province' => 1, // Replace with actual valid ID
         ]);
     }
 }

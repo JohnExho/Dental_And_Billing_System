@@ -46,6 +46,7 @@ class Logs extends Model
   public static function record(
         Account $account,
         ?Clinic $clinic = null,
+        ?Laboratories $laboratories = null,
         string $action,
         string $log_type,
         ?string $description = null,
@@ -60,7 +61,7 @@ class Logs extends Model
             'patient_id'   => null,
             'associate_id' => null,
             'clinic_id'    => $clinic?->clinic_id,
-            'laboratory_id'=> null,
+            'laboratory_id'=> $laboratories?->laboratory_id,
             'log_type'     => $log_type,
             'action'       => $action,
             'description'  => $description ?? ucfirst($action) . ' performed.',

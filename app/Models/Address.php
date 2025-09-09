@@ -21,18 +21,22 @@ class Address extends Model
     protected $uuidColumn = 'address_id';
 
     protected $fillable = [
-        'house_no',
-        'street',
         'account_id',
         'clinic_id',
-        'barangay_id',
-        'city_id',
-        'province_id',
+        'laboratory_id',
+        'house_no',
+        'street',
+        'barangay',
+        'city',
+        'province',
     ];
 
     protected $casts = [
         'house_no' => 'encrypted',
         'street' => 'encrypted',
+        'barangay'  => 'encrypted',
+        'city'  => 'encrypted',
+        'province'  => 'encrypted',
         'created_at' => 'datetime',
         'updated_at' => 'datetime',
         'deleted_at' => 'datetime',

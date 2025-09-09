@@ -23,9 +23,9 @@
                             <td>{{ $staff->contact_no ?? 'N/A' }}</td>
                             <td>
                                 {{ optional($staff->address)->house_no }} {{ optional($staff->address)->street }}<br>
-                                {{ optional($staff->address->barangay)->name ?? '' }}
-                                {{ optional($staff->address->city)->name ?? '' }}
-                                {{ optional($staff->address->province)->name ?? '' }}
+                                {{ optional($staff->address)->barangay ?? '' }}
+                                {{ optional($staff->address)->city ?? '' }}
+                                {{ optional($staff->address)->province ?? '' }}
                             </td>
                             <td class="text-end">
                                 <a role="button" class="btn btn-sm btn-outline-primary" data-bs-toggle="modal"

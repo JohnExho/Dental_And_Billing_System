@@ -1,5 +1,5 @@
 @extends('layout')
-@section('title', 'laboratories | Chomply')
+@section('title', 'Laboratories | Chomply')
 @section('content')
     <div class="container-fluid mt-4">
         <div class="card shadow-sm border-0">
@@ -24,7 +24,7 @@
             {{-- {{ $laboratories->links('vendor.pagination.bootstrap-5') }} --}}
         </div>
         {{-- Modal lives outside the container but still inside content --}}
-        {{-- @include('pages.laboratories.modals.add') --}}
+        @include('pages.laboratories.modals.add')
         <script>
             document.addEventListener("DOMContentLoaded", function () {
                 document.getElementById('laboratories-loading').classList.add('d-none');

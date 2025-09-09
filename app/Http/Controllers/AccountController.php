@@ -86,6 +86,7 @@ class AccountController extends Controller
                 Logs::record(
                     $account,
                     null,
+                    null,
                     'login',
                     'auth',
                     'User has logged in',
@@ -134,6 +135,7 @@ class AccountController extends Controller
             Logs::record(
                 $account,
                 null,
+                null,
                 'logout',
                 'auth',
                 'User has logged out',
@@ -167,6 +169,7 @@ class AccountController extends Controller
         if ($account) {
             Logs::record(
                 $account,
+                null,
                 null,
                 'update',
                 'auth',
@@ -210,6 +213,7 @@ class AccountController extends Controller
         if ($account) {
             Logs::record(
                 $account,
+                null,
                 null,
                 'update',
                 'auth',
@@ -273,6 +277,7 @@ class AccountController extends Controller
             Logs::record(
                 $account,
                 null,
+                null,
                 'update',
                 'auth',
                 'User has changed password',
@@ -330,6 +335,7 @@ class AccountController extends Controller
         Logs::record(
             $account,
             null,
+            null,
             'delete',
             'auth',
             'User has deleted their account',
@@ -365,6 +371,7 @@ class AccountController extends Controller
         Logs::record(
             $account,
             null,
+            null,
             'otp_request',
             'auth',
             'User has requested OTP for password reset',
@@ -397,6 +404,7 @@ class AccountController extends Controller
 
         Logs::record(
             $account,
+            null,
             null,
             'otp_resend',
             'auth',
@@ -441,6 +449,7 @@ class AccountController extends Controller
 
         Logs::record(
             $account,
+            null,
             null,
             'otp_verify',
             'auth',
@@ -489,6 +498,7 @@ class AccountController extends Controller
         /** @var Account $account */
         Logs::record(
             $account,
+            null,
             null,
             'password_reset',
             'auth',
@@ -568,6 +578,7 @@ class AccountController extends Controller
 
             Logs::record(
                 $authAccount, // actor (logged-in user)
+                null,
                 null,
                 'create',
                 'staff',
@@ -655,6 +666,7 @@ class AccountController extends Controller
             Logs::record(
                 $authAccount, // actor
                 null,       // subject
+                null,
                 'update',
                 'staff',
                 'User updated a staff account',
@@ -690,6 +702,7 @@ class AccountController extends Controller
             // Logging
             Logs::record(
                 $deletor,
+                null,
                 null,
                 'delete',
                 'clinic',

@@ -12,6 +12,9 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
+use Yajra\Address\Entities\Barangay;
+use Yajra\Address\Entities\City;
+use Yajra\Address\Entities\Province;
 
 class ClinicController extends Controller
 {
@@ -36,7 +39,7 @@ class ClinicController extends Controller
         $request->validate([
             'name' => 'required|string|max:255',
             'description' => 'nullable|string',
-            'specialty' => 'nullable|string|max:255',
+            'speciality' => 'nullable|string|max:255',
             'mobile_no' => 'nullable|string|max:20',
             'contact_no' => 'nullable|string|max:20',
             'email' => 'nullable|email|max:255',
@@ -75,7 +78,7 @@ class ClinicController extends Controller
                 'name' => $request->name,
                 'description' => $request->description,
                 'schedule_summary' => $request->schedule_summary ?: 'No schedule yet',
-                'specialty' => $request->specialty,
+                'speciality' => $request->speciality,
                 'mobile_no' => $request->mobile_no,
                 'contact_no' => $request->contact_no,
                 'email' => $request->email,
@@ -106,9 +109,9 @@ class ClinicController extends Controller
                     'clinic_id' => $clinic->clinic_id,
                     'house_no' => $request->address['house_no'] ?? null,
                     'street' => $request->address['street'] ?? null,
-                    'barangay_id' => $request->address['barangay_id'] ?? null,
-                    'city_id' => $request->address['city_id'] ?? null,
-                    'province_id' => $request->address['province_id'] ?? null,
+                    'barangay'   => optional(Barangay::find($request->address['barangay_id']))->name,
+                    'city'       => optional(City::find($request->address['city_id']))->name,
+                    'province'   => optional(Province::find($request->address['province_id']))->name,
                 ]);
             }
 
@@ -119,6 +122,7 @@ class ClinicController extends Controller
             Logs::record(
                 $account,
                 $clinic,
+                null,
                 'create',
                 'clinic',
                 'User created a clinic',
@@ -140,7 +144,7 @@ class ClinicController extends Controller
             'clinic_id' => 'required|exists:clinics,clinic_id',
             'name' => 'required|string|max:255',
             'description' => 'nullable|string',
-            'specialty' => 'nullable|string|max:255',
+            'speciality' => 'nullable|string|max:255',
             'mobile_no' => 'nullable|string|max:20',
             'contact_no' => 'nullable|string|max:20',
             'email' => 'nullable|email|max:255|regex:/^[A-Za-z][A-Za-z0-9._%+-]*@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$/',
@@ -178,7 +182,7 @@ class ClinicController extends Controller
             $clinic->update([
                 'name' => $request->name,
                 'description' => $request->description,
-                'specialty' => $request->specialty,
+                'speciality' => $request->speciality,
                 'mobile_no' => $request->mobile_no,
                 'contact_no' => $request->contact_no,
                 'email' => $normalizedEmail,
@@ -213,9 +217,9 @@ class ClinicController extends Controller
                         'account_id' => $account->account_id,
                         'house_no' => $request->address['house_no'] ?? null,
                         'street' => $request->address['street'] ?? null,
-                        'barangay_id' => $request->address['barangay_id'] ?? null,
-                        'city_id' => $request->address['city_id'] ?? null,
-                        'province_id' => $request->address['province_id'] ?? null,
+                        'barangay'   => optional(Barangay::find($request->address['barangay_id']))->name,
+                        'city'       => optional(City::find($request->address['city_id']))->name,
+                        'province'   => optional(Province::find($request->address['province_id']))->name,
                     ]
                 );
             }
@@ -226,6 +230,7 @@ class ClinicController extends Controller
             Logs::record(
                 $account,
                 $clinic,
+                null,
                 'update',
                 'clinic',
                 'User updated a clinic',
@@ -265,6 +270,7 @@ class ClinicController extends Controller
             Logs::record(
                 $account,
                 $clinic,
+                null,
                 'delete',
                 'clinic',
                 'User deleted a clinic',

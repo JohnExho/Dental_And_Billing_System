@@ -23,9 +23,9 @@
                             <td>{{ $laboratory->contact_no ?? 'N/A' }}</td>
                             <td>
                                 {{ optional($laboratory->address)->house_no }} {{ optional($laboratory->address)->street }}<br>
-                                {{ optional($laboratory->address->barangay)->name ?? '' }}
-                                {{ optional($laboratory->address->city)->name ?? '' }}
-                                {{ optional($laboratory->address->province)->name ?? '' }}
+                                {{ optional($laboratory->address)->barangay }}
+                                {{ optional($laboratory->address)->city  }}
+                                {{ optional($laboratory->address)->province}}
                             </td>
                             <td class="text-end">
                                 {{-- <a role="button" class="btn btn-sm btn-outline-primary" data-bs-toggle="modal"

@@ -20,7 +20,7 @@ class Clinic extends Model
     protected $fillable = [
         'name',
         'description',
-        'specialty',
+        'speciality',
         'schedule_summary',
         'mobile_no',
         'contact_no',
@@ -32,7 +32,7 @@ class Clinic extends Model
     protected $casts = [
         'name' => 'encrypted',
         'description' => 'encrypted',
-        'specialty' => 'encrypted',
+        'speciality' => 'encrypted',
         'schedule_summary' => 'encrypted',
         'mobile_no' => 'encrypted',
         'contact_no' => 'encrypted',
@@ -49,7 +49,8 @@ class Clinic extends Model
         return $this->hasMany(Logs::class, 'clinic_id', 'clinic_id');
     }
 
-   public function account(){
+    public function account()
+    {
         return $this->belongsTo(Account::class, 'account_id', 'account_id');
     }
 
@@ -62,5 +63,4 @@ class Clinic extends Model
     {
         return $this->hasMany(ClinicSchedule::class, 'clinic_id', 'clinic_id');
     }
-
 }
