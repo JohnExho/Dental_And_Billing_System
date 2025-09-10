@@ -6,7 +6,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>@yield('title', 'Unnamed | Chomply')</title>
-    <link rel="stylesheet" href="{{ asset('css/app.css') }}">
+    {{-- <link rel="stylesheet" href="{{ asset('css/app.css') }}"> --}}
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/sweetalert/1.1.3/sweetalert.min.css">
@@ -47,13 +47,13 @@
             box-shadow: 0 1px 6px rgba(0, 0, 0, .08);
         }
 
-        .comment{
+        .comment {
             color: green;
         }
     </style>
 </head>
 
-<body>
+<body class="sidebar-collapsed">
     @php
         $invalidRoute = ['login', 'forgot-password', 'confirm-otp', 'reset-password', 'dashboard'];
         $activeRole = session('active_role', auth()->user()?->role);
@@ -84,58 +84,65 @@
 
         @if (Route::is($invalidRoute))
             <div class=" flex-grow-1">
-        @else
+            @else
                 <div class=" flex-grow-1 main-content">
-            @endif
-                @yield('content')
-                @yield('modals')
-            </div>
-        </div>
-        @if (Session::has('success'))
-            <script>
-                Swal.fire({
-                    icon: 'success',
-                    title: 'Success!',
-                    text: '{{ Session::get('success') }}',
-                    position: 'top-right',
-                    timer: 3000,
-                    toast: true,
-                    showConfirmButton: false,
-                    timerProgressBar: true
-                });
-            </script>
         @endif
-
-        @if (Session::has('error') || $errors->any())
-            <script>
-                Swal.fire({
-                    icon: 'error',
-                    title: 'Error!',
-                    text: '{{ Session::get('error') }}',
-                    position: 'top-right',
-                    timer: 3000,
-                    toast: true,
-                    showConfirmButton: false,
-                    timerProgressBar: true
-                });
-            </script>
-        @endif
-        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-        <script src="{{ asset('js/app.js') }}"></script>
-        @stack('scripts')
+        @yield('content')
+        @yield('modals')
+    </div>
+    </div>
+    @if (Session::has('success'))
         <script>
-            document.addEventListener('DOMContentLoaded', function () {
-                // no need to add a 'has-sidebar' class since sidebar is assumed present by default
-                const btn = document.getElementById('sidebarToggle');
-                if (btn) {
-                    btn.setAttribute('aria-expanded', 'true');
-                    btn.addEventListener('click', function () {
-                        const collapsed = document.body.classList.toggle('sidebar-collapsed');
-                        btn.setAttribute('aria-expanded', collapsed ? 'false' : 'true');
-                    });
-                }
+            Swal.fire({
+                icon: 'success',
+                title: 'Success!',
+                text: '{{ Session::get('success') }}',
+                position: 'top-right',
+                timer: 3000,
+                toast: true,
+                showConfirmButton: false,
+                timerProgressBar: true
             });
         </script>
+    @endif
+
+    @if (Session::has('error') || $errors->any())
+        <script>
+            Swal.fire({
+                icon: 'error',
+                title: 'Error!',
+                text: '{{ Session::get('error') }}',
+                position: 'top-right',
+                timer: 3000,
+                toast: true,
+                showConfirmButton: false,
+                timerProgressBar: true
+            });
+        </script>
+    @endif
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    {{-- <script src="{{ asset('js/app.js') }}"></script> --}}
+    @stack('scripts')
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const body = document.body;
+            const toggleBtn = document.getElementById('sidebarToggle');
+
+            // Check for saved preference, default is collapsed
+            const saved = localStorage.getItem('sidebarCollapsed');
+            if (saved === 'false') {
+                body.classList.remove('sidebar-collapsed');
+            } else {
+                body.classList.add('sidebar-collapsed');
+            }
+
+            toggleBtn?.addEventListener('click', function() {
+                body.classList.toggle('sidebar-collapsed');
+                localStorage.setItem('sidebarCollapsed', body.classList.contains('sidebar-collapsed'));
+            });
+        });
+    </script>
+
 
 </body>
 

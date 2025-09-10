@@ -7,10 +7,11 @@
                 <thead class="table-light">
                     <tr>
                         <th>Name</th>
+                        <th>Description</th>
+                        <th>Speciality</th>
                         <th>Email</th>
-                        <th>Mobile</th>
-                        <th>Contact</th>
                         <th>Address</th>
+                        <th>Contact</th>
                         <th class="text-end">Actions</th>
                     </tr>
                 </thead>
@@ -18,20 +19,26 @@
                     @foreach ($laboratories as $laboratory)
                         <tr>
                             <td>{{ $laboratory->name }}</td>
+                            <td>{{ $laboratory->description }}</td>
+                            <td>{{ $laboratory->speciality }}</td>
                             <td>{{ $laboratory->email }}</td>
-                            <td>{{ $laboratory->mobile_no ?? 'N/A' }}</td>
-                            <td>{{ $laboratory->contact_no ?? 'N/A' }}</td>
                             <td>
-                                {{ optional($laboratory->address)->house_no }} {{ optional($laboratory->address)->street }}<br>
-                                {{ optional($laboratory->address)->barangay }}
-                                {{ optional($laboratory->address)->city  }}
-                                {{ optional($laboratory->address)->province}}
+                                {{ optional($laboratory->address)->house_no }}
+                                {{ optional($laboratory->address)->street }}<br>
+                                {{ optional($laboratory->address->barangay)->name }}
+                                {{ optional($laboratory->address->city)->name }}
+                                {{ optional($laboratory->address->province)->name }}
+                            </td>
+                            <td>
+                                <i class="bi bi-telephone-fill me-1"></i>{{ $laboratory->contact_no }}<br>
+                                <i class="bi bi-phone-fill me-1"></i>{{ $laboratory->mobile_no }}
                             </td>
                             <td class="text-end">
-                                {{-- <a role="button" class="btn btn-sm btn-outline-primary" data-bs-toggle="modal"
-                                    data-bs-target="#laboratory-detail-modal" data-first-name="{{ $laboratory->first_name }}"
-                                    data-middle-name="{{ $laboratory->middle_name }}"
-                                    data-last-name="{{ $laboratory->last_name }}" data-email="{{ $laboratory->email }}"
+                                <a role="button" class="btn btn-sm btn-outline-primary" data-bs-toggle="modal"
+                                    data-bs-target="#laboratory-detail-modal" data-name="{{ $laboratory->name }}"
+                                    data-description="{{ $laboratory->description }}"
+                                    data-speciality="{{ $laboratory->speciality }}"
+                                    data-email="{{ $laboratory->email }}"
                                     data-contact="{{ $laboratory->contact_no }} / {{ $laboratory->mobile_no }}"
                                     data-address="{{ optional($laboratory->address)->house_no }} {{ optional($laboratory->address)->street }} {{ optional($laboratory->address->barangay)->name ?? '' }} {{ optional($laboratory->address->city)->name ?? '' }} {{ optional($laboratory->address->province)->name ?? '' }}">
                                     <i class="bi bi-eye"></i>
@@ -42,9 +49,10 @@
                                 <!-- Edit Button -->
                                 <button type="button" class="btn btn-sm btn-outline-secondary" data-bs-toggle="modal"
                                     data-bs-target="#edit-laboratory-modal" onclick="event.stopPropagation();"
-                                    data-id="{{ $laboratory->account_id }}" data-first_name="{{ $laboratory->first_name }}"
-                                    data-middle_name="{{ $laboratory->middle_name }}"
-                                    data-last_name="{{ $laboratory->last_name }}" data-email="{{ $laboratory->email }}"
+                                    data-id="{{ $laboratory->laboratory_id }}" data-name="{{ $laboratory->name }}"
+                                    data-description="{{ $laboratory->description }}"
+                                    data-speciality="{{ $laboratory->speciality }}"
+                                    data-email="{{ $laboratory->email }}"
                                     data-contact_no="{{ $laboratory->contact_no }}"
                                     data-mobile_no="{{ $laboratory->mobile_no }}"
                                     data-house_no="{{ optional($laboratory->address)->house_no }}"
@@ -62,7 +70,7 @@
                                 <button type="button" class="btn btn-outline-danger btn-sm delete-laboratory-btn"
                                     data-id="{{ $laboratory->account_id }}" onclick="event.stopPropagation();">
                                     <i class="bi bi-trash"></i>
-                                </button> --}}
+                                </button>
                             </td>
                         </tr>
                     @endforeach
@@ -86,6 +94,6 @@
         });
     });
 </script>
-{{-- @include('pages.laboratories.modals.info')
+@include('pages.laboratories.modals.info')
 @include('pages.laboratories.modals.edit')
-@include('pages.laboratories.modals.delete') --}}
+{{-- @include('pages.laboratories.modals.delete')  --}}

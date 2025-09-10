@@ -109,9 +109,12 @@ class ClinicController extends Controller
                     'clinic_id' => $clinic->clinic_id,
                     'house_no' => $request->address['house_no'] ?? null,
                     'street' => $request->address['street'] ?? null,
-                    'barangay'   => optional(Barangay::find($request->address['barangay_id']))->name,
-                    'city'       => optional(City::find($request->address['city_id']))->name,
-                    'province'   => optional(Province::find($request->address['province_id']))->name,
+                    'barangay_name'   => optional(Barangay::find($request->address['barangay_id']))->name,
+                    'city_name'       => optional(City::find($request->address['city_id']))->name,
+                    'province_name'   => optional(Province::find($request->address['province_id']))->name,
+                    'barangay_id' => $request->address['barangay_id'] ?? null,
+                    'city_id'     => $request->address['city_id'] ?? null,
+                    'province_id' => $request->address['province_id'] ?? null,
                 ]);
             }
 
@@ -217,9 +220,12 @@ class ClinicController extends Controller
                         'account_id' => $account->account_id,
                         'house_no' => $request->address['house_no'] ?? null,
                         'street' => $request->address['street'] ?? null,
-                        'barangay'   => optional(Barangay::find($request->address['barangay_id']))->name,
-                        'city'       => optional(City::find($request->address['city_id']))->name,
-                        'province'   => optional(Province::find($request->address['province_id']))->name,
+                        'barangay_name'   => optional(Barangay::find($request->address['barangay_id']))->name,
+                        'city_name'       => optional(City::find($request->address['city_id']))->name,
+                        'province_name'   => optional(Province::find($request->address['province_id']))->name,
+                        'barangay_id' => $request->address['barangay_id'] ?? null,
+                        'city_id'     => $request->address['city_id'] ?? null,
+                        'province_id' => $request->address['province_id'] ?? null,
                     ]
                 );
             }

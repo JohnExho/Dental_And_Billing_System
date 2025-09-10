@@ -1,5 +1,5 @@
 <?php
-
+// not checked
 namespace App\Http\Controllers;
 
 use App\Models\Address;
@@ -13,6 +13,8 @@ use Illuminate\Support\Str;
 use Yajra\Address\Entities\Barangay;
 use Yajra\Address\Entities\City;
 use Yajra\Address\Entities\Province;
+use App\Models\Account;
+use Illuminate\Support\Facades\Hash;
 
 class LaboratoryController extends Controller
 {
@@ -85,9 +87,12 @@ class LaboratoryController extends Controller
                     'laboratory_id' => $laboratory->laboratory_id,
                     'house_no' => $request->address['house_no'] ?? null,
                     'street' => $request->address['street'] ?? null,
-                    'barangay'   => optional(Barangay::find($request->address['barangay_id']))->name,
-                    'city'       => optional(City::find($request->address['city_id']))->name,
-                    'province'   => optional(Province::find($request->address['province_id']))->name,
+                    'barangay_name'   => optional(Barangay::find($request->address['barangay_id']))->name,
+                    'city_name'       => optional(City::find($request->address['city_id']))->name,
+                    'province_name'   => optional(Province::find($request->address['province_id']))->name,
+                    'barangay_id' => $request->address['barangay_id'] ?? null,
+                    'city_id'     => $request->address['city_id'] ?? null,
+                    'province_id' => $request->address['province_id'] ?? null,
                 ]);
             }
 
@@ -108,6 +113,129 @@ class LaboratoryController extends Controller
             );
 
             return redirect()->route('laboratories')->with('success', 'Laboratory created successfully.');
+        });
+    }
+
+    public function update(Request $request, Account $authAccount)
+    {
+        // Validation
+        $request->validate([
+            'name' => 'required|string|max:255',
+            'description' => 'nullable|string',
+            'speciality' => 'nullable|string|max:255',
+            'mobile_no' => 'nullable|string|max:20',
+            'contact_no' => 'nullable|string|max:20',
+            'email' => 'nullable|email|max:255',
+            'address' => 'nullable|array',
+            'address.house_no' => 'nullable|string|max:50',
+            'address.street' => 'nullable|string|max:255',
+            'address.barangay_id' => 'nullable|exists:barangays,id',
+            'address.city_id' => 'nullable|exists:cities,id',
+            'address.province_id' => 'nullable|exists:provinces,id',
+        ]);
+
+        $authAccount = $this->guard->user();
+        $laboratory  = Laboratories::findOrFail($request->laboratory_id);
+
+        // Normalize + hash email
+        $normalizedEmail = $request->email ? strtolower($request->email) : null;
+        $newEmailHash    = $normalizedEmail ? hash('sha256', $normalizedEmail) : null;
+
+        // Prevent duplicate email
+        if (
+            $newEmailHash && Laboratories::where('email_hash', $newEmailHash)
+            ->where('laboratory_id', '!=', $laboratory->laboratory_id)
+            ->whereNull('deleted_at')
+            ->exists()
+        ) {
+            return redirect()->back()->with('error', 'The email has already been taken.');
+        }
+
+        return DB::transaction(function () use ($request, $laboratory, $authAccount, $normalizedEmail, $newEmailHash) {
+            // Step 1: Update laboratory
+            $updateData = [
+                'name' => $request->name,
+                'description' => $request->description,
+                'speciality' => $request->speciality,
+                'mobile_no' => $request->mobile_no,
+                'contact_no' => $request->contact_no,
+                'email' => $normalizedEmail,
+                'email_hash' => $newEmailHash,
+            ];
+
+            $laboratory->update($updateData);
+
+            // Step 2: Update Address (if provided)
+            if ($request->filled('address')) {
+                $laboratory->address()->updateOrCreate(
+                    ['laboratory_id' => $laboratory->laboratory_id],
+                    [
+                        'house_no'    => $request->address['house_no'] ?? null,
+                        'street'      => $request->address['street'] ?? null,
+                        'barangay_name'   => optional(Barangay::find($request->address['barangay_id']))->name,
+                        'city_name'       => optional(City::find($request->address['city_id']))->name,
+                        'province_name'   => optional(Province::find($request->address['province_id']))->name,
+                        'barangay_id' => $request->address['barangay_id'] ?? null,
+                        'city_id'     => $request->address['city_id'] ?? null,
+                        'province_id' => $request->address['province_id'] ?? null,
+                    ]
+                );
+            }
+
+            // Step 3: Logging
+            $addressId = optional($laboratory->address)->address_id;
+
+            Logs::record(
+                $authAccount, // actor
+                null,       // subject
+                $laboratory,
+                'update',
+                'laboratory',
+                'User updated a laboratory',
+                'laboratory: ' . $laboratory->laboratory_id
+                    . ', address: ' . $addressId,
+                $request->ip(),
+                $request->userAgent()
+            );
+
+            return redirect()->route('laboratories')->with('success', 'laboratory updated successfully.');
+        });
+    }
+
+    public function destroy(Request $request)
+    {
+        $request->validate([
+            'laboratory_id' => 'required|exists:laboratories,laboratory_id',
+            'password' => 'required'
+        ]);
+
+        $laboratory = Laboratories::findOrFail($request->laboratory_id);
+
+
+        return DB::transaction(function () use ($laboratory, $request) {
+
+            $addressId = optional($laboratory->address)->address_id;
+
+            // Delete schedules & address
+            $laboratory->address()->delete();
+            // Delete clinic
+            $laboratory->delete();
+            $deletor =  Auth::guard('account')->user();
+            // Logging
+            Logs::record(
+                $deletor,
+                null,
+                null,
+                'delete',
+                'clinic',
+                'User deleted an account',
+                'Account: ' . $laboratory->laboratory_id
+                    . ', address: ' . $addressId,
+                $request->ip(),
+                $request->userAgent()
+            );
+
+            return redirect()->route('laboratories')->with('success', 'account deleted successfully.');
         });
     }
 }

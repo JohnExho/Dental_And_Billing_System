@@ -30,8 +30,8 @@
                             <h6 class="text-muted mt-3">☎️ Contact</h6>
                             <div class="row">
                                 <div class="col-md-6 mb-3">
-                                    <label for="edit_specialty" class="form-label">Specialty</label>
-                                    <input type="text" class="form-control form-control-sm" id="edit_specialty" name="specialty">
+                                    <label for="edit_speciality" class="form-label">Speciality</label>
+                                    <input type="text" class="form-control form-control-sm" id="edit_speciality" name="speciality">
                                 </div>
                                 <div class="col-md-6 mb-3">
                                     <label for="edit_email" class="form-label">Email</label>
@@ -252,7 +252,7 @@
             modal.querySelector('#edit_clinic_id').value = button.getAttribute('data-id') || '';
             modal.querySelector('#edit_clinic_name').value = button.getAttribute('data-name') || '';
             modal.querySelector('#edit_clinic_description').value = button.getAttribute('data-description') || '';
-            modal.querySelector('#edit_specialty').value = button.getAttribute('data-specialty') || '';
+            modal.querySelector('#edit_speciality').value = button.getAttribute('data-speciality') || '';
             modal.querySelector('#edit_email').value = button.getAttribute('data-email') || '';
             modal.querySelector('#edit_contact_no').value = button.getAttribute('data-contact_no') || '';
             modal.querySelector('#edit_mobile_no').value = button.getAttribute('data-mobile_no') || '';
@@ -287,4 +287,37 @@
             syncSchedule();
         });
     })();
+</script>
+<script>
+    function syncSchedule() {
+        document.querySelectorAll('#edit-clinic-modal .day-row').forEach(row => {
+            const checkbox = row.querySelector('.day-check');
+            const timeInputsWrapper = row.querySelector('.time-inputs');
+            const timeInputs = timeInputsWrapper.querySelectorAll('input[type="time"]');
+
+            if (checkbox.checked) {
+                timeInputsWrapper.classList.remove('d-none');
+                timeInputs.forEach(input => input.disabled = false);
+            } else {
+                timeInputsWrapper.classList.add('d-none');
+                timeInputs.forEach(input => input.disabled = true);
+            }
+
+            // Add change event listener (if not already added)
+            checkbox.addEventListener('change', () => {
+                if (checkbox.checked) {
+                    timeInputsWrapper.classList.remove('d-none');
+                    timeInputs.forEach(input => input.disabled = false);
+                } else {
+                    timeInputsWrapper.classList.add('d-none');
+                    timeInputs.forEach(input => input.disabled = true);
+                }
+            });
+        });
+    }
+
+    // Run it after the modal is shown
+    document.getElementById('edit-clinic-modal').addEventListener('shown.bs.modal', function () {
+        syncSchedule();
+    });
 </script>

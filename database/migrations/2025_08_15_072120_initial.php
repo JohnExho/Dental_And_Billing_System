@@ -335,9 +335,13 @@ return new class extends Migration
             //Encrypt
             $table->text('house_no')->nullable();
             $table->text('street')->nullable();
-            $table->text('barangay')->nullable();
-            $table->text('city')->nullable();
-            $table->text('province')->nullable();
+            $table->text('barangay_name')->nullable();
+            $table->text('city_name')->nullable();
+            $table->text('province_name')->nullable();
+
+            $table->unsignedBigInteger('barangay_id')->nullable();
+            $table->unsignedBigInteger('city_id')->nullable();
+            $table->unsignedBigInteger('province_id')->nullable();
 
             // Indexes
             $table->index('patient_id');
@@ -355,6 +359,9 @@ return new class extends Migration
             $table->foreign('patient_id')->references('patient_id')->on('patients')->onDelete('set null');
             $table->foreign('clinic_id')->references('clinic_id')->on('clinics')->onDelete('set null');
             $table->foreign('laboratory_id')->references('laboratory_id')->on('laboratories')->onDelete('set null');
+            $table->foreign('barangay_id')->references('id')->on('barangays')->onDelete('set null');
+            $table->foreign('city_id')->references('id')->on('cities')->onDelete('set null');
+            $table->foreign('province_id')->references('id')->on('provinces')->onDelete('set null');
         });
 
 

@@ -23,9 +23,9 @@
                             <td>{{ $staff->contact_no ?? 'N/A' }}</td>
                             <td>
                                 {{ optional($staff->address)->house_no }} {{ optional($staff->address)->street }}<br>
-                                {{ optional($staff->address)->barangay ?? '' }}
-                                {{ optional($staff->address)->city ?? '' }}
-                                {{ optional($staff->address)->province ?? '' }}
+                                {{ optional($staff->address->barangay)->name ?? '' }}
+                                {{ optional($staff->address->city)->name ?? '' }}
+                                {{ optional($staff->address->province)->name ?? '' }}
                             </td>
                             <td class="text-end">
                                 <a role="button" class="btn btn-sm btn-outline-primary" data-bs-toggle="modal"
@@ -50,11 +50,11 @@
                                     data-house_no="{{ optional($staff->address)->house_no }}"
                                     data-street="{{ optional($staff->address)->street }}"
                                     data-province_id="{{ optional($staff->address->province)->province_id }}"
-                                    data-province_name="{{ optional($staff->address->province)->name }}"
+                                    data-province_name="{{ optional($staff->address->province)->name}}"
                                     data-city_id="{{ optional($staff->address->city)->city_id }}"
                                     data-city_name="{{ optional($staff->address->city)->name }}"
                                     data-barangay_id="{{ optional($staff->address->barangay)->barangay_id }}"
-                                    data-barangay_name="{{ optional($staff->address->barangay)->name }}">
+                                    data-barangay_name="{{ optional($staff->address->barangay)->name}}">
                                     <i class="bi bi-pencil-square"></i>
                                 </button>
 

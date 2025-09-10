@@ -42,6 +42,7 @@ Route::middleware('web')->group(function () {
     Route::delete('/process/delete/staff', [AccountController::class, 'destroy'])->name('process-delete-staff');
 
      Route::post('/process/create/laboratory', [LaboratoryController::class, 'create'])->name('process-create-laboratory');
+     Route::put('/process/update/laboratory', [LaboratoryController::class, 'update'])->name('process-update-laboratory');
 
     // Protected routes
     Route::middleware('auth:account')->group(function () {

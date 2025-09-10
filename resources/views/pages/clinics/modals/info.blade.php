@@ -6,7 +6,8 @@
             <!-- Header -->
             <div class="modal-header bg-primary text-white">
                 <h5 class="modal-title fw-bold" id="clinicDetailLabel">Clinic Details</h5>
-                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"
+                    aria-label="Close"></button>
             </div>
 
             <!-- Body -->
@@ -19,17 +20,22 @@
                         <ul class="list-group list-group-flush">
                             <li class="list-group-item">
                                 <i class="bi bi-card-text me-2 text-secondary"></i>
-                                <strong>Description:</strong> 
+                                <strong>Description:</strong>
                                 <span id="clinic-description" class="text-muted"></span>
                             </li>
                             <li class="list-group-item">
                                 <i class="bi bi-geo-alt me-2 text-secondary"></i>
-                                <strong>Address:</strong> 
+                                <strong>Speciality:</strong>
+                                <span id="clinic-speciality" class="text-muted"></span>
+                            </li>
+                            <li class="list-group-item">
+                                <i class="bi bi-geo-alt me-2 text-secondary"></i>
+                                <strong>Address:</strong>
                                 <span id="clinic-address" class="text-muted"></span>
                             </li>
                             <li class="list-group-item">
                                 <i class="bi bi-envelope me-2 text-secondary"></i>
-                                <strong>Email:</strong> 
+                                <strong>Email:</strong>
                                 <span id="clinic-email" class="text-muted"></span>
                             </li>
                             <li class="list-group-item">
@@ -50,7 +56,8 @@
 
                         <p class="fw-semibold mb-2">Full Schedule</p>
                         <div class="table-responsive">
-                            <table id="clinic-schedule-details" class="table table-sm table-striped table-bordered mb-0 align-middle">
+                            <table id="clinic-schedule-details"
+                                class="table table-sm table-striped table-bordered mb-0 align-middle">
                                 <thead class="table-light">
                                     <tr>
                                         <th class="text-center">Day</th>
@@ -86,7 +93,7 @@
 
     const clinicModal = document.getElementById('clinic-detail-modal');
 
-    clinicModal.addEventListener('show.bs.modal', function (event) {
+    clinicModal.addEventListener('show.bs.modal', function(event) {
         const button = event.relatedTarget;
         const data = {
             name: button.getAttribute('data-name'),
@@ -94,6 +101,7 @@
             email: button.getAttribute('data-email'),
             contact: button.getAttribute('data-contact'),
             address: button.getAttribute('data-address'),
+            speciality: button.getAttribute('data-speciality'),
             schedule: button.getAttribute('data-schedule'),
             schedules: JSON.parse(button.getAttribute('data-schedules') || '[]')
         };
@@ -102,7 +110,9 @@
 
         // Update left column
         clinicModal.querySelector('#clinic-name').textContent = data.name;
-        clinicModal.querySelector('#clinic-description').textContent = data.description || 'No description provided';
+        clinicModal.querySelector('#clinic-description').textContent = data.description ||
+            'No description provided';
+        clinicModal.querySelector('#clinic-speciality').textContent = data.speciality || 'N/A';
         clinicModal.querySelector('#clinic-email').textContent = data.email || 'N/A';
         clinicModal.querySelector('#clinic-contact-no').textContent = contactNo || 'N/A';
         clinicModal.querySelector('#clinic-mobile-no').textContent = mobileNo || 'N/A';

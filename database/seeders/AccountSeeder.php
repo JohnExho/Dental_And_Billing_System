@@ -38,9 +38,12 @@ class AccountSeeder extends Seeder
             'account_id' => $adminAccount->account_id, // Use the ID of the created account
             'house_no' => $faker->buildingNumber,
             'street' => $faker->streetName,
-            'barangay' => 38108, // Replace with actual valid ID
-            'city' => 1456, // Replace with actual valid ID
-            'province' => 106, // Replace with actual valid ID
+            'barangay_name' => $faker->streetName,
+            'city_name' => $faker->streetName,
+            'province_name' => $faker->streetName,
+            'barangay_id' => 38108, // Replace with actual valid ID
+            'city_id' => 1456, // Replace with actual valid ID
+            'province_id' => 106, // Replace with actual valid ID
         ]);
 
         // Example of another account
@@ -63,9 +66,12 @@ class AccountSeeder extends Seeder
             'account_id' => $staffAccount->account_id, // Use the ID of the created account
             'house_no' => $faker->buildingNumber,
             'street' => $faker->streetName,
-            'barangay' => 38108, // Replace with actual valid ID
-            'city' => 1456, // Replace with actual valid ID
-            'province' => 106, // Replace with actual valid ID
+            'barangay_name' => $faker->streetName,
+            'city_name' => $faker->streetName,
+            'province_name' => $faker->streetName,
+            'barangay_id' => 38108, // Replace with actual valid ID
+            'city_id' => 1456, // Replace with actual valid ID
+            'province_id' => 106, // Replace with actual valid ID
         ]);
     }
 }

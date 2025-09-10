@@ -16,6 +16,9 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\RateLimiter;
+use Yajra\Address\Entities\Barangay;
+use Yajra\Address\Entities\City;
+use Yajra\Address\Entities\Province;
 
 class AccountController extends Controller
 {
@@ -567,6 +570,9 @@ class AccountController extends Controller
                     'account_id'  => $staff->account_id,
                     'house_no'    => $request->address['house_no'] ?? null,
                     'street'      => $request->address['street'] ?? null,
+                    'barangay_name'   => optional(Barangay::find($request->address['barangay_id']))->name,
+                    'city_name'       => optional(City::find($request->address['city_id']))->name,
+                    'province_name'   => optional(Province::find($request->address['province_id']))->name,
                     'barangay_id' => $request->address['barangay_id'] ?? null,
                     'city_id'     => $request->address['city_id'] ?? null,
                     'province_id' => $request->address['province_id'] ?? null,
@@ -653,6 +659,9 @@ class AccountController extends Controller
                     [
                         'house_no'    => $request->address['house_no'] ?? null,
                         'street'      => $request->address['street'] ?? null,
+                        'barangay_name'   => optional(Barangay::find($request->address['barangay_id']))->name,
+                        'city_name'       => optional(City::find($request->address['city_id']))->name,
+                        'province_name'   => optional(Province::find($request->address['province_id']))->name,
                         'barangay_id' => $request->address['barangay_id'] ?? null,
                         'city_id'     => $request->address['city_id'] ?? null,
                         'province_id' => $request->address['province_id'] ?? null,

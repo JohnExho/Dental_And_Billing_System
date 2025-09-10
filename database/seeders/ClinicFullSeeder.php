@@ -40,8 +40,8 @@ class ClinicFullSeeder extends Seeder
             $schedules[] = [
                 'clinic_schedule_id' => Str::uuid(),
                 'day_of_week' => $day,
-                'start_time' => $faker->time('H:i:s'),
-                'end_time' => $faker->time('H:i:s'),
+                'start_time' => $faker->time('H:i'),
+                'end_time' => $faker->time('H:i'),
             ];
         }
         $clinic->clinicSchedules()->createMany($schedules);
@@ -52,9 +52,12 @@ class ClinicFullSeeder extends Seeder
             'clinic_id' => $clinic->clinic_id,
             'house_no' => $faker->buildingNumber,
             'street' => $faker->streetName,
-            'barangay' => 1, // Replace with actual valid ID
-            'city' => 1,     // Replace with actual valid ID
-            'province' => 1, // Replace with actual valid ID
+            'barangay_name' => $faker->streetName,
+            'city_name' => $faker->streetName,
+            'province_name' => $faker->streetName,
+            'barangay_id' => 38108, // Replace with actual valid ID
+            'city_id' => 1456, // Replace with actual valid ID
+            'province_id' => 106, // Replace with actual valid ID
         ]);
     }
 }
