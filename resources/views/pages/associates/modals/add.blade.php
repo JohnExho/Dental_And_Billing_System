@@ -16,7 +16,7 @@
                         <!-- Left Column -->
                         <div class="col-md-6">
                             <!-- associate Name -->
-                            <h6 class="text-muted mb-2"><i class="bi bi-person me-1"></i> associate Information</h6>
+                            <h6 class="text-muted mb-2"><i class="bi bi-person me-1"></i> Associate Information</h6>
                             <div class="row">
                                 <div class="col-md-4 mb-3">
                                     <input type="text" class="form-control" name="first_name"

@@ -2,7 +2,7 @@
 @section('title', 'Already Logged In | Chomply')
 
 @section("content")
-<div class="container vh-100 d-flex flex-column justify-content-center">
+<div class="container-fluid vh-100 d-flex flex-column justify-content-center">
     <div class="alert alert-warning text-center mb-5">
         <h4 class="mb-0">⚠️ You are already logged in.</h4>
         <p class="mb-0">Please choose what you’d like to do:</p>

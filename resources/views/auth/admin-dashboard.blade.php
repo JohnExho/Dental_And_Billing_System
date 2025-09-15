@@ -1,7 +1,7 @@
 @extends("layout")
 @section('title', 'Dashboard | Chomply')
 @section("content")
-    <div class="container mt-5">
+    <div class="container-fluid mt-5">
         <div class="row">
             <div class="col-md-12">
                 <h1 class="text-center">Welcome to the Dashboard</h1>

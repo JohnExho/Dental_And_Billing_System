@@ -4,7 +4,7 @@
 
 
 
-    <div class="container mt-4">
+    <div class="container-fluid mt-4">
         <div class="card shadow-sm mb-4 pt-1 pb-1 rounded-4">
             <div class="card-body">
                 <h5 class="text-strong">Profile information</h1>

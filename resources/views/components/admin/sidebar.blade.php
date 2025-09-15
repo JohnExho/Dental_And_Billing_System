@@ -96,15 +96,6 @@
             </li>
             <li class="nav-item mb-1">
                 <a class="text-decoration-none fw-bold fs-4  
-                    {{ request()->routeIs('laboratories') ? 'active text-primary' : 'text-dark' }}"
-                    href="{{ route('laboratories') }}"
-                    style="{{ request()->routeIs('laboratories') ? 'background: gray;' : '' }}">
-                    <span class="nav-text">Laboratories</span>
-                    <i class="bi bi-buildings"></i>
-                </a>
-            </li>
-            <li class="nav-item mb-1">
-                <a class="text-decoration-none fw-bold fs-4  
                     {{ request()->routeIs('associates') ? 'active text-primary' : 'text-dark' }}"
                     href="{{ route('associates') }}"
                     style="{{ request()->routeIs('associates') ? 'background: gray;' : '' }}">
@@ -115,9 +106,42 @@
             <li class="nav-item mb-1">
                 <a class="text-decoration-none fw-bold fs-4  
                     {{ request()->routeIs('staffs') ? 'active text-primary' : 'text-dark' }}"
-                    href="{{ route('staffs') }}"
-                    style="{{ request()->routeIs('staffs') ? 'background: gray;' : '' }}">
+                    href="{{ route('staffs') }}" style="{{ request()->routeIs('staffs') ? 'background: gray;' : '' }}">
                     <span class="nav-text">Staffs</span>
+                    <i class="bi bi-person-badge-fill"></i>
+                </a>
+            </li>
+            <li class="nav-item mb-1">
+                <a class="text-decoration-none fw-bold fs-4  
+                    {{ request()->routeIs('laboratories') ? 'active text-primary' : 'text-dark' }}"
+                    href="{{ route('laboratories') }}"
+                    style="{{ request()->routeIs('laboratories') ? 'background: gray;' : '' }}">
+                    <span class="nav-text">Laboratories</span>
+                    <i class="bi bi-buildings"></i>
+                </a>
+            </li>
+            <li class="nav-item mb-1">
+                <a class="text-decoration-none fw-bold fs-4 text-secondary
+                    {{-- request()->routeIs('staffs') ? 'active text-primary' : 'text-dark' --}}"
+                    href="{{-- route('staffs') --}}" style="{{-- request()->routeIs('staffs') ? 'background: gray;' : '' --}}">
+                    <span class="nav-text">Reports</span>
+                    <i class="bi bi-person-badge-fill"></i>
+                </a>
+            </li>
+            <li class="nav-item mb-1">
+                <a class="text-decoration-none fw-bold fs-4  text-secondary
+                    {{-- request()->routeIs('staffs') ? 'active text-primary' : 'text-dark' --}}"
+                    href="{{-- route('staffs') --}}" style="{{-- request()->routeIs('staffs') ? 'background: gray;' : '' --}}">
+                    <span class="nav-text">Masterfile</span>
+                    <i class="bi bi-person-badge-fill"></i>
+                </a>
+            </li>
+            <li class="nav-item mb-1">
+                <a class="text-decoration-none fw-bold fs-4  text-secondary
+                    {{-- request()->routeIs('staffs') ? 'active text-primary' : 'text-dark' --}}"
+                    href="{{-- route('staffs') --}}"
+                    style="{{-- request()->routeIs('staffs') ? 'background: gray;' : '' --}}">
+                    <span class="nav-text">Tools</span>
                     <i class="bi bi-person-badge-fill"></i>
                 </a>
             </li>
