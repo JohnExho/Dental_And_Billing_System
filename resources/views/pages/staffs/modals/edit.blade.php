@@ -103,7 +103,16 @@
                                     <input type="hidden" name="address[barangay_id]" id="edit_barangay_hidden">
                                     <span id="barangay_label" class="form-text"></span>
                                 </div>
+
                             </div>
+                            <!-- Account Status -->
+                            <h6 class="text-muted mt-3">⚡ Account Status</h6>
+                            <div class="form-check form-switch mb-3">
+                                <input class="form-check-input" type="checkbox" id="edit_is_active" name="is_active"
+                                    value="1">
+                                <label class="form-check-label" for="edit_is_active">Activate/Deactivate</label>
+                            </div>
+
                         </div>
                     </div>
                 </div>
@@ -228,22 +237,24 @@
             // Fill fields
             modal.querySelector('#edit_staff_id').value = button.getAttribute('data-id') || '';
             modal.querySelector('#edit_first_name').value = button.getAttribute('data-first_name') ||
-            '';
+                '';
             modal.querySelector('#edit_middle_name').value = button.getAttribute('data-middle_name') ||
                 '';
             modal.querySelector('#edit_last_name').value = button.getAttribute('data-last_name') || '';
             modal.querySelector('#edit_email').value = button.getAttribute('data-email') || '';
             modal.querySelector('#edit_contact_no').value = button.getAttribute('data-contact_no') ||
-            '';
+                '';
             modal.querySelector('#edit_mobile_no').value = button.getAttribute('data-mobile_no') || '';
             modal.querySelector('#edit_house_no').value = button.getAttribute('data-house_no') || '';
             modal.querySelector('#edit_street').value = button.getAttribute('data-street') || '';
             modal.querySelector('#province_label').textContent = button.getAttribute(
                 'data-province_name') || '';
             modal.querySelector('#city_label').textContent = button.getAttribute('data-city_name') ||
-            '';
+                '';
             modal.querySelector('#barangay_label').textContent = button.getAttribute(
                 'data-barangay_name') || '';
+            modal.querySelector('#edit_is_active').checked = button.getAttribute('data-is_active') ===
+                '1';
 
             if (provinceId) {
                 provinceSelect.value = provinceId;

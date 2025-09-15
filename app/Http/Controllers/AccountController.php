@@ -77,7 +77,7 @@ class AccountController extends Controller
         $emailHash = hash('sha256', strtolower($request->email));
         $account = Account::where('email_hash', $emailHash)->first();
 
-        if ($account && Hash::check($request->password, $account->password)) {
+        if ($account && $account->is_active && Hash::check($request->password, $account->password)) {
             $this->guard->login($account);
             $request->session()->regenerate();
             session(['active_role' => $account->role]);
@@ -115,8 +115,14 @@ class AccountController extends Controller
                 ->with('success', 'Welcome back ' . $account->full_name);
         }
 
+        // give clearer error message for inactive accounts
+        if ($account && !$account->is_active) {
+            return back()->with('error', 'Your account is inactive. Please contact support.');
+        }
+
         return back()->with('error', 'Invalid credentials.');
     }
+
 
 
 
@@ -615,6 +621,7 @@ class AccountController extends Controller
             'address.barangay_id' => 'nullable|exists:barangays,id',
             'address.city_id'    => 'nullable|exists:cities,id',
             'address.province_id' => 'nullable|exists:provinces,id',
+            'is_active' => 'nullable|boolean',
         ]);
 
         $authAccount = $this->guard->user();
@@ -644,12 +651,12 @@ class AccountController extends Controller
                 'contact_no'  => $request->contact_no,
                 'email'       => $normalizedEmail,
                 'email_hash'  => $newEmailHash,
+                'is_active'   => $request->has('is_active') ? 1 : 0
             ];
 
             if ($request->filled('password')) {
                 $updateData['password'] = Hash::make($request->password);
             }
-
             $staff->update($updateData);
 
             // Step 2: Update Address (if provided)

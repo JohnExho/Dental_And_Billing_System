@@ -11,6 +11,7 @@
                         <th>Mobile</th>
                         <th>Contact</th>
                         <th>Address</th>
+                        <th>Status</th>
                         <th class="text-end">Actions</th>
                     </tr>
                 </thead>
@@ -27,6 +28,14 @@
                                 {{ optional($staff->address->city)->name ?? '' }}
                                 {{ optional($staff->address->province)->name ?? '' }}
                             </td>
+                            <td>
+                                @if ($staff->is_active)
+                                    <span class="badge bg-success">Active</span>
+                                @else
+                                    <span class="badge bg-danger">Inactive</span>
+                                @endif
+                            </td>
+
                             <td class="text-end">
                                 <a role="button" class="btn btn-sm btn-outline-primary" data-bs-toggle="modal"
                                     data-bs-target="#staff-detail-modal" data-first-name="{{ $staff->first_name }}"
@@ -50,11 +59,12 @@
                                     data-house_no="{{ optional($staff->address)->house_no }}"
                                     data-street="{{ optional($staff->address)->street }}"
                                     data-province_id="{{ optional($staff->address->province)->province_id }}"
-                                    data-province_name="{{ optional($staff->address->province)->name}}"
+                                    data-province_name="{{ optional($staff->address->province)->name }}"
                                     data-city_id="{{ optional($staff->address->city)->city_id }}"
                                     data-city_name="{{ optional($staff->address->city)->name }}"
                                     data-barangay_id="{{ optional($staff->address->barangay)->barangay_id }}"
-                                    data-barangay_name="{{ optional($staff->address->barangay)->name}}">
+                                    data-barangay_name="{{ optional($staff->address->barangay)->name }}"
+                                    data-is_active="{{ $staff->is_active }}">
                                     <i class="bi bi-pencil-square"></i>
                                 </button>
 
