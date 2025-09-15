@@ -19,6 +19,7 @@ class Clinic extends Model
 
     protected $fillable = [
         'name',
+        'name_hash',
         'description',
         'speciality',
         'schedule_summary',

@@ -52,7 +52,8 @@ class LaboratoryController extends Controller
         ]);
 
         // Prevent duplicate email
-        $newEmailHash = $request->email ? hash('sha256', strtolower($request->email)) : null;
+        $normalizedEmail = $request->email ? strtolower($request->email) : null;
+        $newEmailHash    = $normalizedEmail ? hash('sha256', $normalizedEmail) : null;
 
         if (
             $newEmailHash && Laboratories::where('email_hash', $newEmailHash)
@@ -62,7 +63,7 @@ class LaboratoryController extends Controller
             return redirect()->back()->with('error', 'The email has already been taken.');
         }
 
-        return DB::transaction(function () use ($request) {
+        return DB::transaction(function () use ($request, $normalizedEmail, $newEmailHash) {
             $account = $this->guard->user();
             Log::info($request->all());
 
@@ -71,12 +72,13 @@ class LaboratoryController extends Controller
                 'laboratory_id' => Str::uuid(),
                 'account_id' => $account->account_id,
                 'name' => $request->name,
+                'name_hash' => $request->name_hash = hash('sha256', strtolower($request->name)),
                 'description' => $request->description,
                 'speciality' => $request->speciality,
                 'mobile_no' => $request->mobile_no,
                 'contact_no' => $request->contact_no,
-                'email' => $request->email,
-                'email_hash' => $request->email ? hash('sha256', $request->email) : null,
+                'email' => $normalizedEmail,
+                'email_hash' => $newEmailHash ? hash('sha256', $request->email) : null,
             ]);
 
 
@@ -103,6 +105,7 @@ class LaboratoryController extends Controller
                 $account,
                 null,
                 $laboratory,
+                null,
                 'create',
                 'clinic',
                 'User created a laboratory',
@@ -155,6 +158,7 @@ class LaboratoryController extends Controller
             // Step 1: Update laboratory
             $updateData = [
                 'name' => $request->name,
+                'name_hash' => $request->name_hash = hash('sha256', strtolower($request->name)),
                 'description' => $request->description,
                 'speciality' => $request->speciality,
                 'mobile_no' => $request->mobile_no,
@@ -189,6 +193,7 @@ class LaboratoryController extends Controller
                 $authAccount, // actor
                 null,       // subject
                 $laboratory,
+                null,
                 'update',
                 'laboratory',
                 'User updated a laboratory',
@@ -208,7 +213,7 @@ class LaboratoryController extends Controller
             'laboratory_id' => 'required|exists:laboratories,laboratory_id',
             'password' => 'required'
         ]);
-    
+
         $account =  Auth::guard('account')->user();
         $laboratory = Laboratories::findOrFail($request->laboratory_id);
 
@@ -225,6 +230,7 @@ class LaboratoryController extends Controller
             // Logging
             Logs::record(
                 $account,
+                null,
                 null,
                 null,
                 'delete',

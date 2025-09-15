@@ -24,6 +24,7 @@ class Address extends Model
         'account_id',
         'clinic_id',
         'laboratory_id',
+        'associate_id',
         'house_no',
         'street',
         'barangay_name',
@@ -61,6 +62,10 @@ class Address extends Model
     public function laboratory()
     {
         return $this->belongsTo(Laboratories::class, 'laboratory_id', 'laboratory_id');
+    }
+
+    public function associate(){
+        return $this->belongsTo(Associate::class,'associate_id','associate_id');
     }
 
     public function barangay()

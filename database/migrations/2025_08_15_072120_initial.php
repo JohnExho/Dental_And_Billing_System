@@ -20,23 +20,19 @@ return new class extends Migration
         Schema::create('accounts', function (Blueprint $table) {
             $table->uuid('account_id')->primary();
             $table->text('email')->unique();
-            $table->string('email_hash')->unique();
+            $table->string('email_hash')->unique()->index();
             $table->text('last_name');
+            $table->text('last_name_hash')->index();
             $table->text('middle_name')->nullable();
             $table->text('first_name');
             $table->text('mobile_no')->nullable();
             $table->text('contact_no')->nullable();
             $table->string('password');
-            $table->enum('role', ['admin', 'staff'])->default('staff');
+            $table->enum('role', ['admin', 'staff'])->default('staff')->index();
             $table->boolean('can_act_as_staff')->default(false);
-            $table->boolean('is_active')->default(true);
+            $table->boolean('is_active')->default(true)->index();
             $table->string('otp_hash', 255)->nullable();
             $table->timestamp('otp_expires_at')->nullable();
-
-            // Indexes
-            $table->index('email_hash');    // login lookup
-            $table->index('role');          // frequently filter by role
-            $table->index('is_active');     // active/inactive accounts
 
             $table->timestamps();
             $table->softDeletes();
@@ -45,21 +41,16 @@ return new class extends Migration
         // Dependent Tables
         Schema::create('clinics', function (Blueprint $table) {
             $table->uuid('clinic_id')->primary();
-            $table->uuid('account_id')->nullable(); // Account that owns the clinic
+            $table->uuid('account_id')->nullable(); 
             $table->text('name');
+            $table->text('name_hash')->index();
             $table->text('description')->nullable();
             $table->text('schedule_summary')->nullable();
             $table->text('speciality')->nullable();
             $table->text('mobile_no')->nullable();
             $table->text('contact_no')->nullable();
             $table->text('email')->nullable();
-            $table->string('email_hash')->nullable();
-
-            // Indexes
-            $table->index('account_id');    // join with accounts
-            $table->index('name');          // search by name
-            $table->index('email_hash');
-
+            $table->string('email_hash')->nullable()->index();
 
             $table->timestamps();
             $table->softDeletes();
@@ -84,19 +75,13 @@ return new class extends Migration
             $table->uuid('laboratory_id')->primary();
             $table->uuid('account_id')->nullable(); // Account that owns/added the laboratory
             $table->text('name');
+            $table->text('name_hash')->index();
             $table->text('description')->nullable();
             $table->text('speciality')->nullable();
             $table->text('mobile_no')->nullable();
             $table->text('contact_no')->nullable();
             $table->text('email')->nullable();
-            $table->string('email_hash')->nullable();
-
-
-            $table->index('account_id');    // join with accounts
-            $table->index('name');          // search by name
-            $table->index('email_hash');
-
-
+            $table->string('email_hash')->nullable()->index();
             $table->timestamps();
             $table->softDeletes();
 
@@ -105,23 +90,19 @@ return new class extends Migration
 
         Schema::create('associates', function (Blueprint $table) {
             $table->uuid('associate_id')->primary();
-            $table->uuid('account_id')->nullable(); // Account that created the associate
-            $table->uuid('clinic_id')->nullable(); // Associate's primary clinic
-            $table->uuid('laboratory_id')->nullable(); // Associate's primary laboratory
-            $table->string('first_name');
-            $table->string('middle_name')->nullable();
-            $table->string('last_name');
-            $table->string('speciality')->nullable();
+            $table->uuid('account_id')->nullable(); 
+            $table->uuid('clinic_id')->nullable(); 
+            $table->uuid('laboratory_id')->nullable();
+            $table->text('first_name');
+            $table->text('middle_name')->nullable();
+            $table->text('last_name');
+            $table->text('last_name_hash')->index();
+            $table->text('speciality')->nullable();
             $table->text('mobile_no')->nullable();
             $table->text('contact_no')->nullable();
             $table->boolean('is_active')->default(true);
-            $table->string('email')->nullable();
-            $table->index('account_id');    // join with accounts
-            $table->index('clinic_id');     // join with clinics
-            $table->index('laboratory_id'); // join with labs
-            $table->index('last_name');     // search by last name
-
-
+            $table->text('email')->unique();
+            $table->string('email_hash')->unique()->index();
 
             $table->timestamps();
             $table->softDeletes();

@@ -1,13 +1,15 @@
 <?php
 
+use App\Models\Associate;
+use App\Models\Laboratories;
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\AccountController;
-use App\Http\Controllers\AddressController;
-use App\Http\Controllers\ClinicController;
-use App\Http\Controllers\LaboratoryController;
 use App\Http\Controllers\OTPController;
 use App\Http\Controllers\StaffController;
-use App\Models\Laboratories;
+use App\Http\Controllers\ClinicController;
+use App\Http\Controllers\AccountController;
+use App\Http\Controllers\AddressController;
+use App\Http\Controllers\AssociateController;
+use App\Http\Controllers\LaboratoryController;
 
 Route::middleware('web')->group(function () {
     // Login page
@@ -29,7 +31,7 @@ Route::middleware('web')->group(function () {
     Route::post('/process/chang/role', [AccountController::class, 'switchRole'])->name('process-switch-role');
     Route::put('/process/change/name', [AccountController::class, 'changeName'])->name('process-change-name');
     Route::put('/process/change/password', [AccountController::class, 'updatePassword'])->name('process-change-password');
-  
+
     Route::post('/process/send/otp', [OTPController::class, 'sendOtp'])->name('process-send-otp');
     Route::post('/process/resend/otp', [OTPController::class, 'resendOtp'])->name('process-resend-otp');
     Route::post('/process/verify/otp', [OTPController::class, 'verifyOtp'])->name('process-verify-otp');
@@ -48,6 +50,10 @@ Route::middleware('web')->group(function () {
     Route::put('/process/update/laboratory', [LaboratoryController::class, 'update'])->name('process-update-laboratory');
     Route::delete('/process/delete/laboratory', [LaboratoryController::class, 'destroy'])->name('process-delete-laboratory');
 
+    Route::post('/process/create/associate', [AssociateController::class, 'create'])->name('process-create-associate');
+    Route::put('/process/update/associate', [AssociateController::class, 'update'])->name('process-update-associate');
+    Route::delete('/process/delete/associate', [AssociateController::class, 'destroy'])->name('process-delete-associate');
+
     // Protected routes
     Route::middleware('auth:account')->group(function () {
         Route::view('/dashboard', 'dashboard')->name('dashboard');
@@ -56,7 +62,7 @@ Route::middleware('web')->group(function () {
         Route::get('/settings', [AccountController::class, 'settings'])->name('settings');
         Route::middleware('admin.only')->group(function () {
             Route::get('/clinics', [ClinicController::class, 'index'])->name('clinics');
-            Route::view('/associates', 'pages.associates.index')->name('associates');
+            Route::get('/associates', [AssociateController::class, 'index'])->name('associates');
             Route::get('/staffs', [StaffController::class, 'index'])->name('staffs');
             Route::get('/laboratories', [LaboratoryController::class, 'index'])->name('laboratories');
         });

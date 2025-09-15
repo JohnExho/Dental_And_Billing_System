@@ -75,6 +75,7 @@ class AccountController extends Controller
                     $account,
                     null,
                     null,
+                    null,
                     'login',
                     'auth',
                     'User has logged in',
@@ -130,6 +131,7 @@ class AccountController extends Controller
                 $account,
                 null,
                 null,
+                null,
                 'logout',
                 'auth',
                 'User has logged out',
@@ -165,6 +167,7 @@ class AccountController extends Controller
                 $account,
                 null,
                 null,
+                null,
                 'update',
                 'auth',
                 'User has changed roles',
@@ -198,6 +201,7 @@ class AccountController extends Controller
         /** @var Account $account */
         $account = $this->guard->user(); // Use the 'account' guard for consistency
         $account->last_name = $request->last_name;
+        $account->last_name_hash = hash('sha256', strtolower($request->last_name));
         $account->first_name = $request->first_name;
         $account->middle_name = $request->middle_name;
         $account->save();
@@ -207,6 +211,7 @@ class AccountController extends Controller
         if ($account) {
             Logs::record(
                 $account,
+                null,
                 null,
                 null,
                 'update',
@@ -272,6 +277,7 @@ class AccountController extends Controller
                 $account,
                 null,
                 null,
+                null,
                 'update',
                 'auth',
                 'User has changed password',
@@ -328,6 +334,7 @@ class AccountController extends Controller
         /** @var Account $account */
         Logs::record(
             $account,
+            null,
             null,
             null,
             'delete',

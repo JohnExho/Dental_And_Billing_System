@@ -19,6 +19,7 @@ class Laboratories extends Model
 
     protected $fillable = [
         'name',
+        'name_hash',
         'description',
         'speciality',
         'mobile_no',

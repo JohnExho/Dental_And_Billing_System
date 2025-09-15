@@ -20,6 +20,7 @@ class Account extends Authenticatable
 
     protected $fillable = [
         'last_name',
+        'last_name_hash',
         'middle_name',
         'first_name',
         'email',

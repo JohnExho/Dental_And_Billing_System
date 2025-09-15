@@ -20,6 +20,7 @@ class AccountSeeder extends Seeder
         // Create an admin account
         $adminAccount = Account::create([
             'last_name' => 'Admin User',
+            'last_name_hash' => hash('sha256', strtolower('Admin User')),
             'middle_name' => null,
             'first_name' => 'Admin',
             'email' => 'admin@example.com',
@@ -49,6 +50,7 @@ class AccountSeeder extends Seeder
         // Example of another account
         $staffAccount = Account::create([
             'last_name' => 'Doe',
+            'last_name_hash' => hash('sha256', strtolower('Doe')),
             'middle_name' => 'M',
             'first_name' => 'John',
             'email' => 'rci.bsis.hensonjohnvictor@gmail.com',

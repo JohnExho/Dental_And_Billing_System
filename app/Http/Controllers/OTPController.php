@@ -36,6 +36,7 @@ class OTPController extends Controller
             $account,
             null,
             null,
+            null,
             'otp_request',
             'auth',
             'User has requested OTP for password reset',
@@ -68,6 +69,7 @@ class OTPController extends Controller
 
         Logs::record(
             $account,
+            null,
             null,
             null,
             'otp_resend',
@@ -113,6 +115,7 @@ class OTPController extends Controller
 
         Logs::record(
             $account,
+            null,
             null,
             null,
             'otp_verify',
@@ -163,6 +166,7 @@ class OTPController extends Controller
         /** @var Account $account */
         Logs::record(
             $account,
+            null,
             null,
             null,
             'password_reset',

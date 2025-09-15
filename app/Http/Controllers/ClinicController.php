@@ -57,7 +57,8 @@ class ClinicController extends Controller
         ]);
 
         // Prevent duplicate email
-        $newEmailHash = $request->email ? hash('sha256', strtolower($request->email)) : null;
+              $normalizedEmail = $request->email ? strtolower($request->email) : null;
+        $newEmailHash = $normalizedEmail ? hash('sha256', $normalizedEmail) : null;
 
         if (
             $newEmailHash && Clinic::where('email_hash', $newEmailHash)
@@ -67,7 +68,7 @@ class ClinicController extends Controller
             return redirect()->back()->with('error', 'The email has already been taken.');
         }
 
-        return DB::transaction(function () use ($request) {
+        return DB::transaction(function () use ($request, $normalizedEmail, $newEmailHash) {
             $account = $this->guard->user();
             Log::info($request->all());
 
@@ -76,13 +77,14 @@ class ClinicController extends Controller
                 'clinic_id' => Str::uuid(),
                 'account_id' => $account->account_id,
                 'name' => $request->name,
+                'name_hash' => $request->name_hash = hash('sha256', strtolower($request->name)),
                 'description' => $request->description,
                 'schedule_summary' => $request->schedule_summary ?: 'No schedule yet',
                 'speciality' => $request->speciality,
                 'mobile_no' => $request->mobile_no,
                 'contact_no' => $request->contact_no,
-                'email' => $request->email,
-                'email_hash' => $request->email ? hash('sha256', $request->email) : null,
+                'email' => $normalizedEmail,
+                'email_hash' => $newEmailHash
             ]);
 
             // Step 2: Create Schedules (if any)
@@ -125,6 +127,7 @@ class ClinicController extends Controller
             Logs::record(
                 $account,
                 $clinic,
+                null,
                 null,
                 'create',
                 'clinic',
@@ -184,6 +187,7 @@ class ClinicController extends Controller
             // --- Update clinic basic info ---
             $clinic->update([
                 'name' => $request->name,
+                'name_hash' => $request->name_hash = hash('sha256', strtolower($request->name)),
                 'description' => $request->description,
                 'speciality' => $request->speciality,
                 'mobile_no' => $request->mobile_no,
@@ -237,6 +241,7 @@ class ClinicController extends Controller
                 $account,
                 $clinic,
                 null,
+                null,
                 'update',
                 'clinic',
                 'User updated a clinic',
@@ -276,6 +281,7 @@ class ClinicController extends Controller
             Logs::record(
                 $account,
                 $clinic,
+                null,
                 null,
                 'delete',
                 'clinic',

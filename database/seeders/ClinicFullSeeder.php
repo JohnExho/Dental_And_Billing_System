@@ -24,6 +24,7 @@ class ClinicFullSeeder extends Seeder
             'clinic_id' => Str::uuid(),
             'account_id' => $account->account_id,
             'name' => $faker->company,
+            'name_hash' => hash('sha256', strtolower($faker->company)),
             'description' => $faker->paragraph,
             'speciality' => $faker->word,
             'mobile_no' => $faker->phoneNumber,

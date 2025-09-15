@@ -1,35 +1,53 @@
 <div class="card-body p-0">
-    {{-- @if ($associates->isEmpty())
+    @if ($associates->isEmpty())
         <p class="p-3 mb-0 text-danger text-center">No associate found. Add one using the button above.</p>
-    @else --}}
+    @else
         <div class="table-responsive">
             <table class="table table-hover align-middle mb-0">
                 <thead class="table-light">
                     <tr>
                         <th>Name</th>
                         <th>Email</th>
-                        <th>Mobile</th>
+                        <th>Speciality</th>
+                        <th>Clinic</th>
+                        <th>Laboratory</th>
                         <th>Contact</th>
                         <th>Address</th>
+                        <th>Status</th>
                         <th class="text-end">Actions</th>
                     </tr>
                 </thead>
                 <tbody>
-                    {{-- @foreach ($associates as $associate)
+                    @foreach ($associates as $associate)
                         <tr>
                             <td>{{ $associate->full_name }}</td>
                             <td>{{ $associate->email }}</td>
-                            <td>{{ $associate->mobile_no ?? 'N/A' }}</td>
-                            <td>{{ $associate->contact_no ?? 'N/A' }}</td>
+                            <td>{{ $associate->speciality }}</td>
+                            <td>{{ $associate->clinic->name ?? 'No Clinic' }}</td>
+                            <td>{{ $associate->laboratory->name ?? 'No Laboratory' }}</td>
+
                             <td>
-                                {{ optional($associate->address)->house_no }} {{ optional($associate->address)->street }}<br>
+                                <i class="bi bi-telephone-fill me-1"></i>{{ $associate->contact_no }}<br>
+                                <i class="bi bi-phone-fill me-1"></i>{{ $associate->mobile_no }}
+                            </td>
+                            <td>
+                                {{ optional($associate->address)->house_no }}
+                                {{ optional($associate->address)->street }}<br>
                                 {{ optional($associate->address->barangay)->name ?? '' }}
                                 {{ optional($associate->address->city)->name ?? '' }}
                                 {{ optional($associate->address->province)->name ?? '' }}
                             </td>
+                            <td>
+                                @if ($associate->is_active)
+                                    <span class="badge bg-success">Active</span>
+                                @else
+                                    <span class="badge bg-danger">Inactive</span>
+                                @endif
+                            </td>
                             <td class="text-end">
                                 <a role="button" class="btn btn-sm btn-outline-primary" data-bs-toggle="modal"
-                                    data-bs-target="#associate-detail-modal" data-first-name="{{ $associate->first_name }}"
+                                    data-bs-target="#associate-detail-modal"
+                                    data-first-name="{{ $associate->first_name }}"
                                     data-middle-name="{{ $associate->middle_name }}"
                                     data-last-name="{{ $associate->last_name }}" data-email="{{ $associate->email }}"
                                     data-contact="{{ $associate->contact_no }} / {{ $associate->mobile_no }}"
@@ -42,7 +60,8 @@
                                 <!-- Edit Button -->
                                 <button type="button" class="btn btn-sm btn-outline-secondary" data-bs-toggle="modal"
                                     data-bs-target="#edit-associate-modal" onclick="event.stopPropagation();"
-                                    data-id="{{ $associate->account_id }}" data-first_name="{{ $associate->first_name }}"
+                                    data-id="{{ $associate->account_id }}"
+                                    data-first_name="{{ $associate->first_name }}"
                                     data-middle_name="{{ $associate->middle_name }}"
                                     data-last_name="{{ $associate->last_name }}" data-email="{{ $associate->email }}"
                                     data-contact_no="{{ $associate->contact_no }}"
@@ -65,11 +84,11 @@
                                 </button>
                             </td>
                         </tr>
-                    @endforeach --}}
+                    @endforeach
                 </tbody>
             </table>
         </div>
-    {{-- @endif --}}
+    @endif
 </div>
 <script>
     document.addEventListener('DOMContentLoaded', function() {
@@ -86,6 +105,6 @@
         });
     });
 </script>
-{{-- @include('pages.associates.modals.info')
+@include('pages.associates.modals.info')
 @include('pages.associates.modals.edit')
-@include('pages.associates.modals.delete') --}}
+@include('pages.associates.modals.delete')

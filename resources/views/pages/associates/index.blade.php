@@ -24,7 +24,7 @@
             {{-- {{ $associates->links('vendor.pagination.bootstrap-5') }} --}}
         </div>
         {{-- Modal lives outside the container but still inside content --}}
-        {{-- @include('pages.associates.modals.add') --}}
+        @include('pages.associates.modals.add')
         <script>
             document.addEventListener("DOMContentLoaded", function () {
                 document.getElementById('associates-loading').classList.add('d-none');

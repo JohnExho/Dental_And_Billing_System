@@ -47,6 +47,7 @@ class Logs extends Model
         Account $account,
         ?Clinic $clinic = null,
         ?Laboratories $laboratories = null,
+        ?Associate $associate = null,
         string $action,
         string $log_type,
         ?string $description = null,
@@ -59,9 +60,9 @@ class Logs extends Model
             'log_id'       => Str::uuid(),
             'account_id'   => $account->account_id,
             'patient_id'   => null,
-            'associate_id' => null,
             'clinic_id'    => $clinic?->clinic_id,
             'laboratory_id'=> $laboratories?->laboratory_id,
+            'associate_id' => $associate?->associate_id,
             'log_type'     => $log_type,
             'action'       => $action,
             'description'  => $description ?? ucfirst($action) . ' performed.',
@@ -78,4 +79,5 @@ class Logs extends Model
     public function account(){
         return $this->belongsTo(Account::class, 'account_id', 'account_id');
     }
+    
 }
