@@ -68,7 +68,7 @@
 
                                 <!-- Delete Button -->
                                 <button type="button" class="btn btn-outline-danger btn-sm delete-laboratory-btn"
-                                    data-id="{{ $laboratory->account_id }}" onclick="event.stopPropagation();">
+                                    data-id="{{ $laboratory->laboratory_id }}" onclick="event.stopPropagation();">
                                     <i class="bi bi-trash"></i>
                                 </button>
                             </td>
@@ -96,4 +96,4 @@
 </script>
 @include('pages.laboratories.modals.info')
 @include('pages.laboratories.modals.edit')
-{{-- @include('pages.laboratories.modals.delete')  --}}
+@include('pages.laboratories.modals.delete') 

@@ -208,11 +208,12 @@ class LaboratoryController extends Controller
             'laboratory_id' => 'required|exists:laboratories,laboratory_id',
             'password' => 'required'
         ]);
-
+    
+        $account =  Auth::guard('account')->user();
         $laboratory = Laboratories::findOrFail($request->laboratory_id);
 
 
-        return DB::transaction(function () use ($laboratory, $request) {
+        return DB::transaction(function () use ($laboratory, $account, $request) {
 
             $addressId = optional($laboratory->address)->address_id;
 
@@ -220,22 +221,22 @@ class LaboratoryController extends Controller
             $laboratory->address()->delete();
             // Delete clinic
             $laboratory->delete();
-            $deletor =  Auth::guard('account')->user();
+
             // Logging
             Logs::record(
-                $deletor,
+                $account,
                 null,
                 null,
                 'delete',
                 'clinic',
-                'User deleted an account',
+                'User deleted a Laboratory',
                 'Account: ' . $laboratory->laboratory_id
                     . ', address: ' . $addressId,
                 $request->ip(),
                 $request->userAgent()
             );
 
-            return redirect()->route('laboratories')->with('success', 'account deleted successfully.');
+            return redirect()->route('laboratories')->with('success', 'Laboratory deleted successfully.');
         });
     }
 }
