@@ -33,6 +33,8 @@ class Account extends Authenticatable
         'is_active',
         'otp_hash',
         'otp_expires_at',
+        'clinic_id',
+        'laboratory_id',
     ];
 
     protected $casts = [

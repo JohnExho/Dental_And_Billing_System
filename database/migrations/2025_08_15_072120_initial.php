@@ -38,9 +38,6 @@ return new class extends Migration
 
             $table->timestamps();
             $table->softDeletes();
-
-             $table->foreign('clinic_id')->references('clinic_id')->on('clinics')->onDelete('set null');
-            $table->foreign('laboratory_id')->references('laboratory_id')->on('laboratories')->onDelete('set null');
         });
 
         // Dependent Tables
