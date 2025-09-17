@@ -1,34 +1,37 @@
 <?php
+
 // not checked
+
 namespace App\Http\Controllers;
 
+use App\Models\Account;
 use App\Models\Address;
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Log;
-use Illuminate\Support\Facades\Auth;
 use App\Models\Laboratories;
 use App\Models\Logs;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
 use Yajra\Address\Entities\Barangay;
 use Yajra\Address\Entities\City;
 use Yajra\Address\Entities\Province;
-use App\Models\Account;
-use Illuminate\Support\Facades\Hash;
 
 class LaboratoryController extends Controller
 {
     protected $guard;
+
     public function __construct()
     {
         $this->guard = Auth::guard('account');
     }
+
     public function index()
     {
         $laboratories = Laboratories::with('address.barangay', 'address.city', 'address.province')
             ->latest()
             ->paginate(4);
-
 
         return view('pages.laboratories.index', compact('laboratories'));
     }
@@ -42,6 +45,7 @@ class LaboratoryController extends Controller
             'speciality' => 'nullable|string|max:255',
             'mobile_no' => 'nullable|string|max:20',
             'contact_no' => 'nullable|string|max:20',
+            'contact_person' => 'nullable|string',
             'email' => 'nullable|email|max:255',
             'address' => 'nullable|array',
             'address.house_no' => 'nullable|string|max:50',
@@ -53,12 +57,12 @@ class LaboratoryController extends Controller
 
         // Prevent duplicate email
         $normalizedEmail = $request->email ? strtolower($request->email) : null;
-        $newEmailHash    = $normalizedEmail ? hash('sha256', $normalizedEmail) : null;
+        $newEmailHash = $normalizedEmail ? hash('sha256', $normalizedEmail) : null;
 
         if (
             $newEmailHash && Laboratories::where('email_hash', $newEmailHash)
-            ->whereNull('deleted_at') // ignore soft-deleted
-            ->exists()
+                ->whereNull('deleted_at') // ignore soft-deleted
+                ->exists()
         ) {
             return redirect()->back()->with('error', 'The email has already been taken.');
         }
@@ -77,10 +81,10 @@ class LaboratoryController extends Controller
                 'speciality' => $request->speciality,
                 'mobile_no' => $request->mobile_no,
                 'contact_no' => $request->contact_no,
+                'contact_person' => $request->contact_person,
                 'email' => $normalizedEmail,
                 'email_hash' => $newEmailHash ? hash('sha256', $request->email) : null,
             ]);
-
 
             // Step 2: Create Address (if provided)
             if ($request->filled('address')) {
@@ -89,11 +93,11 @@ class LaboratoryController extends Controller
                     'laboratory_id' => $laboratory->laboratory_id,
                     'house_no' => $request->address['house_no'] ?? null,
                     'street' => $request->address['street'] ?? null,
-                    'barangay_name'   => optional(Barangay::find($request->address['barangay_id']))->name,
-                    'city_name'       => optional(City::find($request->address['city_id']))->name,
-                    'province_name'   => optional(Province::find($request->address['province_id']))->name,
+                    'barangay_name' => optional(Barangay::find($request->address['barangay_id']))->name,
+                    'city_name' => optional(City::find($request->address['city_id']))->name,
+                    'province_name' => optional(Province::find($request->address['province_id']))->name,
                     'barangay_id' => $request->address['barangay_id'] ?? null,
-                    'city_id'     => $request->address['city_id'] ?? null,
+                    'city_id' => $request->address['city_id'] ?? null,
                     'province_id' => $request->address['province_id'] ?? null,
                 ]);
             }
@@ -109,8 +113,8 @@ class LaboratoryController extends Controller
                 'create',
                 'clinic',
                 'User created a laboratory',
-                'clinic: ' . $laboratory->laboratory_id
-                    . ', address: ' . $addressId,
+                'clinic: '.$laboratory->laboratory_id
+                    .', address: '.$addressId,
                 $request->ip(),
                 $request->userAgent()
             );
@@ -126,6 +130,7 @@ class LaboratoryController extends Controller
             'name' => 'required|string|max:255',
             'description' => 'nullable|string',
             'speciality' => 'nullable|string|max:255',
+            'contact_person' => 'nullable|string',
             'mobile_no' => 'nullable|string|max:20',
             'contact_no' => 'nullable|string|max:20',
             'email' => 'nullable|email|max:255',
@@ -138,18 +143,18 @@ class LaboratoryController extends Controller
         ]);
 
         $authAccount = $this->guard->user();
-        $laboratory  = Laboratories::findOrFail($request->laboratory_id);
+        $laboratory = Laboratories::findOrFail($request->laboratory_id);
 
         // Normalize + hash email
         $normalizedEmail = $request->email ? strtolower($request->email) : null;
-        $newEmailHash    = $normalizedEmail ? hash('sha256', $normalizedEmail) : null;
+        $newEmailHash = $normalizedEmail ? hash('sha256', $normalizedEmail) : null;
 
         // Prevent duplicate email
         if (
             $newEmailHash && Laboratories::where('email_hash', $newEmailHash)
-            ->where('laboratory_id', '!=', $laboratory->laboratory_id)
-            ->whereNull('deleted_at')
-            ->exists()
+                ->where('laboratory_id', '!=', $laboratory->laboratory_id)
+                ->whereNull('deleted_at')
+                ->exists()
         ) {
             return redirect()->back()->with('error', 'The email has already been taken.');
         }
@@ -163,6 +168,7 @@ class LaboratoryController extends Controller
                 'speciality' => $request->speciality,
                 'mobile_no' => $request->mobile_no,
                 'contact_no' => $request->contact_no,
+                'contact_person' => $request->contact_person,
                 'email' => $normalizedEmail,
                 'email_hash' => $newEmailHash,
             ];
@@ -174,13 +180,13 @@ class LaboratoryController extends Controller
                 $laboratory->address()->updateOrCreate(
                     ['laboratory_id' => $laboratory->laboratory_id],
                     [
-                        'house_no'    => $request->address['house_no'] ?? null,
-                        'street'      => $request->address['street'] ?? null,
-                        'barangay_name'   => optional(Barangay::find($request->address['barangay_id']))->name,
-                        'city_name'       => optional(City::find($request->address['city_id']))->name,
-                        'province_name'   => optional(Province::find($request->address['province_id']))->name,
+                        'house_no' => $request->address['house_no'] ?? null,
+                        'street' => $request->address['street'] ?? null,
+                        'barangay_name' => optional(Barangay::find($request->address['barangay_id']))->name,
+                        'city_name' => optional(City::find($request->address['city_id']))->name,
+                        'province_name' => optional(Province::find($request->address['province_id']))->name,
                         'barangay_id' => $request->address['barangay_id'] ?? null,
-                        'city_id'     => $request->address['city_id'] ?? null,
+                        'city_id' => $request->address['city_id'] ?? null,
                         'province_id' => $request->address['province_id'] ?? null,
                     ]
                 );
@@ -197,8 +203,8 @@ class LaboratoryController extends Controller
                 'update',
                 'laboratory',
                 'User updated a laboratory',
-                'laboratory: ' . $laboratory->laboratory_id
-                    . ', address: ' . $addressId,
+                'laboratory: '.$laboratory->laboratory_id
+                    .', address: '.$addressId,
                 $request->ip(),
                 $request->userAgent()
             );
@@ -211,12 +217,11 @@ class LaboratoryController extends Controller
     {
         $request->validate([
             'laboratory_id' => 'required|exists:laboratories,laboratory_id',
-            'password' => 'required'
+            'password' => 'required',
         ]);
 
-        $account =  Auth::guard('account')->user();
+        $account = Auth::guard('account')->user();
         $laboratory = Laboratories::findOrFail($request->laboratory_id);
-
 
         return DB::transaction(function () use ($laboratory, $account, $request) {
 
@@ -236,8 +241,8 @@ class LaboratoryController extends Controller
                 'delete',
                 'clinic',
                 'User deleted a Laboratory',
-                'Account: ' . $laboratory->laboratory_id
-                    . ', address: ' . $addressId,
+                'Account: '.$laboratory->laboratory_id
+                    .', address: '.$addressId,
                 $request->ip(),
                 $request->userAgent()
             );

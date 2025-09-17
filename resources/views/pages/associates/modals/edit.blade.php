@@ -1,15 +1,15 @@
-{{-- <!-- Edit Staff Modal -->
-<div class="modal fade" id="edit-staff-modal" tabindex="-1" aria-hidden="true">
+<!-- Edit associate Modal -->
+<div class="modal fade" id="edit-associate-modal" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog modal-xl">
         <div class="modal-content">
-            <form id="edit-staff-form" action="{{ route('process-update-staff') }}" method="POST">
+            <form id="edit-associate-form" action="{{ route('process-update-associate') }}" method="POST">
                 @csrf
                 @method('PUT')
-                <input type="hidden" name="account_id" id="edit_staff_id">
+                <input type="hidden" name="associate_id" id="edit_associate_id">
 
                 <!-- Header -->
                 <div class="modal-header">
-                    <h5 class="modal-title">✏️ Edit Staff</h5>
+                    <h5 class="modal-title">✏️ Edit Associate</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
 
@@ -18,8 +18,8 @@
                     <div class="row">
                         <!-- Left Column -->
                         <div class="col-md-6">
-                            <!-- Staff Name -->
-                            <h6 class="text-muted mt-2">👤 Staff Name</h6>
+                            <!-- associate Name -->
+                            <h6 class="text-muted mt-2">👤 associate Name</h6>
                             <div class="row">
                                 <div class="col-md-4 mb-3">
                                     <label for="edit_first_name" class="form-label">First Name</label>
@@ -74,7 +74,7 @@
                                 </div>
                                 <div class="col-md-4 mb-3">
                                     <label for="edit_province_select" class="form-label">Province</label>
-                                    <select id="edit_province_select" class="form-select form-select-sm" required>
+                                    <select id="edit_province_select" class="form-select form-select-sm">
                                         <option value="">-- Select Province --</option>
                                         @foreach ($provinces as $province)
                                             <option value="{{ $province->province_id }}" data-id="{{ $province->id }}">
@@ -88,7 +88,7 @@
                                 <div class="col-md-4 mb-3">
                                     <label for="edit_city_select" class="form-label">City</label>
                                     <select id="edit_city_select" class="form-select form-select-sm" disabled
-                                        required>
+                                        >
                                         <option value="">-- Select City --</option>
                                     </select>
                                     <input type="hidden" name="address[city_id]" id="edit_city_hidden">
@@ -97,7 +97,7 @@
                                 <div class="col-md-4 mb-3">
                                     <label for="edit_barangay_select" class="form-label">Barangay</label>
                                     <select id="edit_barangay_select" class="form-select form-select-sm" disabled
-                                        required>
+                                        >
                                         <option value="">-- Select Barangay --</option>
                                     </select>
                                     <input type="hidden" name="address[barangay_id]" id="edit_barangay_hidden">
@@ -119,7 +119,7 @@
 
                 <!-- Footer -->
                 <div class="modal-footer">
-                    <button type="submit" class="btn btn-primary">💾 Update Staff</button>
+                    <button type="submit" class="btn btn-primary">💾 Update associate</button>
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">✖️ Close</button>
                 </div>
             </form>
@@ -129,7 +129,7 @@
 
 <script>
     (function() {
-        const modal = document.getElementById('edit-staff-modal');
+        const modal = document.getElementById('edit-associate-modal');
         if (!modal) return;
 
         // --- Cascading selects ---
@@ -235,7 +235,7 @@
             const button = event.relatedTarget;
 
             // Fill fields
-            modal.querySelector('#edit_staff_id').value = button.getAttribute('data-id') || '';
+            modal.querySelector('#edit_associate_id').value = button.getAttribute('data-id') || '';
             modal.querySelector('#edit_first_name').value = button.getAttribute('data-first_name') ||
                 '';
             modal.querySelector('#edit_middle_name').value = button.getAttribute('data-middle_name') ||
@@ -273,4 +273,4 @@
             });
         });
     })();
-</script> --}}
+</script>

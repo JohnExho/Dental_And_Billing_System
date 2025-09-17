@@ -21,7 +21,8 @@
                                 <div class="input-group">
                                     <span class="input-group-text"><i class="bi bi-building"></i></span>
                                     <input type="text" class="form-control" id="laboratory_name" name="name"
-                                        placeholder="Laboratory Name" value="{{ old('name', $laboratory->name ?? '') }}" required>
+                                        placeholder="Laboratory Name" value="{{ old('name', $laboratory->name ?? '') }}"
+                                        required>
                                 </div>
                             </div>
 
@@ -35,12 +36,14 @@
                             </div>
 
                             <!-- speciality and Contact -->
-                            <h6 class="text-muted mt-4 mb-3"><i class="bi bi-envelope me-2"></i> Contact Information</h6>
+                            <h6 class="text-muted mt-4 mb-3"><i class="bi bi-envelope me-2"></i> Contact Information
+                            </h6>
                             <div class="mb-3">
                                 <div class="input-group">
                                     <span class="input-group-text"><i class="bi bi-heart-pulse"></i></span>
                                     <input type="text" class="form-control" id="speciality" name="speciality"
-                                        placeholder="Speciality" value="{{ old('speciality', $laboratory->speciality ?? '') }}">
+                                        placeholder="Speciality"
+                                        value="{{ old('speciality', $laboratory->speciality ?? '') }}">
                                 </div>
                             </div>
 
@@ -53,6 +56,16 @@
                                 </div>
                                 <div class="form-text">Must start with a letter (e.g. laboratory@mail.com)</div>
                             </div>
+
+                            <div class="mb-3">
+                                <div class="input-group">
+                                    <span class="input-group-text"><i class="bi bi-at"></i></span>
+                                    <input type="text" class="form-control" id="contact_person" name="contact_person"
+                                        placeholder="Contact Person"
+                                        value="{{ old('contact_person', $laboratory->contact_person ?? '') }}" required>
+                                </div>
+                            </div>
+
                         </div>
 
                         <!-- Right Column -->
@@ -63,7 +76,8 @@
                                         <span class="input-group-text"><i class="bi bi-telephone"></i></span>
                                         <input type="text" class="form-control phone-number" id="contact_no"
                                             name="contact_no" placeholder="Phone / Landline"
-                                            value="{{ old('contact_no', $laboratory->contact_no ?? '') }}" maxlength="11" required>
+                                            value="{{ old('contact_no', $laboratory->contact_no ?? '') }}"
+                                            maxlength="11" required>
                                     </div>
                                     <div class="form-text">11-digit format only</div>
                                 </div>
@@ -72,18 +86,21 @@
                                         <span class="input-group-text"><i class="bi bi-phone"></i></span>
                                         <input type="text" class="form-control phone-number" id="mobile_no"
                                             name="mobile_no" placeholder="Mobile No"
-                                            value="{{ old('mobile_no', $laboratory->mobile_no ?? '') }}" maxlength="11" required>
+                                            value="{{ old('mobile_no', $laboratory->mobile_no ?? '') }}" maxlength="11"
+                                            required>
                                     </div>
                                     <div class="form-text">11-digit format only</div>
                                 </div>
                             </div>
 
                             <!-- Address -->
-                            <h6 class="text-muted mt-4 mb-3"><i class="bi bi-geo-alt me-2"></i> Address Information</h6>
+                            <h6 class="text-muted mt-4 mb-3"><i class="bi bi-geo-alt me-2"></i> Address Information
+                            </h6>
                             <div class="row">
                                 <div class="col-md-4 mb-3">
-                                    <input type="text" class="form-control" id="house_no" name="address[house_no]"
-                                        placeholder="House No." value="{{ old('house_no', $laboratory->house_no ?? '') }}">
+                                    <input type="text" class="form-control" id="house_no"
+                                        name="address[house_no]" placeholder="House No."
+                                        value="{{ old('house_no', $laboratory->house_no ?? '') }}">
                                 </div>
                                 <div class="col-md-8 mb-3">
                                     <input type="text" class="form-control" id="street" name="address[street]"

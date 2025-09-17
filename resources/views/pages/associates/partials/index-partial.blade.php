@@ -51,6 +51,7 @@
                                     data-middle-name="{{ $associate->middle_name }}"
                                     data-last-name="{{ $associate->last_name }}" data-email="{{ $associate->email }}"
                                     data-contact="{{ $associate->contact_no }} / {{ $associate->mobile_no }}"
+                                    data-speciality="{{ $associate->speciality }}"
                                     data-address="{{ optional($associate->address)->house_no }} {{ optional($associate->address)->street }} {{ optional($associate->address->barangay)->name ?? '' }} {{ optional($associate->address->city)->name ?? '' }} {{ optional($associate->address->province)->name ?? '' }}">
                                     <i class="bi bi-eye"></i>
                                 </a>
@@ -60,7 +61,7 @@
                                 <!-- Edit Button -->
                                 <button type="button" class="btn btn-sm btn-outline-secondary" data-bs-toggle="modal"
                                     data-bs-target="#edit-associate-modal" onclick="event.stopPropagation();"
-                                    data-id="{{ $associate->account_id }}"
+                                    data-id="{{ $associate->associate_id }}"
                                     data-first_name="{{ $associate->first_name }}"
                                     data-middle_name="{{ $associate->middle_name }}"
                                     data-last_name="{{ $associate->last_name }}" data-email="{{ $associate->email }}"
@@ -73,13 +74,14 @@
                                     data-city_id="{{ optional($associate->address->city)->city_id }}"
                                     data-city_name="{{ optional($associate->address->city)->name }}"
                                     data-barangay_id="{{ optional($associate->address->barangay)->barangay_id }}"
-                                    data-barangay_name="{{ optional($associate->address->barangay)->name }}">
+                                    data-barangay_name="{{ optional($associate->address->barangay)->name }}"
+                                    data-is_active="{{ $associate->is_active }}">
                                     <i class="bi bi-pencil-square"></i>
                                 </button>
 
                                 <!-- Delete Button -->
                                 <button type="button" class="btn btn-outline-danger btn-sm delete-associate-btn"
-                                    data-id="{{ $associate->account_id }}" onclick="event.stopPropagation();">
+                                    data-id="{{ $associate->associate_id }}" onclick="event.stopPropagation();">
                                     <i class="bi bi-trash"></i>
                                 </button>
                             </td>

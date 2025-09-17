@@ -19,6 +19,8 @@ return new class extends Migration
         // Independent Tables
         Schema::create('accounts', function (Blueprint $table) {
             $table->uuid('account_id')->primary();
+            $table->uuid('clinic_id')->nullable(); 
+            $table->uuid('laboratory_id')->nullable();
             $table->text('email')->unique();
             $table->string('email_hash')->unique()->index();
             $table->text('last_name');
@@ -36,6 +38,9 @@ return new class extends Migration
 
             $table->timestamps();
             $table->softDeletes();
+
+             $table->foreign('clinic_id')->references('clinic_id')->on('clinics')->onDelete('set null');
+            $table->foreign('laboratory_id')->references('laboratory_id')->on('laboratories')->onDelete('set null');
         });
 
         // Dependent Tables
@@ -78,6 +83,7 @@ return new class extends Migration
             $table->text('name_hash')->index();
             $table->text('description')->nullable();
             $table->text('speciality')->nullable();
+            $table->text('contact_person');
             $table->text('mobile_no')->nullable();
             $table->text('contact_no')->nullable();
             $table->text('email')->nullable();
