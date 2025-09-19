@@ -19,7 +19,7 @@ return new class extends Migration
         // Independent Tables
         Schema::create('accounts', function (Blueprint $table) {
             $table->uuid('account_id')->primary();
-            $table->uuid('clinic_id')->nullable(); 
+            $table->uuid('clinic_id')->nullable();
             $table->uuid('laboratory_id')->nullable();
             $table->text('email')->unique();
             $table->string('email_hash')->unique()->index();
@@ -43,7 +43,7 @@ return new class extends Migration
         // Dependent Tables
         Schema::create('clinics', function (Blueprint $table) {
             $table->uuid('clinic_id')->primary();
-            $table->uuid('account_id')->nullable(); 
+            $table->uuid('account_id')->nullable();
             $table->text('name');
             $table->text('name_hash')->index();
             $table->text('description')->nullable();
@@ -93,8 +93,8 @@ return new class extends Migration
 
         Schema::create('associates', function (Blueprint $table) {
             $table->uuid('associate_id')->primary();
-            $table->uuid('account_id')->nullable(); 
-            $table->uuid('clinic_id')->nullable(); 
+            $table->uuid('account_id')->nullable();
+            $table->uuid('clinic_id')->nullable();
             $table->uuid('laboratory_id')->nullable();
             $table->text('first_name');
             $table->text('middle_name')->nullable();
@@ -251,24 +251,32 @@ return new class extends Migration
             $table->foreign('account_id')->references('account_id')->on('accounts')->onDelete('set null');
         });
 
+        Schema::create('tooth_list', function (Blueprint $table) {
+            $table->uuid('tooth_list_id')->primary();
+            $table->text('number')->unique(); // e.g., 11, 12, 13
+            $table->text('name');             // e.g., upper right central incisor
+            $table->text('name_hash')->index(); 
+
+                       $table->timestamps();
+            $table->softDeletes();
+        });
+
         Schema::create('teeth', function (Blueprint $table) {
             $table->uuid('tooth_id')->primary();
-            $table->uuid('account_id')->nullable(); // Account that created the tooth record
-            $table->uuid('patient_id')->nullable();
-            $table->string('tooth_number'); // e.g., 11, 12, 13
-            $table->string('tooth_name');  // e.g., upper right central incisor
-            $table->string('condition')->nullable(); // e.g., healthy, decayed, missing
-            $table->index('patient_id');
-            $table->index('tooth_number');   // search specific tooth
-
+            $table->uuid('account_id')->nullable();
+            $table->uuid('patient_id'); // should usually NOT be nullable
+            $table->uuid('tooth_list_id'); // link to reference tooth slot
+            $table->text('condition')->nullable(); // e.g., healthy, decayed, missing
 
             $table->timestamps();
             $table->softDeletes();
 
             $table->foreign('account_id')->references('account_id')->on('accounts')->onDelete('set null');
-            $table->foreign('patient_id')->references('patient_id')->on('patients')->onDelete('set null');
-        });
+            $table->foreign('patient_id')->references('patient_id')->on('patients')->onDelete('cascade');
+            $table->foreign('tooth_list_id')->references('tooth_list_id')->on('tooth_list')->onDelete('cascade');
 
+            $table->unique(['patient_id', 'tooth_list_id']); // enforce one slot per patient
+        });
 
 
         Schema::create('logs', function (Blueprint $table) {
@@ -658,6 +666,7 @@ return new class extends Migration
         Schema::dropIfExists('patient_visits');
         Schema::dropIfExists('addresses');
         Schema::dropIfExists('logs');
+        Schema::dropIfExists('tooth_list');
         Schema::dropIfExists('teeth');
         Schema::dropIfExists('medicines');
         Schema::dropIfExists('services');

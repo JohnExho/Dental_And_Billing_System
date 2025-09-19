@@ -61,8 +61,8 @@ class AssociateController extends Controller
 
         if (
             $newEmailHash && Associate::where('email_hash', $newEmailHash)
-                ->whereNull('deleted_at')
-                ->exists()
+            ->whereNull('deleted_at')
+            ->exists()
         ) {
             return redirect()->back()->with('error', 'The email has already been taken.');
         }
@@ -113,8 +113,8 @@ class AssociateController extends Controller
                 'create',
                 'associate',
                 'User created an associate',
-                'associate: '.$associate->associate_id
-                    .', address: '.$addressId,
+                'associate: ' . $associate->associate_id
+                    . ', address: ' . $addressId,
                 $request->ip(),
                 $request->userAgent()
             );
@@ -123,7 +123,7 @@ class AssociateController extends Controller
         });
     }
 
-   public function update(Request $request, Associate $associate)
+    public function update(Request $request, Associate $associate)
     {
         // Validation
         $request->validate([
@@ -195,7 +195,7 @@ class AssociateController extends Controller
                     ]
                 );
             }
-     // Step 3: Logging
+            // Step 3: Logging
             $addressId = optional($associate->address)->address_id;
 
             Logs::record(
@@ -206,8 +206,8 @@ class AssociateController extends Controller
                 'update',
                 'associate',
                 'User updated a associate account',
-                'associate: '.$associate->associate_id
-                    .', address: '.$addressId,
+                'associate: ' . $associate->associate_id
+                    . ', address: ' . $addressId,
                 $request->ip(),
                 $request->userAgent()
             );
@@ -222,8 +222,13 @@ class AssociateController extends Controller
             'associate_id' => 'required|exists:associates,associate_id',
             'password' => 'required',
         ]);
-
+        $deletor = Auth::guard('account')->user();
         $associate = Associate::findOrFail($request->associate_id);
+
+        if (!Hash::check($request->password, $deletor->password)) {
+            return back()->with('error', 'The password is incorrect.');
+        }
+
 
         return DB::transaction(function () use ($associate, $request) {
 
@@ -243,8 +248,8 @@ class AssociateController extends Controller
                 'delete',
                 'associate',
                 'User deleted an associate',
-                'Account: '.$associate->associate_id
-                    .', address: '.$addressId,
+                'Account: ' . $associate->associate_id
+                    . ', address: ' . $addressId,
                 $request->ip(),
                 $request->userAgent()
             );

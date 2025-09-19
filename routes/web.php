@@ -10,6 +10,8 @@ use App\Http\Controllers\AccountController;
 use App\Http\Controllers\AddressController;
 use App\Http\Controllers\AssociateController;
 use App\Http\Controllers\LaboratoryController;
+use App\Http\Controllers\ToothListController;
+use App\Models\ToothList;
 
 Route::middleware('web')->group(function () {
     // Login page
@@ -54,6 +56,11 @@ Route::middleware('web')->group(function () {
     Route::put('/process/update/associate', [AssociateController::class, 'update'])->name('process-update-associate');
     Route::delete('/process/delete/associate', [AssociateController::class, 'destroy'])->name('process-delete-associate');
 
+    Route::post('/process/create/tooth', [ToothListController::class, 'create'])->name('process-create-tooth');
+    Route::put('/process/update/tooth', [ToothListController::class, 'update'])->name('process-update-tooth');
+    Route::delete('/process/delete/tooth', [ToothListController::class, 'destroy'])->name('process-delete-tooth');
+
+
     // Protected routes
     Route::middleware('auth:account')->group(function () {
         Route::view('/dashboard', 'dashboard')->name('dashboard');
@@ -65,6 +72,7 @@ Route::middleware('web')->group(function () {
             Route::get('/associates', [AssociateController::class, 'index'])->name('associates');
             Route::get('/staffs', [StaffController::class, 'index'])->name('staffs');
             Route::get('/laboratories', [LaboratoryController::class, 'index'])->name('laboratories');
+            Route::get('/teeth', [ToothListController::class, 'index'])->name('teeth');
         });
     });
 });

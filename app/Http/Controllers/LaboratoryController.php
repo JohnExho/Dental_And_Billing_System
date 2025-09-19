@@ -223,6 +223,12 @@ class LaboratoryController extends Controller
         $account = Auth::guard('account')->user();
         $laboratory = Laboratories::findOrFail($request->laboratory_id);
 
+
+                if (!Hash::check($request->password, $account->password)) {
+            return back()->with('error', 'The password is incorrect.');
+        }
+
+
         return DB::transaction(function () use ($laboratory, $account, $request) {
 
             $addressId = optional($laboratory->address)->address_id;

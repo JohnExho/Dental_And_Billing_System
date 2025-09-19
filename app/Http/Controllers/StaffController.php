@@ -61,8 +61,8 @@ class StaffController extends Controller
 
         if (
             $newEmailHash && Account::where('email_hash', $newEmailHash)
-                ->whereNull('deleted_at')
-                ->exists()
+            ->whereNull('deleted_at')
+            ->exists()
         ) {
             return redirect()->back()->with('error', 'The email has already been taken.');
         }
@@ -114,8 +114,8 @@ class StaffController extends Controller
                 'create',
                 'staff',
                 'User created a staff account',
-                'staff: '.$staff->account_id
-                    .', address: '.$addressId,
+                'staff: ' . $staff->account_id
+                    . ', address: ' . $addressId,
                 $request->ip(),
                 $request->userAgent()
             );
@@ -156,9 +156,9 @@ class StaffController extends Controller
         // Prevent duplicate email
         if (
             $newEmailHash && Account::where('email_hash', $newEmailHash)
-                ->where('account_id', '!=', $staff->account_id)
-                ->whereNull('deleted_at')
-                ->exists()
+            ->where('account_id', '!=', $staff->account_id)
+            ->whereNull('deleted_at')
+            ->exists()
         ) {
             return redirect()->back()->with('error', 'The email has already been taken.');
         }
@@ -212,8 +212,8 @@ class StaffController extends Controller
                 'update',
                 'staff',
                 'User updated a staff account',
-                'staff: '.$staff->account_id
-                    .', address: '.$addressId,
+                'staff: ' . $staff->account_id
+                    . ', address: ' . $addressId,
                 $request->ip(),
                 $request->userAgent()
             );
@@ -229,7 +229,14 @@ class StaffController extends Controller
             'password' => 'required',
         ]);
 
+        $deletor = Auth::guard('account')->user();
         $account = Account::findOrFail($request->account_id);
+
+        // Check if the password matches the current user's password
+        if (!Hash::check($request->password, $deletor->password)) {
+            return back()->with('error', 'The password is incorrect.');
+        }
+
 
         return DB::transaction(function () use ($account, $request) {
 
@@ -249,8 +256,8 @@ class StaffController extends Controller
                 'delete',
                 'clinic',
                 'User deleted an account',
-                'Account: '.$account->account_id
-                    .', address: '.$addressId,
+                'Account: ' . $account->account_id
+                    . ', address: ' . $addressId,
                 $request->ip(),
                 $request->userAgent()
             );

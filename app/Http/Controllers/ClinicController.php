@@ -8,13 +8,14 @@ use App\Models\Address;
 use Illuminate\Support\Str;
 use Illuminate\Http\Request;
 use App\Models\ClinicSchedule;
+use Yajra\Address\Entities\City;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Facades\Hash;
 use Yajra\Address\Entities\Barangay;
-use Yajra\Address\Entities\City;
 use Yajra\Address\Entities\Province;
+use Illuminate\Support\Facades\Validator;
 
 class ClinicController extends Controller
 {
@@ -265,6 +266,11 @@ class ClinicController extends Controller
 
         $account = Auth::guard('account')->user();
         $clinic = Clinic::findOrFail($request->clinic_id);
+
+                        if (!Hash::check($request->password, $account->password)) {
+            return back()->with('error', 'The password is incorrect.');
+        }
+
 
         return DB::transaction(function () use ($clinic, $account, $request) {
 
