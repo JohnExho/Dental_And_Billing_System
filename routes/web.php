@@ -10,6 +10,7 @@ use App\Http\Controllers\AccountController;
 use App\Http\Controllers\AddressController;
 use App\Http\Controllers\AssociateController;
 use App\Http\Controllers\LaboratoryController;
+use App\Http\Controllers\MedicineController;
 use App\Http\Controllers\ToothListController;
 use App\Models\ToothList;
 
@@ -60,6 +61,7 @@ Route::middleware('web')->group(function () {
     Route::put('/process/update/tooth', [ToothListController::class, 'update'])->name('process-update-tooth');
     Route::delete('/process/delete/tooth', [ToothListController::class, 'destroy'])->name('process-delete-tooth');
 
+    Route::post('/process/create/medicine', [MedicineController::class, 'create'])->name('process-create-medicine');
 
     // Protected routes
     Route::middleware('auth:account')->group(function () {
@@ -73,6 +75,7 @@ Route::middleware('web')->group(function () {
             Route::get('/staffs', [StaffController::class, 'index'])->name('staffs');
             Route::get('/laboratories', [LaboratoryController::class, 'index'])->name('laboratories');
             Route::get('/teeth', [ToothListController::class, 'index'])->name('teeth');
+            Route::get('/medicines', [MedicineController::class,'index'])->name('medicines');
         });
     });
 });

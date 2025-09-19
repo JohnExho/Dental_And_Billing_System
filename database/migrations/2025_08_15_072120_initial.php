@@ -237,12 +237,12 @@ return new class extends Migration
         Schema::create('medicines', function (Blueprint $table) {
             $table->uuid('medicine_id')->primary();
             $table->uuid('account_id')->nullable(); // Account that created the medicine
-            $table->string('name');
+            $table->text('name');
             $table->text('description')->nullable();
+            //not encrypted
             $table->decimal('price', 10, 2);
             $table->integer('stock')->default(0); // Available stock
-            $table->index('account_id');
-            $table->index('name');           // search by medicine
+            $table->text('name_hash')->index();           // search by medicine
 
 
             $table->timestamps();

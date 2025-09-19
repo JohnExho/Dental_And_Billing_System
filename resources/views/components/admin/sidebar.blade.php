@@ -129,9 +129,10 @@
                 </a>
             </li>
             <li class="nav-item mb-1">
-                <a class="text-decoration-none fw-bold fs-4  text-secondary
-                    {{-- request()->routeIs('staffs') ? 'active text-primary' : 'text-dark' --}}"
-                    href="{{-- route('staffs') --}}" style="{{-- request()->routeIs('staffs') ? 'background: gray;' : '' --}}">
+                <a class="text-decoration-none fw-bold fs-4 
+                    {{ request()->routeIs('medicines') ? 'active text-primary' : 'text-dark' }}"
+                    href="{{ route('medicines') }}"
+                    style="{{ request()->routeIs('medicines') ? 'background: gray;' : '' }}">
                     <span class="nav-text">Medicine</span>
                     <i class="fa-solid fa-tablets"></i>
                 </a>

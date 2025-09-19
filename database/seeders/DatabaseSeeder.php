@@ -2,6 +2,7 @@
 
 namespace Database\Seeders;
 
+use App\Models\ToothList;
 use App\Models\User;
 // use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
@@ -18,5 +19,6 @@ class DatabaseSeeder extends Seeder
         $this->call(AccountSeeder::class);
         $this->call(ClinicFullSeeder::class);
         $this->call(LaboratorySeeder::class);
+        $this->call(ToothListSeeder::class);
     }
 }
