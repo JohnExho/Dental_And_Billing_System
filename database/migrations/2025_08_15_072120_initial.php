@@ -203,25 +203,35 @@ return new class extends Migration
 
         Schema::create('services', function (Blueprint $table) {
             $table->uuid('service_id')->primary();
-            $table->uuid('account_id')->nullable(); // Account that created the service
-            // clinic and laboratory added for where the treatment is performed and available
-            $table->uuid('clinic_id')->nullable();
-            $table->uuid('laboratory_id')->nullable();
-            $table->string('service_type'); // e.g., cleaning, extraction, filling
-            $table->string('name');
+            $table->uuid('account_id')->nullable(); // who created
+            $table->text('service_type');
+            $table->text('name');
+            $table->text('name_hash')->index();
             $table->text('description')->nullable();
-            $table->decimal('price', 10, 2);
-            $table->index('account_id');
-            $table->index('clinic_id');
-            $table->index('laboratory_id');
-            $table->index('name');           // search by service
-
             $table->timestamps();
             $table->softDeletes();
 
             $table->foreign('account_id')->references('account_id')->on('accounts')->onDelete('set null');
-            $table->foreign('clinic_id')->references('clinic_id')->on('clinics')->onDelete('set null');
-            $table->foreign('laboratory_id')->references('laboratory_id')->on('laboratories')->onDelete('set null');
+        });
+
+        Schema::create('clinic_service', function (Blueprint $table) {
+            $table->uuid('clinic_service_id')->primary();
+            $table->uuid('clinic_id');
+            $table->uuid('service_id');
+            $table->decimal('price', 10, 2)->nullable();
+
+            $table->foreign('clinic_id')->references('clinic_id')->on('clinics')->onDelete('cascade');
+            $table->foreign('service_id')->references('service_id')->on('services')->onDelete('cascade');
+        });
+
+        Schema::create('laboratory_service', function (Blueprint $table) {
+            $table->uuid('laboratory_service_id')->primary();
+            $table->uuid('laboratory_id');
+            $table->uuid('service_id');
+            $table->decimal('price', 10, 2)->nullable();
+
+            $table->foreign('laboratory_id')->references('laboratory_id')->on('laboratories')->onDelete('cascade');
+            $table->foreign('service_id')->references('service_id')->on('services')->onDelete('cascade');
         });
 
         Schema::create('medicines', function (Blueprint $table) {

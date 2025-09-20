@@ -2,19 +2,24 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Model;
 use App\Traits\HasUuid;
-use Illuminate\Notifications\Notifiable;
-use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Notifications\Notifiable;
 
 class Laboratories extends Model
 {
-    use HasFactory, SoftDeletes, Notifiable, HasUuid;
+    use HasFactory, HasUuid, Notifiable, SoftDeletes;
+
     protected $table = 'laboratories';
+
     protected $primaryKey = 'laboratory_id';
+
     protected $keyType = 'string';
+
     public $incrementing = false;
+
     protected $uuidColumn = 'laboratory_id';
 
     protected $fillable = [
@@ -43,8 +48,7 @@ class Laboratories extends Model
         'deleted_at' => 'datetime',
     ];
 
-
-    //Connections
+    // Connections
     public function logs()
     {
         return $this->hasMany(Logs::class, 'laboratory_id', 'laboratory_id');
@@ -58,5 +62,13 @@ class Laboratories extends Model
     public function address()
     {
         return $this->hasOne(Address::class, 'laboratory_id', 'laboratory_id');
+    }
+
+    public function services()
+    {
+        return $this->belongsToMany(Service::class, 'laboratory_service', 'laboratory_id', 'service_id')
+            ->using(LaboratoryService::class)
+            ->withPivot('laboratory_service_id', 'price')
+            ->withTimestamps();
     }
 }

@@ -3,18 +3,23 @@
 namespace App\Models;
 
 use App\Traits\HasUuid;
-use Illuminate\Database\Eloquent\Model;
-use Illuminate\Notifications\Notifiable;
-use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Notifications\Notifiable;
 
 class Clinic extends Model
 {
-    use HasFactory, SoftDeletes, Notifiable, HasUuid;
+    use HasFactory, HasUuid, Notifiable, SoftDeletes;
+
     protected $table = 'clinics';
+
     protected $primaryKey = 'clinic_id';
+
     protected $keyType = 'string';
+
     public $incrementing = false;
+
     protected $uuidColumn = 'clinic_id';
 
     protected $fillable = [
@@ -43,8 +48,7 @@ class Clinic extends Model
         'deleted_at' => 'datetime',
     ];
 
-
-    //Connections
+    // Connections
     public function logs()
     {
         return $this->hasMany(Logs::class, 'clinic_id', 'clinic_id');
@@ -63,5 +67,21 @@ class Clinic extends Model
     public function clinicSchedules()
     {
         return $this->hasMany(ClinicSchedule::class, 'clinic_id', 'clinic_id');
+    }
+
+    public function services()
+    {
+        return $this->belongsToMany(Service::class, 'clinic_service', 'clinic_id', 'service_id')
+            ->using(ClinicService::class)
+            ->withPivot('clinic_service_id', 'price')
+            ->withTimestamps();
+    }
+
+    public function medicines()
+    {
+        return $this->belongsToMany(Medicine::class, 'medicine_clinic', 'clinic_id', 'medicine_id')
+            ->using(MedicineClinic::class) 
+            ->withPivot('medicine_clinic_id', 'price', 'stock')
+            ->withTimestamps();
     }
 }

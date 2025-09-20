@@ -8,34 +8,30 @@ use Illuminate\Database\Eloquent\Relations\Pivot;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Notifications\Notifiable;
 
-class Medicine_Clinic extends Pivot
+class ClinicService extends Pivot
 {
     use HasFactory, HasUuid, Notifiable, SoftDeletes;
 
-    protected $table = 'medicine_clinics';
+    protected $table = 'clinic_service';
 
-    protected $primaryKey = 'medicine_clinic_id';
-
-    public $incrementing = false; // because you’re using UUIDs
+    protected $primaryKey = 'clinic_service_id';
 
     protected $keyType = 'string';
 
-    protected $uuidColumn = 'medicine_id';
+    public $incrementing = false;
+
+    protected $uuidColumn = 'clinic_service_id';
 
     protected $fillable = [
-        'medicine_id',
+        'clinic_service_id',
         'clinic_id',
-        'stock',
+        'service_id',
         'price',
     ];
 
-    // Optional: if you want timestamps to work with Pivot
-    public $timestamps = true;
-
-    // Relationships back to Medicine or Clinic (if needed)
-    public function medicine()
+    public function service()
     {
-        return $this->belongsTo(Medicine::class, 'medicine_id', 'medicine_id');
+        return $this->belongsTo(Service::class, 'service_id', 'service_id');
     }
 
     public function clinic()
