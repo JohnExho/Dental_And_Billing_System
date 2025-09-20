@@ -24,12 +24,16 @@
                             <input type="text" id="tooth-name" name="name" class="form-control"
                                 value="{{ old('tooth_name', $tooth->tooth_name ?? '') }}" required>
                         </div>
-                        <div class="col-md-6">
+                        <div class="col-md-3">
                             <label for="tooth-number" class="form-label">Tooth Number</label>
                             <input type="number" id="tooth-number" name="number" class="form-control"
                                 value="{{ old('tooth_number', $tooth->tooth_number ?? '') }}" min="1"
                                 max="32" step="1" inputmode="numeric">
-
+                        </div>
+                        <div class="col-md-3">
+                            <label for="tooth-price" class="form-label">Tooth Price</label>
+                            <input type="number" id="tooth-price" name="price" class="form-control"
+                                value="{{ old('tooth_price', $tooth->tooth_price ?? '') }}" inputmode="numeric">
                         </div>
                     </div>
                 </div>
@@ -55,6 +59,7 @@
 
         modal.addEventListener('shown.bs.modal', function() {
             const toothNumberInput = modal.querySelector('#tooth-number');
+            const toothPriceInput = modal.querySelector('#tooth-price');
 
             if (toothNumberInput) {
                 toothNumberInput.addEventListener('input', function() {
@@ -65,6 +70,19 @@
                     const val = parseInt(this.value, 10);
                     if (val < 1) this.value = 1;
                     if (val > 32) this.value = 32;
+                });
+            }
+
+            if (toothPriceInput) {
+                toothPriceInput.addEventListener('input', function() {
+                    // Allow only numbers and a single decimal point
+                    this.value = this.value.replace(/[^0-9.]/g, '');
+
+                    // Ensure only one decimal point
+                    const parts = this.value.split('.');
+                    if (parts.length > 2) {
+                        this.value = parts[0] + '.' + parts.slice(1).join('');
+                    }
                 });
             }
         });

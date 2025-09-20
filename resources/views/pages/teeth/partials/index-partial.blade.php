@@ -8,6 +8,7 @@
                     <tr>
                         <th>Number</th>
                         <th>Name</th>
+                        <th>Price</th>
                         <th class="text-end">Actions</th>
                     </tr>
                 </thead>
@@ -16,21 +17,21 @@
                         <tr>
                             <td>{{ $tooth->number }}</td>
                             <td>{{ $tooth->name }}</td>
-
+                            <td>{{ $tooth->price }}</td>
                             <td class="text-end">
                                 <a role="button" class="btn btn-sm btn-outline-primary" data-bs-toggle="modal"
                                     data-bs-target="#tooth-detail-modal" data-name="{{ $tooth->name }}"
-                                    data-number="{{ $tooth->number }}">
+                                    data-number="{{ $tooth->number }}" data-price="{{ $tooth->price }}">
                                     <i class="bi bi-eye"></i>
                                 </a>
 
 
-                                 
+
                                 <!-- Edit Button -->
                                 <button type="button" class="btn btn-sm btn-outline-secondary" data-bs-toggle="modal"
                                     data-bs-target="#edit-tooth-modal" onclick="event.stopPropagation();"
                                     data-id="{{ $tooth->tooth_list_id }}"data-name="{{ $tooth->name }}"
-                                    data-number="{{ $tooth->number }}">
+                                    data-number="{{ $tooth->number }}" data-price="{{ $tooth->price }}">
                                     <i class="bi bi-pencil-square"></i>
                                 </button>
 

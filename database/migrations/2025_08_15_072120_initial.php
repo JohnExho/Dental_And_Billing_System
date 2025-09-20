@@ -12,9 +12,7 @@ return new class extends Migration
      */
     public function up(): void
     {
-        //TODO: add this table and reference it on other table for visit
-
-
+        // TODO: add this table and reference it on other table for visit
 
         // Independent Tables
         Schema::create('accounts', function (Blueprint $table) {
@@ -115,7 +113,6 @@ return new class extends Migration
             $table->foreign('laboratory_id')->references('laboratory_id')->on('laboratories')->onDelete('set null');
         });
 
-
         Schema::create('patient_qr_codes', function (Blueprint $table) {
             $table->uuid('qr_id')->primary();
             $table->string('qr_code'); // could store string or path to QR image
@@ -142,15 +139,12 @@ return new class extends Migration
             $table->index('contact_no');    // search by phone
             $table->index('email');         // search by email
 
-
             $table->timestamps();
             $table->softDeletes();
 
             $table->foreign('account_id')->references('account_id')->on('accounts')->onDelete('set null');
             $table->foreign('qr_id')->references('qr_id')->on('patient_qr_codes')->onDelete('set null');
         });
-
-
 
         Schema::create('appointments', function (Blueprint $table) {
             $table->uuid('appointment_id')->primary();
@@ -167,7 +161,6 @@ return new class extends Migration
             $table->index('laboratory_id');  // join
             $table->index('appointment_date'); // upcoming appointments
             $table->index('status');         // scheduled/completed/cancelled
-
 
             $table->timestamps();
             $table->softDeletes();
@@ -196,8 +189,6 @@ return new class extends Migration
             $table->index('requested_at');   // queue by request date
             $table->index('status');         // waiting/finished/removed
 
-
-
             $table->timestamps();
             $table->softDeletes();
 
@@ -213,7 +204,7 @@ return new class extends Migration
         Schema::create('services', function (Blueprint $table) {
             $table->uuid('service_id')->primary();
             $table->uuid('account_id')->nullable(); // Account that created the service
-            //clinic and laboratory added for where the treatment is performed and available
+            // clinic and laboratory added for where the treatment is performed and available
             $table->uuid('clinic_id')->nullable();
             $table->uuid('laboratory_id')->nullable();
             $table->string('service_type'); // e.g., cleaning, extraction, filling
@@ -224,7 +215,6 @@ return new class extends Migration
             $table->index('clinic_id');
             $table->index('laboratory_id');
             $table->index('name');           // search by service
-
 
             $table->timestamps();
             $table->softDeletes();
@@ -239,11 +229,10 @@ return new class extends Migration
             $table->uuid('account_id')->nullable(); // Account that created the medicine
             $table->text('name');
             $table->text('description')->nullable();
-            //not encrypted
-            $table->decimal('price', 10, 2);
+            // not encrypted
+            $table->decimal('price', 10, 2)->index();
             $table->integer('stock')->default(0); // Available stock
             $table->text('name_hash')->index();           // search by medicine
-
 
             $table->timestamps();
             $table->softDeletes();
@@ -255,9 +244,9 @@ return new class extends Migration
             $table->uuid('tooth_list_id')->primary();
             $table->text('number')->unique(); // e.g., 11, 12, 13
             $table->text('name');             // e.g., upper right central incisor
-            $table->text('name_hash')->index(); 
-
-                       $table->timestamps();
+            $table->text('name_hash')->index();
+            $table->decimal('price', 10, 2)->index();
+            $table->timestamps();
             $table->softDeletes();
         });
 
@@ -278,7 +267,6 @@ return new class extends Migration
             $table->unique(['patient_id', 'tooth_list_id']); // enforce one slot per patient
         });
 
-
         Schema::create('logs', function (Blueprint $table) {
             $table->uuid('log_id')->primary();
             $table->string('account_id')->nullable();
@@ -290,10 +278,9 @@ return new class extends Migration
             $table->string('log_type'); // e.g., 'appointment', 'bill', 'note'
             $table->string('action'); // e.g., 'created', 'updated', 'deleted'
             $table->text('description')->nullable();
-            $table->text('private_description')->nullable(); //shown only for audit trail
+            $table->text('private_description')->nullable(); // shown only for audit trail
             $table->ipAddress('ip_address')->nullable();
             $table->string('user_agent', 512)->nullable();
-
 
             $table->index('account_id');
             $table->index('patient_id');
@@ -303,7 +290,6 @@ return new class extends Migration
             $table->index('log_type');
             $table->index('action');
             $table->index('created_at');
-
 
             $table->timestamps();
             $table->softDeletes();
@@ -319,12 +305,12 @@ return new class extends Migration
             $table->uuid('address_id')->primary();
             $table->uuid('account_id')->nullable(); // Nullable if address is not linked to an account
             $table->uuid('qr_id')->nullable(); // Nullable if address is not linked to a QR code
-            $table->boolean('is_staff')->default(false); //based on account id true if address is for staff, false if for just admin
+            $table->boolean('is_staff')->default(false); // based on account id true if address is for staff, false if for just admin
             $table->uuid('associate_id')->nullable();
             $table->uuid('patient_id')->nullable();
             $table->uuid('clinic_id')->nullable();
             $table->uuid('laboratory_id')->nullable();
-            //Encrypt
+            // Encrypt
             $table->text('house_no')->nullable();
             $table->text('street')->nullable();
             $table->text('barangay_name')->nullable();
@@ -341,7 +327,6 @@ return new class extends Migration
             $table->index('clinic_id');
             $table->index('laboratory_id');
 
-
             $table->timestamps();
             $table->softDeletes();
 
@@ -355,7 +340,6 @@ return new class extends Migration
             $table->foreign('city_id')->references('id')->on('cities')->onDelete('set null');
             $table->foreign('province_id')->references('id')->on('provinces')->onDelete('set null');
         });
-
 
         // Table: patient_visits
         Schema::create('patient_visits', function (Blueprint $table) {
@@ -402,8 +386,6 @@ return new class extends Migration
             $table->index('status');         // unpaid/paid/partially_paid
             $table->index('created_at');     // reporting by date
 
-
-
             $table->timestamps();
             $table->softDeletes();
 
@@ -430,7 +412,6 @@ return new class extends Migration
             $table->foreign('associate_id')->references('associate_id')->on('associates')->onDelete('set null');
             $table->foreign('visit_id')->references('visit_id')->on('patient_visits')->onDelete('set null');
         });
-
 
         Schema::create('bill_items', function (Blueprint $table) {
             $table->uuid('bill_item_id')->primary();
@@ -461,14 +442,12 @@ return new class extends Migration
             $table->index('account_id');     // who processed
             $table->index('paid_at');        // reporting/filtering
 
-
             $table->timestamps();
             $table->softDeletes();
 
             $table->foreign('account_id')->references('account_id')->on('accounts')->onDelete('set null');
             $table->foreign('bill_id')->references('bill_id')->on('bills')->onDelete('set null');
         });
-
 
         Schema::create('prescriptions', function (Blueprint $table) {
             $table->uuid('prescription_id')->primary();
@@ -491,7 +470,6 @@ return new class extends Migration
             $table->index('laboratory_id');
             $table->index('prescribed_at');  // filter by date
 
-
             $table->timestamps();
             $table->softDeletes();
 
@@ -505,7 +483,6 @@ return new class extends Migration
             $table->foreign('laboratory_id')->references('laboratory_id')->on('laboratories')->onDelete('set null');
             $table->foreign('visit_id')->references('visit_id')->on('patient_visits')->onDelete('set null');
         });
-
 
         Schema::create('diagnostic_requests', function (Blueprint $table) {
             $table->uuid('request_id')->primary();
@@ -527,8 +504,6 @@ return new class extends Migration
             $table->index('requested_at');
             $table->index('status');         // pending/in-progress/etc
 
-
-
             $table->timestamps();
             $table->softDeletes();
 
@@ -538,7 +513,6 @@ return new class extends Migration
             $table->foreign('associate_id')->references('associate_id')->on('associates')->onDelete('set null');
             $table->foreign('visit_id')->references('visit_id')->on('patient_visits')->onDelete('set null');
         });
-
 
         Schema::create('certificates', function (Blueprint $table) {
             $table->uuid('certificate_id')->primary();
@@ -556,7 +530,6 @@ return new class extends Migration
             $table->index('associate_id');
             $table->index('clinic_id');
             $table->index('issued_at');      // filtering by date
-
 
             $table->timestamps();
             $table->softDeletes();
@@ -578,8 +551,6 @@ return new class extends Migration
             $table->index('patient_id')->nullable();
             $table->index('associate_id')->nullable();
             $table->index('created_at');
-
-
 
             $table->timestamps();
             $table->softDeletes();
@@ -603,7 +574,6 @@ return new class extends Migration
             $table->index('associate_id')->nullable();
             $table->index('recall_date');    // upcoming recalls
             $table->index('status');
-
 
             $table->timestamps();
             $table->softDeletes();

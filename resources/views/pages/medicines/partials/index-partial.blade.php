@@ -6,8 +6,10 @@
             <table class="table table-hover align-middle mb-0">
                 <thead class="table-light">
                     <tr>
-                        <th>Number</th>
                         <th>Name</th>
+                        <th>Description</th>
+                        <th>Price</th>
+                        <th>Stock</th>
                         <th class="text-end">Actions</th>
                     </tr>
                 </thead>
@@ -16,7 +18,8 @@
                         <tr>
                             <td>{{ $medicine->name }}</td>
                             <td>{{ $medicine->description }}</td>
-
+                            <td>{{ $medicine->price }}</td>
+                            <td>{{$medicine->stock}}</td>
                             <td class="text-end">
                                 <a role="button" class="btn btn-sm btn-outline-primary" data-bs-toggle="modal"
                                     data-bs-target="#medicine-detail-modal" data-name="{{ $medicine->name }}"

@@ -21,6 +21,7 @@ class ToothList extends Model
         'name',
         'name_hash',
         'number',
+        'price',
     ];
 
     protected $casts = [
