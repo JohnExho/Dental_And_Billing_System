@@ -1,15 +1,16 @@
 <?php
 
-use App\Http\Controllers\AccountController;
-use App\Http\Controllers\AddressController;
-use App\Http\Controllers\AssociateController;
-use App\Http\Controllers\ClinicController;
-use App\Http\Controllers\LaboratoryController;
-use App\Http\Controllers\MedicineController;
+use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\OTPController;
 use App\Http\Controllers\StaffController;
+use App\Http\Controllers\ClinicController;
+use App\Http\Controllers\AccountController;
+use App\Http\Controllers\AddressController;
+use App\Http\Controllers\ServiceController;
+use App\Http\Controllers\MedicineController;
+use App\Http\Controllers\AssociateController;
 use App\Http\Controllers\ToothListController;
-use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\LaboratoryController;
 
 Route::middleware('web')->group(function () {
     // Login page
@@ -61,6 +62,8 @@ Route::middleware('web')->group(function () {
     Route::post('/process/create/medicine', [MedicineController::class, 'create'])->name('process-create-medicine');
     Route::put('/process/update/medicine', [MedicineController::class, 'update'])->name('process-update-medicine');
     Route::delete('/process/delete/medicine', [MedicineController::class, 'destroy'])->name('process-delete-medicine');
+
+    Route::post('/process/create/service', [ServiceController::class, 'create'])->name('process-create-service');
 
     // Protected routes
     Route::middleware('auth:account')->group(function () {
