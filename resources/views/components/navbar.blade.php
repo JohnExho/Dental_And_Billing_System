@@ -46,6 +46,8 @@
         'clinics' => 'Clinics',
         'associates' => 'Associates',
         'laboratories' => 'Laboratories',
+        'teeth' => 'Teeth',
+        'medicines' => 'Medicines',
     ];
 @endphp
 

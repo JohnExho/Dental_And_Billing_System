@@ -23,56 +23,65 @@
                         <!-- Name -->
                         <div class="col-md-6">
                             <label for="medicine-name" class="form-label fw-semibold">Medicine Name</label>
-                            <input type="text" id="medicine-name" name="name" 
-                                   class="form-control form-control-lg rounded-3 shadow-sm"
-                                   placeholder="e.g., Amoxicillin"
-                                   value="{{ old('name') }}" required>
-                        </div>
-
-                        <!-- Clinic -->
-                        <div class="col-md-6">
-                            <label for="clinic" class="form-label fw-semibold">Clinic</label>
-                            <select name="clinic_id" id="clinic" class="form-select form-select-lg rounded-3 shadow-sm" required>
-                                <option value="">-- Select Clinic --</option>
-                                @foreach ($clinics as $clinic)
-                                    <option value="{{ $clinic->clinic_id }}"
-                                        {{ old('clinic_id', $associate->clinic_id ?? '') == $clinic->clinic_id ? 'selected' : '' }}>
-                                        {{ $clinic->name }}
-                                    </option>
-                                @endforeach
-                            </select>
+                            <input type="text" id="medicine-name" name="name"
+                                class="form-control form-control-lg rounded-3 shadow-sm"
+                                placeholder="e.g., Amoxicillin"
+                                value="{{ old('name') }}" required>
                         </div>
 
                         <!-- Description -->
-                        <div class="col-12">
+                        <div class="col-md-6">
                             <label for="medicine-description" class="form-label fw-semibold">Description</label>
-                            <textarea id="medicine-description" name="description"
-                                      class="form-control rounded-3 shadow-sm"
-                                      rows="3"
-                                      placeholder="Short description...">{{ old('description') }}</textarea>
-                        </div>
-
-                        <!-- Price -->
-                        <div class="col-md-6">
-                            <label for="medicine-price" class="form-label fw-semibold">Price</label>
-                            <div class="input-group shadow-sm">
-                                <span class="input-group-text bg-light fw-bold">₱</span>
-                                <input type="number" step="0.01" id="medicine-price" name="price"
-                                       class="form-control"
-                                       placeholder="0.00"
-                                       value="{{ old('price') }}" required>
-                            </div>
-                        </div>
-
-                        <!-- Stock -->
-                        <div class="col-md-6">
-                            <label for="medicine-stock" class="form-label fw-semibold">Stock</label>
-                            <input type="number" id="medicine-stock" name="stock"
-                                   class="form-control form-control-lg rounded-3 shadow-sm"
-                                   placeholder="0"
-                                   value="{{ old('stock', 0) }}" min="0" required>
+                            <input type="text" id="medicine-description" name="description"
+                                class="form-control form-control-lg rounded-3 shadow-sm"
+                                placeholder="Short description..."
+                                value="{{ old('description') }}">
                         </div>
                     </div>
+
+                    <hr class="my-4">
+
+                    <!-- Clinic Availability -->
+                    <h6 class="text-secondary fw-semibold mb-3 border-start ps-2">
+                        <i class="bi bi-hospital me-2"></i> Clinic Availability
+                    </h6>
+
+                    <div class="table-responsive">
+                        <table class="table table-bordered align-middle text-center">
+                            <thead class="table-light">
+                                <tr>
+                                    <th style="width: 25%">Clinic</th>
+                                    <th style="width: 25%">Select</th>
+                                    <th style="width: 25%">Price (₱)</th>
+                                    <th style="width: 25%">Stock</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach ($clinics as $clinic)
+                                    <tr>
+                                        <td class="fw-semibold text-start">{{ $clinic->name }}</td>
+                                        <td>
+                                            <input type="checkbox" class="form-check-input"
+                                                name="clinics[{{ $clinic->clinic_id }}][selected]" value="1">
+                                        </td>
+                                        <td>
+                                            <input type="number" step="0.01" min="0"
+                                                name="clinics[{{ $clinic->clinic_id }}][price]"
+                                                class="form-control form-control-sm rounded-3 shadow-sm"
+                                                placeholder="0.00">
+                                        </td>
+                                        <td>
+                                            <input type="number" min="0"
+                                                name="clinics[{{ $clinic->clinic_id }}][stock]"
+                                                class="form-control form-control-sm rounded-3 shadow-sm"
+                                                placeholder="0">
+                                        </td>
+                                    </tr>
+                                @endforeach
+                            </tbody>
+                        </table>
+                    </div>
+
                 </div>
 
                 <!-- Footer -->
@@ -88,6 +97,8 @@
         </div>
     </div>
 </div>
+
+
 
 <script>
     document.addEventListener('DOMContentLoaded', function() {

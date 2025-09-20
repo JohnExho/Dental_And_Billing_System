@@ -22,7 +22,8 @@ class ClinicProvider extends ServiceProvider
      */
     public function boot(): void
     {
-        View::composer(['pages.associates.modals.add','pages.staffs.modals.add','pages.medicines.modals.add'], function ($view) {
+        View::composer(['pages.associates.modals.add','pages.staffs.modals.add','pages.medicines.modals.add',
+        'pages.medicines.modals.edit'], function ($view) {
             $view->with('clinics', Clinic::all());
         });
 

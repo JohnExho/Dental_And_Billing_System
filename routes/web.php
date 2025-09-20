@@ -1,18 +1,15 @@
 <?php
 
-use App\Models\Associate;
-use App\Models\Laboratories;
-use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\OTPController;
-use App\Http\Controllers\StaffController;
-use App\Http\Controllers\ClinicController;
 use App\Http\Controllers\AccountController;
 use App\Http\Controllers\AddressController;
 use App\Http\Controllers\AssociateController;
+use App\Http\Controllers\ClinicController;
 use App\Http\Controllers\LaboratoryController;
 use App\Http\Controllers\MedicineController;
+use App\Http\Controllers\OTPController;
+use App\Http\Controllers\StaffController;
 use App\Http\Controllers\ToothListController;
-use App\Models\ToothList;
+use Illuminate\Support\Facades\Route;
 
 Route::middleware('web')->group(function () {
     // Login page
@@ -62,6 +59,8 @@ Route::middleware('web')->group(function () {
     Route::delete('/process/delete/tooth', [ToothListController::class, 'destroy'])->name('process-delete-tooth');
 
     Route::post('/process/create/medicine', [MedicineController::class, 'create'])->name('process-create-medicine');
+    Route::put('/process/update/medicine', [MedicineController::class, 'update'])->name('process-update-medicine');
+    Route::delete('/process/delete/medicine', [MedicineController::class, 'destroy'])->name('process-delete-medicine');
 
     // Protected routes
     Route::middleware('auth:account')->group(function () {
@@ -75,7 +74,7 @@ Route::middleware('web')->group(function () {
             Route::get('/staffs', [StaffController::class, 'index'])->name('staffs');
             Route::get('/laboratories', [LaboratoryController::class, 'index'])->name('laboratories');
             Route::get('/teeth', [ToothListController::class, 'index'])->name('teeth');
-            Route::get('/medicines', [MedicineController::class,'index'])->name('medicines');
+            Route::get('/medicines', [MedicineController::class, 'index'])->name('medicines');
         });
     });
 });

@@ -229,15 +229,27 @@ return new class extends Migration
             $table->uuid('account_id')->nullable(); // Account that created the medicine
             $table->text('name');
             $table->text('description')->nullable();
-            // not encrypted
-            $table->decimal('price', 10, 2)->index();
-            $table->integer('stock')->default(0); // Available stock
             $table->text('name_hash')->index();           // search by medicine
 
             $table->timestamps();
             $table->softDeletes();
 
             $table->foreign('account_id')->references('account_id')->on('accounts')->onDelete('set null');
+        });
+
+        Schema::create('medicine_clinics', function (Blueprint $table) {
+            $table->uuid('medicine_clinic_id')->primary();
+            $table->uuid('medicine_id');
+            $table->uuid('clinic_id');
+            $table->integer('stock')->default(0);
+            $table->decimal('price', 10, 2)->nullable();
+            $table->timestamps();
+            $table->softDeletes();
+
+            $table->foreign('medicine_id')->references('medicine_id')->on('medicines')->onDelete('cascade');
+            $table->foreign('clinic_id')->references('clinic_id')->on('clinics')->onDelete('cascade');
+
+            $table->unique(['medicine_id', 'clinic_id']); // prevent duplicate entries
         });
 
         Schema::create('tooth_list', function (Blueprint $table) {
@@ -639,6 +651,7 @@ return new class extends Migration
         Schema::dropIfExists('tooth_list');
         Schema::dropIfExists('teeth');
         Schema::dropIfExists('medicines');
+        Schema::dropIfExists('medicine_clinics');
         Schema::dropIfExists('services');
         Schema::dropIfExists('waitlist');
         Schema::dropIfExists('appointments');

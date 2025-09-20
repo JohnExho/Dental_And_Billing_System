@@ -21,8 +21,6 @@ class Medicine extends Model
         'name',
         'name_hash',
         'description',
-        'price',
-        'stock',
     ];
 
     protected $casts = [
@@ -32,4 +30,11 @@ class Medicine extends Model
         'updated_at' => 'datetime',
         'deleted_at' => 'datetime',
     ];
+
+    public function clinics()
+    {
+        return $this->belongsToMany(Clinic::class, 'medicine_clinics', 'medicine_id', 'clinic_id')
+                    ->withPivot('price', 'stock')
+                    ->withTimestamps();
+    }
 }

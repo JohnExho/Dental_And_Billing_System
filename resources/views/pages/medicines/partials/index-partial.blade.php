@@ -10,6 +10,7 @@
                         <th>Description</th>
                         <th>Price</th>
                         <th>Stock</th>
+                        <th>Available in:</th>
                         <th class="text-end">Actions</th>
                     </tr>
                 </thead>
@@ -18,26 +19,69 @@
                         <tr>
                             <td>{{ $medicine->name }}</td>
                             <td>{{ $medicine->description }}</td>
-                            <td>{{ $medicine->price }}</td>
-                            <td>{{$medicine->stock}}</td>
+                            <td>
+                                @if ($medicine->clinics->isNotEmpty())
+                                    {{ $medicine->clinics->map(fn($c) => '₱' . number_format($c->pivot->price, 2))->join(' | ') }}
+                                @else
+                                    —
+                                @endif
+                            </td>
+
+                            <td>
+                                @php
+                                    // Sum or show first stock? Up to you. Here we sum all clinic stocks
+                                    $totalStock = $medicine->clinics->sum(fn($c) => $c->pivot->stock);
+                                    $badgeClass = 'bg-success';
+
+                                    if ($totalStock < 50) {
+                                        $badgeClass = 'bg-danger';
+                                    } elseif ($totalStock < 500) {
+                                        $badgeClass = 'bg-warning text-dark';
+                                    }
+                                @endphp
+
+                                <span class="badge {{ $badgeClass }} px-3 py-2 rounded-pill">
+                                    {{ $totalStock }}
+                                </span>
+                            </td>
+
+                            <td>
+                                {{-- List all clinic names, comma separated --}}
+                                {{ $medicine->clinics->pluck('name')->join(' | ') }}
+                            </td>
+
                             <td class="text-end">
+                                @php
+                                    $clinicsJson = $medicine->clinics
+                                        ->map(function ($c) {
+                                            return [
+                                                'id' => $c->clinic_id, // 🔑 add clinic id here
+                                                'name' => $c->name,
+                                                'price' => $c->pivot->price,
+                                                'stock' => $c->pivot->stock,
+                                            ];
+                                        })
+                                        ->toJson();
+                                    $totalStock = $medicine->clinics->sum(fn($c) => $c->pivot->stock);
+                                    $firstPrice = $medicine->clinics->first()?->pivot->price ?? '—';
+                                @endphp
+
                                 <a role="button" class="btn btn-sm btn-outline-primary" data-bs-toggle="modal"
                                     data-bs-target="#medicine-detail-modal" data-name="{{ $medicine->name }}"
-                                    data-description="{{ $medicine->description }}">
+                                    data-description="{{ $medicine->description }}" data-price="{{ $firstPrice }}"
+                                    data-stock="{{ $totalStock }}" data-clinics='{{ $clinicsJson }}'>
                                     <i class="bi bi-eye"></i>
                                 </a>
 
-
-
-                                <!-- Edit Button -->
                                 <button type="button" class="btn btn-sm btn-outline-secondary" data-bs-toggle="modal"
                                     data-bs-target="#edit-medicine-modal" onclick="event.stopPropagation();"
-                                    data-id="{{ $medicine->medicine_id }}"data-name="{{ $medicine->name }}"
-                                    data-description="{{ $medicine->description }}">
+                                    data-id="{{ $medicine->medicine_id }}" data-name="{{ $medicine->name }}"
+                                    data-description="{{ $medicine->description }}"
+                                    data-clinics='{{ $clinicsJson }}'>
                                     <i class="bi bi-pencil-square"></i>
                                 </button>
 
-                                <!-- Delete Button -->
+
                                 <button type="button" class="btn btn-outline-danger btn-sm delete-medicine-btn"
                                     data-id="{{ $medicine->medicine_id }}" onclick="event.stopPropagation();">
                                     <i class="bi bi-trash"></i>
@@ -46,6 +90,7 @@
                         </tr>
                     @endforeach
                 </tbody>
+
             </table>
         </div>
     @endif
@@ -65,6 +110,6 @@
         });
     });
 </script>
-{{-- @include('pages.medicines.modals.info')
+@include('pages.medicines.modals.info')
 @include('pages.medicines.modals.edit')
-@include('pages.medicines.modals.delete') --}}
+@include('pages.medicines.modals.delete')
