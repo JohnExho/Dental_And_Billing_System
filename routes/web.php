@@ -75,6 +75,7 @@ Route::middleware('web')->group(function () {
             Route::get('/laboratories', [LaboratoryController::class, 'index'])->name('laboratories');
             Route::get('/teeth', [ToothListController::class, 'index'])->name('teeth');
             Route::get('/medicines', [MedicineController::class, 'index'])->name('medicines');
+            Route::view('/services', 'pages.services.index')->name('services');
         });
     });
 });

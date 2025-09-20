@@ -48,6 +48,7 @@
         'laboratories' => 'Laboratories',
         'teeth' => 'Teeth',
         'medicines' => 'Medicines',
+        'services' => 'Services',
     ];
 @endphp
 

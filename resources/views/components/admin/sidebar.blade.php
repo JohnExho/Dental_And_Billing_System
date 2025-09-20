@@ -138,9 +138,10 @@
                 </a>
             </li>
             <li class="nav-item mb-1">
-                <a class="text-decoration-none fw-bold fs-4  text-secondary
-                    {{-- request()->routeIs('staffs') ? 'active text-primary' : 'text-dark' --}}"
-                    href="{{-- route('staffs') --}}" style="{{-- request()->routeIs('staffs') ? 'background: gray;' : '' --}}">
+                <a class="text-decoration-none fw-bold fs-4
+                    {{ request()->routeIs('services') ? 'active text-primary' : 'text-dark' }}"
+                    href="{{ route('services') }}"
+                    style="{{ request()->routeIs('services') ? 'background: gray;' : '' }}">
                     <span class="nav-text">Service</span>
                     <i class="fa-solid fa-stethoscope"></i>
                 </a>
