@@ -72,4 +72,9 @@ class Account extends Authenticatable
     {
         return $this->hasOne(Address::class, 'account_id', 'account_id');
     }
+
+    public function clinic()
+    {
+        return $this->belongsTo(Clinic::class, 'clinic_id', 'clinic_id');
+    }
 }

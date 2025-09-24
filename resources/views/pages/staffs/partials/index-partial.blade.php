@@ -1,6 +1,10 @@
 <div class="card-body p-0">
     @if ($staffs->isEmpty())
-        <p class="p-3 mb-0 text-danger text-center">No staff found. Add one using the button above.</p>
+        <p class="p-3 mb-0 text-danger text-center">
+            {{ session('clinic_id')
+                ? 'No staffs found for this clinic. Add one using the button above.'
+                : 'No staffs available globally.' }}
+        </p>
     @else
         <div class="table-responsive">
             <table class="table table-hover align-middle mb-0">
@@ -16,7 +20,7 @@
                     </tr>
                 </thead>
                 <tbody>
-                    @foreach ($staffs as $staff)
+                    @forelse ($staffs as $staff)
                         <tr>
                             <td>{{ $staff->full_name }}</td>
                             <td>{{ $staff->email }}</td>
@@ -75,7 +79,13 @@
                                 </button>
                             </td>
                         </tr>
-                    @endforeach
+                    @empty
+                        <tr>
+                            <td colspan="9" class="text-center text-warning">
+                                No staffs found.
+                            </td>
+                        </tr>
+                    @endforelse
                 </tbody>
             </table>
         </div>

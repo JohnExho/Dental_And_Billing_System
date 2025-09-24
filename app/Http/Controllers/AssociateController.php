@@ -2,17 +2,19 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Logs;
+use App\Models\Clinic;
 use App\Models\Account;
 use App\Models\Address;
 use App\Models\Associate;
-use App\Models\Logs;
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Str;
-use Yajra\Address\Entities\Barangay;
+use App\Services\LogService;
+use Illuminate\Http\Request;
 use Yajra\Address\Entities\City;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Hash;
+use Yajra\Address\Entities\Barangay;
 use Yajra\Address\Entities\Province;
 
 class AssociateController extends Controller
@@ -26,12 +28,23 @@ class AssociateController extends Controller
 
     public function index()
     {
-        $associates = Associate::with('address.barangay', 'address.city', 'address.province')
-            ->latest()
-            ->paginate(8);
+        $query = Associate::with([
+            'clinic',
+            'address.barangay',
+            'address.city',
+            'address.province',
+        ])->latest();
+
+        // If a clinic is selected → filter
+        if (session()->has('clinic_id') && $clinicId = session('clinic_id')) {
+            $query->where('clinic_id', $clinicId);
+        }
+
+        $associates = $query->paginate(8);
 
         return view('pages.associates.index', compact('associates'));
     }
+
 
     public function create(Request $request)
     {
@@ -60,8 +73,8 @@ class AssociateController extends Controller
 
         if (
             $newEmailHash && Associate::where('email_hash', $newEmailHash)
-            ->whereNull('deleted_at')
-            ->exists()
+                ->whereNull('deleted_at')
+                ->exists()
         ) {
             return redirect()->back()->with('error', 'The email has already been taken.');
         }
@@ -102,21 +115,17 @@ class AssociateController extends Controller
 
             // Step 3: Logging
             $addressId = optional($associate->address)->address_id;
-
-            Logs::record(
-                $authAccount, // actor (logged-in user)
-                null,
-                null,
-                $associate,
-                'create',
-                'associate',
+            LogService::record(
+                $authAccount,            // who did it
+                $associate,            // what was acted on (loggable model, here the Account itself)
+                'create',             // action
+                'associate',              // log_type
                 'User created an associate',
-                'associate: ' . $associate->associate_id
-                    . ', address: ' . $addressId,
+                'Associate: ' . $associate->associate_id
+                . ', Address: ' . $addressId,
                 $request->ip(),
                 $request->userAgent()
             );
-
             return redirect()->route('associates')->with('success', 'associate created successfully.');
         });
     }
@@ -125,35 +134,35 @@ class AssociateController extends Controller
     {
         // Validation
         $request->validate([
-            'associate_id'     => 'required|exists:associates,associate_id',
-            'first_name'     => 'required|string|max:100',
-            'middle_name'    => 'nullable|string|max:100',
-            'last_name'      => 'required|string|max:100',
-            'mobile_no'      => 'nullable|string|max:20',
-            'contact_no'     => 'nullable|string|max:20',
-            'email'          => 'nullable|email|max:255',
-            'address'        => 'nullable|array',
-            'address.house_no'   => 'nullable|string|max:50',
-            'address.street'     => 'nullable|string|max:255',
+            'associate_id' => 'required|exists:associates,associate_id',
+            'first_name' => 'required|string|max:100',
+            'middle_name' => 'nullable|string|max:100',
+            'last_name' => 'required|string|max:100',
+            'mobile_no' => 'nullable|string|max:20',
+            'contact_no' => 'nullable|string|max:20',
+            'email' => 'nullable|email|max:255',
+            'address' => 'nullable|array',
+            'address.house_no' => 'nullable|string|max:50',
+            'address.street' => 'nullable|string|max:255',
             'address.barangay_id' => 'nullable|exists:barangays,id',
-            'address.city_id'    => 'nullable|exists:cities,id',
+            'address.city_id' => 'nullable|exists:cities,id',
             'address.province_id' => 'nullable|exists:provinces,id',
             'is_active' => 'nullable|boolean',
         ]);
 
         $authAccount = $this->guard->user();
-        $associate       = Associate::findOrFail($request->associate_id);
+        $associate = Associate::findOrFail($request->associate_id);
 
         // Normalize + hash email
         $normalizedEmail = $request->email ? strtolower($request->email) : null;
-        $newEmailHash    = $normalizedEmail ? hash('sha256', $normalizedEmail) : null;
+        $newEmailHash = $normalizedEmail ? hash('sha256', $normalizedEmail) : null;
 
         // Prevent duplicate email
         if (
             $newEmailHash && Associate::where('email_hash', $newEmailHash)
-            ->where('associate_id', '!=', $associate->associate_id)
-            ->whereNull('deleted_at')
-            ->exists()
+                ->where('associate_id', '!=', $associate->associate_id)
+                ->whereNull('deleted_at')
+                ->exists()
         ) {
             return redirect()->back()->with('error', 'The email has already been taken.');
         }
@@ -161,15 +170,15 @@ class AssociateController extends Controller
         return DB::transaction(function () use ($request, $associate, $authAccount, $normalizedEmail, $newEmailHash) {
             // Step 1: Update Associate
             $updateData = [
-                'first_name'  => $request->first_name,
+                'first_name' => $request->first_name,
                 'middle_name' => $request->middle_name,
-                'last_name'   => $request->last_name,
+                'last_name' => $request->last_name,
                 'last_name_hash' => hash('sha256', strtolower($request->last_name)),
-                'mobile_no'   => $request->mobile_no,
-                'contact_no'  => $request->contact_no,
-                'email'       => $normalizedEmail,
-                'email_hash'  => $newEmailHash,
-                'is_active'   => $request->has('is_active') ? 1 : 0
+                'mobile_no' => $request->mobile_no,
+                'contact_no' => $request->contact_no,
+                'email' => $normalizedEmail,
+                'email_hash' => $newEmailHash,
+                'is_active' => $request->has('is_active') ? 1 : 0
             ];
 
             if ($request->filled('password')) {
@@ -182,13 +191,13 @@ class AssociateController extends Controller
                 $associate->address()->updateOrCreate(
                     ['associate_id' => $associate->associate_id],
                     [
-                        'house_no'    => $request->address['house_no'] ?? null,
-                        'street'      => $request->address['street'] ?? null,
-                        'barangay_name'   => optional(Barangay::find($request->address['barangay_id']))->name,
-                        'city_name'       => optional(City::find($request->address['city_id']))->name,
-                        'province_name'   => optional(Province::find($request->address['province_id']))->name,
+                        'house_no' => $request->address['house_no'] ?? null,
+                        'street' => $request->address['street'] ?? null,
+                        'barangay_name' => optional(Barangay::find($request->address['barangay_id']))->name,
+                        'city_name' => optional(City::find($request->address['city_id']))->name,
+                        'province_name' => optional(Province::find($request->address['province_id']))->name,
                         'barangay_id' => $request->address['barangay_id'] ?? null,
-                        'city_id'     => $request->address['city_id'] ?? null,
+                        'city_id' => $request->address['city_id'] ?? null,
                         'province_id' => $request->address['province_id'] ?? null,
                     ]
                 );
@@ -196,16 +205,14 @@ class AssociateController extends Controller
             // Step 3: Logging
             $addressId = optional($associate->address)->address_id;
 
-            Logs::record(
-                $authAccount, // actor
-                null,       // subject
-                null,
-                $associate,
-                'update',
-                'associate',
-                'User updated a associate account',
-                'associate: ' . $associate->associate_id
-                    . ', address: ' . $addressId,
+            LogService::record(
+                $authAccount,            // who did it
+                $associate,            // what was acted on (loggable model, here the Account itself)
+                'update',             // action
+                'associate',              // log_type
+                'User updated an associate',
+                'Associate: ' . $associate->associate_id
+                . ', Address: ' . $addressId,
                 $request->ip(),
                 $request->userAgent()
             );
@@ -238,20 +245,17 @@ class AssociateController extends Controller
             $associate->delete();
             $deletor = Auth::guard('account')->user();
             // Logging
-            Logs::record(
-                $deletor,
-                null,
-                null,
-                $associate,
-                'delete',
-                'associate',
+
+            LogService::record(
+                $deletor,            // who did it
+                $associate,            // what was acted on (loggable model, here the Account itself)
+                'delete',             // action
+                'associate',              // log_type
                 'User deleted an associate',
-                'Account: ' . $associate->associate_id
-                    . ', address: ' . $addressId,
+                'Associate: ' . $associate->associate_id,
                 $request->ip(),
                 $request->userAgent()
             );
-
             return redirect()->route('associates')->with('success', 'associate deleted successfully.');
         });
     }

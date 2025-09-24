@@ -296,46 +296,64 @@ class ClinicController extends Controller
     {
         $clinicId = $request->input('clinic_id');
         $account = Auth::guard('account')->user();
+
+        // Global mode (if clinic_id = "global")
+        if ($clinicId === 'global') {
+            session(['clinic_id' => null]);
+
+            LogService::record(
+                $account,
+                $account, // we can log this action against the account itself
+                'select_global',
+                'clinic',
+                'User switched to global mode',
+                'All clinics selected',
+                $request->ip(),
+                $request->userAgent()
+            );
+
+            return redirect()->back()->with('success', 'Global mode enabled (all clinics).');
+        }
+
+        // Clinic-specific mode
         $clinic = Clinic::find($clinicId);
 
-        // Check it exists
-        if (!Clinic::where('clinic_id', $clinicId)->exists()) {
+        if (!$clinic) {
             return redirect()->back()->with('error', 'Invalid clinic selection.');
         }
 
-        // If already selected → remove
+        // If already selected → deselect (return to global mode)
         if (session('clinic_id') == $clinicId) {
             session()->forget('clinic_id');
 
-            // Log the deselection
             LogService::record(
-                $account,            // who did it
-                $clinic,            // what was acted on (loggable model, here the Account itself)
-                'deselect',             // action
-                'clinic',              // log_type
+                $account,
+                $clinic,
+                'deselect',
+                'clinic',
                 'User deselected a clinic',
                 'Clinic: ' . $clinic->clinic_id,
                 $request->ip(),
                 $request->userAgent()
             );
 
-            return redirect()->back()->with('success', 'Clinic deselected successfully.');
+            return redirect()->back()->with('success', 'Clinic deselected, back to global mode.');
         }
 
         // Otherwise set new selection
         session(['clinic_id' => $clinicId]);
 
-        // Log the selection
         LogService::record(
-            $account,            // who did it
-            $clinic,            // what was acted on (loggable model, here the Account itself)
-            'select',             // action
-            'clinic',              // log_type
+            $account,
+            $clinic,
+            'select',
+            'clinic',
             'User selected a clinic',
             'Clinic: ' . $clinic->clinic_id,
             $request->ip(),
             $request->userAgent()
         );
+
         return redirect()->back()->with('success', 'Clinic selected successfully.');
     }
 

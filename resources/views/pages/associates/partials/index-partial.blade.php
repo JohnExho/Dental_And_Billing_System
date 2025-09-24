@@ -1,6 +1,10 @@
 <div class="card-body p-0">
     @if ($associates->isEmpty())
-        <p class="p-3 mb-0 text-danger text-center">No associate found. Add one using the button above.</p>
+        <p class="p-3 mb-0 text-danger text-center">
+            {{ session('clinic_id')
+                ? 'No associates found for this clinic. Add one using the button above.'
+                : 'No associates available globally.' }}
+        </p>
     @else
         <div class="table-responsive">
             <table class="table table-hover align-middle mb-0">
@@ -10,7 +14,6 @@
                         <th>Email</th>
                         <th>Speciality</th>
                         <th>Clinic</th>
-                        <th>Laboratory</th>
                         <th>Contact</th>
                         <th>Address</th>
                         <th>Status</th>
@@ -18,25 +21,23 @@
                     </tr>
                 </thead>
                 <tbody>
-                    @foreach ($associates as $associate)
+                    @forelse ($associates as $associate)
                         <tr>
                             <td>{{ $associate->full_name }}</td>
                             <td>{{ $associate->email }}</td>
                             <td>{{ $associate->speciality }}</td>
                             <td>{{ $associate->clinic->name ?? 'No Clinic' }}</td>
-                            <td>{{ $associate->laboratory->name ?? 'No Laboratory' }}</td>
-
                             <td>
                                 <i class="bi bi-telephone-fill me-1"></i>{{ $associate->contact_no }}<br>
                                 <i class="bi bi-phone-fill me-1"></i>{{ $associate->mobile_no }}
                             </td>
-                            <td>
-                                {{ optional($associate->address)->house_no }}
-                                {{ optional($associate->address)->street }}<br>
-                                {{ optional($associate->address->barangay)->name ?? '' }}
-                                {{ optional($associate->address->city)->name ?? '' }}
-                                {{ optional($associate->address->province)->name ?? '' }}
-                            </td>
+                                <td>
+                                    {{ optional($associate->address)->house_no }}
+                                    {{ optional($associate->address)->street }}<br>
+                                    {{ optional($associate->address->barangay)->name ?? '' }}
+                                    {{ optional($associate->address->city)->name ?? '' }}
+                                    {{ optional($associate->address->province)->name ?? '' }}
+                                </td>
                             <td>
                                 @if ($associate->is_active)
                                     <span class="badge bg-success">Active</span>
@@ -86,12 +87,19 @@
                                 </button>
                             </td>
                         </tr>
-                    @endforeach
+                    @empty
+                        <tr>
+                            <td colspan="9" class="text-center text-warning">
+                                No associates found.
+                            </td>
+                        </tr>
+                    @endforelse
                 </tbody>
             </table>
         </div>
     @endif
 </div>
+
 <script>
     document.addEventListener('DOMContentLoaded', function() {
         document.querySelectorAll('.delete-associate-btn').forEach(btn => {

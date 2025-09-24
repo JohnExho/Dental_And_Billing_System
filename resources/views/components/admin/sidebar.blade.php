@@ -79,14 +79,14 @@
         <ul class="nav flex-column text-start">
             <li class="nav-item mb-1">
                 <a href="{{ route('admin.dashboard') }}"
-                    class="text-decoration-none fw-bold fs-4 
+                    class="text-decoration-none fw-bold fs-4
                    {{ request()->routeIs('admin.dashboard') ? 'text-primary' : 'text-dark' }}">
                     <span class="nav-text">Dashboard</span>
                     <i class="bi bi-speedometer2 ms-1"></i>
                 </a>
             </li>
             <li class="nav-item mb-1">
-                <a class="text-decoration-none fw-bold fs-4  
+                <a class="text-decoration-none fw-bold fs-4
                     {{ request()->routeIs('clinics') ? 'active text-primary' : 'text-dark' }}"
                     href="{{ route('clinics') }}"
                     style="{{ request()->routeIs('clinics') ? 'background: gray;' : '' }}">
@@ -94,9 +94,8 @@
                     <i class="bi bi-building"></i>
                 </a>
             </li>
-            @if(session()->has('clinic_id'))
             <li class="nav-item mb-1">
-                <a class="text-decoration-none fw-bold fs-4  
+                <a class="text-decoration-none fw-bold fs-4
                     {{ request()->routeIs('associates') ? 'active text-primary' : 'text-dark' }}"
                     href="{{ route('associates') }}"
                     style="{{ request()->routeIs('associates') ? 'background: gray;' : '' }}">
@@ -105,7 +104,7 @@
                 </a>
             </li>
             <li class="nav-item mb-1">
-                <a class="text-decoration-none fw-bold fs-4  
+                <a class="text-decoration-none fw-bold fs-4
                     {{ request()->routeIs('staffs') ? 'active text-primary' : 'text-dark' }}"
                     href="{{ route('staffs') }}" style="{{ request()->routeIs('staffs') ? 'background: gray;' : '' }}">
                     <span class="nav-text">Staffs</span>
@@ -113,7 +112,7 @@
                 </a>
             </li>
             <li class="nav-item mb-1">
-                <a class="text-decoration-none fw-bold fs-4  
+                <a class="text-decoration-none fw-bold fs-4
                     {{ request()->routeIs('laboratories') ? 'active text-primary' : 'text-dark' }}"
                     href="{{ route('laboratories') }}"
                     style="{{ request()->routeIs('laboratories') ? 'background: gray;' : '' }}">
@@ -130,7 +129,7 @@
                 </a>
             </li>
             <li class="nav-item mb-1">
-                <a class="text-decoration-none fw-bold fs-4 
+                <a class="text-decoration-none fw-bold fs-4
                     {{ request()->routeIs('medicines') ? 'active text-primary' : 'text-dark' }}"
                     href="{{ route('medicines') }}"
                     style="{{ request()->routeIs('medicines') ? 'background: gray;' : '' }}">
@@ -163,7 +162,6 @@
                     <i class="bi bi-person-badge-fill"></i>
                 </a>
             </li>
-            @endif
         </ul>
     </nav>
 </aside>

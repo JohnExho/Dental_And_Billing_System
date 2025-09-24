@@ -4,9 +4,36 @@
     <div class="container-fluid mt-4">
         <div class="card shadow-sm border-0">
             <div class="card-header bg-primary text-white">
-                <a href="#" class="btn btn-light btn-sm float-end" data-bs-toggle="modal" data-bs-target="#add-associate-modal">
-                    <i class="bi bi-plus-circle"></i> Add associate
-                </a>
+                @php
+                    $currentClinic = session('clinic_id') ? \App\Models\Clinic::find(session('clinic_id')) : null;
+                @endphp
+
+                <div class="d-flex justify-content-between align-items-center">
+                    @if ($currentClinic)
+                        <div class="d-flex align-items-center gap-2">
+                            <span
+                                class="badge rounded-pill bg-light text-dark border shadow-sm d-flex align-items-center px-3 py-2">
+                                <i class="bi bi-hospital me-2 text-primary fs-5"></i>
+                                <span class="fw-semibold">Clinic:</span>&nbsp;{{ $currentClinic->name }}
+                            </span>
+                        </div>
+                        <a href="#" class="btn btn-light btn-sm d-flex align-items-center gap-1"
+                            data-bs-toggle="modal" data-bs-target="#add-associate-modal">
+                            <i class="bi bi-plus-circle"></i> Add Associate
+                        </a>
+                    @else
+                        <div class="d-flex align-items-center gap-2">
+                            <span class="badge rounded-pill bg-secondary text-white px-3 py-2">
+                                <i class="bi bi-people me-2"></i> Showing all associates
+                            </span>
+                        </div>
+                        <a href="{{ route('clinics') }}"
+                            class="btn btn-secondary btn-sm d-flex align-items-center gap-1">
+                            <i class="bi bi-plus-circle"></i> Select Clinic to Add
+                        </a>
+                    @endif
+                </div>
+
             </div>
             <div id="associate-container" class="position-relative">
                 <div id="associates-loading" class="text-center py-5">
@@ -24,11 +51,14 @@
             {{-- {{ $associates->links('vendor.pagination.bootstrap-5') }} --}}
         </div>
         {{-- Modal lives outside the container but still inside content --}}
-        @include('pages.associates.modals.add')
+        @if (session('clinic_id'))
+            @include('pages.associates.modals.add')
+        @endif
+
         <script>
-            document.addEventListener("DOMContentLoaded", function () {
+            document.addEventListener("DOMContentLoaded", function() {
                 document.getElementById('associates-loading').classList.add('d-none');
                 document.getElementById('associates-content').classList.remove('d-none');
             });
         </script>
-@endsection
+    @endsection

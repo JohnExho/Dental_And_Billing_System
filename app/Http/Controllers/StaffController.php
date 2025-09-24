@@ -2,16 +2,17 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Logs;
 use App\Models\Account;
 use App\Models\Address;
-use App\Models\Logs;
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Str;
-use Yajra\Address\Entities\Barangay;
+use App\Services\LogService;
+use Illuminate\Http\Request;
 use Yajra\Address\Entities\City;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Hash;
+use Yajra\Address\Entities\Barangay;
 use Yajra\Address\Entities\Province;
 
 class StaffController extends Controller
@@ -25,13 +26,22 @@ class StaffController extends Controller
 
     public function index()
     {
-        $staffs = Account::with('address.barangay', 'address.city', 'address.province')
-            ->latest()
-            ->where('role', 'staff')
-            ->paginate(8);
+        $query = Account::with([
+            'clinic',
+            'address.barangay',
+            'address.city',
+            'address.province',
+        ])->latest();
 
+
+        if (session()->has('clinic_id') && $clinicId = session('clinic_id')) {
+            $query->where('clinic_id', $clinicId);
+        }
+
+        $staffs = $query->paginate(8);
         return view('pages.staffs.index', compact('staffs'));
     }
+
 
     public function create(Request $request)
     {
@@ -61,8 +71,8 @@ class StaffController extends Controller
 
         if (
             $newEmailHash && Account::where('email_hash', $newEmailHash)
-            ->whereNull('deleted_at')
-            ->exists()
+                ->whereNull('deleted_at')
+                ->exists()
         ) {
             return redirect()->back()->with('error', 'The email has already been taken.');
         }
@@ -106,19 +116,18 @@ class StaffController extends Controller
             // Step 3: Logging
             $addressId = optional($staff->address)->address_id;
 
-            Logs::record(
-                $authAccount, // actor (logged-in user)
-                null,
-                null,
-                null,
+            LogService::record(
+                $authAccount,
+                $staff,
                 'create',
                 'staff',
                 'User created a staff account',
-                'staff: ' . $staff->account_id
-                    . ', address: ' . $addressId,
+                'Staff: ' . $staff->account_id
+                . ', address: ' . $addressId,
                 $request->ip(),
                 $request->userAgent()
             );
+
 
             return redirect()->route('staffs')->with('success', 'Staff created successfully.');
         });
@@ -156,9 +165,9 @@ class StaffController extends Controller
         // Prevent duplicate email
         if (
             $newEmailHash && Account::where('email_hash', $newEmailHash)
-            ->where('account_id', '!=', $staff->account_id)
-            ->whereNull('deleted_at')
-            ->exists()
+                ->where('account_id', '!=', $staff->account_id)
+                ->whereNull('deleted_at')
+                ->exists()
         ) {
             return redirect()->back()->with('error', 'The email has already been taken.');
         }
@@ -204,19 +213,18 @@ class StaffController extends Controller
             // Step 3: Logging
             $addressId = optional($staff->address)->address_id;
 
-            Logs::record(
-                $authAccount, // actor
-                null,       // subject
-                null,
-                null,
+            LogService::record(
+                $authAccount,
+                $staff,
                 'update',
                 'staff',
                 'User updated a staff account',
-                'staff: ' . $staff->account_id
-                    . ', address: ' . $addressId,
+                'Staff: ' . $staff->account_id
+                . ', address: ' . $addressId,
                 $request->ip(),
                 $request->userAgent()
             );
+
 
             return redirect()->route('staffs')->with('success', 'Staff updated successfully.');
         });
@@ -230,7 +238,7 @@ class StaffController extends Controller
         ]);
 
         $deletor = Auth::guard('account')->user();
-        $account = Account::findOrFail($request->account_id);
+        $staff = Account::findOrFail($request->account_id);
 
         // Check if the password matches the current user's password
         if (!Hash::check($request->password, $deletor->password)) {
@@ -238,30 +246,28 @@ class StaffController extends Controller
         }
 
 
-        return DB::transaction(function () use ($account, $request) {
+        return DB::transaction(function () use ($staff, $request) {
 
-            $addressId = optional($account->address)->address_id;
+            $addressId = optional($staff->address)->address_id;
 
             // Delete schedules & address
-            $account->address()->delete();
+            $staff->address()->delete();
             // Delete clinic
-            $account->delete();
+            $staff->delete();
             $deletor = Auth::guard('account')->user();
             // Logging
-            Logs::record(
+
+            LogService::record(
                 $deletor,
-                null,
-                null,
-                null,
+                $staff,
                 'delete',
-                'clinic',
-                'User deleted an account',
-                'Account: ' . $account->account_id
-                    . ', address: ' . $addressId,
+                'staff',
+                'User deleted a staff account',
+                'Staff: ' . $staff->account_id
+                . ', address: ' . $addressId,
                 $request->ip(),
                 $request->userAgent()
             );
-
             return redirect()->route('staffs')->with('success', 'account deleted successfully.');
         });
     }
