@@ -224,16 +224,6 @@ return new class extends Migration
             $table->foreign('service_id')->references('service_id')->on('services')->onDelete('cascade');
         });
 
-        Schema::create('laboratory_service', function (Blueprint $table) {
-            $table->uuid('laboratory_service_id')->primary();
-            $table->uuid('laboratory_id');
-            $table->uuid('service_id');
-            $table->decimal('price', 10, 2)->nullable();
-
-            $table->foreign('laboratory_id')->references('laboratory_id')->on('laboratories')->onDelete('cascade');
-            $table->foreign('service_id')->references('service_id')->on('services')->onDelete('cascade');
-        });
-
         Schema::create('medicines', function (Blueprint $table) {
             $table->uuid('medicine_id')->primary();
             $table->uuid('account_id')->nullable(); // Account that created the medicine

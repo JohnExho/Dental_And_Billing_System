@@ -1,5 +1,7 @@
 # 📝 To-Do List
 
+### REFACTOR CLINIC TO BE SELECTED BY USER
+
 ### 1. Service Setup
 - [ ] Implement a service with a **default price**.  
 - [ ] Allow adding **custom prices** for each **labaratory** and **clinic**.

@@ -94,6 +94,7 @@
                     <i class="bi bi-building"></i>
                 </a>
             </li>
+            @if(session()->has('clinic_id'))
             <li class="nav-item mb-1">
                 <a class="text-decoration-none fw-bold fs-4  
                     {{ request()->routeIs('associates') ? 'active text-primary' : 'text-dark' }}"
@@ -162,6 +163,7 @@
                     <i class="bi bi-person-badge-fill"></i>
                 </a>
             </li>
+            @endif
         </ul>
     </nav>
 </aside>

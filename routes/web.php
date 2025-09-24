@@ -42,6 +42,7 @@ Route::middleware('web')->group(function () {
     Route::post('/process/create/clinic', [ClinicController::class, 'create'])->name('process-create-clinic');
     Route::put('/process/update/clinic', [ClinicController::class, 'update'])->name('process-update-clinic');
     Route::delete('process/delete/clnic', [ClinicController::class, 'destroy'])->name('process-delete-clinic');
+    Route::post('process/clinics/select', [ClinicController::class, 'select'])->name('process-select-clinic');
 
     Route::post('/process/create/staff', [StaffController::class, 'create'])->name('process-create-staff');
     Route::put('/process/update/staff', [StaffController::class, 'update'])->name('process-update-staff');

@@ -54,7 +54,7 @@
 
 
 
-<nav class="navbar navbar-left navbar-expand-lg navbar-light border border-3 border-primary text-black navbar-fixed">
+<nav class="navbar navbar-left navbar-expand-lg navbar-light border-3 border-primary text-black navbar-fixed">
     <div class="container d-flex align-items-center">
         <div class="d-flex align-items-center echo-movebar">
             @foreach ($navItems as $route => $label)

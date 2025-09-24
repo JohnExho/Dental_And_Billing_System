@@ -2,34 +2,33 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Logs;
-use App\Models\Clinic;
 use App\Models\Address;
-use Illuminate\Support\Str;
+use App\Models\Clinic;
+use App\Models\Logs;
 use Illuminate\Http\Request;
-use App\Models\ClinicSchedule;
-use Yajra\Address\Entities\City;
-use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Str;
 use Yajra\Address\Entities\Barangay;
+use Yajra\Address\Entities\City;
 use Yajra\Address\Entities\Province;
-use Illuminate\Support\Facades\Validator;
 
 class ClinicController extends Controller
 {
     protected $guard;
+
     public function __construct()
     {
         $this->guard = Auth::guard('account');
     }
+
     public function index()
     {
         $clinics = Clinic::with('address.barangay', 'address.city', 'address.province')
             ->latest()
             ->paginate(4);
-
 
         return view('pages.clinics.index', compact('clinics'));
     }
@@ -58,13 +57,13 @@ class ClinicController extends Controller
         ]);
 
         // Prevent duplicate email
-              $normalizedEmail = $request->email ? strtolower($request->email) : null;
+        $normalizedEmail = $request->email ? strtolower($request->email) : null;
         $newEmailHash = $normalizedEmail ? hash('sha256', $normalizedEmail) : null;
 
         if (
             $newEmailHash && Clinic::where('email_hash', $newEmailHash)
-            ->whereNull('deleted_at') // ignore soft-deleted
-            ->exists()
+                ->whereNull('deleted_at') // ignore soft-deleted
+                ->exists()
         ) {
             return redirect()->back()->with('error', 'The email has already been taken.');
         }
@@ -85,13 +84,13 @@ class ClinicController extends Controller
                 'mobile_no' => $request->mobile_no,
                 'contact_no' => $request->contact_no,
                 'email' => $normalizedEmail,
-                'email_hash' => $newEmailHash
+                'email_hash' => $newEmailHash,
             ]);
 
             // Step 2: Create Schedules (if any)
             $schedules = [];
             foreach ($request->schedule ?? [] as $day => $data) {
-                if (!empty($data['active'])) {
+                if (! empty($data['active'])) {
                     $schedules[] = [
                         'clinic_schedule_id' => Str::uuid(),
                         'day_of_week' => $day,
@@ -101,7 +100,7 @@ class ClinicController extends Controller
                 }
             }
 
-            if (!empty($schedules)) {
+            if (! empty($schedules)) {
                 $clinic->clinicSchedules()->createMany($schedules);
             }
 
@@ -112,11 +111,11 @@ class ClinicController extends Controller
                     'clinic_id' => $clinic->clinic_id,
                     'house_no' => $request->address['house_no'] ?? null,
                     'street' => $request->address['street'] ?? null,
-                    'barangay_name'   => optional(Barangay::find($request->address['barangay_id']))->name,
-                    'city_name'       => optional(City::find($request->address['city_id']))->name,
-                    'province_name'   => optional(Province::find($request->address['province_id']))->name,
+                    'barangay_name' => optional(Barangay::find($request->address['barangay_id']))->name,
+                    'city_name' => optional(City::find($request->address['city_id']))->name,
+                    'province_name' => optional(Province::find($request->address['province_id']))->name,
                     'barangay_id' => $request->address['barangay_id'] ?? null,
-                    'city_id'     => $request->address['city_id'] ?? null,
+                    'city_id' => $request->address['city_id'] ?? null,
                     'province_id' => $request->address['province_id'] ?? null,
                 ]);
             }
@@ -133,9 +132,9 @@ class ClinicController extends Controller
                 'create',
                 'clinic',
                 'User created a clinic',
-                'clinic: ' . $clinic->clinic_id
-                    . ', address: ' . $addressId
-                    . ', schedules: ' . json_encode($scheduleIds),
+                'clinic: '.$clinic->clinic_id
+                    .', address: '.$addressId
+                    .', schedules: '.json_encode($scheduleIds),
                 $request->ip(),
                 $request->userAgent()
             );
@@ -177,8 +176,8 @@ class ClinicController extends Controller
         // Prevent duplicate email
         if (
             $normalizedEmail && Clinic::where('email_hash', $newEmailHash)
-            ->where('clinic_id', '!=', $clinic->clinic_id)
-            ->exists()
+                ->where('clinic_id', '!=', $clinic->clinic_id)
+                ->exists()
         ) {
             return redirect()->route('clinics')->with('error', 'The email has already been taken.');
         }
@@ -202,14 +201,14 @@ class ClinicController extends Controller
             $incomingSchedules = $request->schedule ?? [];
 
             // Delete schedules not in the request or inactive
-            $activeDays = array_keys(array_filter($incomingSchedules, fn($d) => !empty($d['active'])));
+            $activeDays = array_keys(array_filter($incomingSchedules, fn ($d) => ! empty($d['active'])));
             $clinic->clinicSchedules()
                 ->whereNotIn('day_of_week', $activeDays)
                 ->delete();
 
             // Update or create active schedules
             foreach ($incomingSchedules as $day => $data) {
-                if (!empty($data['active'])) {
+                if (! empty($data['active'])) {
                     $clinic->clinicSchedules()->updateOrCreate(
                         ['clinic_id' => $clinic->clinic_id, 'day_of_week' => $day],
                         ['start_time' => $data['start'], 'end_time' => $data['end']]
@@ -225,11 +224,11 @@ class ClinicController extends Controller
                         'account_id' => $account->account_id,
                         'house_no' => $request->address['house_no'] ?? null,
                         'street' => $request->address['street'] ?? null,
-                        'barangay_name'   => optional(Barangay::find($request->address['barangay_id']))->name,
-                        'city_name'       => optional(City::find($request->address['city_id']))->name,
-                        'province_name'   => optional(Province::find($request->address['province_id']))->name,
+                        'barangay_name' => optional(Barangay::find($request->address['barangay_id']))->name,
+                        'city_name' => optional(City::find($request->address['city_id']))->name,
+                        'province_name' => optional(Province::find($request->address['province_id']))->name,
                         'barangay_id' => $request->address['barangay_id'] ?? null,
-                        'city_id'     => $request->address['city_id'] ?? null,
+                        'city_id' => $request->address['city_id'] ?? null,
                         'province_id' => $request->address['province_id'] ?? null,
                     ]
                 );
@@ -246,9 +245,9 @@ class ClinicController extends Controller
                 'update',
                 'clinic',
                 'User updated a clinic',
-                'clinic: ' . $clinic->clinic_id
-                    . ', address: ' . $addressId
-                    . ', schedules: ' . json_encode($scheduleIds),
+                'clinic: '.$clinic->clinic_id
+                    .', address: '.$addressId
+                    .', schedules: '.json_encode($scheduleIds),
                 $request->ip(),
                 $request->userAgent()
             );
@@ -261,16 +260,15 @@ class ClinicController extends Controller
     {
         $request->validate([
             'clinic_id' => 'required|exists:clinics,clinic_id',
-            'password' => 'required'
+            'password' => 'required',
         ]);
 
         $account = Auth::guard('account')->user();
         $clinic = Clinic::findOrFail($request->clinic_id);
 
-                        if (!Hash::check($request->password, $account->password)) {
+        if (! Hash::check($request->password, $account->password)) {
             return back()->with('error', 'The password is incorrect.');
         }
-
 
         return DB::transaction(function () use ($clinic, $account, $request) {
 
@@ -292,14 +290,28 @@ class ClinicController extends Controller
                 'delete',
                 'clinic',
                 'User deleted a clinic',
-                'clinic: ' . $clinic->clinic_id
-                    . ', address: ' . $addressId
-                    . ', schedules: ' . json_encode($scheduleIds),
+                'clinic: '.$clinic->clinic_id
+                    .', address: '.$addressId
+                    .', schedules: '.json_encode($scheduleIds),
                 $request->ip(),
                 $request->userAgent()
             );
 
             return redirect()->route('clinics')->with('success', 'Clinic deleted successfully.');
         });
+    }
+
+    public function select(Request $request)
+    {
+        $clinicId = $request->input('clinic_id');
+
+        // Optionally validate it exists
+        if (! \App\Models\Clinic::where('clinic_id', $clinicId)->exists()) {
+            return redirect()->back()->with('error', 'Invalid clinic selection.');
+        }
+
+        session(['clinic_id' => $clinicId]);
+
+        return redirect()->route('admin.dashboard')->with('success', 'Clinic selected successfully.');
     }
 }

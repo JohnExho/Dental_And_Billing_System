@@ -19,6 +19,10 @@
                 </thead>
                 <tbody>
                     @foreach ($clinics as $clinic)
+                        <tr class="{{ session('clinic_id') == $clinic->clinic_id ? 'table-success' : '' }}">
+                            <td class="fw-semibold">{{ $clinic->name }}</td>
+                            <!-- rest of your columns -->
+                        </tr>
                         <tr>
                             <td class="fw-semibold">{{ $clinic->name }}</td>
                             <td>{{ Str::limit($clinic->description, 50) ?? 'No Description Given' }}</td>
@@ -32,10 +36,19 @@
                             <td>
                                 {{ optional($clinic->address)->house_no }} {{ optional($clinic->address)->street }}<br>
                                 {{ optional($clinic->address->barangay)->name ?? '' }}
-                                {{ optional($clinic->address->city)->name  ?? '' }}
-                                {{ optional($clinic->address->province)->name  ?? '' }}
+                                {{ optional($clinic->address->city)->name ?? '' }}
+                                {{ optional($clinic->address->province)->name ?? '' }}
                             </td>
                             <td class="text-end">
+                                <!-- Select Clinic Button -->
+                                <form action="{{ route('process-select-clinic') }}" method="POST" class="d-inline">
+                                    @csrf
+                                    <input type="hidden" name="clinic_id" value="{{ $clinic->clinic_id }}">
+                                    <button type="submit" class="btn btn-sm btn-success">
+                                        <i class="bi bi-check-circle"></i> Select
+                                    </button>
+                                </form>
+
                                 <a role="button" class="btn btn-sm btn-outline-primary" data-bs-toggle="modal"
                                     data-bs-target="#clinic-detail-modal" data-name="{{ $clinic->name }}"
                                     data-description="{{ $clinic->description }}" data-email="{{ $clinic->email }}"
@@ -59,11 +72,11 @@
                                     data-house_no="{{ optional($clinic->address)->house_no }}"
                                     data-street="{{ optional($clinic->address)->street }}"
                                     data-province_id="{{ optional($clinic->address)->province_id }}"
-                                    data-province_name="{{ optional($clinic->address->province)->name  }}"
+                                    data-province_name="{{ optional($clinic->address->province)->name }}"
                                     data-city_id="{{ optional($clinic->address)->city_id }}"
-                                    data-city_name="{{ optional($clinic->address->city)->name  }}"
+                                    data-city_name="{{ optional($clinic->address->city)->name }}"
                                     data-barangay_id="{{ optional($clinic->address)->barangay_id }}"
-                                    data-barangay_name="{{ optional($clinic->address->barangay)->name  }}"
+                                    data-barangay_name="{{ optional($clinic->address->barangay)->name }}"
                                     data-schedule_summary="{{ $clinic->schedule_summary ?? 'N/A' }}"
                                     data-schedules='@json($clinic->clinicSchedules)'>
                                     <i class="bi bi-pencil-square"></i>

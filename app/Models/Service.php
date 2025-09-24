@@ -46,11 +46,4 @@ class Service extends Model
             ->withPivot('price')
             ->withTimestamps();
     }
-
-    public function laboratories()
-    {
-        return $this->belongsToMany(Laboratories::class, 'laboratory_service', 'service_id', 'laboratory_id')
-            ->withPivot('price')
-            ->withTimestamps();
-    }
 }
