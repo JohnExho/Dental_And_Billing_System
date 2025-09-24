@@ -213,12 +213,12 @@ return new class extends Migration {
 
         Schema::create('clinic_service', function (Blueprint $table) {
             $table->uuid('clinic_service_id')->primary();
-            $table->uuid('clinic_id');
-            $table->uuid('service_id');
+            $table->uuid('clinic_id')->nullable();
+            $table->uuid('service_id')->nullable();
             $table->decimal('price', 10, 2)->nullable();
 
-            $table->foreign('clinic_id')->references('clinic_id')->on('clinics')->onDelete('cascade');
-            $table->foreign('service_id')->references('service_id')->on('services')->onDelete('cascade');
+            $table->foreign('clinic_id')->references('clinic_id')->on('clinics')->onDelete('set null');
+            $table->foreign('service_id')->references('service_id')->on('services')->onDelete('set null');
         });
 
         Schema::create('medicines', function (Blueprint $table) {
@@ -236,15 +236,15 @@ return new class extends Migration {
 
         Schema::create('medicine_clinics', function (Blueprint $table) {
             $table->uuid('medicine_clinic_id')->primary();
-            $table->uuid('medicine_id');
-            $table->uuid('clinic_id');
+            $table->uuid('medicine_id')->nullable();
+            $table->uuid('clinic_id')->nullable();
             $table->integer('stock')->default(0);
             $table->decimal('price', 10, 2)->nullable();
             $table->timestamps();
             $table->softDeletes();
 
-            $table->foreign('medicine_id')->references('medicine_id')->on('medicines')->onDelete('cascade');
-            $table->foreign('clinic_id')->references('clinic_id')->on('clinics')->onDelete('cascade');
+            $table->foreign('medicine_id')->references('medicine_id')->on('medicines')->onDelete('set null');
+            $table->foreign('clinic_id')->references('clinic_id')->on('clinics')->onDelete('set null');
 
             $table->unique(['medicine_id', 'clinic_id']); // prevent duplicate entries
         });
@@ -254,26 +254,45 @@ return new class extends Migration {
             $table->text('number')->unique(); // e.g., 11, 12, 13
             $table->text('name');             // e.g., upper right central incisor
             $table->text('name_hash')->index();
-            $table->decimal('price', 10, 2)->index();
             $table->timestamps();
             $table->softDeletes();
         });
 
+        Schema::create('clinic_tooth_prices', function (Blueprint $table) {
+            $table->uuid('clinic_tooth_price_id')->primary();
+            $table->uuid('clinic_id')->nullable();
+            $table->uuid('tooth_list_id')->nullable();
+            $table->decimal('price', 10, 2)->index();
+
+            $table->timestamps();
+            $table->softDeletes();
+
+
+            $table->foreign('clinic_id')->references('clinic_id')->on('clinics')->onDelete('set null');
+            $table->foreign('tooth_list_id')->references('tooth_list_id')->on('tooth_list')->onDelete('set null');
+
+            $table->unique(['clinic_id', 'tooth_list_id']); // one price per tooth per clinic
+        });
+
+
         Schema::create('teeth', function (Blueprint $table) {
             $table->uuid('tooth_id')->primary();
             $table->uuid('account_id')->nullable();
-            $table->uuid('patient_id'); // should usually NOT be nullable
-            $table->uuid('tooth_list_id'); // link to reference tooth slot
+            $table->uuid('patient_id')->nullable();
+            $table->uuid('tooth_list_id')->nullable();
+            $table->uuid('clinic_id')->nullable(); // clinic where treatment happened
             $table->text('condition')->nullable(); // e.g., healthy, decayed, missing
+            $table->decimal('price', 10, 2)->nullable(); // price at the time of treatment
 
             $table->timestamps();
             $table->softDeletes();
 
             $table->foreign('account_id')->references('account_id')->on('accounts')->onDelete('set null');
-            $table->foreign('patient_id')->references('patient_id')->on('patients')->onDelete('cascade');
-            $table->foreign('tooth_list_id')->references('tooth_list_id')->on('tooth_list')->onDelete('cascade');
+            $table->foreign('patient_id')->references('patient_id')->on('patients')->onDelete('set null');
+            $table->foreign('tooth_list_id')->references('tooth_list_id')->on('tooth_list')->onDelete('set null');
+            $table->foreign('clinic_id')->references('clinic_id')->on('clinics')->onDelete('set null');
 
-            $table->unique(['patient_id', 'tooth_list_id']); // enforce one slot per patient
+            $table->unique(['patient_id', 'tooth_list_id']); // one record per patient per tooth
         });
 
         Schema::create('logs', function (Blueprint $table) {
@@ -645,6 +664,7 @@ return new class extends Migration {
         Schema::dropIfExists('addresses');
         Schema::dropIfExists('logs');
         Schema::dropIfExists('tooth_list');
+        Schema::dropIfExists('clinic_tooth_prices');
         Schema::dropIfExists('teeth');
         Schema::dropIfExists('medicines');
         Schema::dropIfExists('medicine_clinics');

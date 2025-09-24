@@ -11,14 +11,14 @@
                 <div class="d-flex justify-content-between align-items-center">
                     @if ($currentClinic)
                         <div class="d-flex align-items-center gap-2">
-                            <span
-                                class="badge rounded-pill bg-light text-dark border shadow-sm d-flex align-items-center px-3 py-2">
-                                <i class="bi bi-hospital me-2 text-primary fs-5"></i>
+                            <a href="{{ route('clinics') }}"
+                                class="badge rounded-pill bg-light text-dark border d-flex align-items-center px-3 py-2 shadow-sm text-decoration-none">
+                                <i class="bi bi-hospital me-2 text-primary"></i>
                                 <span class="fw-semibold">Clinic:</span>&nbsp;{{ $currentClinic->name }}
-                            </span>
+                            </a>
                         </div>
-                        <a href="#" class="btn btn-light btn-sm d-flex align-items-center gap-1"
-                            data-bs-toggle="modal" data-bs-target="#add-associate-modal">
+                        <a href="#" class="btn btn-light btn-sm d-flex align-items-center gap-1" data-bs-toggle="modal"
+                            data-bs-target="#add-associate-modal">
                             <i class="bi bi-plus-circle"></i> Add Associate
                         </a>
                     @else
@@ -27,8 +27,7 @@
                                 <i class="bi bi-people me-2"></i> Showing all associates
                             </span>
                         </div>
-                        <a href="{{ route('clinics') }}"
-                            class="btn btn-secondary btn-sm d-flex align-items-center gap-1">
+                        <a href="{{ route('clinics') }}" class="btn btn-secondary btn-sm d-flex align-items-center gap-1">
                             <i class="bi bi-plus-circle"></i> Select Clinic to Add
                         </a>
                     @endif

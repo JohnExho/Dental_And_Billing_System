@@ -3,9 +3,11 @@
 namespace Database\Seeders;
 
 use App\Models\ToothList;
-use Faker\Factory as Faker;
+use App\Models\ClinicToothPrice;
+use App\Models\Clinic;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Str;
+use Faker\Factory as Faker;
 
 class ToothListSeeder extends Seeder
 {
@@ -16,13 +18,15 @@ class ToothListSeeder extends Seeder
     {
         $faker = Faker::create();
 
-        // Create a clinic
-        $tooth_list = ToothList::create([
-            'tooth_list_id' => Str::uuid(),
-            'number' => $faker->numberBetween(1, 32),
-            'name' => $faker->company,
-            'name_hash' => hash('sha256', strtolower($faker->company)),
-            'price' => $faker->randomFloat(2, 50, 500), // Random price between 50 and 500
-        ]);
+        // Seed 32 teeth
+        for ($i = 1; $i <= 32; $i++) {
+            $name = "Tooth $i"; // or use real tooth names
+            ToothList::create([
+                'tooth_list_id' => Str::uuid(),
+                'number' => $i,
+                'name' => $name,
+                'name_hash' => hash('sha256', strtolower($name)),
+            ]);
+        }
     }
 }
