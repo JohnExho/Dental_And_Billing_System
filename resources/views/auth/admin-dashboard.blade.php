@@ -1,6 +1,6 @@
-@extends("layout")
+@extends('layout')
 @section('title', 'Dashboard | Chomply')
-@section("content")
+@section('content')
     <div class="container-fluid mt-5">
         <div class="row">
             <div class="col-md-12">
@@ -10,11 +10,40 @@
         </div>
 
         <div class="row mt-4">
-            <!-- Left Card (Empty) -->
+            <!-- Left Card (Patients with Balance) -->
             <div class="col-md-5">
-                <div class="card">
+                <div class="card shadow-sm border-1 border-danger">
                     <div class="card-body">
-                        <!-- Empty card -->
+                        <div class="d-flex justify-content-between align-items-center mb-3">
+                            <h5 class="card-title mb-0 text-danger">Patients with Balance</h5>
+                            <span class="badge bg-danger-subtle text-danger border border-danger">
+                                3
+                            </span>
+                        </div>
+
+                        <div class="list-group list-group-flush">
+                            <div class="list-group-item d-flex justify-content-between align-items-center">
+                                <div>
+                                    <strong>Doe, John</strong><br>
+                                    <small class="text-muted">#101</small>
+                                </div>
+                                <span class="badge bg-danger">₱1,200.00</span>
+                            </div>
+                            <div class="list-group-item d-flex justify-content-between align-items-center">
+                                <div>
+                                    <strong>Smith, Jane</strong><br>
+                                    <small class="text-muted">#102</small>
+                                </div>
+                                <span class="badge bg-danger">₱850.00</span>
+                            </div>
+                            <div class="list-group-item d-flex justify-content-between align-items-center">
+                                <div>
+                                    <strong>Lee, Alex</strong><br>
+                                    <small class="text-muted">#103</small>
+                                </div>
+                                <span class="badge bg-danger">₱500.00</span>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -79,7 +108,7 @@
                     }
 
                     // Simulate loading buffer
-                    document.addEventListener("DOMContentLoaded", function () {
+                    document.addEventListener("DOMContentLoaded", function() {
                         setTimeout(() => {
                             document.getElementById('recentActivitiesLoading').classList.add('d-none');
                             document.getElementById('recentActivitiesContent').classList.remove('d-none');
@@ -97,4 +126,4 @@
                         }
                     });
                 </script>
-@endsection
+            @endsection

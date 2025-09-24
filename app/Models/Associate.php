@@ -30,7 +30,6 @@ class Associate extends Model
         'email_hash',
         'account_id',
         'clinic_id',
-        'laboratory_id',
     ];
 
     protected $casts = [

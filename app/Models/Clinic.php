@@ -51,7 +51,7 @@ class Clinic extends Model
     // Connections
     public function logs()
     {
-        return $this->hasMany(Logs::class, 'clinic_id', 'clinic_id');
+        return $this->morphMany(Logs::class, 'loggable');
     }
 
     public function account()
@@ -80,7 +80,7 @@ class Clinic extends Model
     public function medicines()
     {
         return $this->belongsToMany(Medicine::class, 'medicine_clinic', 'clinic_id', 'medicine_id')
-            ->using(MedicineClinic::class) 
+            ->using(MedicineClinic::class)
             ->withPivot('medicine_clinic_id', 'price', 'stock')
             ->withTimestamps();
     }

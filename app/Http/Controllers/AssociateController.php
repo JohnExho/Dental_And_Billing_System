@@ -51,7 +51,6 @@ class AssociateController extends Controller
             'address.city_id' => 'nullable|exists:cities,id',
             'address.province_id' => 'nullable|exists:provinces,id',
             'clinic_id' => 'nullable|exists:clinics,clinic_id',
-            'laboratory_id' => 'nullable|exists:laboratories,laboratory_id',
         ]);
 
         // Prevent duplicate email
@@ -84,7 +83,6 @@ class AssociateController extends Controller
                 'email' => $normalizedEmail,
                 'email_hash' => $newEmailHash,
                 'clinic_id' => $request->clinic_id,
-                'laboratory_id' => $request->laboratory_id,
             ]);
 
             // Step 2: Create Address (if provided)

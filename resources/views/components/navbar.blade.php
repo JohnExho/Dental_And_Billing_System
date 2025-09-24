@@ -50,6 +50,11 @@
         'medicines' => 'Medicines',
         'services' => 'Services',
     ];
+
+    $currentClinic = null;
+    if (session('clinic_id')) {
+        $currentClinic = \App\Models\Clinic::find(session('clinic_id'));
+    }
 @endphp
 
 
@@ -72,6 +77,18 @@
 
         <div class="collapse navbar-collapse justify-content-end" id="navbarNav">
             <ul class="navbar-nav ms-auto" style="margin-right: 0; margin-left: 250px;">
+
+                @if($currentClinic !== null)
+                <li class="nav-item d-flex align-items-center me-3">
+                    <span
+                        class="badge rounded-pill bg-light text-dark border d-flex align-items-center px-3 py-2 shadow-sm">
+                        <i class="bi bi-hospital me-2 text-primary"></i>
+                        <span class="fw-semibold">Clinic:</span>&nbsp;{{ $currentClinic->name }}
+                    </span>
+                </li>
+                @endif
+
+
                 <li class="nav-item dropdown">
                     <a class="nav-link dropdown-toggle fs-4" href="#" id="userDropdown" role="button"
                         data-bs-toggle="dropdown" aria-expanded="false">

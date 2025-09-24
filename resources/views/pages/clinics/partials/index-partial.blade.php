@@ -21,10 +21,6 @@
                     @foreach ($clinics as $clinic)
                         <tr class="{{ session('clinic_id') == $clinic->clinic_id ? 'table-success' : '' }}">
                             <td class="fw-semibold">{{ $clinic->name }}</td>
-                            <!-- rest of your columns -->
-                        </tr>
-                        <tr>
-                            <td class="fw-semibold">{{ $clinic->name }}</td>
                             <td>{{ Str::limit($clinic->description, 50) ?? 'No Description Given' }}</td>
                             <td>{{ $clinic->email }}</td>
                             <td>{{ $clinic->speciality }}</td>
@@ -44,8 +40,8 @@
                                 <form action="{{ route('process-select-clinic') }}" method="POST" class="d-inline">
                                     @csrf
                                     <input type="hidden" name="clinic_id" value="{{ $clinic->clinic_id }}">
-                                    <button type="submit" class="btn btn-sm btn-success">
-                                        <i class="bi bi-check-circle"></i> Select
+                                    <button type="submit" class="btn btn-sm btn-outline-success">
+                                        <i class="bi bi-check-circle"></i>
                                     </button>
                                 </form>
 

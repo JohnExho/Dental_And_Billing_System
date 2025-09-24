@@ -124,37 +124,18 @@
                                 </div>
                             </div>
 
-                            <!-- Clinic & Laboratory -->
+                            <!-- Clinic -->
                             <h6 class="text-muted mt-4 mb-2">
-                                <i class="bi bi-building me-1"></i> Clinic & Laboratory
+                                <i class="bi bi-building me-1"></i> Clinic
                             </h6>
                             <div class="row">
                                 <div class="col-md-6 mb-3">
-                                    <select name="clinic_id" class="form-select" required>
-                                        <option value="">-- Select Clinic --</option>
-                                        @foreach ($clinics as $clinic)
-                                            <option value="{{ $clinic->clinic_id }}"
-                                                {{ old('clinic_id', $associate->clinic_id ?? '') == $clinic->clinic_id ? 'selected' : '' }}>
-                                                {{ $clinic->name }}
-                                            </option>
-                                        @endforeach
-                                    </select>
+                                    <input type="hidden" name="clinic_id" value="{{ session('clinic_id') }}">
+                                    <input type="text" class="form-control"
+                                        value="{{ \App\Models\Clinic::find(session('clinic_id'))->name }}" disabled>
                                 </div>
-
-                                <div class="col-md-6 mb-3">
-                                    <select name="laboratory_id" class="form-select">
-                                        <option value="">-- Select Laboratory --</option>
-                                        @foreach ($laboratories as $lab)
-                                            <option value="{{ $lab->laboratory_id }}"
-                                                {{ old('laboratory_id', $associate->laboratory_id ?? '') == $lab->laboratory_id ? 'selected' : '' }}>
-                                                {{ $lab->name }}
-                                            </option>
-                                        @endforeach
-                                    </select>
-                                    <div class="form-text">This field is optional</div>
-                                </div>
-
                             </div>
+
 
                         </div>
                     </div>

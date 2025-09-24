@@ -46,6 +46,20 @@ class Address extends Model
         'deleted_at' => 'datetime',
     ];
 
+    //Accessor for full address
+    public function getFullAddressAttribute(): string
+    {
+        $parts = array_filter([
+            $this->house_no,
+            $this->street,
+            $this->barangay_name,
+            $this->city_name,
+            $this->province_name,
+        ]);
+
+        return implode(', ', $parts);
+    }
+
 
     //Connections
 

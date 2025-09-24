@@ -2,7 +2,7 @@
 
 namespace App\Models;
 
-use App\Models\Logs as Log;
+use App\Models\Logs;
 use App\Traits\HasUuid;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Database\Eloquent\SoftDeletes;
@@ -26,7 +26,7 @@ class Account extends Authenticatable
         'email',
         'email_hash',
         'mobile_no',
-        'contact_no', 
+        'contact_no',
         'password',
         'role',
         'can_act_as_staff',
@@ -58,16 +58,17 @@ class Account extends Authenticatable
 
     public function getFullNameAttribute()
     {
-    return trim("{$this->last_name}, {$this->first_name} {$this->middle_name}") ?: 'N/A';
+        return trim("{$this->last_name}, {$this->first_name} {$this->middle_name}") ?: 'N/A';
     }
 
     //Connections
     public function logs()
     {
-        return $this->hasMany(Logs::class, 'account_id', 'account_id');
+        return $this->morphMany(Logs::class, 'loggable');
     }
 
-        public function address()
+
+    public function address()
     {
         return $this->hasOne(Address::class, 'account_id', 'account_id');
     }

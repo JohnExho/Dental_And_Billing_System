@@ -5,8 +5,7 @@ use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 use phpDocumentor\Reflection\Types\Nullable;
 
-return new class extends Migration
-{
+return new class extends Migration {
     /**
      * Run the migrations.
      */
@@ -93,7 +92,6 @@ return new class extends Migration
             $table->uuid('associate_id')->primary();
             $table->uuid('account_id')->nullable();
             $table->uuid('clinic_id')->nullable();
-            $table->uuid('laboratory_id')->nullable();
             $table->text('first_name');
             $table->text('middle_name')->nullable();
             $table->text('last_name');
@@ -110,7 +108,6 @@ return new class extends Migration
 
             $table->foreign('account_id')->references('account_id')->on('accounts')->onDelete('set null');
             $table->foreign('clinic_id')->references('clinic_id')->on('clinics')->onDelete('set null');
-            $table->foreign('laboratory_id')->references('laboratory_id')->on('laboratories')->onDelete('set null');
         });
 
         Schema::create('patient_qr_codes', function (Blueprint $table) {
@@ -281,37 +278,36 @@ return new class extends Migration
 
         Schema::create('logs', function (Blueprint $table) {
             $table->uuid('log_id')->primary();
-            $table->string('account_id')->nullable();
-            $table->text('account_name_snapshot')->nullable(); // store name at time of action for audit trail
-            $table->uuid('patient_id')->nullable(); // Nullable if log is not patient-specific
-            $table->uuid('associate_id')->nullable(); // Nullable if log is not associate-specific
-            $table->uuid('clinic_id')->nullable(); // Nullable if log is not clinic-specific
-            $table->uuid('laboratory_id')->nullable(); // Nullable if log is not laboratory
-            $table->string('log_type'); // e.g., 'appointment', 'bill', 'note'
-            $table->string('action'); // e.g., 'created', 'updated', 'deleted'
+
+            // Who did the action
+            $table->uuid('account_id')->nullable();
+            $table->text('account_name_snapshot')->nullable(); // Freeze name at time of log
+
+            // Polymorphic relation (can point to patients, bills, appointments, etc.)
+            $table->uuid('loggable_id')->nullable();
+            $table->string('loggable_type')->nullable();
+            $table->text('loggable_snapshot')->nullable();
+
+            // Metadata
+            $table->string('log_type'); // e.g., 'bill', 'appointment', 'patient'
+            $table->string('action');   // e.g., 'created', 'updated', 'deleted', 'selected'
             $table->text('description')->nullable();
-            $table->text('private_description')->nullable(); // shown only for audit trail
+            $table->text('private_description')->nullable();
+
+            // Request context
             $table->ipAddress('ip_address')->nullable();
             $table->string('user_agent', 512)->nullable();
-
-            $table->index('account_id');
-            $table->index('patient_id');
-            $table->index('associate_id');
-            $table->index('clinic_id');
-            $table->index('laboratory_id');
-            $table->index('log_type');
-            $table->index('action');
-            $table->index('created_at');
 
             $table->timestamps();
             $table->softDeletes();
 
-            $table->foreign('account_id')->references('account_id')->on('accounts')->onDelete('set null');
-            $table->foreign('patient_id')->references('patient_id')->on('patients')->onDelete('set null');
-            $table->foreign('associate_id')->references('associate_id')->on('associates')->onDelete('set null');
-            $table->foreign('clinic_id')->references('clinic_id')->on('clinics')->onDelete('set null');
-            $table->foreign('laboratory_id')->references('laboratory_id')->on('laboratories')->onDelete('set null');
+            // Indexes
+            $table->index(['loggable_id', 'loggable_type']);
+            $table->index('account_id');
+            $table->index('log_type');
+            $table->index('action');
         });
+
 
         Schema::create('addresses', function (Blueprint $table) {
             $table->uuid('address_id')->primary();

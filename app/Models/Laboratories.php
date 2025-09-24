@@ -63,12 +63,4 @@ class Laboratories extends Model
     {
         return $this->hasOne(Address::class, 'laboratory_id', 'laboratory_id');
     }
-
-    public function services()
-    {
-        return $this->belongsToMany(Service::class, 'laboratory_service', 'laboratory_id', 'service_id')
-            ->using(LaboratoryService::class)
-            ->withPivot('laboratory_service_id', 'price')
-            ->withTimestamps();
-    }
 }

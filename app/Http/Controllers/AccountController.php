@@ -3,18 +3,19 @@
 namespace App\Http\Controllers;
 
 
+use App\Services\LogService;
 use App\Models\Logs;
 use App\Models\Account;
 use App\Models\Address;
 use Illuminate\Support\Str;
 use Illuminate\Http\Request;
+use Yajra\Address\Entities\City;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
-use Illuminate\Support\Facades\RateLimiter;
 use Yajra\Address\Entities\Barangay;
-use Yajra\Address\Entities\City;
 use Yajra\Address\Entities\Province;
+use Illuminate\Support\Facades\RateLimiter;
 
 class AccountController extends Controller
 {
@@ -71,15 +72,13 @@ class AccountController extends Controller
             $account = $this->guard->user();
 
             if ($account) {
-                Logs::record(
-                    $account,
-                    null,
-                    null,
-                    null,
-                    'login',
-                    'auth',
+                LogService::record(
+                    $account,            // who did it
+                    $account,            // what was acted on (loggable model, here the Account itself)
+                    'login',             // action
+                    'auth',              // log_type
                     'User has logged in',
-                    'Account: ' . json_encode($account->account_id),
+                    'Account: ' . $account->account_id,
                     $request->ip(),
                     $request->userAgent()
                 );
@@ -127,15 +126,13 @@ class AccountController extends Controller
         /** @var Account $account */
 
         if ($account) {
-            Logs::record(
-                $account,
-                null,
-                null,
-                null,
-                'logout',
-                'auth',
+            LogService::record(
+                $account,            // who did it
+                $account,            // what was acted on (loggable model, here the Account itself)
+                'logout',             // action
+                'auth',              // log_type
                 'User has logged out',
-                'Account: ' . json_encode($account->account_id),
+                'Account: ' . $account->account_id,
                 $request->ip(),
                 $request->userAgent()
             );
@@ -163,15 +160,14 @@ class AccountController extends Controller
 
         $activeRole = session('active_role');
         if ($account) {
-            Logs::record(
-                $account,
-                null,
-                null,
-                null,
-                'update',
-                'auth',
+
+            LogService::record(
+                $account,            // who did it
+                $account,            // what was acted on (loggable model, here the Account itself)
+                'update',             // action
+                'auth',              // log_type
                 'User has changed roles',
-                'Account: ' . json_encode($account->account_id),
+                'Account: ' . $account->account_id,
                 $request->ip(),
                 $request->userAgent()
             );
@@ -209,20 +205,17 @@ class AccountController extends Controller
         /** @var Account $account */
         $account = $this->guard->user();
         if ($account) {
-            Logs::record(
-                $account,
-                null,
-                null,
-                null,
-                'update',
-                'auth',
+            LogService::record(
+                $account,            // who did it
+                $account,            // what was acted on (loggable model, here the Account itself)
+                'update',             // action
+                'auth',              // log_type
                 'User has changed name',
-                'Account: ' . json_encode($account->account_id),
+                'Account: ' . $account->account_id,
                 $request->ip(),
                 $request->userAgent()
             );
         }
-
         return redirect()->back()->with('success', 'Name updated successfully.');
     }
 
@@ -273,15 +266,13 @@ class AccountController extends Controller
         /** @var Account $account */
         $account = $this->guard->user();
         if ($account) {
-            Logs::record(
-                $account,
-                null,
-                null,
-                null,
-                'update',
-                'auth',
+            LogService::record(
+                $account,            // who did it
+                $account,            // what was acted on (loggable model, here the Account itself)
+                'update',             // action
+                'auth',              // log_type
                 'User has changed password',
-                'Account: ' . json_encode($account->account_id),
+                'Account: ' . $account->account_id,
                 $request->ip(),
                 $request->userAgent()
             );
@@ -332,15 +323,13 @@ class AccountController extends Controller
         $request->session()->regenerateToken();
 
         /** @var Account $account */
-        Logs::record(
-            $account,
-            null,
-            null,
-            null,
-            'delete',
-            'auth',
+        LogService::record(
+            $account,            // who did it
+            $account,            // what was acted on (loggable model, here the Account itself)
+            'delete',             // action
+            'auth',              // log_type
             'User has deleted their account',
-            'Account: ' . json_encode($accountId),
+            'Account: ' . $account->account_id,
             $request->ip(),
             $request->userAgent()
         );
