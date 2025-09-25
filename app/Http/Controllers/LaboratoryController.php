@@ -8,6 +8,7 @@ use App\Models\Account;
 use App\Models\Address;
 use App\Models\Laboratories;
 use App\Models\Logs;
+use App\Services\LogService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -105,16 +106,14 @@ class LaboratoryController extends Controller
             // Step 4: Logging
             $addressId = optional($laboratory->address)->address_id;
 
-            Logs::record(
-                $account,
-                null,
-                $laboratory,
-                null,
-                'create',
-                'clinic',
+            LogService::record(
+                $account,            // who did it
+                $laboratory,            // what was acted on (loggable model, here the Account itself)
+                'create',             // action
+                'laboratory',              // log_type
                 'User created a laboratory',
-                'clinic: '.$laboratory->laboratory_id
-                    .', address: '.$addressId,
+                'Laboratory: '.$laboratory->laboratory_id
+                    .', Address: '.$addressId,
                 $request->ip(),
                 $request->userAgent()
             );
@@ -195,16 +194,14 @@ class LaboratoryController extends Controller
             // Step 3: Logging
             $addressId = optional($laboratory->address)->address_id;
 
-            Logs::record(
-                $authAccount, // actor
-                null,       // subject
-                $laboratory,
-                null,
-                'update',
-                'laboratory',
+             LogService::record(
+                $authAccount,            // who did it
+                $laboratory,            // what was acted on (loggable model, here the Account itself)
+                'update',             // action
+                'laboratory',              // log_type
                 'User updated a laboratory',
-                'laboratory: '.$laboratory->laboratory_id
-                    .', address: '.$addressId,
+                'Laboratory: '.$laboratory->laboratory_id
+                    .', Address: '.$addressId,
                 $request->ip(),
                 $request->userAgent()
             );
@@ -223,11 +220,9 @@ class LaboratoryController extends Controller
         $account = Auth::guard('account')->user();
         $laboratory = Laboratories::findOrFail($request->laboratory_id);
 
-
-                if (!Hash::check($request->password, $account->password)) {
+        if (! Hash::check($request->password, $account->password)) {
             return back()->with('error', 'The password is incorrect.');
         }
-
 
         return DB::transaction(function () use ($laboratory, $account, $request) {
 
@@ -238,21 +233,17 @@ class LaboratoryController extends Controller
             // Delete clinic
             $laboratory->delete();
 
-            // Logging
-            Logs::record(
-                $account,
-                null,
-                null,
-                null,
-                'delete',
-                'clinic',
-                'User deleted a Laboratory',
-                'Account: '.$laboratory->laboratory_id
-                    .', address: '.$addressId,
+             LogService::record(
+                $account,            // who did it
+                $laboratory,            // what was acted on (loggable model, here the Account itself)
+                'delete',             // action
+                'laboratory',              // log_type
+                'User deleted a laboratory',
+                'Laboratory: '.$laboratory->laboratory_id
+                    .', Address: '.$addressId,
                 $request->ip(),
                 $request->userAgent()
             );
-
             return redirect()->route('laboratories')->with('success', 'Laboratory deleted successfully.');
         });
     }

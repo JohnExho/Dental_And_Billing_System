@@ -2,17 +2,17 @@
 
 namespace App\Http\Controllers;
 
-use Carbon\Carbon;
-use App\Models\Logs;
 use App\Mail\SendEmail;
 use App\Models\Account;
+use App\Services\LogService;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Mail;
 
 class OTPController extends Controller
 {
-     public function sendOtp(Request $request)
+    public function sendOtp(Request $request)
     {
         $request->validate([
             'email' => 'required|email',
@@ -25,25 +25,24 @@ class OTPController extends Controller
         $otp = random_int(100000, 999999);
 
         $account->update([
-            'otp_hash' => Hash::make((string)$otp),
+            'otp_hash' => Hash::make((string) $otp),
             'otp_expires_at' => Carbon::now()->addMinutes(5),
         ]);
 
         Mail::to($account->email)->send(new SendEmail($otp));
 
         /** @var Account $account */
-        Logs::record(
-            $account,
-            null,
-            null,
-            null,
-            'otp_request',
-            'auth',
+        LogService::record(
+            $account,            // who did it
+            $account,            // what was acted on (loggable model, here the Account itself)
+            'otp_request',             // action
+            'auth',              // log_type
             'User has requested OTP for password reset',
-            'Account: ' . json_encode($account->account_id),
+            'Account: '.$account->account_id,
             $request->ip(),
             $request->userAgent()
         );
+
         return redirect()->route('confirm-otp')->with('success', 'OTP sent to your email.');
     }
 
@@ -51,7 +50,7 @@ class OTPController extends Controller
     {
         $email = session('otp_email');
 
-        if (!$email) {
+        if (! $email) {
             return redirect()->route('login')->withErrors('Session expired. Please request a new OTP.');
         }
 
@@ -61,29 +60,26 @@ class OTPController extends Controller
         $otp = random_int(100000, 999999);
 
         $account->update([
-            'otp_hash' => Hash::make((string)$otp),
+            'otp_hash' => Hash::make((string) $otp),
             'otp_expires_at' => Carbon::now()->addMinutes(5),
         ]);
 
         Mail::to($account->email)->send(new SendEmail($otp));
 
-        Logs::record(
-            $account,
-            null,
-            null,
-            null,
-            'otp_resend',
-            'auth',
+        /** @var Account $account */
+        LogService::record(
+            $account,            // who did it
+            $account,            // what was acted on (loggable model, here the Account itself)
+            'otp_resend',             // action
+            'auth',              // log_type
             'User has requested OTP resend',
-            'Account: ' . json_encode($account->account_id),
+            'Account: '.$account->account_id,
             $request->ip(),
             $request->userAgent()
         );
 
         return back()->with('success', 'A new OTP has been sent to your email.');
     }
-
-
 
     public function verifyOtp(Request $request)
     {
@@ -100,11 +96,11 @@ class OTPController extends Controller
         $emailHash = hash('sha256', strtolower($encryptedEmail));
         $account = Account::where('email_hash', $emailHash)->firstOrFail();
 
-        if (!$account || !$account->otp_hash || now()->gt($account->otp_expires_at)) {
+        if (! $account || ! $account->otp_hash || now()->gt($account->otp_expires_at)) {
             return back()->withErrors(['otp' => 'Invalid or expired OTP']);
         }
 
-        if (!Hash::check($otpInput, $account->otp_hash)) {
+        if (! Hash::check($otpInput, $account->otp_hash)) {
             return back()->withErrors(['otp' => 'Invalid or expired OTP']);
         }
 
@@ -113,15 +109,13 @@ class OTPController extends Controller
             'otp_expires_at' => null,
         ]);
 
-        Logs::record(
-            $account,
-            null,
-            null,
-            null,
-            'otp_verify',
-            'auth',
+        LogService::record(
+            $account,            // who did it
+            $account,            // what was acted on (loggable model, here the Account itself)
+            'otp_verify',             // action
+            'auth',              // log_type
             'User has verified OTP for password reset',
-            'Account: ' . json_encode($account->account_id),
+            'Account: '.$account->account_id,
             $request->ip(),
             $request->userAgent()
         );
@@ -133,10 +127,9 @@ class OTPController extends Controller
         return redirect()->route('reset-password')->with('success', 'OTP verified. You can now reset your password.');
     }
 
-    
     public function showResetForm(Request $request)
     {
-        if (!session('otp_verified')) {
+        if (! session('otp_verified')) {
             return redirect()->route('forgot-password')
                 ->withErrors(['otp' => 'You must verify your OTP first.']);
         }
@@ -148,14 +141,12 @@ class OTPController extends Controller
         ]);
     }
 
-
-
     public function resetPassword(Request $request)
     {
         $encryptedEmail = session('otp_email');
         $request->validate([
-            'email'                 => 'required|email',
-            'password'              => 'required|min:8|confirmed',
+            'email' => 'required|email',
+            'password' => 'required|min:8|confirmed',
             'password_confirmation' => 'required',
         ]);
 
@@ -164,15 +155,13 @@ class OTPController extends Controller
 
         $account->update(['password' => Hash::make($request->password)]);
         /** @var Account $account */
-        Logs::record(
-            $account,
-            null,
-            null,
-            null,
-            'password_reset',
-            'auth',
+        LogService::record(
+            $account,            // who did it
+            $account,            // what was acted on (loggable model, here the Account itself)
+            'password_reset',             // action
+            'auth',              // log_type
             'User has reset their password',
-            'Account: ' . json_encode($account->account_id),
+            'Account: '.$account->account_id,
             $request->ip(),
             $request->userAgent()
         );

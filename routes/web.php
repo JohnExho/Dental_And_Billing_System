@@ -22,7 +22,7 @@ Route::middleware('web')->group(function () {
         Route::get('/confirm-otp', function () {
             return view('auth.confirm-otp');
         })->name('confirm-otp');
-        Route::get('/reset-password', [AccountController::class, 'showResetForm'])->name('reset-password');
+        Route::get('/reset-password', [OTPController::class, 'showResetForm'])->name('reset-password');
     });
 
     Route::get('/locations/cities/{province}', [AddressController::class, 'cities']);

@@ -251,9 +251,10 @@ return new class extends Migration {
 
         Schema::create('tooth_list', function (Blueprint $table) {
             $table->uuid('tooth_list_id')->primary();
-            $table->text('number')->unique(); // e.g., 11, 12, 13
+            $table->unsignedTinyInteger('number')->unique()->index();  // e.g., 11, 12, 13
             $table->text('name');             // e.g., upper right central incisor
             $table->text('name_hash')->index();
+            $table->decimal('default_price', 10, 2)->nullable()->index();
             $table->timestamps();
             $table->softDeletes();
         });

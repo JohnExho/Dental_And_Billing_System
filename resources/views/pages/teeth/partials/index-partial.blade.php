@@ -13,11 +13,15 @@
                     </tr>
                 </thead>
                 <tbody>
-                    @foreach ($teeth as $tooth)
+                    @forelse  ($teeth as $tooth)
                         <tr>
                             <td>{{ $tooth->number }}</td>
                             <td>{{ $tooth->name }}</td>
-                            <td>{{ $tooth->price }}</td>
+                            @if ($clinicId)
+                                <td> {{ $tooth->clinicPrices->first()->price ?? '—' }} </td>
+                            @else
+                                <td>{{ $tooth->default_price ?? '—' }}</td>
+                            @endif
                             <td class="text-end">
                                 <a role="button" class="btn btn-sm btn-outline-primary" data-bs-toggle="modal"
                                     data-bs-target="#tooth-detail-modal" data-name="{{ $tooth->name }}"
@@ -26,12 +30,12 @@
                                 </a>
 
 
-
                                 <!-- Edit Button -->
                                 <button type="button" class="btn btn-sm btn-outline-secondary" data-bs-toggle="modal"
                                     data-bs-target="#edit-tooth-modal" onclick="event.stopPropagation();"
-                                    data-id="{{ $tooth->tooth_list_id }}"data-name="{{ $tooth->name }}"
-                                    data-number="{{ $tooth->number }}" data-price="{{ $tooth->price }}">
+                                    data-id="{{ $tooth->tooth_list_id }}" data-name="{{ $tooth->name }}"
+                                    data-number="{{ $tooth->number }}" data-default_price="{{ $tooth->default_price }}"
+                                    @if (session('clinic_id')) data-clinic_price="{{ optional($tooth->clinicPrices->first())->price }}" @endif>
                                     <i class="bi bi-pencil-square"></i>
                                 </button>
 
@@ -42,7 +46,11 @@
                                 </button>
                             </td>
                         </tr>
-                    @endforeach
+                    @empty
+                        <tr>
+                            <td colspan="3">No teeth found.</td>
+                        </tr>
+                    @endforelse
                 </tbody>
             </table>
         </div>

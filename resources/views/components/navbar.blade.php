@@ -86,6 +86,14 @@
                             <span class="fw-semibold">Clinic:</span>&nbsp;{{ $currentClinic->name }}
                         </a>
                     </li>
+                @else
+                    <li class="nav-item d-flex align-items-center me-3">
+                        <a href="{{ route('clinics') }}"
+                            class="badge rounded-pill bg-light text-dark border d-flex align-items-center px-3 py-2 shadow-sm text-decoration-none">
+                            <i class="bi bi-hospital me-2 text-primary"></i>
+                            <span class="fw-semibold">Clinic:</span>&nbsp;No Selected
+                        </a>
+                    </li>
                 @endif
 
 

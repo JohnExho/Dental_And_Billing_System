@@ -51,7 +51,7 @@ class Laboratories extends Model
     // Connections
     public function logs()
     {
-        return $this->hasMany(Logs::class, 'laboratory_id', 'laboratory_id');
+        return $this->morphMany(Logs::class, 'loggable');
     }
 
     public function account()

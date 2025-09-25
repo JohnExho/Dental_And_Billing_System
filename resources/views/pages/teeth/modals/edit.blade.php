@@ -32,8 +32,10 @@
                         </div>
                         <div class="col-md-3">
                             <label for="edit_price" class="form-label">Tooth Price</label>
-                            <input type="number" class="form-control" id="edit_price" name="price" inputmode="numeric">
+                            <input type="number" class="form-control" id="edit_price" name="price"
+                                inputmode="decimal" step="0.01" min="0">
                         </div>
+
                     </div>
                 </div>
 
@@ -57,12 +59,21 @@
 
         editModal.addEventListener('show.bs.modal', function(event) {
             const button = event.relatedTarget;
-
+            const clinicPrice = button.getAttribute('data-clinic_price');
+            const defaultPrice = button.getAttribute('data-default_price');
             // Fill fields from data attributes
             editModal.querySelector('#edit_tooth_id').value = button.getAttribute('data-id') || '';
             editModal.querySelector('#edit_name').value = button.getAttribute('data-name') || '';
             editModal.querySelector('#edit_number').value = button.getAttribute('data-number') || '';
-            editModal.querySelector('#edit_price').value = button.getAttribute('data-price') || '';
+
+
+            // Prefer clinic price, fallback to default
+            if (clinicPrice !== null) {
+                editModal.querySelector('#edit_price').value = clinicPrice;
+            } else {
+                editModal.querySelector('#edit_price').value = defaultPrice || '';
+            }
+
         });
 
         // Enforce numeric + 1–32 range

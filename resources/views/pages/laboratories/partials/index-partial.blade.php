@@ -19,7 +19,7 @@
                     @foreach ($laboratories as $laboratory)
                         <tr>
                             <td>{{ $laboratory->name }}</td>
-                            <td>{{ $laboratory->description }}</td>
+                            <td>{{ Str::limit($laboratory->description, 50) }}</td>
                             <td>{{ $laboratory->speciality }}</td>
                             <td>{{ $laboratory->email }}</td>
                             <td>

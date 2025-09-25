@@ -2,13 +2,15 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Logs;
+use App\Models\ClinicToothPrice;
 use App\Models\ToothList;
+use App\Services\LogService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Str;
 use Illuminate\Validation\Rule;
 
 class ToothListController extends Controller
@@ -22,10 +24,19 @@ class ToothListController extends Controller
 
     public function index()
     {
-        $teeth = ToothList::latest()
+        $clinicId = session('clinic_id'); // null if not chosen
+
+        $teeth = ToothList::with([
+            'clinicPrices' => function ($q) use ($clinicId) {
+                if ($clinicId) {
+                    $q->where('clinic_id', $clinicId);
+                }
+            },
+        ])
+            ->orderByRaw('CAST(number AS UNSIGNED) ASC')
             ->paginate(8);
 
-        return view('pages.teeth.index', compact('teeth'));
+        return view('pages.teeth.index', compact('teeth', 'clinicId'));
     }
 
     public function create(Request $request)
@@ -40,22 +51,36 @@ class ToothListController extends Controller
             return back()->with('error', $validator->errors()->first());
         }
 
+        // 1. Create tooth catalog entry
         $tooth = ToothList::create([
+            'tooth_list_id' => \Str::uuid(),
             'name' => $request->name,
             'name_hash' => hash('sha256', strtolower($request->name)),
             'number' => $request->number,
-            'price' => $request->price,
+            'default_price' => session()->has('clinic_id') ? null : $request->price, // only store if no clinic
         ]);
+
+        // 2. If session clinic exists → save price for that clinic
+        if (session()->has('clinic_id')) {
+            ClinicToothPrice::create([
+                'clinic_tooth_price_id' => \Str::uuid(),
+                'clinic_id' => session('clinic_id'),
+                'tooth_list_id' => $tooth->tooth_list_id,
+                'price' => $request->price,
+            ]);
+        }
+
+        // 3. Logging
         $authAccount = $this->guard->user();
-        Logs::record(
-            $authAccount, // actor (logged-in user)
-            null,
-            null,
-            null,
+        $priceSource = session()->has('clinic_id') ? 'Clinic Price' : 'Default Price';
+
+        LogService::record(
+            $authAccount,
+            $tooth,
             'create',
-            'Teeth',
-            'User created a tooth',
-            'Tooth: '.$tooth->name.' (#'.$tooth->number.') Price: '.$tooth->price,
+            'Tooth Catalog',
+            'User has created a tooth',
+            "Tooth: {$tooth->name} (#{$tooth->number}) {$priceSource}: {$request->price}",
             $request->ip(),
             $request->userAgent()
         );
@@ -74,7 +99,8 @@ class ToothListController extends Controller
                 'integer',
                 'min:1',
                 'max:32',
-                Rule::unique('tooth_list', 'number')->ignore($request->tooth_list_id, 'tooth_list_id'),
+                Rule::unique('tooth_list', 'number')
+                    ->ignore($request->tooth_list_id, 'tooth_list_id'),
             ],
         ], [
             'number.unique' => 'This tooth number is already assigned.',
@@ -84,29 +110,47 @@ class ToothListController extends Controller
             return back()->with('error', $validator->errors()->first());
         }
 
-        // Find the tooth by ID
+        // 1. Find the base tooth
         $tooth = ToothList::findOrFail($request->tooth_list_id);
 
-        // Update its values
+        // 2. Update core attributes
         $tooth->update([
             'name' => $request->name,
             'name_hash' => hash('sha256', strtolower($request->name)),
             'number' => $request->number,
-            'price' => $request->price,
         ]);
 
-        $authAccount = $this->guard->user();
+        // 3. Handle pricing depending on clinic session
+        $priceSource = 'Default Price';
 
-        // Log the update action
-        Logs::record(
+        if (session()->has('clinic_id')) {
+            $priceSource = 'Clinic Price';
+
+            ClinicToothPrice::updateOrCreate(
+                [
+                    'clinic_id' => session('clinic_id'),
+                    'tooth_list_id' => $tooth->tooth_list_id,
+                ],
+                [
+                    'clinic_tooth_price_id' => Str::uuid(),
+                    'price' => $request->price,
+                ]
+            );
+        } else {
+            $tooth->update([
+                'default_price' => $request->price,
+            ]);
+        }
+
+        // 4. Logging
+        $authAccount = $this->guard->user();
+        LogService::record(
             $authAccount,
-            null,
-            null,
-            null,
+            $tooth,
             'update',
-            'Teeth',
-            'User updated a tooth',
-            'Tooth: '.$tooth->name.' (#'.$tooth->number.') . Price: '.$tooth->price,
+            'Tooth Catalog',
+            'User has updated a tooth',
+            "Tooth: {$tooth->name} (#{$tooth->number}) {$priceSource}: {$request->price}",
             $request->ip(),
             $request->userAgent()
         );
@@ -125,7 +169,7 @@ class ToothListController extends Controller
 
         $deletor = Auth::guard('account')->user();
 
-        // Check if the password matches the current user's password
+        // Password check
         if (! Hash::check($request->password, $deletor->password)) {
             return back()->with('error', 'The password is incorrect.');
         }
@@ -133,18 +177,30 @@ class ToothListController extends Controller
         $toothList = ToothList::findOrFail($request->tooth_list_id);
 
         return DB::transaction(function () use ($toothList, $deletor, $request) {
-            $toothList->delete();
+            // If a clinic session exists, remove only the clinic price mapping
+            if (session()->has('clinic_id')) {
+                $clinicId = session('clinic_id');
+                ClinicToothPrice::where('clinic_id', $clinicId)
+                    ->where('tooth_list_id', $toothList->tooth_list_id)
+                    ->get()
+                    ->each
+                    ->delete(); // uses the model ->delete() = soft delete
+
+                $priceSource = "Clinic Price (Clinic ID: {$clinicId})";
+            } else {
+                // Otherwise delete the tooth from catalog entirely
+                $toothList->delete();
+                $priceSource = 'Default Price / Global Tooth';
+            }
 
             // Logging
-            Logs::record(
+            LogService::record(
                 $deletor,
-                null,
-                null,
-                null,
+                $toothList,
                 'delete',
                 'Teeth',
-                'User deleted a tooth',
-                'Tooth: '.$toothList->name.' (#'.$toothList->number.')',
+                'User deleted a tooth or clinic-specific price',
+                "Tooth: {$toothList->name} (#{$toothList->number}) Source: {$priceSource}",
                 $request->ip(),
                 $request->userAgent()
             );

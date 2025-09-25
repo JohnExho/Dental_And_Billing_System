@@ -16,13 +16,13 @@ class ClinicToothPrice extends Model
 
     protected $table = 'clinic_tooth_prices';
 
-    protected $primaryKey = 'clinic_tooth_prices_id';
+    protected $primaryKey = 'clinic_tooth_price_id';
 
     protected $keyType = 'string';
 
     public $incrementing = false;
 
-    protected $uuidColumn = 'clinic_tooth_prices_id';
+    protected $uuidColumn = 'clinic_tooth_price_id';
 
     protected $fillable = [
         'tooth_list_id',
@@ -31,7 +31,7 @@ class ClinicToothPrice extends Model
     ];
 
     protected $casts = [
-        'price' => 'encrypted',
+        'price' => 'decimal:2',
         'created_at' => 'datetime',
         'updated_at' => 'datetime',
         'deleted_at' => 'datetime',
@@ -54,4 +54,5 @@ class ClinicToothPrice extends Model
     }
 
 }
+
 

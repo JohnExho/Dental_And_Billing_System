@@ -26,7 +26,22 @@ class ToothListSeeder extends Seeder
                 'number' => $i,
                 'name' => $name,
                 'name_hash' => hash('sha256', strtolower($name)),
+                'default_price' => $faker->randomFloat(2, 50, 500),
             ]);
+        }
+
+        $clinics = Clinic::all();
+        $teeth = ToothList::all();
+
+        foreach ($clinics as $clinic) {
+            foreach ($teeth as $tooth) {
+                ClinicToothPrice::create([
+                    'clinic_tooth_price_id' => Str::uuid(), // use the correct PK
+                    'clinic_id' => $clinic->clinic_id,
+                    'tooth_list_id' => $tooth->tooth_list_id,
+                    'price' => $faker->randomFloat(2, 50, 500),
+                ]);
+            }
         }
     }
 }
