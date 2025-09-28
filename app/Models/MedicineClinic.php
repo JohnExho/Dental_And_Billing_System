@@ -4,11 +4,11 @@ namespace App\Models;
 
 use App\Traits\HasUuid;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Relations\Pivot;
+use Illuminate\Database\Eloquent\Model;   // ✅ Use Model, not Pivot
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Notifications\Notifiable;
 
-class MedicineClinic extends Pivot
+class MedicineClinic extends Model   // ✅ Change here
 {
     use HasFactory, HasUuid, Notifiable, SoftDeletes;
 
@@ -16,11 +16,11 @@ class MedicineClinic extends Pivot
 
     protected $primaryKey = 'medicine_clinic_id';
 
-    public $incrementing = false; // because you’re using UUIDs
-
+    public $incrementing = false; // Using UUIDs
     protected $keyType = 'string';
 
-    protected $uuidColumn = 'medicine_id';
+    // ✅ Fix wrong UUID column
+    protected $uuidColumn = 'medicine_clinic_id';
 
     protected $fillable = [
         'medicine_id',
@@ -29,10 +29,13 @@ class MedicineClinic extends Pivot
         'price',
     ];
 
-    // Optional: if you want timestamps to work with Pivot
     public $timestamps = true;
 
-    // Relationships back to Medicine or Clinic (if needed)
+    public function logs()
+    {
+        return $this->morphMany(Logs::class, 'loggable');
+    }
+
     public function medicine()
     {
         return $this->belongsTo(Medicine::class, 'medicine_id', 'medicine_id');

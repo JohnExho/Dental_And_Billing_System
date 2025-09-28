@@ -24,8 +24,7 @@
                         <div class="col-md-6">
                             <label for="medicine-name" class="form-label fw-semibold">Medicine Name</label>
                             <input type="text" id="medicine-name" name="name"
-                                class="form-control form-control-lg rounded-3 shadow-sm"
-                                placeholder="e.g., Amoxicillin"
+                                class="form-control form-control-lg rounded-3 shadow-sm" placeholder="e.g., Amoxicillin"
                                 value="{{ old('name') }}" required>
                         </div>
 
@@ -34,54 +33,35 @@
                             <label for="medicine-description" class="form-label fw-semibold">Description</label>
                             <input type="text" id="medicine-description" name="description"
                                 class="form-control form-control-lg rounded-3 shadow-sm"
-                                placeholder="Short description..."
-                                value="{{ old('description') }}">
+                                placeholder="Short description..." value="{{ old('description') }}">
                         </div>
                     </div>
 
                     <hr class="my-4">
 
-                    <!-- Clinic Availability -->
+                    <!-- Price & Stock -->
                     <h6 class="text-secondary fw-semibold mb-3 border-start ps-2">
-                        <i class="bi bi-hospital me-2"></i> Clinic Availability
+                        <i class="bi bi-cash-stack me-2"></i>
+                        {{ session()->has('clinic_id') ? 'Clinic Price & Stock' : 'Default Price' }}
                     </h6>
 
-                    <div class="table-responsive">
-                        <table class="table table-bordered align-middle text-center">
-                            <thead class="table-light">
-                                <tr>
-                                    <th style="width: 25%">Clinic</th>
-                                    <th style="width: 25%">Select</th>
-                                    <th style="width: 25%">Price (₱)</th>
-                                    <th style="width: 25%">Stock</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                @foreach ($clinics as $clinic)
-                                    <tr>
-                                        <td class="fw-semibold text-start">{{ $clinic->name }}</td>
-                                        <td>
-                                            <input type="checkbox" class="form-check-input"
-                                                name="clinics[{{ $clinic->clinic_id }}][selected]" value="1">
-                                        </td>
-                                        <td>
-                                            <input type="number" step="0.01" min="0"
-                                                name="clinics[{{ $clinic->clinic_id }}][price]"
-                                                class="form-control form-control-sm rounded-3 shadow-sm"
-                                                placeholder="0.00">
-                                        </td>
-                                        <td>
-                                            <input type="number" min="0"
-                                                name="clinics[{{ $clinic->clinic_id }}][stock]"
-                                                class="form-control form-control-sm rounded-3 shadow-sm"
-                                                placeholder="0">
-                                        </td>
-                                    </tr>
-                                @endforeach
-                            </tbody>
-                        </table>
-                    </div>
+                    <div class="row g-4">
+                        <div class="col-md-6">
+                            <label class="form-label fw-semibold">Price (₱)</label>
+                            <input type="number" step="0.01" min="0" name="price"
+                                class="form-control form-control-lg rounded-3 shadow-sm" value="{{ old('price') }}"
+                                required>
+                        </div>
 
+                        @if (session()->has('clinic_id'))
+                            <div class="col-md-6">
+                                <label class="form-label fw-semibold">Stock</label>
+                                <input type="number" min="0" name="stock"
+                                    class="form-control form-control-lg rounded-3 shadow-sm" value="{{ old('stock') }}"
+                                    required>
+                            </div>
+                        @endif
+                    </div>
                 </div>
 
                 <!-- Footer -->
@@ -97,8 +77,6 @@
         </div>
     </div>
 </div>
-
-
 
 <script>
     document.addEventListener('DOMContentLoaded', function() {

@@ -92,35 +92,57 @@
         @yield('modals')
     </div>
     </div>
-    @if (Session::has('success'))
-        <script>
-            Swal.fire({
-                icon: 'success',
-                title: 'Success!',
-                text: '{{ Session::get('success') }}',
-                position: 'top-right',
-                timer: 3000,
-                toast: true,
-                showConfirmButton: false,
-                timerProgressBar: true
-            });
-        </script>
-    @endif
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
 
-    @if (Session::has('error') || $errors->any())
-        <script>
-            Swal.fire({
-                icon: 'error',
-                title: 'Error!',
-                text: '{{ Session::get('error') }}',
-                position: 'top-right',
-                timer: 3000,
-                toast: true,
-                showConfirmButton: false,
-                timerProgressBar: true
-            });
-        </script>
-    @endif
+            @if (Session::has('success'))
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Success!',
+                    text: '{{ Session::get('success') }}',
+                    position: 'top-right',
+                    timer: 2000,
+                    toast: true,
+                    showConfirmButton: false,
+                    timerProgressBar: true
+                });
+            @endif
+
+            @if (Session::has('stock_error'))
+                setTimeout(() => {
+                    Swal.fire({
+                        icon: 'warning',
+                        title: 'Low Stock Alert',
+                        text: '{{ Session::get('stock_error') }}',
+                        position: 'middle',
+                        timer: 2500,
+                        showConfirmButton: false,
+                        timerProgressBar: true,
+                        customClass: {
+                            popup: 'swal-lower-right'
+                        }
+                    });
+                }, {{ Session::has('success') ? 2100 : 0 }});
+            @endif
+
+            @if (Session::has('error') || $errors->any())
+                setTimeout(() => {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Error!',
+                        text: '{{ Session::get('error') }}',
+                        position: 'top-right',
+                        timer: 3000,
+                        toast: true,
+                        showConfirmButton: false,
+                        timerProgressBar: true
+                    });
+                }, {{ Session::has('success') || Session::has('stock_error') ? 4500 : 0 }});
+            @endif
+
+        });
+    </script>
+
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     {{-- <script src="{{ asset('js/app.js') }}"></script> --}}
     @stack('scripts')

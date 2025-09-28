@@ -2,19 +2,13 @@
 
 namespace App\Http\Controllers;
 
-
-use App\Services\LogService;
-use App\Models\Logs;
 use App\Models\Account;
-use App\Models\Address;
-use Illuminate\Support\Str;
+use App\Models\Medicine;
+use App\Services\LogService;
 use Illuminate\Http\Request;
-use Yajra\Address\Entities\City;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
-use Yajra\Address\Entities\Barangay;
-use Yajra\Address\Entities\Province;
 use Illuminate\Support\Facades\RateLimiter;
 
 class AccountController extends Controller
@@ -49,9 +43,9 @@ class AccountController extends Controller
     public function settings()
     {
         $account = $this->guard->user(); // Use the 'account' guard for consistency
+
         return view('settings.index', compact('account'));
     }
-
 
     public function login(Request $request)
     {
@@ -73,43 +67,50 @@ class AccountController extends Controller
 
             if ($account) {
                 LogService::record(
-                    $account,            // who did it
-                    $account,            // what was acted on (loggable model, here the Account itself)
-                    'login',             // action
-                    'auth',              // log_type
+                    $account,
+                    $account,
+                    'login',
+                    'auth',
                     'User has logged in',
-                    'Account: ' . $account->account_id,
+                    'Account: '.$account->account_id,
                     $request->ip(),
                     $request->userAgent()
                 );
             }
 
-            // redirect logic based on role
-            if ($account->role === 'staff') {
-                return redirect()->route('staff.dashboard')
-                    ->with('success', 'Welcome back ' . $account->full_name);
+            // ✅ Check Medicine Stock After Login
+            $lowStockMedicines = Medicine::leftJoin('medicine_clinics', 'medicines.medicine_id', '=', 'medicine_clinics.medicine_id')
+                ->select('medicines.medicine_id', 'medicines.name', DB::raw('COALESCE(SUM(medicine_clinics.stock), 0) as total_stock'))
+                ->groupBy('medicines.medicine_id', 'medicines.name')
+                ->having('total_stock', '<', 50)
+                ->get();
+            $stockErrorMessage = null;
+
+            if ($lowStockMedicines->isNotEmpty()) {
+                $medicineNames = $lowStockMedicines->pluck('name')->join(', ');
+                $stockErrorMessage = "Low stock for: {$medicineNames}";
             }
 
-            if ($account->role === 'admin') {
-                return redirect()->route('admin.dashboard')
-                    ->with('success', 'Welcome back ' . $account->full_name);
-            }
+            // ✅ Redirect logic based on role
+            $redirectRoute = match ($account->role) {
+                'staff' => 'staff.dashboard',
+                'admin' => 'admin.dashboard',
+                default => 'dashboard',
+            };
 
-            // fallback (if role isn’t matched)
-            return redirect()->route('dashboard')
-                ->with('success', 'Welcome back ' . $account->full_name);
+            // ✅ Send BOTH messages in one redirect
+            return redirect()->route($redirectRoute)
+                ->with('success', 'Welcome back '.$account->full_name)
+                ->with('stock_error', $stockErrorMessage);
+
         }
 
-        // give clearer error message for inactive accounts
-        if ($account && !$account->is_active) {
+        if ($account && ! $account->is_active) {
             return back()->with('error', 'Your account is inactive. Please contact support.');
         }
 
         return back()->with('error', 'Invalid credentials.');
     }
-
-
-
 
     public function logout(Request $request)
     {
@@ -124,7 +125,6 @@ class AccountController extends Controller
         $request->session()->regenerateToken();
 
         /** @var Account $account */
-
         if ($account) {
             LogService::record(
                 $account,            // who did it
@@ -132,7 +132,7 @@ class AccountController extends Controller
                 'logout',             // action
                 'auth',              // log_type
                 'User has logged out',
-                'Account: ' . $account->account_id,
+                'Account: '.$account->account_id,
                 $request->ip(),
                 $request->userAgent()
             );
@@ -167,7 +167,7 @@ class AccountController extends Controller
                 'update',             // action
                 'auth',              // log_type
                 'User has changed roles',
-                'Account: ' . $account->account_id,
+                'Account: '.$account->account_id,
                 $request->ip(),
                 $request->userAgent()
             );
@@ -183,7 +183,6 @@ class AccountController extends Controller
     /**
      * Change the authenticated account's name.
      *
-     * @param \Illuminate\Http\Request $request
      * @return \Illuminate\Http\RedirectResponse
      */
     public function changeName(Request $request)
@@ -211,24 +210,24 @@ class AccountController extends Controller
                 'update',             // action
                 'auth',              // log_type
                 'User has changed name',
-                'Account: ' . $account->account_id,
+                'Account: '.$account->account_id,
                 $request->ip(),
                 $request->userAgent()
             );
         }
+
         return redirect()->back()->with('success', 'Name updated successfully.');
     }
 
     /**
      * Update the authenticated account's password.
      *
-     * @param \Illuminate\Http\Request $request
      * @return \Illuminate\Http\RedirectResponse
      */
     public function updatePassword(Request $request)
     {
         $account = $this->guard->user();
-        $throttleKey = 'password-update:' . $account->id;
+        $throttleKey = 'password-update:'.$account->id;
 
         if (RateLimiter::tooManyAttempts($throttleKey, 5)) {
             return back()->with('error', 'Too many attempts. Please try again later.');
@@ -241,21 +240,20 @@ class AccountController extends Controller
             ]);
         } catch (\Illuminate\Validation\ValidationException $e) {
             RateLimiter::hit($throttleKey);
+
             return redirect()->back()
                 ->with('error', $e->validator->errors()->first())
                 ->withInput();
         }
 
-
-
-        if (!Hash::check($request->current_password, $account->password)) {
+        if (! Hash::check($request->current_password, $account->password)) {
             RateLimiter::hit($throttleKey);
+
             return redirect()->back()->with(
                 'error',
                 'The current password is incorrect.'
             )->withInput();
         }
-
 
         RateLimiter::clear($throttleKey);
 
@@ -272,7 +270,7 @@ class AccountController extends Controller
                 'update',             // action
                 'auth',              // log_type
                 'User has changed password',
-                'Account: ' . $account->account_id,
+                'Account: '.$account->account_id,
                 $request->ip(),
                 $request->userAgent()
             );
@@ -284,7 +282,6 @@ class AccountController extends Controller
     /**
      * Delete the authenticated account.
      *
-     * @param \Illuminate\Http\Request $request
      * @return \Illuminate\Http\RedirectResponse
      */
     public function deleteAccount(Request $request)
@@ -301,14 +298,13 @@ class AccountController extends Controller
         $masterDeletionPassword = config('app.account_deletion_password');
         // $masterDeletionPassword = "secret";
 
-        if (!$account) {
+        if (! $account) {
             return redirect()->back()->with('error', 'No account found to delete.');
         }
 
         if ($request->input('deletion_password') !== $masterDeletionPassword) {
             return redirect()->back()->with('error', 'Invalid deletion password.');
         }
-
 
         $accountId = $account->account_id;
 
@@ -329,7 +325,7 @@ class AccountController extends Controller
             'delete',             // action
             'auth',              // log_type
             'User has deleted their account',
-            'Account: ' . $account->account_id,
+            'Account: '.$account->account_id,
             $request->ip(),
             $request->userAgent()
         );

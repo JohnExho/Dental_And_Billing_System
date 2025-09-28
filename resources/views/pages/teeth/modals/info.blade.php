@@ -13,7 +13,6 @@
             <div class="modal-body">
                 <h4 id="tooth-name" class="fw-bold text-primary mb-3"></h4>
                 <div class="row g-4">
-
                     <!-- tooth Info -->
                     <div class="col-md-12">
                         <ul class="list-group list-group-flush">
@@ -24,7 +23,19 @@
                             </li>
                         </ul>
                     </div>
+                </div>
 
+                <h6 class="fw-bold mt-4">Clinic Prices</h6>
+                <div class="table-responsive">
+                    <table class="table table-bordered table-sm align-middle">
+                        <thead class="table-light">
+                            <tr>
+                                <th>Clinic</th>
+                                <th>Price</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tooth-clinics"></tbody>
+                    </table>
                 </div>
             </div>
             <!-- Footer -->
@@ -43,12 +54,27 @@
         const data = {
             name: button.getAttribute('data-name'),
             number: button.getAttribute('data-number'),
+            clinics: JSON.parse(button.getAttribute('data-clinics') || '[]')
         };
 
         // Update modal fields
         toothModal.querySelector('#tooth-name').textContent = data.name || 'Unnamed tooth';
-
         toothModal.querySelector('#tooth-number').textContent = data.number || 'N/A';
 
+        // Update clinic prices table
+        const clinicTable = toothModal.querySelector('#tooth-clinics');
+        clinicTable.innerHTML = '';
+
+        if (data.clinics.length > 0) {
+            data.clinics.forEach(c => {
+                clinicTable.innerHTML += `
+                    <tr>
+                        <td>${c.name}</td>
+                        <td>₱${c.price}</td>
+                    </tr>`;
+            });
+        } else {
+            clinicTable.innerHTML = `<tr><td colspan="2" class="text-center text-muted">No clinic prices available</td></tr>`;
+        }
     });
 </script>

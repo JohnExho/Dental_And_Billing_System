@@ -19,6 +19,12 @@
                     <span id="medicine-stock" class="px-3 py-2 rounded-pill"></span>
                 </div>
 
+                <div class="mb-3">
+                    <strong>Default Price:</strong>
+                    <span id="medicine-default-price" class="px-2 py-1 rounded-pill"></span>
+                </div>
+
+
                 <h6 class="fw-bold mt-4">Clinic Availability</h6>
                 <div class="table-responsive">
                     <table class="table table-bordered table-sm align-middle">
@@ -51,12 +57,16 @@
             name: button.getAttribute('data-name'),
             description: button.getAttribute('data-description'),
             stock: button.getAttribute('data-stock'),
-            clinics: JSON.parse(button.getAttribute('data-clinics') || '[]')
+            clinics: JSON.parse(button.getAttribute('data-clinics') || '[]'),
+            default_price: button.getAttribute('data-default_price') || '—',
+
         };
 
         medicineModal.querySelector('#medicine-name').textContent = data.name || 'Unnamed medicine';
         medicineModal.querySelector('#medicine-description').textContent = data.description || 'No description';
         medicineModal.querySelector('#medicine-stock').textContent = data.stock ?? '0';
+        medicineModal.querySelector('#medicine-default-price').textContent = `₱${data.default_price}`;
+
 
         const clinicTable = medicineModal.querySelector('#medicine-clinics');
         clinicTable.innerHTML = '';
@@ -71,7 +81,8 @@
                     </tr>`;
             });
         } else {
-            clinicTable.innerHTML = `<tr><td colspan="3" class="text-center text-muted">No clinics available</td></tr>`;
+            clinicTable.innerHTML =
+                `<tr><td colspan="3" class="text-center text-muted">No clinics available</td></tr>`;
         }
     });
 </script>

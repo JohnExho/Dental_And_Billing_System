@@ -24,8 +24,13 @@
                             @endif
                             <td class="text-end">
                                 <a role="button" class="btn btn-sm btn-outline-primary" data-bs-toggle="modal"
-                                    data-bs-target="#tooth-detail-modal" data-name="{{ $tooth->name }}"
-                                    data-number="{{ $tooth->number }}" data-price="{{ $tooth->price }}">
+                                    data-bs-target="#tooth-detail-modal"
+                                    data-name="{{ $tooth->name }}"
+                                    data-number="{{ $tooth->number }}"
+                                    data-clinics='@json($tooth->clinicPrices->map(fn($c) => [
+                                        "name" => $c->clinic->name ?? '',
+                                        "price" => $c->price ?? ''
+                                    ]))'>
                                     <i class="bi bi-eye"></i>
                                 </a>
 

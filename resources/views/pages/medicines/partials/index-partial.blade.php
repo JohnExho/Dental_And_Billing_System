@@ -10,7 +10,6 @@
                         <th>Description</th>
                         <th>Price</th>
                         <th>Stock</th>
-                        <th>Available in:</th>
                         <th class="text-end">Actions</th>
                     </tr>
                 </thead>
@@ -19,25 +18,25 @@
                         <tr>
                             <td>{{ $medicine->name }}</td>
                             <td>{{ $medicine->description }}</td>
-                            <td>
-                                @if ($medicine->clinics->isNotEmpty())
-                                    {{ $medicine->clinics->map(fn($c) => '₱' . number_format($c->pivot->price, 2))->join(' | ') }}
-                                @else
-                                    —
-                                @endif
-                            </td>
 
+                            {{-- ✅ Show price based on default or clinic --}}
+                            @if ($clinicId)
+                                <td>{{ $medicine->medicineClinics->firstWhere('clinic_id', $clinicId)->price ?? '—' }}
+                                </td>
+                            @else
+                                <td>{{ $medicine->default_price ?? '—' }}</td>
+                            @endif
+
+                            {{-- ✅ Total stock across all clinics --}}
                             <td>
                                 @php
-                                    // Sum or show first stock? Up to you. Here we sum all clinic stocks
-                                    $totalStock = $medicine->clinics->sum(fn($c) => $c->pivot->stock);
-                                    $badgeClass = 'bg-success';
+                                    $totalStock = $medicine->medicineClinics->sum('stock');
 
-                                    if ($totalStock < 50) {
-                                        $badgeClass = 'bg-danger';
-                                    } elseif ($totalStock < 500) {
-                                        $badgeClass = 'bg-warning text-dark';
-                                    }
+                                    $badgeClass = match (true) {
+                                        $totalStock < 50 => 'bg-danger',
+                                        $totalStock < 500 => 'bg-warning text-dark',
+                                        default => 'bg-success',
+                                    };
                                 @endphp
 
                                 <span class="badge {{ $badgeClass }} px-3 py-2 rounded-pill">
@@ -45,43 +44,43 @@
                                 </span>
                             </td>
 
-                            <td>
-                                {{-- List all clinic names, comma separated --}}
-                                {{ $medicine->clinics->pluck('name')->join(' | ') }}
-                            </td>
-
                             <td class="text-end">
                                 @php
-                                    $clinicsJson = $medicine->clinics
-                                        ->map(function ($c) {
+                                    $clinicsJson = $medicine->medicineClinics
+                                        ->map(function ($mc) {
                                             return [
-                                                'id' => $c->clinic_id, // 🔑 add clinic id here
-                                                'name' => $c->name,
-                                                'price' => $c->pivot->price,
-                                                'stock' => $c->pivot->stock,
+                                                'id' => $mc->clinic_id,
+                                                'name' => $mc->clinic->name ?? '—',
+                                                'price' => $mc->price,
+                                                'stock' => $mc->stock,
                                             ];
                                         })
                                         ->toJson();
-                                    $totalStock = $medicine->clinics->sum(fn($c) => $c->pivot->stock);
-                                    $firstPrice = $medicine->clinics->first()?->pivot->price ?? '—';
                                 @endphp
-
                                 <a role="button" class="btn btn-sm btn-outline-primary" data-bs-toggle="modal"
                                     data-bs-target="#medicine-detail-modal" data-name="{{ $medicine->name }}"
-                                    data-description="{{ $medicine->description }}" data-price="{{ $firstPrice }}"
+                                    data-description="{{ $medicine->description }}"
+                                    data-default_price="{{ $medicine->default_price }}"
+                                    @if ($clinicId) data-clinic_price="{{ optional($medicine->medicineClinics->firstWhere('clinic_id', $clinicId))->price }}" @endif
                                     data-stock="{{ $totalStock }}" data-clinics='{{ $clinicsJson }}'>
                                     <i class="bi bi-eye"></i>
                                 </a>
 
+
+
+
+                                {{-- ✅ Edit Button --}}
                                 <button type="button" class="btn btn-sm btn-outline-secondary" data-bs-toggle="modal"
                                     data-bs-target="#edit-medicine-modal" onclick="event.stopPropagation();"
                                     data-id="{{ $medicine->medicine_id }}" data-name="{{ $medicine->name }}"
                                     data-description="{{ $medicine->description }}"
-                                    data-clinics='{{ $clinicsJson }}'>
+                                    data-default_price="{{ $medicine->default_price }}"
+                                    @if (session('clinic_id')) data-clinic_price="{{ optional($medicine->medicineClinics->firstWhere('clinic_id', session('clinic_id')))->price }}"
+                                     data-stock="{{ optional($medicine->medicineClinics->firstWhere('clinic_id', session('clinic_id')))->stock }}" @endif>
                                     <i class="bi bi-pencil-square"></i>
                                 </button>
 
-
+                                {{-- ✅ Delete Button --}}
                                 <button type="button" class="btn btn-outline-danger btn-sm delete-medicine-btn"
                                     data-id="{{ $medicine->medicine_id }}" onclick="event.stopPropagation();">
                                     <i class="bi bi-trash"></i>
@@ -90,11 +89,11 @@
                         </tr>
                     @endforeach
                 </tbody>
-
             </table>
         </div>
     @endif
 </div>
+
 <script>
     document.addEventListener('DOMContentLoaded', function() {
         document.querySelectorAll('.delete-medicine-btn').forEach(btn => {
@@ -110,6 +109,7 @@
         });
     });
 </script>
+
 @include('pages.medicines.modals.info')
 @include('pages.medicines.modals.edit')
 @include('pages.medicines.modals.delete')

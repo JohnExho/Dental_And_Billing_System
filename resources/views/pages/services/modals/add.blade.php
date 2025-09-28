@@ -62,31 +62,6 @@
                             </div>
                         @endforeach
                     </div>
-
-                    <hr class="my-4">
-
-                    <!-- Laboratories -->
-                    <h6 class="text-muted fw-semibold mb-3">
-                        <i class="bi bi-flask me-2"></i> Assign to Laboratories
-                    </h6>
-                    <div class="row g-3">
-                        @foreach ($laboratories as $lab)
-                            <div class="col-md-6 d-flex align-items-center">
-                                <div class="form-check me-2">
-                                    <input class="form-check-input" type="checkbox"
-                                        name="laboratories[{{ $lab->id }}][selected]" id="lab-{{ $lab->id }}">
-                                    <label class="form-check-label" for="lab-{{ $lab->id }}">
-                                        {{ $lab->name }}
-                                    </label>
-                                </div>
-                                <input type="number" step="0.01" min="0"
-                                    name="clinics[{{ $clinic->id }}][price]"
-                                    value="{{ old('clinics.' . $clinic->id . '.price') }}" class="form-control ms-2"
-                                    placeholder="Price">
-
-                            </div>
-                        @endforeach
-                    </div>
                 </div>
 
                 <!-- Footer -->

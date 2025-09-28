@@ -31,40 +31,29 @@
                         </div>
 
                         <!-- Description -->
-                        <div class="col-12">
+                        <div class="col-md-6">
                             <label for="edit-medicine-description" class="form-label fw-semibold">Description</label>
                             <input type="text" id="edit-medicine-description" name="description"
                                 class="form-control form-control-lg rounded-3 shadow-sm">
                         </div>
 
-                        <!-- Clinics -->
-                        <div class="col-12">
-                            <h6 class="fw-bold mt-3">Clinic Availability</h6>
-                            @foreach ($clinics as $clinic)
-                                <div class="row align-items-center mb-2 border rounded p-2 shadow-sm clinic-row"
-                                     data-clinic-id="{{ $clinic->clinic_id }}">
-                                    <div class="col-md-4">
-                                        <input type="checkbox" 
-                                               class="form-check-input me-2 clinic-checkbox"
-                                               name="clinics[{{ $clinic->clinic_id }}][selected]" value="1"
-                                               id="edit-clinic-{{ $clinic->clinic_id }}">
-                                        <label for="edit-clinic-{{ $clinic->clinic_id }}" class="form-check-label">
-                                            {{ $clinic->name }}
-                                        </label>
-                                    </div>
-                                    <div class="col-md-4">
-                                        <input type="number" step="0.01" min='0'
-                                               class="form-control form-control-sm clinic-price"
-                                               name="clinics[{{ $clinic->clinic_id }}][price]" placeholder="0.00">
-                                    </div>
-                                    <div class="col-md-4">
-                                        <input type="number" min ='0'
-                                               class="form-control form-control-sm clinic-stock"
-                                               name="clinics[{{ $clinic->clinic_id }}][stock]" placeholder="0">
-                                    </div>
-                                </div>
-                            @endforeach
+                        <!-- Price -->
+                        <div class="col-md-6 mt-3">
+                            <label for="edit-medicine-price" class="form-label fw-semibold">
+                                {{ session()->has('clinic_id') ? 'Clinic Price' : 'Default Price' }}
+                            </label>
+                            <input type="number" step="0.01" min="0" id="edit-medicine-price" name="price"
+                                class="form-control form-control-lg rounded-3 shadow-sm" required>
                         </div>
+
+                        <!-- Stock (Clinic only) -->
+                        @if (session()->has('clinic_id'))
+                            <div class="col-md-6 mt-3">
+                                <label for="edit-medicine-stock" class="form-label fw-semibold">Stock</label>
+                                <input type="number" min="0" id="edit-medicine-stock" name="stock"
+                                    class="form-control form-control-lg rounded-3 shadow-sm">
+                            </div>
+                        @endif
                     </div>
                 </div>
 
@@ -81,39 +70,34 @@
         </div>
     </div>
 </div>
+
 <script>
-  document.addEventListener('DOMContentLoaded', function() {
-    const editModal = document.getElementById('edit-medicine-modal');
+    document.addEventListener('DOMContentLoaded', function() {
+        const editModal = document.getElementById('edit-medicine-modal');
 
-    editModal.addEventListener('show.bs.modal', function(event) {
-        const button = event.relatedTarget;
-        const medicineId = button.getAttribute('data-id');
-        const name = button.getAttribute('data-name');
-        const description = button.getAttribute('data-description');
-        const clinics = JSON.parse(button.getAttribute('data-clinics') || '[]');
+        editModal.addEventListener('show.bs.modal', function(event) {
+            const button = event.relatedTarget;
+            const medicineId = button.getAttribute('data-id');
+            const name = button.getAttribute('data-name');
+            const description = button.getAttribute('data-description');
+            const defaultPrice = button.getAttribute('data-default_price');
+            const clinicPrice = button.getAttribute('data-clinic_price');
+            const stock = button.getAttribute('data-stock');
 
-        // Fill basic fields
-        editModal.querySelector('#edit-medicine-id').value = medicineId;
-        editModal.querySelector('#edit-medicine-name').value = name;
-        editModal.querySelector('#edit-medicine-description').value = description;
 
-        // Reset all clinic rows
-        editModal.querySelectorAll('.clinic-row').forEach(row => {
-            row.querySelector('.clinic-price').value = '';
-            row.querySelector('.clinic-stock').value = '';
-            row.querySelector('.clinic-checkbox').checked = false;
-        });
 
-        // Populate from clinics JSON
-        clinics.forEach(c => {
-            const row = editModal.querySelector(`.clinic-row[data-clinic-id="${c.id}"]`);
-            if (row) {
-                row.querySelector('.clinic-price').value = c.price ?? '';
-                row.querySelector('.clinic-stock').value = c.stock ?? '';
-                row.querySelector('.clinic-checkbox').checked = true;
+            editModal.querySelector('#edit-medicine-id').value = medicineId;
+            editModal.querySelector('#edit-medicine-name').value = name;
+            editModal.querySelector('#edit-medicine-description').value = description || '';
+
+            // ✅ Set price directly
+            editModal.querySelector('#edit-medicine-price').value =
+                clinicPrice ?? defaultPrice ?? '';
+
+            const stockInput = editModal.querySelector('#edit-medicine-stock');
+            if (stockInput) {
+                stockInput.value = stock ?? '';
             }
         });
     });
-});
-
 </script>

@@ -5,9 +5,10 @@ namespace App\Http\Controllers;
 use App\Models\Clinic;
 use App\Models\Logs;
 use App\Models\Medicine;
-use Illuminate\Support\Facades\DB;
+use App\Services\LogService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Str;
@@ -23,65 +24,67 @@ class MedicineController extends Controller
 
     public function index()
     {
-        $medicines = Medicine::with('clinics')->latest()
-            ->paginate(8);
+        $clinicId = session('clinic_id');
+        $medicines = Medicine::with([
+            'medicineClinics' => function ($q) use ($clinicId) {
+                if ($clinicId) {
+                    $q->where('clinic_id', $clinicId);
+                }
+            },
+        ])->paginate(8);
 
-        return view('pages.medicines.index', compact('medicines'));
+        return view('pages.medicines.index', compact('medicines', 'clinicId'));
     }
 
     public function create(Request $request)
     {
         $validator = Validator::make($request->all(), [
             'name' => 'required|string|max:255',
-            'clinics' => 'required|array',
-            'clinics.*.selected' => 'nullable|boolean',
-            'clinics.*.price' => 'nullable|numeric|min:0|max:999999.99',
-            'clinics.*.stock' => 'nullable|integer|min:0|max:100000',
             'description' => 'nullable|string|max:500',
+            'price' => 'required|numeric|min:0',
+            'stock' => session()->has('clinic_id')
+                ? 'required|integer|min:0'
+                : 'nullable|integer|min:0',
         ]);
 
         if ($validator->fails()) {
             return back()->with('error', $validator->errors()->first());
         }
 
-        // Step 1: Create the medicine
+        // 1. Create the medicine catalog entry
         $medicine = Medicine::create([
+            'medicine_id' => Str::uuid(),
             'name' => $request->name,
             'name_hash' => hash('sha256', strtolower($request->name)),
             'description' => $request->description,
+            'default_price' => session()->has('clinic_id') ? null : $request->price,
         ]);
 
-        // Step 2: Attach to selected clinics with their own pivot data
-        foreach ($request->clinics as $clinicId => $data) {
-            if (isset($data['selected'])) {
-                $medicine->clinics()->attach($clinicId, [
-                    'medicine_clinic_id' => Str::uuid(),
-                    'price' => $data['price'] ?? 0,
-                    'stock' => $data['stock'] ?? 0,
-                ]);
-            }
+        // 2. If a clinic is in session, store clinic-specific price & stock
+        if (session()->has('clinic_id')) {
+            $clinicId = session('clinic_id');
+
+            $medicine->clinics()->attach($clinicId, [
+                'medicine_clinic_id' => Str::uuid(),
+                'price' => $request->price,
+                'stock' => $request->stock,
+            ]);
         }
 
-        // Step 3: Log action for each attached clinic
+        // 3. Logging
         $authAccount = $this->guard->user();
-        foreach ($request->clinics as $clinicId => $data) {
-            if (isset($data['selected'])) {
-                $clinic = Clinic::findOrFail($clinicId);
+        $priceSource = session()->has('clinic_id') ? 'Clinic Price' : 'Default Price';
 
-                Logs::record(
-                    $authAccount,
-                    $clinic,
-                    null,
-                    null,
-                    'create',
-                    'Medicine',
-                    'User created a medicine',
-                    'Medicine: '.$medicine->name.' (Stock: '.($data['stock'] ?? 0).', Price: '.($data['price'] ?? 0).')',
-                    $request->ip(),
-                    $request->userAgent()
-                );
-            }
-        }
+        LogService::record(
+            $authAccount,
+            $medicine,
+            'create',
+            'Medicine Catalog',
+            'User has created a medicine',
+            "Medicine: {$medicine->name} | {$priceSource}: {$request->price}, Stock: {$request->stock}",
+            $request->ip(),
+            $request->userAgent()
+        );
 
         return redirect()->route('medicines')->with('success', 'Medicine created successfully.');
     }
@@ -89,64 +92,68 @@ class MedicineController extends Controller
     public function update(Request $request)
     {
         $validator = Validator::make($request->all(), [
-            'medicine_id' => 'required|uuid|exists:medicines,medicine_id',
+            'medicine_id' => 'required|exists:medicines,medicine_id',
             'name' => 'required|string|max:255',
-            'clinics' => 'required|array',
-            'clinics.*.selected' => 'nullable|boolean',
-            'clinics.*.price' => 'nullable|numeric|min:0|max:999999.99',
-            'clinics.*.stock' => 'nullable|integer|min:0|max:100000',
             'description' => 'nullable|string|max:500',
+            'price' => 'required|numeric|min:0',
+            'stock' => 'nullable|integer|min:0',
         ]);
 
         if ($validator->fails()) {
             return back()->with('error', $validator->errors()->first());
         }
 
-        // Step 1: Find medicine by hidden input
+        // 1. Find medicine
         $medicine = Medicine::findOrFail($request->medicine_id);
 
-        // Step 2: Update base fields
+        // 2. Update core attributes
         $medicine->update([
             'name' => $request->name,
             'name_hash' => hash('sha256', strtolower($request->name)),
             'description' => $request->description,
         ]);
 
-        // Step 3: Build pivot data
-        $pivotData = [];
-        foreach ($request->clinics as $clinicId => $data) {
-            if (isset($data['selected'])) {
-                $pivotData[$clinicId] = [
-                    'medicine_clinic_id' => Str::uuid(), // stays unique if new
-                    'price' => $data['price'] ?? 0,
-                    'stock' => $data['stock'] ?? 0,
-                ];
-            }
-        }
+        // 3. Handle pricing/stock depending on clinic session
+        $priceSource = 'Default Price';
 
-        // Step 4: Sync clinics with pivot data
-        $medicine->clinics()->sync($pivotData);
+        if (session()->has('clinic_id')) {
+            $priceSource = 'Clinic Price';
+            $clinicId = session('clinic_id');
 
-        // Step 5: Log updates
-        $authAccount = $this->guard->user();
-        foreach ($pivotData as $clinicId => $pivot) {
-            $clinic = Clinic::findOrFail($clinicId);
-
-            Logs::record(
-                $authAccount,
-                $clinic,
-                null,
-                null,
-                'update',
-                'Medicine',
-                'User updated a medicine',
-                'Medicine: '.$medicine->name.' (Stock: '.$pivot['stock'].', Price: '.$pivot['price'].')',
-                $request->ip(),
-                $request->userAgent()
+            // Update or create pivot record
+            $medicine->medicineClinics()->updateOrCreate(
+                [
+                    'clinic_id' => $clinicId,
+                ],
+                [
+                    'medicine_clinic_id' => Str::uuid(), // still unique
+                    'price' => $request->price,
+                    'stock' => $request->stock ?? 0,
+                ]
             );
+        } else {
+            $medicine->update([
+                'default_price' => $request->price,
+            ]);
         }
 
-        return redirect()->route('medicines')->with('success', 'Medicine updated successfully.');
+        // 4. Logging
+        $authAccount = $this->guard->user();
+
+        LogService::record(
+            $authAccount,
+            $medicine,
+            'update',
+            'Medicine Catalog',
+            'User has updated a medicine',
+            "Medicine: {$medicine->name} | {$priceSource}: {$request->price}, Stock: ".($request->stock ?? 'N/A'),
+            $request->ip(),
+            $request->userAgent()
+        );
+
+        return redirect()
+            ->route('medicines')
+            ->with('success', 'Medicine updated successfully.');
     }
 
     public function destroy(Request $request)

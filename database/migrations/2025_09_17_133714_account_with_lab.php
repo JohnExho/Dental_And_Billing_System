@@ -14,7 +14,6 @@ return new class extends Migration
         // 3. then in a separate migration, after both exist:
         Schema::table('accounts', function (Blueprint $table) {
               $table->foreign('clinic_id')->references('clinic_id')->on('clinics')->onDelete('set null');
-            $table->foreign('laboratory_id')->references('laboratory_id')->on('laboratories')->onDelete('set null');
         });
     }
 

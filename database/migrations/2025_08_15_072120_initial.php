@@ -17,7 +17,6 @@ return new class extends Migration {
         Schema::create('accounts', function (Blueprint $table) {
             $table->uuid('account_id')->primary();
             $table->uuid('clinic_id')->nullable();
-            $table->uuid('laboratory_id')->nullable();
             $table->text('email')->unique();
             $table->string('email_hash')->unique()->index();
             $table->text('last_name');
@@ -225,7 +224,8 @@ return new class extends Migration {
             $table->uuid('medicine_id')->primary();
             $table->uuid('account_id')->nullable(); // Account that created the medicine
             $table->text('name');
-            $table->text('description')->nullable();
+            $table->decimal('default_price', 10, 2)->nullable();
+            $table->text('description')->nullable()->index();
             $table->text('name_hash')->index();           // search by medicine
 
             $table->timestamps();
@@ -239,7 +239,7 @@ return new class extends Migration {
             $table->uuid('medicine_id')->nullable();
             $table->uuid('clinic_id')->nullable();
             $table->integer('stock')->default(0);
-            $table->decimal('price', 10, 2)->nullable();
+            $table->decimal('price', 10, 2)->nullable()->index();
             $table->timestamps();
             $table->softDeletes();
 
