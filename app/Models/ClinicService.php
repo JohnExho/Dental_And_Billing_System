@@ -38,4 +38,9 @@ class ClinicService extends Pivot
     {
         return $this->belongsTo(Clinic::class, 'clinic_id', 'clinic_id');
     }
+
+    public function logs()
+    {
+        return $this->morphMany(Logs::class, 'loggable');
+    }
 }

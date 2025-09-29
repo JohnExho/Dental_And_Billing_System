@@ -65,6 +65,8 @@ Route::middleware('web')->group(function () {
     Route::delete('/process/delete/medicine', [MedicineController::class, 'destroy'])->name('process-delete-medicine');
 
     Route::post('/process/create/service', [ServiceController::class, 'create'])->name('process-create-service');
+    Route::put('/process/update/service', [ServiceController::class, 'update'])->name('process-update-service');
+    Route::delete('/process/delete/service', [ServiceController::class, 'destroy'])->name('process-delete-service');
 
     // Protected routes
     Route::middleware('auth:account')->group(function () {
@@ -79,7 +81,7 @@ Route::middleware('web')->group(function () {
             Route::get('/laboratories', [LaboratoryController::class, 'index'])->name('laboratories');
             Route::get('/teeth', [ToothListController::class, 'index'])->name('teeth');
             Route::get('/medicines', [MedicineController::class, 'index'])->name('medicines');
-            Route::view('/services', 'pages.services.index')->name('services');
+            Route::get('/services', [ServiceController::class,'index'])->name('services');
         });
     });
 });

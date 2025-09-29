@@ -28,7 +28,7 @@ class Service extends Model
         'description',
         'account_id',
         'service_type',
-
+        'default_price',
     ];
 
     protected $casts = [
@@ -40,10 +40,13 @@ class Service extends Model
         'deleted_at' => 'datetime',
     ];
 
-    public function clinics()
+    public function logs()
     {
-        return $this->belongsToMany(Clinic::class, 'clinic_service', 'service_id', 'clinic_id')
-            ->withPivot('price')
-            ->withTimestamps();
+        return $this->morphMany(Logs::class, 'loggable');
+    }
+
+    public function clinicService()
+    {
+        return $this->hasMany(ClinicService::class, 'service_id', 'service_id');
     }
 }

@@ -1,38 +1,44 @@
-<!-- Edit Tooth Modal -->
-<div class="modal fade" id="edit-tooth-modal" tabindex="-1" aria-hidden="true">
+<!-- Edit Service Modal -->
+<div class="modal fade" id="edit-service-modal" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog modal-lg modal-dialog-centered">
         <div class="modal-content shadow-lg border-0 rounded-4 overflow-hidden">
-            <form id="edit-tooth-form" action="{{ route('process-update-tooth') }}" method="POST">
+            <form id="edit-service-form" action="{{ route('process-update-service') }}" method="POST">
                 @csrf
                 @method('PUT')
-                <input type="hidden" name="tooth_list_id" id="edit_tooth_id">
+                <input type="hidden" name="service_id" id="edit_service_id">
 
                 <!-- Header -->
                 <div class="modal-header bg-warning text-dark">
                     <h5 class="modal-title d-flex align-items-center">
-                        ✏️ Edit Tooth
+                        ✏️ Edit Service
                     </h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                 </div>
 
                 <!-- Body -->
                 <div class="modal-body p-4">
                     <h6 class="text-muted fw-semibold mb-3">
-                        <i class="bi bi-info-circle me-2"></i> Tooth Information
+                        <i class="bi bi-info-circle me-2"></i> Service Information
                     </h6>
                     <div class="row g-3">
                         <div class="col-md-6">
-                            <label for="edit_name" class="form-label">Tooth Name</label>
+                            <label for="edit_name" class="form-label">Service Name</label>
                             <input type="text" class="form-control" id="edit_name" name="name" required>
                         </div>
-                        <div class="col-md-3">
-                            <label for="edit_number" class="form-label">Tooth Number (1–32)</label>
-                            <input type="number" class="form-control" id="edit_number" name="number" min="1"
-                                max="32" step="1" inputmode="numeric">
+
+                        <div class="col-md-6">
+                            <label for="edit_type" class="form-label">Service Type</label>
+                            <input type="text" class="form-control" id="edit_type" name="service_type" required>
                         </div>
-                        <div class="col-md-3">
-                            <label for="edit_price" class="form-label">Tooth Price</label>
-                            <input type="number" class="form-control" id="edit_price" name="price" inputmode="numeric">
+
+                        <div class="col-md-12">
+                            <label for="edit_description" class="form-label">Description</label>
+                            <textarea class="form-control" id="edit_description" name="description" rows="2"></textarea>
+                        </div>
+
+                        <div class="col-md-6">
+                            <label for="edit_price" class="form-label">Service Price</label>
+                            <input type="number" step="0.01" min="0" class="form-control" id="edit_price" name="price" required>
                         </div>
                     </div>
                 </div>
@@ -43,7 +49,7 @@
                         ✖️ Close
                     </button>
                     <button type="submit" class="btn btn-primary">
-                        💾 Update Tooth
+                        💾 Update Service
                     </button>
                 </div>
             </form>
@@ -53,36 +59,28 @@
 
 <script>
     document.addEventListener('DOMContentLoaded', function() {
-        const editModal = document.getElementById('edit-tooth-modal');
+        const editModal = document.getElementById('edit-service-modal');
 
         editModal.addEventListener('show.bs.modal', function(event) {
             const button = event.relatedTarget;
 
-            // Fill fields from data attributes
-            editModal.querySelector('#edit_tooth_id').value = button.getAttribute('data-id') || '';
-            editModal.querySelector('#edit_name').value = button.getAttribute('data-name') || '';
-            editModal.querySelector('#edit_number').value = button.getAttribute('data-number') || '';
-            editModal.querySelector('#edit_price').value = button.getAttribute('data-price') || '';
+            editModal.querySelector('#edit_service_id').value =
+                button.getAttribute('data-id') || '';
+            editModal.querySelector('#edit_name').value =
+                button.getAttribute('data-name') || '';
+            editModal.querySelector('#edit_type').value =
+                button.getAttribute('data-type') || '';
+            editModal.querySelector('#edit_description').value =
+                button.getAttribute('data-description') || '';
+            editModal.querySelector('#edit_price').value =
+                button.getAttribute('data-price') || '';
         });
 
-        // Enforce numeric + 1–32 range
         editModal.addEventListener('shown.bs.modal', function() {
-            const numberInput = editModal.querySelector('#edit_number');
             const priceInput = editModal.querySelector('#edit_price');
-            if (numberInput) {
-                numberInput.addEventListener('input', function() {
-                    this.value = this.value.replace(/\D/g, ''); // only digits
-                    const val = parseInt(this.value, 10);
-                    if (val < 1) this.value = 1;
-                    if (val > 32) this.value = 32;
-                });
-            }
             if (priceInput) {
                 priceInput.addEventListener('input', function() {
-                    // Allow only numbers and a single decimal point
                     this.value = this.value.replace(/[^0-9.]/g, '');
-
-                    // Ensure only one decimal point
                     const parts = this.value.split('.');
                     if (parts.length > 2) {
                         this.value = parts[0] + '.' + parts.slice(1).join('');

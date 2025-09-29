@@ -42,25 +42,16 @@
 
                     <hr class="my-4">
 
-                    <!-- Clinics -->
+                    <!-- Clinic Price -->
                     <h6 class="text-muted fw-semibold mb-3">
-                        <i class="bi bi-hospital me-2"></i> Assign to Clinics
+                        <i class="bi bi-hospital me-2"></i> Clinic Price
                     </h6>
                     <div class="row g-3">
-                        @foreach ($clinics as $clinic)
-                            <div class="col-md-6 d-flex align-items-center">
-                                <div class="form-check me-2">
-                                    <input class="form-check-input" type="checkbox"
-                                        name="clinics[{{ $clinic->id }}][selected]" id="clinic-{{ $clinic->id }}">
-                                    <label class="form-check-label" for="clinic-{{ $clinic->id }}">
-                                        {{ $clinic->name }}
-                                    </label>
-                                </div>
-                                <input type="number" step="0.01" min="0"
-                                    name="clinics[{{ $clinic->id }}][price]" class="form-control ms-2"
-                                    placeholder="Price">
-                            </div>
-                        @endforeach
+                        <div class="col-md-6">
+                            <label for="clinic-price" class="form-label">Price</label>
+                            <input type="number" step="0.01" min="0" name="price" id="clinic-price" class="form-control"
+                                value="{{ old('price') }}" required>
+                        </div>
                     </div>
                 </div>
 

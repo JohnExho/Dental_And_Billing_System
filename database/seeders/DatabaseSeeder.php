@@ -19,5 +19,6 @@ class DatabaseSeeder extends Seeder
         $this->call(ClinicFullSeeder::class);
         $this->call(LaboratorySeeder::class);
         $this->call(ToothListSeeder::class);
+        $this->call(ServiceSeeder::class);
     }
 }

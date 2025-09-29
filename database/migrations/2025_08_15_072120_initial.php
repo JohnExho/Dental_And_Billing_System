@@ -5,7 +5,8 @@ use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 use phpDocumentor\Reflection\Types\Nullable;
 
-return new class extends Migration {
+return new class extends Migration
+{
     /**
      * Run the migrations.
      */
@@ -204,6 +205,7 @@ return new class extends Migration {
             $table->text('name');
             $table->text('name_hash')->index();
             $table->text('description')->nullable();
+            $table->decimal('default_price', 10, 2)->nullable();
             $table->timestamps();
             $table->softDeletes();
 
@@ -214,7 +216,10 @@ return new class extends Migration {
             $table->uuid('clinic_service_id')->primary();
             $table->uuid('clinic_id')->nullable();
             $table->uuid('service_id')->nullable();
-            $table->decimal('price', 10, 2)->nullable();
+            $table->decimal('price', 10, 2)->nullable()->index();
+
+            $table->timestamps();
+            $table->softDeletes();
 
             $table->foreign('clinic_id')->references('clinic_id')->on('clinics')->onDelete('set null');
             $table->foreign('service_id')->references('service_id')->on('services')->onDelete('set null');
@@ -268,13 +273,11 @@ return new class extends Migration {
             $table->timestamps();
             $table->softDeletes();
 
-
             $table->foreign('clinic_id')->references('clinic_id')->on('clinics')->onDelete('set null');
             $table->foreign('tooth_list_id')->references('tooth_list_id')->on('tooth_list')->onDelete('set null');
 
             $table->unique(['clinic_id', 'tooth_list_id']); // one price per tooth per clinic
         });
-
 
         Schema::create('teeth', function (Blueprint $table) {
             $table->uuid('tooth_id')->primary();
@@ -327,7 +330,6 @@ return new class extends Migration {
             $table->index('log_type');
             $table->index('action');
         });
-
 
         Schema::create('addresses', function (Blueprint $table) {
             $table->uuid('address_id')->primary();

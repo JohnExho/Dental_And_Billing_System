@@ -294,9 +294,7 @@ class AccountController extends Controller
         ]);
 
         // Get the master password from env config
-        // $masterDeletionPassword = env('ACCOUNT_DELETION_PASSWORD');
         $masterDeletionPassword = config('app.account_deletion_password');
-        // $masterDeletionPassword = "secret";
 
         if (! $account) {
             return redirect()->back()->with('error', 'No account found to delete.');

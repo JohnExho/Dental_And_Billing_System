@@ -64,8 +64,9 @@ class MedicineController extends Controller
         if (session()->has('clinic_id')) {
             $clinicId = session('clinic_id');
 
-            $medicine->clinics()->attach($clinicId, [
+            $medicine->medicineClinics()->create([
                 'medicine_clinic_id' => Str::uuid(),
+                'clinic_id' => $clinicId,
                 'price' => $request->price,
                 'stock' => $request->stock,
             ]);
@@ -175,22 +176,20 @@ class MedicineController extends Controller
 
         // Step 3: Wrap in transaction
         return DB::transaction(function () use ($medicine, $deletor, $request) {
-            // Delete pivot records first (if you want cascading handled manually)
-            $medicine->clinics()->detach();
+            // Delete related clinic records first (if you want cascading handled manually)
+            $medicine->medicineClinics()->delete();
 
             // Delete the medicine itself
             $medicine->delete();
 
             // Step 4: Log deletion
-            Logs::record(
+            LogService::record(
                 $deletor,
-                null,
-                null,
-                null,
+                $medicine,
                 'delete',
-                'Medicine',
-                'User deleted a medicine',
-                'Medicine: '.$medicine->name,
+                'Medicine Catalog',
+                'User has deleted a medicine',
+                "Medicine: {$medicine->name}",
                 $request->ip(),
                 $request->userAgent()
             );
