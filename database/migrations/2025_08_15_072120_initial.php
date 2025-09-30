@@ -32,7 +32,7 @@ return new class extends Migration
             $table->boolean('is_active')->default(true)->index();
             $table->string('otp_hash', 255)->nullable();
             $table->timestamp('otp_expires_at')->nullable();
-
+            // $table->date('date_of_birth'); To be added later
             $table->timestamps();
             $table->softDeletes();
         });
@@ -102,7 +102,7 @@ return new class extends Migration
             $table->boolean('is_active')->default(true);
             $table->text('email')->unique();
             $table->string('email_hash')->unique()->index();
-
+            // $table->date('date_of_birth'); To be added later
             $table->timestamps();
             $table->softDeletes();
 
@@ -138,8 +138,14 @@ return new class extends Migration
             // Other details
             $table->text('profile_picture')->nullable();
             $table->enum('sex', ['male', 'female', 'other']);
+            $table->enum('civil_status', ['single', 'married', 'widowed', 'divorced', 'separated'])->nullable();
             $table->date('date_of_birth');
-
+            $table->text('referral')->nullable();
+            $table->text('occupation')->nullable();
+            $table->text('company')->nullable();
+            $table->text('weight')->nullable();
+            $table->text('height')->nullable();
+            $table->text('school')->nullable();
 
             $table->timestamps();
             $table->softDeletes();
