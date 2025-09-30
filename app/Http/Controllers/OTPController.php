@@ -7,6 +7,7 @@ use App\Models\Account;
 use App\Services\LogService;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Mail;
 
@@ -57,6 +58,20 @@ class OTPController extends Controller
         $emailHash = hash('sha256', strtolower($email));
         $account = Account::where('email_hash', $emailHash)->firstOrFail();
 
+        $cooldownSeconds = 30;
+        $cacheKey = 'otp_last_sent_'.$account->id;
+
+        // Check cooldown
+        if (Cache::has($cacheKey)) {
+            $expiresAt = Cache::get($cacheKey);
+            $remaining = $expiresAt - time();
+
+            if ($remaining > 0) {
+                return back()->with('cooldown_remaining', $remaining);
+            }
+        }
+
+        // ✅ Generate and send OTP
         $otp = random_int(100000, 999999);
 
         $account->update([
@@ -66,19 +81,22 @@ class OTPController extends Controller
 
         Mail::to($account->email)->send(new SendEmail($otp));
 
+        // ✅ Record timestamp in cache
+        Cache::put($cacheKey, time() + $cooldownSeconds, now()->addSeconds($cooldownSeconds));
+
         /** @var Account $account */
         LogService::record(
-            $account,            // who did it
-            $account,            // what was acted on (loggable model, here the Account itself)
-            'otp_resend',             // action
-            'auth',              // log_type
+            $account,
+            $account,
+            'otp_resend',
+            'auth',
             'User has requested OTP resend',
             'Account: '.$account->account_id,
             $request->ip(),
             $request->userAgent()
         );
 
-        return back()->with('success', 'A new OTP has been sent to your email.');
+        return back()->with('cooldown_remaining', $cooldownSeconds);
     }
 
     public function verifyOtp(Request $request)
