@@ -78,10 +78,20 @@
         </div>
         <ul class="nav flex-column text-start">
             <li class="nav-item mb-1">
-                <a href="{{ route('staff.dashboard') }}" class="text-decoration-none fw-bold fs-4 
+                <a href="{{ route('staff.dashboard') }}"
+                    class="text-decoration-none fw-bold fs-4 
                    {{ request()->routeIs('staff.dashboard') ? 'text-primary' : 'text-dark' }}">
                     <span class="nav-text">Dashboard</span>
                     <i class="bi bi-speedometer2 ms-1"></i>
+                </a>
+            </li>
+            <li class="nav-item mb-1">
+                <a class="text-decoration-none fw-bold fs-4
+                    {{ request()->routeIs('waitlist') ? 'active text-primary' : 'text-dark' }}"
+                    href="{{ route('waitlist') }}"
+                    style="{{ request()->routeIs('waitlist') }}">
+                    <span class="nav-text">Waitlist</span>
+                    <i class="bi bi-list-check"></i>
                 </a>
             </li>
         </ul>

@@ -147,9 +147,9 @@
                 </a>
             </li>
             <li class="nav-item mb-1">
-                <a class="text-decoration-none fw-bold fs-4  text-secondary
-                    {{-- request()->routeIs('staffs') ? 'active text-primary' : 'text-dark' --}}"
-                    href="{{-- route('staffs') --}}" style="{{-- request()->routeIs('staffs') ? 'background: gray;' : '' --}}">
+                <a class="text-decoration-none fw-bold fs-4
+                    {{ request()->routeIs('tools') ? 'active text-primary' : 'text-dark' }}"
+                    href="{{ route('tools') }}" style="{{ request()->routeIs('tools') ? 'background: gray;' : '' }}">
                     <span class="nav-text">Tools</span>
                     <i class="bi bi-person-badge-fill"></i>
                 </a>

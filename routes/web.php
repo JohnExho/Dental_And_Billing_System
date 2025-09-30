@@ -73,6 +73,7 @@ Route::middleware('web')->group(function () {
         Route::view('/dashboard', 'dashboard')->name('dashboard');
         Route::view('/admin/dashboard', 'auth.admin-dashboard')->name('admin.dashboard');
         Route::view('/staff/dashboard', 'auth.staff-dashboard')->name('staff.dashboard');
+        Route::view('/waitlist', 'pages.waitlist.index')->name('waitlist');
         Route::get('/settings', [AccountController::class, 'settings'])->name('settings');
         Route::middleware('admin.only')->group(function () {
             Route::get('/clinics', [ClinicController::class, 'index'])->name('clinics');
@@ -82,6 +83,7 @@ Route::middleware('web')->group(function () {
             Route::get('/teeth', [ToothListController::class, 'index'])->name('teeth');
             Route::get('/medicines', [MedicineController::class, 'index'])->name('medicines');
             Route::get('/services', [ServiceController::class,'index'])->name('services');
+            Route::view('/tools', 'pages.tools.index')->name('tools');
         });
     });
 });

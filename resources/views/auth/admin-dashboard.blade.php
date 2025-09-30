@@ -49,7 +49,7 @@
             </div>
 
             <!-- Right Card with buffer -->
-            <div class="col-md-7">
+            <div class="col-md-7" onclick="window.location='{{ route('tools') }}'" style="cursor: pointer;">
                 <div class="card shadow-sm border-1 border-info">
                     <div class="card-body">
                         <div class="d-flex justify-content-between align-items-center mb-3">

@@ -17,9 +17,9 @@ return new class extends Migration
         // Independent Tables
         Schema::create('accounts', function (Blueprint $table) {
             $table->uuid('account_id')->primary();
-            $table->uuid('clinic_id')->nullable();
+            $table->uuid('clinic_id')->nullable()->index();
             $table->text('email')->unique();
-            $table->string('email_hash')->unique()->index();
+            $table->string('email_hash')->unique();
             $table->text('last_name');
             $table->text('last_name_hash')->index();
             $table->text('middle_name')->nullable();
@@ -112,34 +112,41 @@ return new class extends Migration
 
         Schema::create('patient_qr_codes', function (Blueprint $table) {
             $table->uuid('qr_id')->primary();
-            $table->string('qr_code'); // could store string or path to QR image
-            $table->string('qr_password')->nullable(); // optional password for QR code access
+            $table->text('qr_code'); // could store string or path to QR image
+            $table->text('qr_password')->nullable(); // optional password for QR code access
             $table->timestamps();
             $table->softDeletes();
         });
 
         Schema::create('patients', function (Blueprint $table) {
             $table->uuid('patient_id')->primary();
-            $table->uuid('account_id')->nullable(); // Account that created the patient record
-            $table->uuid('qr_id')->nullable(); // Nullable if patient is not linked to a QR code
-            $table->string('first_name');
-            $table->string('middle_name')->nullable();
-            $table->string('last_name');
-            $table->string('sex');
+            // Relations
+            $table->uuid('account_id')->nullable()->index();
+            $table->uuid('clinic_id')->nullable()->index();
+            $table->uuid('qr_id')->nullable()->index(); // if the patient self uploaded via QR code
+            // Names (text like accounts)
+            $table->text('first_name');
+            $table->text('middle_name')->nullable();
+            $table->text('last_name');
+            // Contact
             $table->text('mobile_no')->nullable();
             $table->text('contact_no')->nullable();
+            $table->text('email')->nullable();
+            // Hashing for fast lookup
+            $table->string('email_hash')->nullable()->index();
+            $table->string('last_name_hash')->nullable()->index();
+            // Other details
+            $table->text('profile_picture')->nullable();
+            $table->enum('sex', ['male', 'female', 'other']);
             $table->date('date_of_birth');
-            $table->string('email')->nullable();
-            $table->boolean('is_validated')->default(false); // Indicates if the patient has been validated in case of qr code input
-            $table->index('account_id');    // join with accounts
-            $table->index('last_name');     // search by name
-            $table->index('contact_no');    // search by phone
-            $table->index('email');         // search by email
+
 
             $table->timestamps();
             $table->softDeletes();
 
+            // Foreign keys
             $table->foreign('account_id')->references('account_id')->on('accounts')->onDelete('set null');
+            $table->foreign('clinic_id')->references('clinic_id')->on('clinics')->onDelete('set null');
             $table->foreign('qr_id')->references('qr_id')->on('patient_qr_codes')->onDelete('set null');
         });
 

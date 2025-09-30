@@ -77,24 +77,67 @@
 
         <div class="collapse navbar-collapse justify-content-end" id="navbarNav">
             <ul class="navbar-nav ms-auto" style="margin-right: 0; margin-left: 250px;">
-
-                @if ($currentClinic !== null)
-                    <li class="nav-item d-flex align-items-center me-3">
-                        <a href="{{ route('clinics') }}"
-                            class="badge rounded-pill bg-light text-dark border d-flex align-items-center px-3 py-2 shadow-sm text-decoration-none">
+                @if (Auth::user()->role === 'admin')
+                    <li class="nav-item dropdown d-flex align-items-center me-3">
+                        <a class="badge rounded-pill bg-light text-dark border d-flex align-items-center px-3 py-2 shadow-sm text-decoration-none dropdown-toggle"
+                            href="#" id="clinicDropdown" role="button" data-bs-toggle="dropdown"
+                            aria-expanded="false">
                             <i class="bi bi-hospital me-2 text-primary"></i>
-                            <span class="fw-semibold">Clinic:</span>&nbsp;{{ $currentClinic->name }}
+                            <span class="fw-semibold">Clinic:</span>&nbsp;{{ $currentClinic->name ?? 'No Selected' }}
                         </a>
+
+                        <ul class="dropdown-menu shadow-sm" aria-labelledby="clinicDropdown">
+                            @foreach ($clinics as $clinic)
+                                <li>
+                                    <form action="{{ route('process-select-clinic') }}" method="POST">
+                                        @csrf
+                                        <input type="hidden" name="clinic_id" value="{{ $clinic->clinic_id }}">
+                                        <button type="submit"
+                                            class="dropdown-item d-flex justify-content-between align-items-center">
+                                            {{ $clinic->name }}
+                                            @if ($currentClinic && $clinic->clinic_id === $currentClinic->clinic_id)
+                                                <i class="bi bi-check2 text-success"></i>
+                                            @endif
+                                        </button>
+                                    </form>
+                                </li>
+                            @endforeach
+                        </ul>
                     </li>
                 @else
+                    <!-- Add Patient + Search Bar -->
                     <li class="nav-item d-flex align-items-center me-3">
-                        <a href="{{ route('clinics') }}"
-                            class="badge rounded-pill bg-light text-dark border d-flex align-items-center px-3 py-2 shadow-sm text-decoration-none">
-                            <i class="bi bi-hospital me-2 text-primary"></i>
-                            <span class="fw-semibold">Clinic:</span>&nbsp;No Selected
-                        </a>
+
+                        <div class="d-flex align-items-center border border-secondary rounded" style="height: 32px;">
+
+                            {{-- Search Form --}}
+                            <form action="{{-- route('patients.search') --}}" method="GET" class="d-flex align-items-center px-2">
+                                <i class="bi bi-search me-2 text-muted"></i>
+                                <input type="text" name="query"
+                                    class="form-control form-control-sm border-0 shadow-none p-0"
+                                    placeholder="Search patient..." style="width: 180px; background: transparent;">
+                            </form>
+
+                            {{-- Divider --}}
+                            <div class="bg-secondary"
+                                style="
+                                    width: 1px;
+                                    height: 100%;
+                                ">
+                            </div>
+
+                            {{-- Add Patient Button --}}
+                            <a href="{{-- route('patients.create') --}}" class="d-flex align-items-center px-2 text-decoration-none"
+                                style="font-size: 0.875rem;">
+                                <i class="bi bi-person-plus-fill me-1"></i> Add Patient
+                            </a>
+                        </div>
+
                     </li>
+
+
                 @endif
+
 
 
                 <li class="nav-item dropdown">
