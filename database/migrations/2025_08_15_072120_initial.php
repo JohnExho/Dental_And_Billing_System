@@ -1,9 +1,9 @@
 <?php
 
-use Illuminate\Database\Migrations\Migration;
-use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
+use Illuminate\Database\Schema\Blueprint;
 use phpDocumentor\Reflection\Types\Nullable;
+use Illuminate\Database\Migrations\Migration;
 
 return new class extends Migration
 {
@@ -40,7 +40,7 @@ return new class extends Migration
         // Dependent Tables
         Schema::create('clinics', function (Blueprint $table) {
             $table->uuid('clinic_id')->primary();
-            $table->uuid('account_id')->nullable();
+            $table->uuid('account_id')->nullable()->index();
             $table->text('name');
             $table->text('name_hash')->index();
             $table->text('description')->nullable();
@@ -59,7 +59,7 @@ return new class extends Migration
 
         Schema::create('clinic_schedules', function (Blueprint $table) {
             $table->uuid('clinic_schedule_id')->primary();
-            $table->uuid('clinic_id')->nullable();
+            $table->uuid('clinic_id')->nullable()->index();
             $table->text('day_of_week');
             $table->text('start_time');
             $table->text('end_time');
@@ -72,7 +72,7 @@ return new class extends Migration
 
         Schema::create('laboratories', function (Blueprint $table) {
             $table->uuid('laboratory_id')->primary();
-            $table->uuid('account_id')->nullable(); // Account that owns/added the laboratory
+            $table->uuid('account_id')->nullable()->index(); // Account that owns/added the laboratory
             $table->text('name');
             $table->text('name_hash')->index();
             $table->text('description')->nullable();
@@ -90,8 +90,8 @@ return new class extends Migration
 
         Schema::create('associates', function (Blueprint $table) {
             $table->uuid('associate_id')->primary();
-            $table->uuid('account_id')->nullable();
-            $table->uuid('clinic_id')->nullable();
+            $table->uuid('account_id')->nullable()->index();
+            $table->uuid('clinic_id')->nullable()->index();
             $table->text('first_name');
             $table->text('middle_name')->nullable();
             $table->text('last_name');
@@ -138,7 +138,7 @@ return new class extends Migration
             // Other details
             $table->text('profile_picture')->nullable();
             $table->enum('sex', ['male', 'female', 'other']);
-            $table->enum('civil_status', ['single', 'married', 'widowed', 'divorced', 'separated'])->nullable();
+            $table->enum('civil_status', ['single', 'married', 'widowed', 'divorced', 'separated', 'annulled'])->nullable();
             $table->date('date_of_birth');
             $table->text('referral')->nullable();
             $table->text('occupation')->nullable();
@@ -213,7 +213,7 @@ return new class extends Migration
 
         Schema::create('services', function (Blueprint $table) {
             $table->uuid('service_id')->primary();
-            $table->uuid('account_id')->nullable(); // who created
+            $table->uuid('account_id')->nullable()->index(); // who created
             $table->text('service_type');
             $table->text('name');
             $table->text('name_hash')->index();
@@ -227,8 +227,8 @@ return new class extends Migration
 
         Schema::create('clinic_service', function (Blueprint $table) {
             $table->uuid('clinic_service_id')->primary();
-            $table->uuid('clinic_id')->nullable();
-            $table->uuid('service_id')->nullable();
+            $table->uuid('clinic_id')->nullable()->index();
+            $table->uuid('service_id')->nullable()->index();
             $table->decimal('price', 10, 2)->nullable()->index();
 
             $table->timestamps();
@@ -240,7 +240,7 @@ return new class extends Migration
 
         Schema::create('medicines', function (Blueprint $table) {
             $table->uuid('medicine_id')->primary();
-            $table->uuid('account_id')->nullable(); // Account that created the medicine
+            $table->uuid('account_id')->nullable()->index(); // Account that created the medicine
             $table->text('name');
             $table->decimal('default_price', 10, 2)->nullable();
             $table->text('description')->nullable()->index();
@@ -254,8 +254,8 @@ return new class extends Migration
 
         Schema::create('medicine_clinics', function (Blueprint $table) {
             $table->uuid('medicine_clinic_id')->primary();
-            $table->uuid('medicine_id')->nullable();
-            $table->uuid('clinic_id')->nullable();
+            $table->uuid('medicine_id')->nullable()->index();
+            $table->uuid('clinic_id')->nullable()->index();
             $table->integer('stock')->default(0);
             $table->decimal('price', 10, 2)->nullable()->index();
             $table->timestamps();
@@ -279,8 +279,8 @@ return new class extends Migration
 
         Schema::create('clinic_tooth_prices', function (Blueprint $table) {
             $table->uuid('clinic_tooth_price_id')->primary();
-            $table->uuid('clinic_id')->nullable();
-            $table->uuid('tooth_list_id')->nullable();
+            $table->uuid('clinic_id')->nullable()->index();
+            $table->uuid('tooth_list_id')->nullable()->index();
             $table->decimal('price', 10, 2)->index();
 
             $table->timestamps();
@@ -294,9 +294,9 @@ return new class extends Migration
 
         Schema::create('teeth', function (Blueprint $table) {
             $table->uuid('tooth_id')->primary();
-            $table->uuid('account_id')->nullable();
-            $table->uuid('patient_id')->nullable();
-            $table->uuid('tooth_list_id')->nullable();
+            $table->uuid('account_id')->nullable()->index();
+            $table->uuid('patient_id')->nullable()->index();
+            $table->uuid('tooth_list_id')->nullable()->index();
             $table->uuid('clinic_id')->nullable(); // clinic where treatment happened
             $table->text('condition')->nullable(); // e.g., healthy, decayed, missing
             $table->decimal('price', 10, 2)->nullable(); // price at the time of treatment
@@ -316,7 +316,7 @@ return new class extends Migration
             $table->uuid('log_id')->primary();
 
             // Who did the action
-            $table->uuid('account_id')->nullable();
+            $table->uuid('account_id')->nullable()->index();
             $table->text('account_name_snapshot')->nullable(); // Freeze name at time of log
 
             // Polymorphic relation (can point to patients, bills, appointments, etc.)
@@ -339,20 +339,19 @@ return new class extends Migration
 
             // Indexes
             $table->index(['loggable_id', 'loggable_type']);
-            $table->index('account_id');
             $table->index('log_type');
             $table->index('action');
         });
 
         Schema::create('addresses', function (Blueprint $table) {
             $table->uuid('address_id')->primary();
-            $table->uuid('account_id')->nullable(); // Nullable if address is not linked to an account
-            $table->uuid('qr_id')->nullable(); // Nullable if address is not linked to a QR code
+            $table->uuid('account_id')->nullable()->index(); // Nullable if address is not linked to an account
+            $table->uuid('qr_id')->nullable()->index(); // Nullable if address is not linked to a QR code
             $table->boolean('is_staff')->default(false); // based on account id true if address is for staff, false if for just admin
-            $table->uuid('associate_id')->nullable();
-            $table->uuid('patient_id')->nullable();
-            $table->uuid('clinic_id')->nullable();
-            $table->uuid('laboratory_id')->nullable();
+            $table->uuid('associate_id')->nullable()->index();
+            $table->uuid('patient_id')->nullable()->index();
+            $table->uuid('clinic_id')->nullable()->index();
+            $table->uuid('laboratory_id')->nullable()->index();
             // Encrypt
             $table->text('house_no')->nullable();
             $table->text('street')->nullable();
