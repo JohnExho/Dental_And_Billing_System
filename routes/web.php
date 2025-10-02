@@ -77,6 +77,7 @@ Route::middleware('web')->group(function () {
         Route::view('/admin/dashboard', 'auth.admin-dashboard')->name('admin.dashboard');
         Route::view('/staff/dashboard', 'auth.staff-dashboard')->name('staff.dashboard');
         Route::view('/waitlist', 'pages.waitlist.index')->name('waitlist');
+        Route::get('/patients', [PatientController::class, 'index'])->name('patients');
         Route::get('/settings', [AccountController::class, 'settings'])->name('settings');
         Route::middleware('admin.only')->group(function () {
             Route::get('/clinics', [ClinicController::class, 'index'])->name('clinics');

@@ -88,10 +88,17 @@
             <li class="nav-item mb-1">
                 <a class="text-decoration-none fw-bold fs-4
                     {{ request()->routeIs('waitlist') ? 'active text-primary' : 'text-dark' }}"
-                    href="{{ route('waitlist') }}"
-                    style="{{ request()->routeIs('waitlist') }}">
+                    href="{{ route('waitlist') }}" style="{{ request()->routeIs('waitlist') }}">
                     <span class="nav-text">Waitlist</span>
                     <i class="bi bi-list-check"></i>
+                </a>
+            </li>
+            <li class="nav-item mb-1">
+                <a class="text-decoration-none fw-bold fs-4
+                    {{ request()->routeIs('patients') ? 'active text-primary' : 'text-dark' }}"
+                    href="{{ route('patients') }}" style="{{ request()->routeIs('patients') }}">
+                    <span class="nav-text">Patients</span>
+                    <i class="bi bi-people-fill"></i>
                 </a>
             </li>
         </ul>

@@ -19,6 +19,28 @@ class PatientController extends Controller
         $this->guard = Auth::guard('account');
     }
 
+    public function index()
+    {
+
+        $clinicId = session('clinic_id');
+        $query = Patient::with([
+            'clinic',
+            'account',
+            // 'patientQR',
+            'address.barangay',
+            'address.city',
+            'address.province',
+        ])->latest();
+
+        if (session()->has('clinic_id') && $clinicId = session('clinic_id')) {
+            $query->where('clinic_id', $clinicId);
+        }
+
+        $patients = $query->paginate(8);
+
+        return view('pages.patients.index', compact('patients', 'clinicId'));
+    }
+
     public function create(Request $request)
     {
         // ✅ Step 1: Manual validation using Validator

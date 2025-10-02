@@ -65,6 +65,13 @@ class Patient extends Model
         'school' => 'encrypted',
     ];
 
+    protected $appends = ['full_name']; // optional: auto-include in JSON
+
+    public function getFullNameAttribute()
+    {
+        return trim("{$this->last_name}, {$this->first_name} {$this->middle_name}") ?: 'N/A';
+    }
+
     public function logs()
     {
         return $this->morphMany(Logs::class, 'loggable');
