@@ -25,7 +25,7 @@ class ClinicFullSeeder extends Seeder
             'name' => $faker->company,
             'name_hash' => hash('sha256', strtolower($faker->company)),
             'description' => $faker->paragraph,
-            'speciality' => $faker->word,
+            'specialty' => $faker->word,
             'mobile_no' => $faker->phoneNumber,
             'contact_no' => $faker->phoneNumber,
             'email' => $email = $faker->unique()->safeEmail,

@@ -35,15 +35,15 @@
                                 </div>
                             </div>
 
-                            <!-- speciality and Contact -->
+                            <!-- specialty and Contact -->
                             <h6 class="text-muted mt-4 mb-3"><i class="bi bi-envelope me-2"></i> Contact Information
                             </h6>
                             <div class="mb-3">
                                 <div class="input-group">
                                     <span class="input-group-text"><i class="bi bi-heart-pulse"></i></span>
-                                    <input type="text" class="form-control" id="speciality" name="speciality"
-                                        placeholder="Speciality"
-                                        value="{{ old('speciality', $laboratory->speciality ?? '') }}">
+                                    <input type="text" class="form-control" id="specialty" name="specialty"
+                                        placeholder="Specialty"
+                                        value="{{ old('specialty', $laboratory->specialty ?? '') }}">
                                 </div>
                             </div>
 

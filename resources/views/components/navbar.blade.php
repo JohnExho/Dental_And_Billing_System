@@ -108,30 +108,13 @@
                     <!-- Add Patient + Search Bar -->
                     <li class="nav-item d-flex align-items-center me-3">
 
-                        <div class="d-flex align-items-center border border-secondary rounded" style="height: 32px;">
 
-                            {{-- Search Form --}}
-                            <form action="{{-- route('patients.search') --}}" method="GET" class="d-flex align-items-center px-2">
-                                <i class="bi bi-search me-2 text-muted"></i>
-                                <input type="text" name="query"
-                                    class="form-control form-control-sm border-0 shadow-none p-0"
-                                    placeholder="Search patient..." style="width: 180px; background: transparent;">
-                            </form>
+                        {{-- Add Patient Button --}}
+                        <a href="#" class="btn btn-primary"
+                            style="font-size: 0.875rem;" data-bs-target="#add-patient-modal" data-bs-toggle="modal">
+                            <i class="bi bi-person-plus-fill me-1"></i> Add Patient
+                        </a>
 
-                            {{-- Divider --}}
-                            <div class="bg-secondary"
-                                style="
-                                    width: 1px;
-                                    height: 100%;
-                                ">
-                            </div>
-
-                            {{-- Add Patient Button --}}
-                            <a href="{{-- route('patients.create') --}}" class="d-flex align-items-center px-2 text-decoration-none"
-                                style="font-size: 0.875rem;">
-                                <i class="bi bi-person-plus-fill me-1"></i> Add Patient
-                            </a>
-                        </div>
 
                     </li>
 

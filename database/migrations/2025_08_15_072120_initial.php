@@ -2,7 +2,6 @@
 
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Database\Schema\Blueprint;
-use phpDocumentor\Reflection\Types\Nullable;
 use Illuminate\Database\Migrations\Migration;
 
 return new class extends Migration
@@ -45,7 +44,7 @@ return new class extends Migration
             $table->text('name_hash')->index();
             $table->text('description')->nullable();
             $table->text('schedule_summary')->nullable();
-            $table->text('speciality')->nullable();
+            $table->text('specialty')->nullable();
             $table->text('mobile_no')->nullable();
             $table->text('contact_no')->nullable();
             $table->text('email')->nullable();
@@ -76,7 +75,7 @@ return new class extends Migration
             $table->text('name');
             $table->text('name_hash')->index();
             $table->text('description')->nullable();
-            $table->text('speciality')->nullable();
+            $table->text('specialty')->nullable();
             $table->text('contact_person');
             $table->text('mobile_no')->nullable();
             $table->text('contact_no')->nullable();
@@ -96,7 +95,7 @@ return new class extends Migration
             $table->text('middle_name')->nullable();
             $table->text('last_name');
             $table->text('last_name_hash')->index();
-            $table->text('speciality')->nullable();
+            $table->text('specialty')->nullable();
             $table->text('mobile_no')->nullable();
             $table->text('contact_no')->nullable();
             $table->boolean('is_active')->default(true);
@@ -137,9 +136,9 @@ return new class extends Migration
             $table->string('last_name_hash')->nullable()->index();
             // Other details
             $table->text('profile_picture')->nullable();
-            $table->enum('sex', ['male', 'female', 'other']);
-            $table->enum('civil_status', ['single', 'married', 'widowed', 'divorced', 'separated', 'annulled'])->nullable();
-            $table->date('date_of_birth');
+            $table->text('sex');
+            $table->text('civil_status')->nullable();
+            $table->text('date_of_birth');
             $table->text('referral')->nullable();
             $table->text('occupation')->nullable();
             $table->text('company')->nullable();
@@ -363,11 +362,6 @@ return new class extends Migration
             $table->unsignedBigInteger('city_id')->nullable();
             $table->unsignedBigInteger('province_id')->nullable();
 
-            // Indexes
-            $table->index('patient_id');
-            $table->index('associate_id');
-            $table->index('clinic_id');
-            $table->index('laboratory_id');
 
             $table->timestamps();
             $table->softDeletes();

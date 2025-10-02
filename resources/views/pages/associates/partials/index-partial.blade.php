@@ -12,7 +12,7 @@
                     <tr>
                         <th>Name</th>
                         <th>Email</th>
-                        <th>Speciality</th>
+                        <th>Specialty</th>
                         <th>Clinic</th>
                         <th>Contact</th>
                         <th>Address</th>
@@ -25,7 +25,7 @@
                         <tr>
                             <td>{{ $associate->full_name }}</td>
                             <td>{{ $associate->email }}</td>
-                            <td>{{ $associate->speciality }}</td>
+                            <td>{{ $associate->specialty }}</td>
                             <td>{{ $associate->clinic->name ?? 'No Clinic' }}</td>
                             <td>
                                 <i class="bi bi-telephone-fill me-1"></i>{{ $associate->contact_no }}<br>
@@ -52,7 +52,7 @@
                                     data-middle-name="{{ $associate->middle_name }}"
                                     data-last-name="{{ $associate->last_name }}" data-email="{{ $associate->email }}"
                                     data-contact="{{ $associate->contact_no }} / {{ $associate->mobile_no }}"
-                                    data-speciality="{{ $associate->speciality }}"
+                                    data-specialty="{{ $associate->specialty }}"
                                     data-address="{{ optional($associate->address)->house_no }} {{ optional($associate->address)->street }} {{ optional($associate->address->barangay)->name ?? '' }} {{ optional($associate->address->city)->name ?? '' }} {{ optional($associate->address->province)->name ?? '' }}">
                                     <i class="bi bi-eye"></i>
                                 </a>
@@ -76,7 +76,9 @@
                                     data-city_name="{{ optional($associate->address->city)->name }}"
                                     data-barangay_id="{{ optional($associate->address->barangay)->barangay_id }}"
                                     data-barangay_name="{{ optional($associate->address->barangay)->name }}"
-                                    data-is_active="{{ $associate->is_active }}">
+                                    data-is_active="{{ $associate->is_active }}"
+                                    data-specialty="{{ $associate->specialty }}"
+                                    >
                                     <i class="bi bi-pencil-square"></i>
                                 </button>
 

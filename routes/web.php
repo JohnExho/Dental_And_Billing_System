@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\PatientController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\OTPController;
 use App\Http\Controllers\StaffController;
@@ -41,7 +42,7 @@ Route::middleware('web')->group(function () {
 
     Route::post('/process/create/clinic', [ClinicController::class, 'create'])->name('process-create-clinic');
     Route::put('/process/update/clinic', [ClinicController::class, 'update'])->name('process-update-clinic');
-    Route::delete('process/delete/clnic', [ClinicController::class, 'destroy'])->name('process-delete-clinic');
+    Route::delete('process/delete/clinic', [ClinicController::class, 'destroy'])->name('process-delete-clinic');
     Route::post('process/clinics/select', [ClinicController::class, 'select'])->name('process-select-clinic');
 
     Route::post('/process/create/staff', [StaffController::class, 'create'])->name('process-create-staff');
@@ -67,6 +68,8 @@ Route::middleware('web')->group(function () {
     Route::post('/process/create/service', [ServiceController::class, 'create'])->name('process-create-service');
     Route::put('/process/update/service', [ServiceController::class, 'update'])->name('process-update-service');
     Route::delete('/process/delete/service', [ServiceController::class, 'destroy'])->name('process-delete-service');
+
+    Route::post('/process/create/patient', [PatientController::class,'create'])->name('process-create-patient');
 
     // Protected routes
     Route::middleware('auth:account')->group(function () {

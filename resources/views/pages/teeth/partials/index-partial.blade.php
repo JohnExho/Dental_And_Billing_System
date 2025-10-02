@@ -76,6 +76,9 @@
         });
     });
 </script>
+
+@section('modals')
 @include('pages.teeth.modals.info')
 @include('pages.teeth.modals.edit')
 @include('pages.teeth.modals.delete')
+@endsection

@@ -90,6 +90,7 @@
         @endif
         @yield('content')
         @yield('modals')
+        @include('pages.patients.modals.add')
     </div>
     </div>
     <script>

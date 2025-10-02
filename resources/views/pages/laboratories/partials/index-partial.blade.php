@@ -8,7 +8,7 @@
                     <tr>
                         <th>Name</th>
                         <th>Description</th>
-                        <th>Speciality</th>
+                        <th>Specialty</th>
                         <th>Email</th>
                         <th>Address</th>
                         <th>Contact</th>
@@ -20,7 +20,7 @@
                         <tr>
                             <td>{{ $laboratory->name }}</td>
                             <td>{{ Str::limit($laboratory->description, 50) }}</td>
-                            <td>{{ $laboratory->speciality }}</td>
+                            <td>{{ $laboratory->specialty }}</td>
                             <td>{{ $laboratory->email }}</td>
                             <td>
                                 {{ optional($laboratory->address)->house_no }}
@@ -37,7 +37,7 @@
                                 <a role="button" class="btn btn-sm btn-outline-primary" data-bs-toggle="modal"
                                     data-bs-target="#laboratory-detail-modal" data-name="{{ $laboratory->name }}"
                                     data-description="{{ $laboratory->description }}"
-                                    data-speciality="{{ $laboratory->speciality }}"
+                                    data-specialty="{{ $laboratory->specialty }}"
                                     data-email="{{ $laboratory->email }}"
                                     data-contact="{{ $laboratory->contact_no }} / {{ $laboratory->mobile_no }}"
                                     data-address="{{ optional($laboratory->address)->house_no }} {{ optional($laboratory->address)->street }} {{ optional($laboratory->address->barangay)->name ?? '' }} {{ optional($laboratory->address->city)->name ?? '' }} {{ optional($laboratory->address->province)->name ?? '' }}">
@@ -51,7 +51,7 @@
                                     data-bs-target="#edit-laboratory-modal" onclick="event.stopPropagation();"
                                     data-id="{{ $laboratory->laboratory_id }}" data-name="{{ $laboratory->name }}"
                                     data-description="{{ $laboratory->description }}"
-                                    data-speciality="{{ $laboratory->speciality }}"
+                                    data-specialty="{{ $laboratory->specialty }}"
                                     data-email="{{ $laboratory->email }}"
                                     data-contact_no="{{ $laboratory->contact_no }}"
                                     data-mobile_no="{{ $laboratory->mobile_no }}"

@@ -41,6 +41,10 @@
                             <h6 class="text-muted mt-3">☎️ Contact</h6>
                             <div class="row">
                                 <div class="col-md-12 mb-3">
+                                        <label for="edit_specialty" class="form-label">Specialty</label>
+                                        <input type="text" class="form-control" id="edit_specialty" name="specialty">
+                                </div>
+                                <div class="col-md-12 mb-3">
                                     <label for="edit_email" class="form-label">Email</label>
                                     <input type="email" class="form-control" id="edit_email" name="email" required>
                                 </div>
@@ -77,7 +81,8 @@
                                     <select id="edit_province_select" class="form-select form-select-sm">
                                         <option value="">-- Select Province --</option>
                                         @foreach ($provinces as $province)
-                                            <option value="{{ $province->province_id }}" data-id="{{ $province->id }}">
+                                            <option value="{{ $province->province_id }}"
+                                                data-id="{{ $province->id }}">
                                                 {{ $province->name }}
                                             </option>
                                         @endforeach
@@ -87,8 +92,7 @@
                                 </div>
                                 <div class="col-md-4 mb-3">
                                     <label for="edit_city_select" class="form-label">City</label>
-                                    <select id="edit_city_select" class="form-select form-select-sm" disabled
-                                        >
+                                    <select id="edit_city_select" class="form-select form-select-sm" disabled>
                                         <option value="">-- Select City --</option>
                                     </select>
                                     <input type="hidden" name="address[city_id]" id="edit_city_hidden">
@@ -96,8 +100,7 @@
                                 </div>
                                 <div class="col-md-4 mb-3">
                                     <label for="edit_barangay_select" class="form-label">Barangay</label>
-                                    <select id="edit_barangay_select" class="form-select form-select-sm" disabled
-                                        >
+                                    <select id="edit_barangay_select" class="form-select form-select-sm" disabled>
                                         <option value="">-- Select Barangay --</option>
                                     </select>
                                     <input type="hidden" name="address[barangay_id]" id="edit_barangay_hidden">
@@ -255,6 +258,7 @@
                 'data-barangay_name') || '';
             modal.querySelector('#edit_is_active').checked = button.getAttribute('data-is_active') ===
                 '1';
+            modal.querySelector('#edit_specialty').value = button.getAttribute('data-specialty');
 
             if (provinceId) {
                 provinceSelect.value = provinceId;

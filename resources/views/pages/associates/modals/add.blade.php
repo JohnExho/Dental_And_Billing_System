@@ -39,9 +39,9 @@
                             <div class="col-md-12 mb-3">
                                 <div class="input-group">
                                     <span class="input-group-text"><i class="bi bi-heart-pulse"></i></span>
-                                    <input type="text" class="form-control" id="speciality" name="speciality"
-                                        placeholder="Speciality"
-                                        value="{{ old('speciality', $associate->speciality ?? '') }}">
+                                    <input type="text" class="form-control" id="specialty" name="specialty"
+                                        placeholder="Specialty"
+                                        value="{{ old('specialty', $associate->specialty ?? '') }}">
                                 </div>
                             </div>
                             <div class="mb-3">

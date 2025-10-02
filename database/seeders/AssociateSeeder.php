@@ -27,7 +27,7 @@ class AssociateSeeder extends Seeder
             'email_hash' => hash('sha256', strtolower('admin@example.com')),
             'mobile_no' => $faker->phoneNumber,
             'contact_no' => $faker->phoneNumber,
-            'speciality' => $faker->word,
+            'specialty' => $faker->word,
             'account_id' => null,
             'clinic_id' => null,
             'laboratory_id' => null,

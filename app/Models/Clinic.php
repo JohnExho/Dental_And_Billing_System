@@ -26,7 +26,7 @@ class Clinic extends Model
         'name',
         'name_hash',
         'description',
-        'speciality',
+        'specialty',
         'schedule_summary',
         'mobile_no',
         'contact_no',
@@ -38,7 +38,7 @@ class Clinic extends Model
     protected $casts = [
         'name' => 'encrypted',
         'description' => 'encrypted',
-        'speciality' => 'encrypted',
+        'specialty' => 'encrypted',
         'schedule_summary' => 'encrypted',
         'mobile_no' => 'encrypted',
         'contact_no' => 'encrypted',

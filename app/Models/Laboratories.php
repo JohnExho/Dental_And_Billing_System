@@ -26,7 +26,7 @@ class Laboratories extends Model
         'name',
         'name_hash',
         'description',
-        'speciality',
+        'specialty',
         'mobile_no',
         'contact_no',
         'contact_person',
@@ -38,7 +38,7 @@ class Laboratories extends Model
     protected $casts = [
         'name' => 'encrypted',
         'description' => 'encrypted',
-        'speciality' => 'encrypted',
+        'specialty' => 'encrypted',
         'mobile_no' => 'encrypted',
         'contact_no' => 'encrypted',
         'contact_person' => 'encrypted',

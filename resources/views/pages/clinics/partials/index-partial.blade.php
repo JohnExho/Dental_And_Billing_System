@@ -10,7 +10,7 @@
                         <th>Name</th>
                         <th>Description</th>
                         <th>Email</th>
-                        <th>Speciality</th>
+                        <th>Specialty</th>
                         <th>Contact</th>
                         <th>Schedule</th>
                         <th>Address</th>
@@ -23,7 +23,7 @@
                             <td class="fw-semibold">{{ $clinic->name }}</td>
                             <td>{{ Str::limit($clinic->description, 50) ?? 'No Description Given' }}</td>
                             <td>{{ $clinic->email }}</td>
-                            <td>{{ $clinic->speciality }}</td>
+                            <td>{{ $clinic->specialty }}</td>
                             <td>
                                 <i class="bi bi-telephone-fill me-1"></i>{{ $clinic->contact_no }}<br>
                                 <i class="bi bi-phone-fill me-1"></i>{{ $clinic->mobile_no }}
@@ -49,7 +49,7 @@
                                     data-bs-target="#clinic-detail-modal" data-name="{{ $clinic->name }}"
                                     data-description="{{ $clinic->description }}" data-email="{{ $clinic->email }}"
                                     data-contact="{{ $clinic->contact_no }} / {{ $clinic->mobile_no }}"
-                                    data-speciality="{{ $clinic->speciality }}"
+                                    data-specialty="{{ $clinic->specialty }}"
                                     data-address="{{ optional($clinic->address)->house_no }} {{ optional($clinic->address)->street }} {{ optional($clinic->address->barangay)->name ?? '' }} {{ optional($clinic->address->city)->name ?? '' }} {{ optional($clinic->address->province)->name ?? '' }}"
                                     data-house_no="{{ optional($clinic->address)->house_no }}"
                                     data-street="{{ optional($clinic->address)->street }}"
@@ -62,7 +62,7 @@
                                 <button type="button" class="btn btn-sm btn-outline-secondary" data-bs-toggle="modal"
                                     data-bs-target="#edit-clinic-modal" data-id="{{ $clinic->clinic_id }}"
                                     data-name="{{ $clinic->name }}" data-description="{{ $clinic->description }}"
-                                    data-speciality="{{ $clinic->speciality }}" data-email="{{ $clinic->email }}"
+                                    data-specialty="{{ $clinic->specialty }}" data-email="{{ $clinic->email }}"
                                     data-contact_no="{{ $clinic->contact_no }}"
                                     data-mobile_no="{{ $clinic->mobile_no }}"
                                     data-house_no="{{ optional($clinic->address)->house_no }}"

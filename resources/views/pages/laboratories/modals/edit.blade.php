@@ -36,8 +36,8 @@
                                 <h6 class="fw-bold mb-3">☎️ Contact Information</h6>
                                 <div class="row g-3">
                                     <div class="col-md-6">
-                                        <label for="edit_speciality" class="form-label">Speciality</label>
-                                        <input type="text" class="form-control" id="edit_speciality" name="speciality">
+                                        <label for="edit_specialty" class="form-label">Specialty</label>
+                                        <input type="text" class="form-control" id="edit_specialty" name="specialty">
                                     </div>
                                     <div class="col-md-6">
                                         <label for="edit_email" class="form-label">Email <span class="text-danger">*</span></label>
@@ -222,7 +222,7 @@
             modal.querySelector('#edit_laboratory_name').value = button.getAttribute('data-name') || '';
             modal.querySelector('#edit_laboratory_description').value = button.getAttribute(
                 'data-description') || '';
-            modal.querySelector('#edit_speciality').value = button.getAttribute('data-speciality') || '';
+            modal.querySelector('#edit_specialty').value = button.getAttribute('data-specialty') || '';
             modal.querySelector('#edit_email').value = button.getAttribute('data-email') || '';
             modal.querySelector('#edit_contact_no').value = button.getAttribute('data-contact_no') ||
                 '';

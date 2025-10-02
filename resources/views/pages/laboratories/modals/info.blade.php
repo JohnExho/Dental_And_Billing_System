@@ -26,8 +26,8 @@
                             </li>
                             <li class="list-group-item">
                                 <i class="bi bi-geo-alt me-2 text-secondary"></i>
-                                <strong>Speciality:</strong>
-                                <span id="laboratory-speciality" class="text-muted"></span>
+                                <strong>Specialty:</strong>
+                                <span id="laboratory-specialty" class="text-muted"></span>
                             </li>
                             <li class="list-group-item">
                                 <i class="bi bi-geo-alt me-2 text-secondary"></i>
@@ -82,7 +82,7 @@
             email: button.getAttribute('data-email'),
             contact: button.getAttribute('data-contact'),
             address: button.getAttribute('data-address'),
-            speciality: button.getAttribute('data-speciality')
+            specialty: button.getAttribute('data-specialty')
         };
 
         const [contactNo, mobileNo] = (data.contact || '').split(' / ');
@@ -95,6 +95,6 @@
         laboratoryModal.querySelector('#laboratory-contact-no').textContent = contactNo || 'N/A';
         laboratoryModal.querySelector('#laboratory-mobile-no').textContent = mobileNo || 'N/A';
         laboratoryModal.querySelector('#laboratory-address').textContent = data.address || 'N/A';
-        laboratoryModal.querySelector('#laboratory-speciality').textContent = data.speciality || 'N/A';
+        laboratoryModal.querySelector('#laboratory-specialty').textContent = data.specialty || 'N/A';
     });
 </script>

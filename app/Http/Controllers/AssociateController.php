@@ -53,7 +53,7 @@ class AssociateController extends Controller
             'first_name' => 'required|string|max:100',
             'middle_name' => 'nullable|string|max:100',
             'last_name' => 'required|string|max:100',
-            'speciality' => 'nullable|string|max:255',
+            'specialty' => 'nullable|string|max:255',
             'mobile_no' => 'nullable|string|max:20',
             'contact_no' => 'nullable|string|max:20',
             'email' => 'nullable|email|max:255',
@@ -90,7 +90,7 @@ class AssociateController extends Controller
                 'middle_name' => $request->middle_name,
                 'last_name' => $request->last_name,
                 'last_name_hash' => hash('sha256', strtolower($request->last_name)),
-                'speciality' => $request->speciality,
+                'specialty' => $request->specialty,
                 'mobile_no' => $request->mobile_no,
                 'contact_no' => $request->contact_no,
                 'email' => $normalizedEmail,
@@ -140,6 +140,7 @@ class AssociateController extends Controller
             'last_name' => 'required|string|max:100',
             'mobile_no' => 'nullable|string|max:20',
             'contact_no' => 'nullable|string|max:20',
+            'specialty' => 'nullable|string|max:100',
             'email' => 'nullable|email|max:255',
             'address' => 'nullable|array',
             'address.house_no' => 'nullable|string|max:50',
@@ -177,6 +178,7 @@ class AssociateController extends Controller
                 'mobile_no' => $request->mobile_no,
                 'contact_no' => $request->contact_no,
                 'email' => $normalizedEmail,
+                'specialty' => $request->specialty,
                 'email_hash' => $newEmailHash,
                 'is_active' => $request->has('is_active') ? 1 : 0
             ];
