@@ -1,4 +1,4 @@
-<!-- Add patient Modal -->
+<!-- Add Patient Modal -->
 <div class="modal fade" id="add-patient-modal" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog modal-lg modal-dialog-centered">
         <div class="modal-content shadow-lg border-0 rounded-4 overflow-hidden">
@@ -15,7 +15,7 @@
 
                 <!-- Body -->
                 <div class="modal-body p-4">
-                    <!-- STEP CONTAINER -->
+                    <!-- STEP 1 -->
                     <div id="step1" class="step-content">
                         <div class="row g-3">
                             <!-- Name Fields -->
@@ -46,8 +46,7 @@
                                 <input type="date" name="date_of_birth" class="form-control" required>
                             </div>
 
-                            <!-- Mobile and Email -->
-                            <!-- Mobile and Contact -->
+                            <!-- Contact -->
                             <div class="col-md-6">
                                 <label class="form-label">Mobile</label>
                                 <input type="text" name="mobile_no" class="form-control phone-number">
@@ -64,6 +63,7 @@
                         </div>
                     </div>
 
+                    <!-- STEP 2 -->
                     <div id="step2" class="step-content d-none">
                         <div class="row g-3">
                             <!-- Civil Status -->
@@ -90,7 +90,6 @@
                                 <input type="text" name="height" class="form-control numeric-only">
                             </div>
 
-
                             <!-- School -->
                             <div class="col-md-6">
                                 <label class="form-label">School</label>
@@ -111,6 +110,48 @@
                             <div class="col-md-6">
                                 <label class="form-label">Company</label>
                                 <input type="text" name="company" class="form-control">
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- STEP 3 (Address) -->
+                    <div id="step3" class="step-content d-none">
+                        <div class="row g-3">
+                            <h6 class="text-muted"><i class="bi bi-geo-alt me-1"></i> Address</h6>
+
+                            <div class="col-md-4">
+                                <input type="text" class="form-control" id="house_no" name="address[house_no]"
+                                    placeholder="House No.">
+                            </div>
+                            <div class="col-md-8">
+                                <input type="text" class="form-control" id="street" name="address[street]"
+                                    placeholder="Street">
+                            </div>
+
+                            <div class="col-md-12">
+                                <select id="patient-province-select" class="form-select" required>
+                                    <option value="">-- Province --</option>
+                                    @foreach ($provinces as $province)
+                                        <option value="{{ $province->province_id }}" data-id="{{ $province->id }}">
+                                            {{ $province->name }}
+                                        </option>
+                                    @endforeach
+                                </select>
+                                <input type="hidden" name="address[province_id]" id="patient-province-hidden">
+                            </div>
+
+                            <div class="col-md-12">
+                                <select id="patient-city-select" class="form-select" disabled required>
+                                    <option value="">-- City --</option>
+                                </select>
+                                <input type="hidden" name="address[city_id]" id="patient-city-hidden">
+                            </div>
+
+                            <div class="col-md-12">
+                                <select id="patient-barangay-select" class="form-select" disabled required>
+                                    <option value="">-- Barangay --</option>
+                                </select>
+                                <input type="hidden" name="address[barangay_id]" id="patient-barangay-hidden">
                             </div>
                         </div>
                     </div>
@@ -142,35 +183,27 @@
 
 <!-- JS for Step Logic -->
 <script>
-    document.addEventListener('DOMContentLoaded', function() {
-        const step1 = document.getElementById('step1');
-        const step2 = document.getElementById('step2');
+    document.addEventListener('DOMContentLoaded', function () {
+        const steps = [
+            document.getElementById('step1'),
+            document.getElementById('step2'),
+            document.getElementById('step3')
+        ];
         const nextBtn = document.getElementById('nextBtn');
         const prevBtn = document.getElementById('prevBtn');
         const submitBtn = document.getElementById('submitBtn');
-
-        let currentStep = 1;
+        let currentStep = 0;
 
         function updateSteps() {
-            if (currentStep === 1) {
-                step1.classList.remove('d-none');
-                step2.classList.add('d-none');
-                prevBtn.classList.add('d-none');
-                nextBtn.classList.remove('d-none');
-                submitBtn.classList.add('d-none');
-            } else if (currentStep === 2) {
-                step1.classList.add('d-none');
-                step2.classList.remove('d-none');
-                prevBtn.classList.remove('d-none');
-                nextBtn.classList.add('d-none');
-                submitBtn.classList.remove('d-none');
-            }
+            steps.forEach((s, i) => s.classList.toggle('d-none', i !== currentStep));
+            prevBtn.classList.toggle('d-none', currentStep === 0);
+            nextBtn.classList.toggle('d-none', currentStep === steps.length - 1);
+            submitBtn.classList.toggle('d-none', currentStep !== steps.length - 1);
         }
 
-        function validateStep1() {
-            const requiredFields = step1.querySelectorAll('[required]');
+        function validateStep(stepIndex) {
+            const requiredFields = steps[stepIndex].querySelectorAll('[required]');
             let isValid = true;
-
             requiredFields.forEach(field => {
                 if (!field.value.trim()) {
                     field.classList.add('is-invalid');
@@ -178,63 +211,117 @@
                 } else {
                     field.classList.remove('is-invalid');
                 }
-
-                // Real-time validation feedback
-                field.addEventListener('input', () => {
-                    if (field.value.trim()) {
-                        field.classList.remove('is-invalid');
-                    }
-                });
             });
-
             return isValid;
         }
 
-        nextBtn.addEventListener('click', function() {
-            if (currentStep === 1 && validateStep1()) {
-                currentStep = 2;
+        nextBtn.addEventListener('click', function () {
+            if (validateStep(currentStep)) {
+                currentStep++;
                 updateSteps();
             }
         });
 
-        prevBtn.addEventListener('click', function() {
-            currentStep = 1;
+        prevBtn.addEventListener('click', function () {
+            currentStep--;
             updateSteps();
         });
 
-        updateSteps(); // Initial state
+        updateSteps();
 
-        // --- Phone number validation ---
-        const phoneInputs = document.querySelectorAll('.phone-number');
-
-        phoneInputs.forEach(input => {
-            input.addEventListener('input', function() {
-                let value = this.value.replace(/\D/g, '');
-                if (value.length > 11) value = value.slice(0, 11);
-                this.value = value;
+        // --- Phone number restriction ---
+        document.querySelectorAll('.phone-number').forEach(input => {
+            input.addEventListener('input', function () {
+                let v = this.value.replace(/\D/g, '');
+                this.value = v.slice(0, 11);
             });
         });
-        // --- Numeric-only fields for weight & height ---
-        const numericOnlyInputs = document.querySelectorAll('.numeric-only');
 
-        numericOnlyInputs.forEach(input => {
-            input.addEventListener('input', function() {
+        // --- Numeric-only fields ---
+        document.querySelectorAll('.numeric-only').forEach(input => {
+            input.addEventListener('input', function () {
                 this.value = this.value.replace(/[^0-9.]/g, '');
-
-                // Optional: limit to 1 decimal point
                 const parts = this.value.split('.');
-                if (parts.length > 2) {
-                    this.value = parts[0] + '.' + parts[1];
-                }
+                if (parts.length > 2) this.value = parts[0] + '.' + parts[1];
             });
+        });
+
+        // --- Address cascading ---
+        const provinceSelect = document.getElementById('patient-province-select');
+        const provinceHidden = document.getElementById('patient-province-hidden');
+        const citySelect = document.getElementById('patient-city-select');
+        const cityHidden = document.getElementById('patient-city-hidden');
+        const barangaySelect = document.getElementById('patient-barangay-select');
+        const barangayHidden = document.getElementById('patient-barangay-hidden');
+
+        function resetSelects() {
+            citySelect.innerHTML = '<option value="">-- Select City --</option>';
+            citySelect.disabled = true;
+            cityHidden.value = '';
+            barangaySelect.innerHTML = '<option value="">-- Select Barangay --</option>';
+            barangaySelect.disabled = true;
+            barangayHidden.value = '';
+        }
+
+        provinceSelect.addEventListener('change', async function () {
+            resetSelects();
+            const selected = this.selectedOptions[0];
+            provinceHidden.value = selected.dataset.id || '';
+            if (!this.value) return;
+            citySelect.innerHTML = '<option>Loading cities…</option>';
+            try {
+                const res = await fetch(`/locations/cities/${this.value}`);
+                const data = await res.json();
+                citySelect.innerHTML = '<option value="">-- Select City --</option>';
+                data.forEach(c => {
+                    const opt = document.createElement('option');
+                    opt.value = c.city_id;
+                    opt.dataset.id = c.id;
+                    opt.textContent = c.name;
+                    citySelect.appendChild(opt);
+                });
+                citySelect.disabled = false;
+            } catch (err) {
+                citySelect.innerHTML = '<option>Error loading cities</option>';
+            }
+        });
+
+        citySelect.addEventListener('change', async function () {
+            barangaySelect.innerHTML = '<option value="">-- Select Barangay --</option>';
+            barangaySelect.disabled = true;
+            cityHidden.value = '';
+            barangayHidden.value = '';
+            const selectedCity = this.selectedOptions[0];
+            cityHidden.value = selectedCity?.dataset.id || '';
+            if (!this.value) return;
+            barangaySelect.innerHTML = '<option>Loading barangays…</option>';
+            try {
+                const res = await fetch(`/locations/barangays/${this.value}`);
+                const data = await res.json();
+                barangaySelect.innerHTML = '<option value="">-- Select Barangay --</option>';
+                data.forEach(b => {
+                    const opt = document.createElement('option');
+                    opt.value = b.barangay_id;
+                    opt.dataset.id = b.id;
+                    opt.textContent = b.name;
+                    barangaySelect.appendChild(opt);
+                });
+                barangaySelect.disabled = false;
+            } catch (err) {
+                barangaySelect.innerHTML = '<option>Error loading barangays</option>';
+            }
+        });
+
+        barangaySelect.addEventListener('change', function () {
+            barangayHidden.value = this.selectedOptions[0]?.dataset.id || '';
         });
     });
-    document.getElementById('add-patient-modal').addEventListener('keydown', function(event) {
+
+    // Prevent accidental submit on Enter before final step
+    document.getElementById('add-patient-modal').addEventListener('keydown', function (event) {
         if (event.key === 'Enter') {
-            const submitBtnVisible = !document.getElementById('submitBtn').classList.contains('d-none');
-            if (!submitBtnVisible) {
-                event.preventDefault();
-            }
+            const submitVisible = !document.getElementById('submitBtn').classList.contains('d-none');
+            if (!submitVisible) event.preventDefault();
         }
     });
 </script>

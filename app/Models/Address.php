@@ -3,21 +3,26 @@
 namespace App\Models;
 
 use App\Traits\HasUuid;
-use Yajra\Address\Entities\City;
-use Yajra\Address\Entities\Barangay;
-use Yajra\Address\Entities\Province;
-use Illuminate\Database\Eloquent\Model;
-use Illuminate\Notifications\Notifiable;
-use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Notifications\Notifiable;
+use Yajra\Address\Entities\Barangay;
+use Yajra\Address\Entities\City;
+use Yajra\Address\Entities\Province;
 
 class Address extends Model
 {
-    use HasFactory, SoftDeletes, Notifiable, HasUuid;
+    use HasFactory, HasUuid, Notifiable, SoftDeletes;
+
     protected $table = 'addresses';
+
     protected $primaryKey = 'address_id';
+
     protected $keyType = 'string';
+
     public $incrementing = false;
+
     protected $uuidColumn = 'address_id';
 
     protected $fillable = [
@@ -33,20 +38,21 @@ class Address extends Model
         'barangay_id',
         'city_id',
         'province_id',
+        'patient_id',
     ];
 
     protected $casts = [
         'house_no' => 'encrypted',
         'street' => 'encrypted',
-        'barangay_name'  => 'encrypted',
-        'city_name'  => 'encrypted',
-        'province_name'  => 'encrypted',
+        'barangay_name' => 'encrypted',
+        'city_name' => 'encrypted',
+        'province_name' => 'encrypted',
         'created_at' => 'datetime',
         'updated_at' => 'datetime',
         'deleted_at' => 'datetime',
     ];
 
-    //Accessor for full address
+    // Accessor for full address
     public function getFullAddressAttribute(): string
     {
         $parts = array_filter([
@@ -60,8 +66,7 @@ class Address extends Model
         return implode(', ', $parts);
     }
 
-
-    //Connections
+    // Connections
 
     public function account()
     {
@@ -78,20 +83,28 @@ class Address extends Model
         return $this->belongsTo(Laboratories::class, 'laboratory_id', 'laboratory_id');
     }
 
-    public function associate(){
-        return $this->belongsTo(Associate::class,'associate_id','associate_id');
+    public function associate()
+    {
+        return $this->belongsTo(Associate::class, 'associate_id', 'associate_id');
     }
 
     public function barangay()
     {
         return $this->belongsTo(Barangay::class, 'barangay_id', 'id');
     }
+
     public function city()
     {
         return $this->belongsTo(City::class, 'city_id', 'id');
     }
+
     public function province()
     {
         return $this->belongsTo(Province::class, 'province_id', 'id');
+    }
+
+    public function patient()
+    {
+        return $this->belongsTo(Patient::class, 'patient_id', 'patient_id');
     }
 }

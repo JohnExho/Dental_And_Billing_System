@@ -2,13 +2,17 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Address;
 use App\Models\Patient;
+use Illuminate\Support\Str;
 use App\Services\LogService;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
+use Yajra\Address\Entities\City;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Auth;
+use Yajra\Address\Entities\Barangay;
+use Yajra\Address\Entities\Province;
 use Illuminate\Support\Facades\Validator; // if you use logs
-use Illuminate\Support\Str;
 
 class PatientController extends Controller
 {
@@ -61,6 +65,12 @@ class PatientController extends Controller
             'height' => 'nullable|numeric',
             'school' => 'nullable|string|max:255',
             'clinic_id' => 'nullable|exists:clinics,clinic_id',
+            'address' => 'nullable|array',
+            'address.house_no' => 'nullable|string|max:50',
+            'address.street' => 'nullable|string|max:255',
+            'address.barangay_id' => 'nullable|exists:barangays,id',
+            'address.city_id' => 'nullable|exists:cities,id',
+            'address.province_id' => 'nullable|exists:provinces,id',
         ]);
 
         // ✅ Return errors if validation fails
@@ -117,6 +127,24 @@ class PatientController extends Controller
                 'school' => $validated['school'] ?? null,
             ]);
 
+            // Step 2: Create Address (if provided)
+            if ($request->filled('address')) {
+                Address::create([
+                    'patient_id' => $patient->patient_id,
+                    'house_no' => $request->address['house_no'] ?? null,
+                    'street' => $request->address['street'] ?? null,
+                    'barangay_name' => optional(Barangay::find($request->address['barangay_id']))->name,
+                    'city_name' => optional(City::find($request->address['city_id']))->name,
+                    'province_name' => optional(Province::find($request->address['province_id']))->name,
+                    'barangay_id' => $request->address['barangay_id'] ?? null,
+                    'city_id' => $request->address['city_id'] ?? null,
+                    'province_id' => $request->address['province_id'] ?? null,
+                ]);
+            }
+
+            // Step 3: Logging
+            $addressId = optional($patient->address)->address_id;
+
             // ✅ Log
             LogService::record(
                 $authAccount,
@@ -124,7 +152,7 @@ class PatientController extends Controller
                 'create',
                 'patient',
                 'User created a patient record',
-                'Patient: '.$patient->patient_id,
+                'Patient: '.$patient->patient_id . 'Address: ' . $addressId ,
                 $request->ip(),
                 $request->userAgent()
             );
