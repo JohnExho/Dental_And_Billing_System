@@ -33,12 +33,12 @@ Route::middleware('web')->group(function () {
     Route::post('/process/chang/role', [AccountController::class, 'switchRole'])->name('process-switch-role');
     Route::put('/process/change/name', [AccountController::class, 'changeName'])->name('process-change-name');
     Route::put('/process/change/password', [AccountController::class, 'updatePassword'])->name('process-change-password');
+    Route::delete('/process/delete/account', [AccountController::class, 'deleteAccount'])->name('process-delete-account');
 
     Route::post('/process/send/otp', [OTPController::class, 'sendOtp'])->name('process-send-otp');
     Route::post('/process/resend/otp', [OTPController::class, 'resendOtp'])->name('process-resend-otp');
     Route::post('/process/verify/otp', [OTPController::class, 'verifyOtp'])->name('process-verify-otp');
     Route::post('/process/reset/password', [OTPController::class, 'resetPassword'])->name('process-reset-password');
-    Route::delete('/process/delete/account', [OTPController::class, 'deleteAccount'])->name('process-delete-account');
 
     Route::post('/process/create/clinic', [ClinicController::class, 'create'])->name('process-create-clinic');
     Route::put('/process/update/clinic', [ClinicController::class, 'update'])->name('process-update-clinic');
@@ -70,6 +70,8 @@ Route::middleware('web')->group(function () {
     Route::delete('/process/delete/service', [ServiceController::class, 'destroy'])->name('process-delete-service');
 
     Route::post('/process/create/patient', [PatientController::class,'create'])->name('process-create-patient');
+    Route::put('/process/update/patient', [PatientController::class, 'update'])->name('process-update-patient');
+    Route::delete('/process/delete/patient', [PatientController::class, 'destroy'])->name('process-delete-patient');
 
     // Protected routes
     Route::middleware('auth:account')->group(function () {

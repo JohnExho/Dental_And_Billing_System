@@ -59,6 +59,7 @@ class LogService
                     'contact_no' => $model->contact_no,
                     'address' => optional($model->address)->full_address, // assuming your Address model has full_address accessor
                 ];
+                
 
             // case \App\Models\Bill::class:
             //     return [

@@ -65,12 +65,22 @@ class Patient extends Model
         'school' => 'encrypted',
     ];
 
-    protected $appends = ['full_name']; // optional: auto-include in JSON
+    protected $appends = ['full_name', 'full_address']; // optional: auto-include in JSON
 
     public function getFullNameAttribute()
     {
         return trim("{$this->last_name}, {$this->first_name} {$this->middle_name}") ?: 'N/A';
     }
+
+    public function getFullAddressAttribute()
+{
+    if (!$this->address) {
+        return 'N/A';
+    }
+
+    return trim("{$this->address->street}, {$this->address->barangay->name}, {$this->address->city->name}, {$this->address->province->name}");
+}
+
 
     public function logs()
     {

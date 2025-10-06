@@ -10,9 +10,11 @@ use Illuminate\Http\Request;
 use Yajra\Address\Entities\City;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Hash;
 use Yajra\Address\Entities\Barangay;
-use Yajra\Address\Entities\Province;
-use Illuminate\Support\Facades\Validator; // if you use logs
+use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\Validator;
+use Yajra\Address\Entities\Province; // if you use logs
 
 class PatientController extends Controller
 {
@@ -25,24 +27,25 @@ class PatientController extends Controller
 
     public function index()
     {
-
         $clinicId = session('clinic_id');
-        $query = Patient::with([
-            'clinic',
-            'account',
-            // 'patientQR',
-            'address.barangay',
-            'address.city',
-            'address.province',
-        ])->latest();
 
-        if (session()->has('clinic_id') && $clinicId = session('clinic_id')) {
+        $query = Patient::query();
+
+        if ($clinicId) {
             $query->where('clinic_id', $clinicId);
         }
 
-        $patients = $query->paginate(8);
+        $patientCount = $query->count(); // ✅ Count after filter
 
-        return view('pages.patients.index', compact('patients', 'clinicId'));
+        $patients = $query->with([
+            'clinic',
+            'account',
+            'address.barangay',
+            'address.city',
+            'address.province',
+        ])->latest()->paginate(8);
+
+        return view('pages.patients.index', compact('patients', 'clinicId', 'patientCount'));
     }
 
     public function create(Request $request)
@@ -54,6 +57,7 @@ class PatientController extends Controller
             'last_name' => 'required|string|max:100',
             'mobile_no' => 'nullable|string|max:20',
             'contact_no' => 'nullable|string|max:20',
+            'profile_picture' => 'nullable|image|mimes:jpg,jpeg,png|max:2048',
             'email' => 'nullable|email|max:255',
             'sex' => 'required|string|max:20',
             'civil_status' => 'nullable|string|max:50',
@@ -84,6 +88,12 @@ class PatientController extends Controller
         // ✅ Step 2: Normalize + Hash email
         $normalizedEmail = $validated['email'] ? strtolower($validated['email']) : null;
         $newEmailHash = $normalizedEmail ? hash('sha256', $normalizedEmail) : null;
+        if ($request->hasFile('profile_picture')) {
+            $file = $request->file('profile_picture');
+            $path = $file->store('profile_pictures', 'public'); // stored in storage/app/public/profile_pictures
+        } else {
+            $path = null;
+        }
 
         // ✅ Step 3: Prevent duplicate email
         if (
@@ -96,7 +106,7 @@ class PatientController extends Controller
         }
 
         // ✅ Step 4: Create inside transaction
-        return DB::transaction(function () use ($validated, $normalizedEmail, $newEmailHash, $request) {
+        return DB::transaction(function () use ($validated, $normalizedEmail, $newEmailHash, $request, $path) {
 
             $authAccount = $this->guard->user();
 
@@ -114,6 +124,7 @@ class PatientController extends Controller
                 'last_name_hash' => hash('sha256', strtolower($validated['last_name'])),
                 'mobile_no' => $validated['mobile_no'] ?? null,
                 'contact_no' => $validated['contact_no'] ?? null,
+                'profile_picture' => $path,
                 'email' => $normalizedEmail,
                 'email_hash' => $newEmailHash,
                 'sex' => $validated['sex'],
@@ -152,7 +163,7 @@ class PatientController extends Controller
                 'create',
                 'patient',
                 'User created a patient record',
-                'Patient: '.$patient->patient_id . 'Address: ' . $addressId ,
+                'Patient: '.$patient->patient_id.'Address: '.$addressId,
                 $request->ip(),
                 $request->userAgent()
             );
@@ -160,4 +171,167 @@ class PatientController extends Controller
             return redirect()->back()->with('success', 'Patient created successfully.');
         });
     }
+
+    public function update(Request $request)
+    {
+
+        // Step 1: Validate
+        $validator = Validator::make($request->all(), [
+            'patient_id' => 'required|exists:patients,patient_id',
+            'first_name' => 'required|string|max:100',
+            'middle_name' => 'nullable|string|max:100',
+            'last_name' => 'required|string|max:100',
+            'mobile_no' => 'nullable|string|max:20',
+            'contact_no' => 'nullable|string|max:20',
+            'profile_picture' => 'nullable|image|mimes:jpg,jpeg,png|max:2048',
+            'email' => 'nullable|email|max:255',
+            'sex' => 'required|string|max:20',
+            'civil_status' => 'nullable|string|max:50',
+            'date_of_birth' => 'required|date',
+            'referral' => 'nullable|string|max:255',
+            'occupation' => 'nullable|string|max:255',
+            'company' => 'nullable|string|max:255',
+            'weight' => 'nullable|numeric',
+            'height' => 'nullable|numeric',
+            'school' => 'nullable|string|max:255',
+            'address' => 'nullable|array',
+            'address.house_no' => 'nullable|string|max:50',
+            'address.street' => 'nullable|string|max:255',
+            'address.barangay_id' => 'nullable|exists:barangays,id',
+            'address.city_id' => 'nullable|exists:cities,id',
+            'address.province_id' => 'nullable|exists:provinces,id',
+        ]);
+
+        if ($validator->fails()) {
+            return back()->with('error', $validator->errors()->first());
+        }
+
+        $validated = $validator->validated();
+        $patient = Patient::findOrFail($validated['patient_id']);
+        $normalizedEmail = $validated['email'] ? strtolower($validated['email']) : null;
+        $newEmailHash = $normalizedEmail ? hash('sha256', $normalizedEmail) : null;
+
+        // Step 2: Check for duplicate email excluding this patient
+        if ($newEmailHash && Patient::where('email_hash', $newEmailHash)
+            ->where('patient_id', '!=', $patient->patient_id)
+            ->withoutTrashed()
+            ->exists()
+        ) {
+            return back()->with('error', 'The email has already been taken.');
+        }
+
+        // Step 3: Handle profile picture upload
+        if ($request->hasFile('profile_picture')) {
+            $file = $request->file('profile_picture');
+            $path = $file->store('profile_pictures', 'public');
+            // Optional: delete old picture
+            if ($patient->profile_picture) {
+                Storage::disk('public')->delete($patient->profile_picture);
+            }
+            $patient->profile_picture = $path;
+        }
+
+        return DB::transaction(function () use ($patient, $validated, $normalizedEmail, $newEmailHash, $request) {
+
+            $authAccount = $this->guard->user();
+
+            // Update patient fields
+            $patient->update([
+                'first_name' => $validated['first_name'],
+                'middle_name' => $validated['middle_name'] ?? null,
+                'last_name' => $validated['last_name'],
+                'last_name_hash' => hash('sha256', strtolower($validated['last_name'])),
+                'mobile_no' => $validated['mobile_no'] ?? null,
+                'contact_no' => $validated['contact_no'] ?? null,
+                'email' => $normalizedEmail,
+                'email_hash' => $newEmailHash,
+                'sex' => $validated['sex'],
+                'civil_status' => $validated['civil_status'] ?? null,
+                'date_of_birth' => $validated['date_of_birth'],
+                'referral' => $validated['referral'] ?? null,
+                'occupation' => $validated['occupation'] ?? null,
+                'company' => $validated['company'] ?? null,
+                'weight' => $validated['weight'] ?? null,
+                'height' => $validated['height'] ?? null,
+                'school' => $validated['school'] ?? null,
+            ]);
+
+            // Update or create address
+            if ($request->filled('address')) {
+                $addressData = [
+                    'house_no' => $request->address['house_no'] ?? null,
+                    'street' => $request->address['street'] ?? null,
+                    'barangay_name' => optional(Barangay::find($request->address['barangay_id']))->name,
+                    'city_name' => optional(City::find($request->address['city_id']))->name,
+                    'province_name' => optional(Province::find($request->address['province_id']))->name,
+                    'barangay_id' => $request->address['barangay_id'] ?? null,
+                    'city_id' => $request->address['city_id'] ?? null,
+                    'province_id' => $request->address['province_id'] ?? null,
+                ];
+                if ($patient->address) {
+                    $patient->address->update($addressData);
+                } else {
+                    $addressData['patient_id'] = $patient->patient_id;
+                    Address::create($addressData);
+                }
+            }
+
+            // Logging
+            LogService::record(
+                $authAccount,
+                $patient,
+                'update',
+                'patient',
+                'User updated a patient record',
+                'Patient: '.$patient->patient_id.' Address: '.optional($patient->address)->address_id,
+                $request->ip(),
+                $request->userAgent()
+            );
+
+            return redirect()->back()->with('success', 'Patient updated successfully.');
+        });
+    }
+
+    public function destroy(Request $request)
+{
+    $request->validate([
+        'patient_id' => 'required|exists:patients,patient_id',
+        'password' => 'required',
+    ]);
+
+    $deletor = Auth::guard('account')->user();
+    $patient = Patient::findOrFail($request->patient_id);
+
+    // Check if the password matches the current user's password
+    if (!Hash::check($request->password, $deletor->password)) {
+        return back()->with('error', 'The password is incorrect.');
+    }
+
+    return DB::transaction(function () use ($patient, $request, $deletor) {
+
+        $addressId = optional($patient->address)->address_id;
+
+        // Delete related address
+        $patient->address()->delete();
+
+        // Delete patient record
+        $patient->delete();
+
+        // Logging
+        LogService::record(
+            $deletor,
+            $patient,
+            'delete',
+            'patient',
+            'User deleted a patient record',
+            'Patient ID: ' . $patient->patient_id
+                . ', address ID: ' . $addressId,
+            $request->ip(),
+            $request->userAgent()
+        );
+
+        return redirect()->route('patients')->with('success', 'Patient record deleted successfully.');
+    });
+}
+
 }

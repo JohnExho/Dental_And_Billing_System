@@ -10,6 +10,7 @@
                         <th>Name</th>
                         <th>Contact</th>
                         <th>Email</th>
+                        <th>Address</th>
                         <th class="text-end">Actions</th>
                     </tr>
                 </thead>
@@ -17,31 +18,57 @@
                     @foreach ($patients as $patient)
                         <tr>
                             <td>
-                                <img src="{{ $patient->profile_picture_url ?? 'https://placehold.co/40' }}"
-                                    alt="Profile Picture" class="rounded-circle" width="40" height="40">
+                                <img src="{{ $patient->profile_picture ? Storage::url($patient->profile_picture) : 'https://placehold.co/60' }}"
+                                    alt="Profile" class="rounded-circle object-fit-cover"
+                                    style="width: 60px; height: 60px;">
+
                             </td>
                             <td>{{ $patient->full_name }}</td>
                             <td>{{ $patient->mobile_no ?? 'N/A' }}/<br>{{ $patient->contact_no ?? 'N/A' }}</td>
-                            <td>{{$patient->email ?? 'N/A'}}</td>
-                            <td>{{$patient->date_of_birth ?? 'N/A'}}</td>
+                            <td>{{ $patient->email ?? 'N/A' }}</td>
+                            <td>
+                                {{ $patient->full_address }}
+                            </td>
 
                             <td class="text-end">
                                 <a role="button" class="btn btn-sm btn-outline-primary" data-bs-toggle="modal"
-                                    data-bs-target="#patient-detail-modal" data-name="{{ $patient->name }}"
-                                    data-description="{{ $patient->description }}"
-                                    data-default_price="{{ $patient->default_price }}">
+                                    data-bs-target="#patient-detail-modal" data-name="{{ $patient->full_name }}"
+                                    data-contact="{{ $patient->mobile_no }} | {{ $patient->contact_no }}"
+                                    data-email="{{ $patient->email }}"
+                                    data-date_of_birth="{{ $patient->date_of_birth }}" data-sex="{{ $patient->sex }}"
+                                    data-civil_status="{{ $patient->civil_status }}"
+                                    data-occupation="{{ $patient->occupation }}"
+                                    data-company="{{ $patient->company }}"
+                                    data-address="{{ optional($patient->address)->full_address }}"
+                                    data-profile_picture="{{ Storage::url($patient->profile_picture) }}"
+                                    data-weight="{{ $patient->weight }}" data-height="{{ $patient->height }}"
+                                    data-school="{{ $patient->school }}">
                                     <i class="bi bi-eye"></i>
                                 </a>
 
 
-
-
                                 {{-- ✅ Edit Button --}}
                                 <button type="button" class="btn btn-sm btn-outline-secondary" data-bs-toggle="modal"
-                                    data-bs-target="#edit-patient-modal" onclick="event.stopPropagation();"
-                                    data-id="{{ $patient->patient_id }}" data-name="{{ $patient->name }}"
-                                    data-description="{{ $patient->description }}"
-                                    data-default_price="{{ $patient->default_price }}">
+                                    data-bs-target="#edit-patient-modal" data-id="{{ $patient->patient_id }}"
+                                    data-name="{{ $patient->full_name }}"
+                                    data-contact="{{ $patient->mobile_no }} | {{ $patient->contact_no }}"
+                                    data-email="{{ $patient->email }}"
+                                    data-date_of_birth="{{ $patient->date_of_birth }}" data-sex="{{ $patient->sex }}"
+                                    data-civil_status="{{ $patient->civil_status }}"
+                                    data-occupation="{{ $patient->occupation }}"
+                                    data-company="{{ $patient->company }}"
+                                    data-referral="{{ $patient->referral }}"
+                                    data-house_no="{{ optional($patient->address)->house_no }}"
+                                    data-street="{{ optional($patient->address)->street }}"
+                                    data-province_id="{{ optional($patient->address->province)->province_id }}"
+                                    data-province_name="{{ optional($patient->address->province)->name }}"
+                                    data-city_id="{{ optional($patient->address->city)->city_id }}"
+                                    data-city_name="{{ optional($patient->address->city)->name }}"
+                                    data-barangay_id="{{ optional($patient->address->barangay)->barangay_id }}"
+                                    data-barangay_name="{{ optional($patient->address->barangay)->name }}"
+                                    data-profile_picture="{{ Storage::url($patient->profile_picture) }}"
+                                    data-weight="{{ $patient->weight }}" data-height="{{ $patient->height }}"
+                                    data-school="{{ $patient->school }}">
                                     <i class="bi bi-pencil-square"></i>
                                 </button>
 
@@ -75,6 +102,6 @@
     });
 </script>
 
-{{-- @include('pages.patients.modals.info')
+@include('pages.patients.modals.info')
 @include('pages.patients.modals.edit')
-@include('pages.patients.modals.delete') --}}
+@include('pages.patients.modals.delete')
