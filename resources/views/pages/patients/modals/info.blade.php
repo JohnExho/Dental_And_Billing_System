@@ -14,8 +14,9 @@
 
                 <!-- Profile Section -->
                 <div class="d-flex align-items-center mb-4">
-                    <img id="patient-profile" src="https://placehold.co/80x80" 
-                        class="rounded-circle border shadow-sm me-3" style="width: 70px; height: 70px; object-fit: cover;">
+                    <img id="patient-profile" src="https://placehold.co/80x80"
+                        class="rounded-circle border shadow-sm me-3"
+                        style="width: 70px; height: 70px; object-fit: cover;">
                     <div>
                         <h4 id="patient-name" class="fw-bold text-primary mb-0"></h4>
                         <small id="patient-email" class="text-muted"></small>
@@ -86,10 +87,19 @@
     </div>
 </div>
 
+@php
+    // ✅ Define your default profile image paths
+    $defaultProfile = [
+        'male' => asset('storage/defaults/male.png'),
+        'female' => asset('storage/defaults/female.png'),
+        'other' => asset('storage/defaults/other.png'),
+    ];
+@endphp
+
 <script>
     const patientModal = document.getElementById('patient-detail-modal');
 
-    patientModal.addEventListener('show.bs.modal', function (event) {
+    patientModal.addEventListener('show.bs.modal', function(event) {
         const button = event.relatedTarget;
         const data = {
             name: button.getAttribute('data-name'),
@@ -109,6 +119,26 @@
 
         const [mobileNo, contactNo] = (data.contact || '').split('|').map(item => item.trim());
 
+
+        const sex = (data.sex || '').toLowerCase();
+        let profileSrc = data.profile_picture && data.profile_picture.trim() !== '' ?
+            data.profile_picture :
+            null;
+
+        if (!profileSrc) {
+            switch (sex) {
+                case 'male':
+                    profileSrc = @json($defaultProfile['male']);
+                    break;
+                case 'female':
+                    profileSrc = @json($defaultProfile['female']);
+                    break;
+                default:
+                    profileSrc = @json($defaultProfile['other']);
+            }
+        }
+
+
         // Update modal fields
         patientModal.querySelector('#patient-name').textContent = data.name || 'Unnamed patient';
         patientModal.querySelector('#patient-email').textContent = data.email || 'N/A';
@@ -122,6 +152,6 @@
         patientModal.querySelector('#patient-weight').textContent = data.weight ? data.weight + ' kg' : 'N/A';
         patientModal.querySelector('#patient-height').textContent = data.height ? data.height + ' cm' : 'N/A';
         patientModal.querySelector('#patient-school').textContent = data.school || 'N/A';
-        patientModal.querySelector('#patient-profile').src = data.profile_picture || 'https://placehold.co/80x80';
+        patientModal.querySelector('#patient-profile').src = profileSrc;
     });
 </script>

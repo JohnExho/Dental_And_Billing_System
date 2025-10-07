@@ -3,13 +3,16 @@
 namespace App\Http\Controllers;
 
 use App\Models\Account;
+use App\Models\Clinic;
 use App\Models\Medicine;
 use App\Services\LogService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\RateLimiter;
+
 
 class AccountController extends Controller
 {
@@ -30,7 +33,7 @@ class AccountController extends Controller
      *
      * @return \Illuminate\View\View
      */
-    public function loginPage()
+    public function index ()
     {
         return view('index');
     }
@@ -49,67 +52,88 @@ class AccountController extends Controller
 
     public function login(Request $request)
     {
+        // 1️⃣ Validate request
         $request->validate([
             'email' => ['required', 'email'],
             'password' => ['required'],
         ]);
 
+        // 2️⃣ Find account by email hash
         $emailHash = hash('sha256', strtolower($request->email));
         $account = Account::where('email_hash', $emailHash)->first();
 
-        if ($account && $account->is_active && Hash::check($request->password, $account->password)) {
-            $this->guard->login($account);
-            $request->session()->regenerate();
-            session(['active_role' => $account->role]);
+        // 3️⃣ Check credentials
+        if (! $account || ! $account->is_active || ! Hash::check($request->password, $account->password)) {
+            $errorMessage = $account && ! $account->is_active
+                ? 'Your account is inactive. Please contact support.'
+                : 'Invalid credentials.';
 
-            /** @var Account $account */
-            $account = $this->guard->user();
+            return back()->with('error', $errorMessage);
+        }
+        $role = strtolower(trim($account->role));
 
-            if ($account) {
-                LogService::record(
-                    $account,
-                    $account,
-                    'login',
-                    'auth',
-                    'User has logged in',
-                    'Account: '.$account->account_id,
-                    $request->ip(),
-                    $request->userAgent()
-                );
+        if ($role === 'staff') {
+            // Staff: check clinic assignment
+            if (empty($account->clinic_id)) {
+                return back()->with('error', 'You are not assigned to any clinic. Please contact your administrator.');
             }
 
-            // ✅ Check Medicine Stock After Login
+            $clinic = Clinic::find($account->clinic_id);
+            if (! $clinic) {
+                return back()->with('error', 'Assigned clinic not found. Please contact support.');
+            }
+        }
+        // 4️⃣ Login and regenerate session
+        $this->guard->login($account);
+        $request->session()->regenerate();
+        session([
+            'active_role' => $role,
+            'clinic_id' => $role === 'staff' ? $account->clinic_id : null,
+        ]);
+
+        /** @var Account $account */
+        $account = $this->guard->user(); // ensures we have the guard-loaded user
+        // 5️⃣ Log the login
+        LogService::record(
+            $account,
+            $account,
+            'login',
+            'auth',
+            'User has logged in',
+            'Account: '.$account->account_id,
+            $request->ip(),
+            $request->userAgent()
+        );
+
+        // 6️⃣ Initialize stock message
+        $stockErrorMessage = null;
+        Log::info('Login role:', ['role' => $account->role]);
+        // 7️⃣ Role-specific logic
+        if ($role === 'admin') {
+            // Admin: show low-stock medicines
             $lowStockMedicines = Medicine::leftJoin('medicine_clinics', 'medicines.medicine_id', '=', 'medicine_clinics.medicine_id')
                 ->select('medicines.medicine_id', 'medicines.name', DB::raw('COALESCE(SUM(medicine_clinics.stock), 0) as total_stock'))
                 ->groupBy('medicines.medicine_id', 'medicines.name')
                 ->having('total_stock', '<', 50)
                 ->get();
-            $stockErrorMessage = null;
 
             if ($lowStockMedicines->isNotEmpty()) {
                 $medicineNames = $lowStockMedicines->pluck('name')->join(', ');
                 $stockErrorMessage = "Low stock for: {$medicineNames}";
             }
-
-            // ✅ Redirect logic based on role
-            $redirectRoute = match ($account->role) {
-                'staff' => 'staff.dashboard',
-                'admin' => 'admin.dashboard',
-                default => 'dashboard',
-            };
-
-            // ✅ Send BOTH messages in one redirect
-            return redirect()->route($redirectRoute)
-                ->with('success', 'Welcome back '.$account->full_name)
-                ->with('stock_error', $stockErrorMessage);
-
         }
 
-        if ($account && ! $account->is_active) {
-            return back()->with('error', 'Your account is inactive. Please contact support.');
-        }
+        // 8️⃣ Determine redirect based on role
+        $redirectRoute = match ($role) {
+            'staff' => 'staff.dashboard',
+            'admin' => 'admin.dashboard',
+            default => 'dashboard',
+        };
 
-        return back()->with('error', 'Invalid credentials.');
+        // 9️⃣ Redirect with messages
+        return redirect()->route($redirectRoute)
+            ->with('success', 'Welcome back '.$account->full_name)
+            ->with('stock_error', $stockErrorMessage);
     }
 
     public function logout(Request $request)
@@ -120,6 +144,7 @@ class AccountController extends Controller
 
         // Invalidate the session to prevent session fixation
         $request->session()->invalidate();
+        
 
         // Regenerate CSRF token
         $request->session()->regenerateToken();

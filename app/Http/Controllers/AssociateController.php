@@ -33,7 +33,7 @@ class AssociateController extends Controller
             'address.barangay',
             'address.city',
             'address.province',
-        ])->latest();
+        ])->latest()->whereNotNull('clinic_id');
 
         // If a clinic is selected → filter
         if (session()->has('clinic_id') && $clinicId = session('clinic_id')) {

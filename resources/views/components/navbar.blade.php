@@ -79,7 +79,7 @@
             <ul class="navbar-nav ms-auto" style="margin-right: 0; margin-left: 250px;">
                 @if (Auth::user()->role === 'admin')
                     <li class="nav-item dropdown d-flex align-items-center me-3">
-                        <a class="badge rounded-pill bg-light text-dark border d-flex align-items-center px-3 py-2 shadow-sm text-decoration-none dropdown-toggle"
+                        <a class="badge rounded-pill bg-light text-dark border d-flex align-items-center px-3 py-2 shadow-sm text-decoration-none dropdown-toggle  me-1"
                             href="#" id="clinicDropdown" role="button" data-bs-toggle="dropdown"
                             aria-expanded="false">
                             <i class="bi bi-hospital me-2 text-primary"></i>
@@ -107,7 +107,12 @@
                 @else
                     <!-- Add Patient + Search Bar -->
                     <li class="nav-item d-flex align-items-center me-3">
-
+                        <a class="badge rounded-pill bg-light text-dark border d-flex align-items-center px-3 py-2 shadow-sm text-decoration-none dropdown-toggle  me-1"
+                            href="#" id="clinicDropdown" role="button" data-bs-toggle="dropdown"
+                            aria-expanded="false">
+                            <i class="bi bi-hospital me-2 text-primary"></i>
+                            <span class="fw-semibold">Clinic:</span>&nbsp;{{ $currentClinic->name ?? 'No Selected' }}
+                        </a>
 
                         {{-- Add Patient Button --}}
                         <a href="#" class="btn btn-primary"

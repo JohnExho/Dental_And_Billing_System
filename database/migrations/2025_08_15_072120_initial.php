@@ -1,8 +1,8 @@
 <?php
 
-use Illuminate\Support\Facades\Schema;
-use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
@@ -362,7 +362,6 @@ return new class extends Migration
             $table->unsignedBigInteger('city_id')->nullable();
             $table->unsignedBigInteger('province_id')->nullable();
 
-
             $table->timestamps();
             $table->softDeletes();
 
@@ -435,14 +434,25 @@ return new class extends Migration
 
         Schema::create('progress_notes', function (Blueprint $table) {
             $table->uuid('progress_note_id')->primary();
-            $table->uuid('account_id')->nullable(); // Account that created the progress note
-            $table->uuid('patient_id')->nullable();
-            $table->uuid('associate_id')->nullable(); // Associate who added the note
-            $table->uuid('visit_id')->nullable(); // Nullable if historically logged with no visit
+
+            // Core relationships
+            $table->uuid('account_id')->nullable()->index(); // who created it
+            $table->uuid('patient_id')->nullable()->index();
+            $table->uuid('associate_id')->nullable()->index(); // optional staff link
+            $table->uuid('visit_id')->nullable()->index(); // optional if tied to a visit
+
+            // Core content
+            $table->text('summary')->nullable(); // short descriptor
             $table->text('progress_note');
+
+            // Tracking
             $table->timestamps();
             $table->softDeletes();
 
+            // Useful indexes
+            $table->index('created_at');
+
+            // Foreign keys
             $table->foreign('account_id')->references('account_id')->on('accounts')->onDelete('set null');
             $table->foreign('patient_id')->references('patient_id')->on('patients')->onDelete('set null');
             $table->foreign('associate_id')->references('associate_id')->on('associates')->onDelete('set null');

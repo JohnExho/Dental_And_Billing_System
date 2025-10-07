@@ -23,10 +23,21 @@
                         <!-- Profile image (always visible on left) -->
                         <div class="col-md-3 d-flex flex-column align-items-center mb-3 mb-md-0">
                             <img id="edit_profile_preview" src="" alt="Profile"
-                                class="rounded-circle border mb-2" width="110" height="110"
+                                class="rounded-circle border mb-2 shadow-sm" width="110" height="110"
                                 style="object-fit:cover;">
+
                             <input type="file" name="profile_picture" id="edit_profile_picture_input"
-                                class="form-control form-control-sm mb-1" accept="image/*">
+                                class="form-control form-control-sm mb-2" accept="image/*">
+
+                            <!-- ✅ Remove Profile Picture Toggle -->
+                            <div class="form-check form-switch mb-1">
+                                <input class="form-check-input" type="checkbox" id="remove_profile_picture_toggle"
+                                    name="remove_profile_picture">
+                                <label class="form-check-label small text-muted" for="remove_profile_picture_toggle">
+                                    Remove current profile
+                                </label>
+                            </div>
+
                             <small class="text-muted text-center">Preview only — saved on Update</small>
                         </div>
 
@@ -168,7 +179,8 @@
                                         <select id="edit_barangay_select" class="form-select" disabled required>
                                             <option value="">-- Barangay --</option>
                                         </select>
-                                        <p class="text-secondary">Previous Barangay: <span id="barangay_label" class="form-text"></span></p>
+                                        <p class="text-secondary">Previous Barangay: <span id="barangay_label"
+                                                class="form-text"></span></p>
                                         <input type="hidden" name="address[barangay_id]" id="edit_barangay_hidden">
                                     </div>
                                 </div>
@@ -198,6 +210,16 @@
         </div>
     </div>
 </div>
+
+
+@php
+    // ✅ Define your default profile image paths
+    $defaultProfile = [
+        'male' => asset('storage/defaults/male.png'),
+        'female' => asset('storage/defaults/female.png'),
+        'other' => asset('storage/defaults/other.png'),
+    ];
+@endphp
 <!-- JS: Edit Modal populate, step logic, cascading, preview -->
 <script>
     document.addEventListener('DOMContentLoaded', function() {
@@ -415,14 +437,74 @@
                 'data-barangay_name') || '';
 
             // Profile picture preview (show empty box if none)
+            // Profile picture preview with gender-based defaults
+            const sex = (button.getAttribute('data-sex') || '').toLowerCase();
             const profileUrl = button.getAttribute('data-profile_picture');
+            modal.dataset.originalProfile = profileUrl;
             const preview = document.getElementById('edit_profile_preview');
-            preview.src = profileUrl ? profileUrl :
-                'data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="150" height="150"></svg>';
 
-            // reset file input (important)
-            const fileInput = document.getElementById('edit_profile_picture_input');
-            fileInput.value = '';
+            let profileSrc = profileUrl && profileUrl.trim() !== '' ? profileUrl : null;
+
+            if (!profileSrc) {
+                switch (sex) {
+                    case 'male':
+                        profileSrc = @json($defaultProfile['male']);
+                        break;
+                    case 'female':
+                        profileSrc = @json($defaultProfile['female']);
+                        break;
+                    default:
+                        profileSrc = @json($defaultProfile['other']);
+                }
+            }
+
+            preview.src = profileSrc;
+
+
+            // --- Handle "Remove Profile Picture" toggle ---
+            const removeToggle = modal.querySelector('#remove_profile_picture_toggle');
+            removeToggle.addEventListener('change', function() {
+                const preview = modal.querySelector('#edit_profile_preview');
+                const fileInput = modal.querySelector('#edit_profile_picture_input');
+                const originalProfile = modal.dataset
+                    .originalProfile; // we'll store this on modal open
+
+                if (this.checked) {
+                    // ✅ Reset preview to gender-based default
+                    const sex = (modal.querySelector('#edit_sex').value || '')
+                        .toLowerCase();
+                    let defaultImg;
+
+                    switch (sex) {
+                        case 'male':
+                            defaultImg = @json($defaultProfile['male']);
+                            break;
+                        case 'female':
+                            defaultImg = @json($defaultProfile['female']);
+                            break;
+                        default:
+                            defaultImg = @json($defaultProfile['other']);
+                    }
+
+                    preview.src = defaultImg;
+                    fileInput.value = '';
+                    fileInput.disabled = true;
+                } else {
+                    // 🔁 Revert to original profile image
+                    fileInput.disabled = false;
+
+                    const sex = @json($patient->sex);
+                    const defaultProfile =
+                        sex === 'male' ?
+                        @json(asset('storage/defaults/male.png')) :
+                        sex === 'female' ?
+                        @json(asset('storage/defaults/female.png')) :
+                        @json(asset('storage/defaults/other.png'));
+
+                    preview.src = originalProfile || defaultProfile;
+                }
+            });
+
 
             // Address: attempt to use provided granular data attributes first
             const houseNo = button.getAttribute('data-house_no') || '';

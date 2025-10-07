@@ -2,6 +2,7 @@
 
 use App\Http\Middleware\AdminOnly;
 use App\Http\Middleware\Authenticated;
+use App\Http\Middleware\ClearPatientSession;
 use Illuminate\Foundation\Application;
 // use App\Http\Middleware\Action;
 use App\Http\Middleware\Unauthenticated;
@@ -18,6 +19,7 @@ return Application::configure(basePath: dirname(__DIR__))
     ->withMiddleware(function (Middleware $middleware): void {
         $middleware->alias([
             'admin.only' => AdminOnly::class,
+            'patient.profile' => ClearPatientSession::class,
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {

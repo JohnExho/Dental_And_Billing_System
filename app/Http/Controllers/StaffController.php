@@ -31,7 +31,7 @@ class StaffController extends Controller
             'address.barangay',
             'address.city',
             'address.province',
-        ])->latest()->where('role','staff');
+        ])->latest()->where('role','staff')->whereNotNull('clinic_id');
 
 
         if (session()->has('clinic_id') && $clinicId = session('clinic_id')) {

@@ -2,11 +2,8 @@
 
 namespace App\Providers;
 
-use Yajra\Address\Entities\City;
-use Illuminate\Support\Facades\View;
-use Yajra\Address\Entities\Barangay;
-use Yajra\Address\Entities\Province;
 use Illuminate\Support\ServiceProvider;
+use Yajra\Address\Entities\Province;
 
 class AddressProvider extends ServiceProvider
 {
@@ -23,8 +20,13 @@ class AddressProvider extends ServiceProvider
      */
     public function boot(): void
     {
-    view()->composer('*', function ($view) {
-        $view->with('provinces', Province::orderBy('name')->get());
-    });
+        view()->composer(['pages.patients.modals.add', 'pages.patients.modals.edit',
+            'pages.clinics.modals.add', 'pages.clinics.modals.edit',
+            'pages.associates.modals.add', 'pages.associates.modals.edit',
+            'pages.staffs.modals.add', 'pages.staffs.modals.edit',
+            'pages.laboratories.modals.add', 'pages.laboratories.modals.edit',
+        ], function ($view) {
+            $view->with('provinces', Province::orderBy('name')->get());
+        });
     }
 }

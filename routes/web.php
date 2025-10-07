@@ -1,22 +1,22 @@
 <?php
 
-use App\Http\Controllers\PatientController;
-use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\OTPController;
-use App\Http\Controllers\StaffController;
-use App\Http\Controllers\ClinicController;
 use App\Http\Controllers\AccountController;
 use App\Http\Controllers\AddressController;
-use App\Http\Controllers\ServiceController;
-use App\Http\Controllers\MedicineController;
 use App\Http\Controllers\AssociateController;
-use App\Http\Controllers\ToothListController;
+use App\Http\Controllers\ClinicController;
 use App\Http\Controllers\LaboratoryController;
+use App\Http\Controllers\MedicineController;
+use App\Http\Controllers\OTPController;
+use App\Http\Controllers\PatientController;
+use App\Http\Controllers\ServiceController;
+use App\Http\Controllers\StaffController;
+use App\Http\Controllers\ToothListController;
+use Illuminate\Support\Facades\Route;
 
 Route::middleware('web')->group(function () {
     // Login page
     Route::middleware('guest:account')->group(function () {
-        Route::get('/', [AccountController::class, 'loginPage'])->name('login');
+        Route::get('/', [AccountController::class, 'index'])->name('login');
         Route::get('/forgot-password', function () {
             return view('auth.forgot-password');
         })->name('forgot-password');
@@ -69,18 +69,20 @@ Route::middleware('web')->group(function () {
     Route::put('/process/update/service', [ServiceController::class, 'update'])->name('process-update-service');
     Route::delete('/process/delete/service', [ServiceController::class, 'destroy'])->name('process-delete-service');
 
-    Route::post('/process/create/patient', [PatientController::class,'create'])->name('process-create-patient');
+    Route::post('/process/create/patient', [PatientController::class, 'create'])->name('process-create-patient');
     Route::put('/process/update/patient', [PatientController::class, 'update'])->name('process-update-patient');
     Route::delete('/process/delete/patient', [PatientController::class, 'destroy'])->name('process-delete-patient');
 
     // Protected routes
-    Route::middleware('auth:account')->group(function () {
+    Route::middleware(['auth:account', 'patient.profile'])->group(function () {
         Route::view('/dashboard', 'dashboard')->name('dashboard');
         Route::view('/admin/dashboard', 'auth.admin-dashboard')->name('admin.dashboard');
         Route::view('/staff/dashboard', 'auth.staff-dashboard')->name('staff.dashboard');
         Route::view('/waitlist', 'pages.waitlist.index')->name('waitlist');
         Route::get('/patients', [PatientController::class, 'index'])->name('patients');
+        Route::get('/patient/profile', [PatientController::class, 'specific'])->name('specific-patient');
         Route::get('/settings', [AccountController::class, 'settings'])->name('settings');
+        Route::view('/dump', 'dd')->name('dump');
         Route::middleware('admin.only')->group(function () {
             Route::get('/clinics', [ClinicController::class, 'index'])->name('clinics');
             Route::get('/associates', [AssociateController::class, 'index'])->name('associates');
@@ -88,7 +90,7 @@ Route::middleware('web')->group(function () {
             Route::get('/laboratories', [LaboratoryController::class, 'index'])->name('laboratories');
             Route::get('/teeth', [ToothListController::class, 'index'])->name('teeth');
             Route::get('/medicines', [MedicineController::class, 'index'])->name('medicines');
-            Route::get('/services', [ServiceController::class,'index'])->name('services');
+            Route::get('/services', [ServiceController::class, 'index'])->name('services');
             Route::view('/tools', 'pages.tools.index')->name('tools');
         });
     });

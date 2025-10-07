@@ -2,22 +2,29 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Clinic;
 use App\Models\Address;
 use App\Models\Patient;
 use Illuminate\Support\Str;
+use App\Models\ProgressNote;
 use App\Services\LogService;
 use Illuminate\Http\Request;
-use Yajra\Address\Entities\City;
+use App\Traits\RegexPatterns;
+use App\Traits\ValidationMessages;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Yajra\Address\Entities\Barangay;
+use Yajra\Address\Entities\Province;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
-use Yajra\Address\Entities\Province; // if you use logs
+use Yajra\Address\Entities\City; // if you use logs
 
 class PatientController extends Controller
 {
+    use RegexPatterns;
+    use ValidationMessages;
+
     protected $guard;
 
     public function __construct()
@@ -50,32 +57,66 @@ class PatientController extends Controller
 
     public function create(Request $request)
     {
-        // ✅ Step 1: Manual validation using Validator
-        $validator = Validator::make($request->all(), [
-            'first_name' => 'required|string|max:100',
-            'middle_name' => 'nullable|string|max:100',
-            'last_name' => 'required|string|max:100',
-            'mobile_no' => 'nullable|string|max:20',
-            'contact_no' => 'nullable|string|max:20',
-            'profile_picture' => 'nullable|image|mimes:jpg,jpeg,png|max:2048',
-            'email' => 'nullable|email|max:255',
-            'sex' => 'required|string|max:20',
-            'civil_status' => 'nullable|string|max:50',
-            'date_of_birth' => 'required|date',
-            'referral' => 'nullable|string|max:255',
-            'occupation' => 'nullable|string|max:255',
-            'company' => 'nullable|string|max:255',
-            'weight' => 'nullable|numeric',
-            'height' => 'nullable|numeric',
-            'school' => 'nullable|string|max:255',
-            'clinic_id' => 'nullable|exists:clinics,clinic_id',
-            'address' => 'nullable|array',
-            'address.house_no' => 'nullable|string|max:50',
-            'address.street' => 'nullable|string|max:255',
-            'address.barangay_id' => 'nullable|exists:barangays,id',
-            'address.city_id' => 'nullable|exists:cities,id',
-            'address.province_id' => 'nullable|exists:provinces,id',
-        ]);
+
+        $validator = Validator::make(
+            $request->all(),
+            [
+                'first_name' => [
+                    'required',
+                    'string',
+                    'max:100',
+                    'regex:'.self::namePattern(),
+                ],
+                'middle_name' => [
+                    'nullable',
+                    'string',
+                    'max:100',
+                    'regex:'.self::namePattern(),
+                ],
+                'last_name' => [
+                    'required',
+                    'string',
+                    'max:100',
+                    'regex:'.self::namePattern(),
+                ],
+                'mobile_no' => 'nullable|string|max:20',
+                'contact_no' => 'nullable|string|max:20',
+                'profile_picture' => 'nullable|image|mimes:jpg,jpeg,png|max:2048',
+                'email' => [
+                    'nullable',
+                    'email',
+                    'max:255',
+                    function ($attribute, $value, $fail) {
+                        if ($value) {
+                            // Split local part from domain
+                            $local = explode('@', $value)[0];
+
+                            // Check if local part is only digits
+                            if (preg_match('/^\d+$/', $local)) {
+                                $fail('Email cannot contain only numbers before the @ symbol.');
+                            }
+                        }
+                    },
+                ],
+                'sex' => 'required|string|max:20',
+                'civil_status' => 'nullable|string|max:50',
+                'date_of_birth' => 'required|date',
+                'referral' => 'nullable|string|max:255',
+                'occupation' => 'nullable|string|max:255',
+                'company' => 'nullable|string|max:255',
+                'weight' => 'nullable|numeric',
+                'height' => 'nullable|numeric',
+                'school' => 'nullable|string|max:255',
+                'clinic_id' => 'nullable|exists:clinics,clinic_id',
+                'address' => 'nullable|array',
+                'address.house_no' => 'nullable|string|max:50',
+                'address.street' => 'nullable|string|max:255',
+                'address.barangay_id' => 'nullable|exists:barangays,id',
+                'address.city_id' => 'nullable|exists:cities,id',
+                'address.province_id' => 'nullable|exists:provinces,id',
+            ],
+            self::messages()
+        );
 
         // ✅ Return errors if validation fails
         if ($validator->fails()) {
@@ -111,7 +152,12 @@ class PatientController extends Controller
             $authAccount = $this->guard->user();
 
             // Auto-assign clinic_id from auth account if present
-            $clinicId = $authAccount->clinic_id ?? ($validated['clinic_id'] ?? null);
+            $clinicId = session('clinic_id') ?? $authAccount->clinic_id ?? ($validated['clinic_id'] ?? null);
+
+            // Validate again to be safe
+            if (! $clinicId || ! Clinic::find($clinicId)) {
+                return back()->with('error', 'Select a Clinic First.');
+            }
 
             // ✅ Create patient
             $patient = Patient::create([
@@ -168,7 +214,7 @@ class PatientController extends Controller
                 $request->userAgent()
             );
 
-            return redirect()->back()->with('success', 'Patient created successfully.');
+            return redirect(route('patients'))->with('success', 'Patient created successfully.');
         });
     }
 
@@ -176,31 +222,65 @@ class PatientController extends Controller
     {
 
         // Step 1: Validate
-        $validator = Validator::make($request->all(), [
-            'patient_id' => 'required|exists:patients,patient_id',
-            'first_name' => 'required|string|max:100',
-            'middle_name' => 'nullable|string|max:100',
-            'last_name' => 'required|string|max:100',
-            'mobile_no' => 'nullable|string|max:20',
-            'contact_no' => 'nullable|string|max:20',
-            'profile_picture' => 'nullable|image|mimes:jpg,jpeg,png|max:2048',
-            'email' => 'nullable|email|max:255',
-            'sex' => 'required|string|max:20',
-            'civil_status' => 'nullable|string|max:50',
-            'date_of_birth' => 'required|date',
-            'referral' => 'nullable|string|max:255',
-            'occupation' => 'nullable|string|max:255',
-            'company' => 'nullable|string|max:255',
-            'weight' => 'nullable|numeric',
-            'height' => 'nullable|numeric',
-            'school' => 'nullable|string|max:255',
-            'address' => 'nullable|array',
-            'address.house_no' => 'nullable|string|max:50',
-            'address.street' => 'nullable|string|max:255',
-            'address.barangay_id' => 'nullable|exists:barangays,id',
-            'address.city_id' => 'nullable|exists:cities,id',
-            'address.province_id' => 'nullable|exists:provinces,id',
-        ]);
+        $validator = Validator::make(
+            $request->all(),
+            [
+                'patient_id' => 'required|exists:patients,patient_id',
+                'first_name' => [
+                    'required',
+                    'string',
+                    'max:100',
+                    'regex:'.self::namePattern(),
+                ],
+                'middle_name' => [
+                    'nullable',
+                    'string',
+                    'max:100',
+                    'regex:'.self::namePattern(),
+                ],
+                'last_name' => [
+                    'required',
+                    'string',
+                    'max:100',
+                    'regex:'.self::namePattern(),
+                ],
+                'mobile_no' => 'nullable|string|max:20',
+                'contact_no' => 'nullable|string|max:20',
+                'profile_picture' => 'nullable|image|mimes:jpg,jpeg,png|max:2048',
+                'email' => [
+                    'nullable',
+                    'email',
+                    'max:255',
+                    function ($attribute, $value, $fail) {
+                        if ($value) {
+                            // Split local part from domain
+                            $local = explode('@', $value)[0];
+
+                            // Check if local part is only digits
+                            if (preg_match('/^\d+$/', $local)) {
+                                $fail('Email cannot contain only numbers before the @ symbol.');
+                            }
+                        }
+                    },
+                ],
+                'sex' => 'required|string|max:20',
+                'civil_status' => 'nullable|string|max:50',
+                'date_of_birth' => 'required|date',
+                'referral' => 'nullable|string|max:255',
+                'occupation' => 'nullable|string|max:255',
+                'company' => 'nullable|string|max:255',
+                'weight' => 'nullable|numeric',
+                'height' => 'nullable|numeric',
+                'school' => 'nullable|string|max:255',
+                'address' => 'nullable|array',
+                'address.house_no' => 'nullable|string|max:50',
+                'address.street' => 'nullable|string|max:255',
+                'address.barangay_id' => 'nullable|exists:barangays,id',
+                'address.city_id' => 'nullable|exists:cities,id',
+                'address.province_id' => 'nullable|exists:provinces,id',
+            ],
+            self::messages()
+        );
 
         if ($validator->fails()) {
             return back()->with('error', $validator->errors()->first());
@@ -276,6 +356,16 @@ class PatientController extends Controller
                 }
             }
 
+            if ($request->boolean('remove_profile_picture')) {
+                // Delete old file if exists
+                if ($patient->profile_picture && Storage::disk('public')->exists($patient->profile_picture)) {
+                    Storage::disk('public')->delete($patient->profile_picture);
+                }
+
+                // Nullify column
+                $patient->update(['profile_picture' => null]);
+            }
+
             // Logging
             LogService::record(
                 $authAccount,
@@ -293,45 +383,81 @@ class PatientController extends Controller
     }
 
     public function destroy(Request $request)
-{
-    $request->validate([
-        'patient_id' => 'required|exists:patients,patient_id',
-        'password' => 'required',
-    ]);
+    {
+        $request->validate([
+            'patient_id' => 'required|exists:patients,patient_id',
+            'password' => 'required',
+        ]);
 
-    $deletor = Auth::guard('account')->user();
-    $patient = Patient::findOrFail($request->patient_id);
+        $deletor = Auth::guard('account')->user();
+        $patient = Patient::findOrFail($request->patient_id);
 
-    // Check if the password matches the current user's password
-    if (!Hash::check($request->password, $deletor->password)) {
-        return back()->with('error', 'The password is incorrect.');
+        // Check if the password matches the current user's password
+        if (! Hash::check($request->password, $deletor->password)) {
+            return back()->with('error', 'The password is incorrect.');
+        }
+
+        return DB::transaction(function () use ($patient, $request, $deletor) {
+
+            $addressId = optional($patient->address)->address_id;
+
+            // Delete related address
+            $patient->address()->delete();
+
+            // Delete patient record
+            $patient->delete();
+
+            // Logging
+            LogService::record(
+                $deletor,
+                $patient,
+                'delete',
+                'patient',
+                'User deleted a patient record',
+                'Patient ID: '.$patient->patient_id
+                    .', address ID: '.$addressId,
+                $request->ip(),
+                $request->userAgent()
+            );
+
+            return redirect()->route('patients')->with('success', 'Patient record deleted successfully.');
+        });
     }
 
-    return DB::transaction(function () use ($patient, $request, $deletor) {
+   public function specific(Request $request)
+{
+    $clinicId = session('clinic_id');
 
-        $addressId = optional($patient->address)->address_id;
+    // If patient_id is provided in the URL (first time)
+    if ($request->has('patient_id')) {
+        session(['current_patient_id' => $request->patient_id]);
 
-        // Delete related address
-        $patient->address()->delete();
+        return redirect()->route('specific-patient');
+    }
 
-        // Delete patient record
-        $patient->delete();
+    // Retrieve from session
+    $patientId = session('current_patient_id');
 
-        // Logging
-        LogService::record(
-            $deletor,
-            $patient,
-            'delete',
-            'patient',
-            'User deleted a patient record',
-            'Patient ID: ' . $patient->patient_id
-                . ', address ID: ' . $addressId,
-            $request->ip(),
-            $request->userAgent()
-        );
+    if (! $patientId) {
+        abort(404, 'No patient selected.');
+    }
 
-        return redirect()->route('patients')->with('success', 'Patient record deleted successfully.');
-    });
+    // Fetch patient with relationships
+    $patient = Patient::with(['address.barangay', 'address.city', 'address.province', 'clinic'])
+        ->findOrFail($patientId);
+
+    // Redirect back if patient clinic_id is null or different
+    if (! $patient->clinic_id || $patient->clinic_id != $clinicId) {
+        return redirect()->route('patients')->with('error', 'Patient does not belong to your clinic.');
+    }
+
+    // Fetch progress notes for this patient
+    $progressNotes = ProgressNote::with(['account', 'clinic'])
+        ->where('patient_id', $patientId)
+        ->latest()
+        ->paginate(8);
+
+    return view('pages.patients.specific', compact('patient', 'progressNotes'));
 }
 
 }

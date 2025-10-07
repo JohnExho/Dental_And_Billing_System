@@ -78,7 +78,7 @@ class Patient extends Model
         return 'N/A';
     }
 
-    return trim("{$this->address->street}, {$this->address->barangay->name}, {$this->address->city->name}, {$this->address->province->name}");
+    return trim("{$this->address->house_no}, {$this->address->street}, {$this->address->barangay->name}, {$this->address->city->name}, {$this->address->province->name}");
 }
 
 

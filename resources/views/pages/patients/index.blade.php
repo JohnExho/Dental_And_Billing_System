@@ -29,10 +29,10 @@
 
         </div>
         <div class="mt-3 px-3">
-            {{-- {{ $patients->links('vendor.pagination.bootstrap-5') }} --}}
+            {{ $patients->links('vendor.pagination.bootstrap-5') }}
         </div>
         {{-- Modal lives outside the container but still inside content --}}
-        {{-- @include('pages.patients.modals.add') --}}
+        @include('pages.patients.modals.add')
         <script>
             document.addEventListener("DOMContentLoaded", function() {
                 document.getElementById('patients-loading').classList.add('d-none');

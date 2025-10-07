@@ -90,9 +90,18 @@
         @endif
         @yield('content')
         @yield('modals')
-        @include('pages.patients.modals.add')
+        @if (Auth::check() && Auth::user()->role === 'staff')
+            @include('pages.patients.modals.add')
+        @endif
+
     </div>
+    <div class="footer text-center py-2 bg-light border-top mt-4 fixed-bottom">
+        <small>
+             <span class="text-mute">Search Functions temporarily disabled due to encrypted columns,</span>
+             <a href="https://www.mdpi.com/2076-3417/12/8/3953" target="_blank" class="text-primary">Security Over Functionality</a>
+        </small>
     </div>
+
     <script>
         document.addEventListener('DOMContentLoaded', function() {
 

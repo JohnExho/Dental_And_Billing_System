@@ -1,10 +1,11 @@
 <div class="card-body p-0">
     @if ($patients->isEmpty())
-        <p class="p-3 mb-0 text-danger text-center">No patient found. Add one using the button above.</p>
+        <p class="p-3 mb-0 text-danger text-center">No patient found. Add one using the
+            button above.</p>
     @else
         <div class="table-responsive">
-            <table class="table table-hover align-middle mb-0">
-                <thead class="table-light">
+            <table class="table table-hover align-middle mb-0 table-striped table-primary">
+                <thead class="bg-info">
                     <tr>
                         <th>Profile Pic</th>
                         <th>Name</th>
@@ -16,35 +17,42 @@
                 </thead>
                 <tbody>
                     @foreach ($patients as $patient)
+                        @php
+                            // Decide which image to show
+                            $defaultProfile = match ($patient->sex) {
+                                'male' => asset('storage/defaults/male.png'),
+                                'female' => asset('storage/defaults/female.png'),
+                                default => asset('storage/defaults/other.png'),
+                            };
+
+                            $profileUrl = $patient->profile_picture
+                                ? Storage::url($patient->profile_picture)
+                                : $defaultProfile;
+                        @endphp
+
                         <tr>
                             <td>
-                                <img src="{{ $patient->profile_picture ? Storage::url($patient->profile_picture) : 'https://placehold.co/60' }}"
-                                    alt="Profile" class="rounded-circle object-fit-cover"
+                                <img src="{{ $profileUrl }}" alt="{{ $patient->full_name ?? 'Profile' }}"
+                                    class="rounded-circle object-fit-cover border-primary border border-2"
                                     style="width: 60px; height: 60px;">
 
                             </td>
                             <td>{{ $patient->full_name }}</td>
-                            <td>{{ $patient->mobile_no ?? 'N/A' }}/<br>{{ $patient->contact_no ?? 'N/A' }}</td>
+                            <td>{{ $patient->mobile_no ?? 'N/A' }}/<br>{{ $patient->contact_no ?? 'N/A' }}
+                            </td>
                             <td>{{ $patient->email ?? 'N/A' }}</td>
                             <td>
                                 {{ $patient->full_address }}
                             </td>
 
                             <td class="text-end">
-                                <a role="button" class="btn btn-sm btn-outline-primary" data-bs-toggle="modal"
-                                    data-bs-target="#patient-detail-modal" data-name="{{ $patient->full_name }}"
-                                    data-contact="{{ $patient->mobile_no }} | {{ $patient->contact_no }}"
-                                    data-email="{{ $patient->email }}"
-                                    data-date_of_birth="{{ $patient->date_of_birth }}" data-sex="{{ $patient->sex }}"
-                                    data-civil_status="{{ $patient->civil_status }}"
-                                    data-occupation="{{ $patient->occupation }}"
-                                    data-company="{{ $patient->company }}"
-                                    data-address="{{ optional($patient->address)->full_address }}"
-                                    data-profile_picture="{{ Storage::url($patient->profile_picture) }}"
-                                    data-weight="{{ $patient->weight }}" data-height="{{ $patient->height }}"
-                                    data-school="{{ $patient->school }}">
-                                    <i class="bi bi-eye"></i>
-                                </a>
+                                <form action="{{ route('specific-patient') }}" method="GET" class="d-inline">
+                                    <input type="hidden" name="patient_id" value="{{ $patient->patient_id }}">
+                                    <button type="submit" class="btn btn-sm btn-outline-primary">
+                                        <i class="bi bi-eye"></i>
+                                    </button>
+                                </form>
+
 
 
                                 {{-- ✅ Edit Button --}}
@@ -56,8 +64,7 @@
                                     data-date_of_birth="{{ $patient->date_of_birth }}" data-sex="{{ $patient->sex }}"
                                     data-civil_status="{{ $patient->civil_status }}"
                                     data-occupation="{{ $patient->occupation }}"
-                                    data-company="{{ $patient->company }}"
-                                    data-referral="{{ $patient->referral }}"
+                                    data-company="{{ $patient->company }}" data-referral="{{ $patient->referral }}"
                                     data-house_no="{{ optional($patient->address)->house_no }}"
                                     data-street="{{ optional($patient->address)->street }}"
                                     data-province_id="{{ optional($patient->address->province)->province_id }}"
@@ -66,7 +73,7 @@
                                     data-city_name="{{ optional($patient->address->city)->name }}"
                                     data-barangay_id="{{ optional($patient->address->barangay)->barangay_id }}"
                                     data-barangay_name="{{ optional($patient->address->barangay)->name }}"
-                                    data-profile_picture="{{ Storage::url($patient->profile_picture) }}"
+                                    data-profile_picture="{{ $patient->profile_picture ? asset('storage/' . $patient->profile_picture) : '' }}"
                                     data-weight="{{ $patient->weight }}" data-height="{{ $patient->height }}"
                                     data-school="{{ $patient->school }}">
                                     <i class="bi bi-pencil-square"></i>
@@ -102,6 +109,8 @@
     });
 </script>
 
-@include('pages.patients.modals.info')
-@include('pages.patients.modals.edit')
-@include('pages.patients.modals.delete')
+
+@if (!empty($patient))
+    @include('pages.patients.modals.edit')
+    @include('pages.patients.modals.delete')
+@endif
