@@ -5,8 +5,8 @@
         </h6>
 
         <!-- Add Note Button -->
-        <button class="btn btn-sm btn-primary" data-bs-toggle="modal" data-bs-target="#addProgressNoteModal">
-            <i class="bi bi-plus-circle me-1"></i> Add Note
+        <button class="btn btn-sm btn-primary" data-bs-toggle="modal" data-bs-target="#add-progress-note-modal">
+            <i class="bi bi-plus-circle me-1"></i> Add Progress
         </button>
     </div>
 
@@ -29,7 +29,7 @@
                                 <td>{{ $note->created_at ? $note->created_at->format('M d, Y') : '-' }}</td>
                                 <td>{{ $note->account?->full_name ?? 'Unknown' }}</td>
                                 <td>{{ $note->summary ?? '-' }}</td>
-                                <td>{{ $note->progress_note }}</td>
+                                <td>{{ $note->note }}</td>
                                 <td class="text-end">
                                     <button class="btn btn-sm btn-outline-primary">
                                         <i class="bi bi-eye"></i>
@@ -48,7 +48,7 @@
 
                 <!-- Pagination links -->
                 <div class="mt-3 px-3">
-                    {{ $progressNotes->links() }}
+                    {{ $progressNotes->links('vendor.pagination.bootstrap-5') }}
                 </div>
             </div>
         @else
@@ -59,31 +59,4 @@
     </div>
 </div>
 
-{{-- <!-- Add Progress Note Modal -->
-<div class="modal fade" id="addProgressNoteModal" tabindex="-1" aria-labelledby="addProgressNoteModalLabel"
-     aria-hidden="true">
-    <div class="modal-dialog">
-        <form action="#" method="POST" class="modal-content">
-            @csrf
-            <div class="modal-header bg-primary text-white">
-                <h5 class="modal-title" id="addProgressNoteModalLabel">Add Progress Note</h5>
-                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
-            </div>
-            <div class="modal-body">
-                <div class="mb-3">
-                    <label class="form-label">Summary</label>
-                    <input type="text" name="summary" class="form-control" placeholder="Enter summary...">
-                </div>
-
-                <div class="mb-3">
-                    <label class="form-label">Details</label>
-                    <textarea name="progress_note" class="form-control" rows="5" placeholder="Write detailed note..."></textarea>
-                </div>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-light" data-bs-dismiss="modal">Cancel</button>
-                <button type="submit" class="btn btn-primary">Save Note</button>
-            </div>
-        </form>
-    </div>
-</div> --}}
+    @include('pages.patients.progress-notes.modals.add')

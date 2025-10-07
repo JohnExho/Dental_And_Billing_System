@@ -8,19 +8,19 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Notifications\Notifiable;
 
-class ProgressNote extends Model
+class Note extends Model
 {
     use HasFactory, HasUuid, Notifiable, SoftDeletes;
 
-    protected $table = 'progress_notes';
+    protected $table = 'notes';
 
-    protected $primaryKey = 'progress_note_id';
+    protected $primaryKey = 'note_id';
 
     protected $keyType = 'string';
 
     public $incrementing = false;
 
-    protected $uuidColumn = 'progress_note_id';
+    protected $uuidColumn = 'note_id';
 
     protected $fillable = [
         'account_id',
@@ -28,29 +28,40 @@ class ProgressNote extends Model
         'associate_id',
         'visit_id',
         'summary',
-        'progress_note',
+        'note',
+        'note_type',
     ];
 
     protected $casts = [
         'summary' => 'encrypted',
-        'progress_note' => 'encrypted',
+        'note' => 'encrypted',
         'created_at' => 'datetime',
         'updated_at' => 'datetime',
         'deleted_at' => 'datetime',
     ];
 
+    // Relationships
     public function logs()
     {
         return $this->morphMany(Logs::class, 'loggable');
     }
 
-        public function account()
+    public function account()
     {
         return $this->belongsTo(Account::class, 'account_id', 'account_id');
     }
 
-    public function clinic()
+    public function associate()
     {
+        return $this->belongsTo(Associate::class, 'associate_id', 'associate_id');
+    }
+
+    public function patient()
+    {
+        return $this->belongsTo(Patient::class, 'patient_id', 'patient_id');
+    }
+
+    public function clinic(){
         return $this->belongsTo(Clinic::class, 'clinic_id', 'clinic_id');
     }
 }

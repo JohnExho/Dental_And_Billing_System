@@ -3,7 +3,7 @@
 @section('content')
     <div class="container-fluid mt-4">
         <div class="card shadow-sm border-0">
-            <div class="card-header bg-primary text-white position-relative">
+            <div class="card-header bg-dark text-white position-relative">
                 @php
                     $defaultProfile = match ($patient->sex) {
                         'male' => asset('storage/defaults/male.png'),
@@ -21,12 +21,14 @@
                     </button>
 
                     <!-- Centered profile + name as a flex anchor -->
-                    <a href="{{ route('specific-patient') }}" class="d-flex align-items-center gap-2 text-decoration-none">
+                    <a href="#info" class="d-flex align-items-center gap-2 text-decoration-none" data-bs-toggle="tab"
+                        role="tab" aria-controls="info" aria-selected="true">
                         <img src="{{ $profileUrl }}" alt="Profile Picture"
                             class="rounded-circle border border-2 border-primary"
                             style="width: 50px; height: 50px; object-fit: cover;">
                         <h6 class="mb-0 text-white">{{ $patient->full_name }}</h6>
                     </a>
+
 
                     <!-- Right button -->
                     <a href="#" class="btn btn-light btn-sm d-flex align-items-center" data-bs-toggle="modal"
@@ -102,7 +104,9 @@
                     </div>
 
                     <div class="tab-pane fade" id="progress" role="tabpanel" aria-labelledby="progress-tab">
-                        @include('pages.patients.partials.progress-notes', ['progressNotes' => $progressNotes])
+                        @include('pages.patients.partials.progress-notes', [
+                            'progressNotes' => $progressNotes,
+                        ])
                     </div>
 
                     <div class="tab-pane fade" id="prescriptions" role="tabpanel" aria-labelledby="prescriptions-tab">
@@ -138,10 +142,6 @@
         <script>
             document.addEventListener("DOMContentLoaded", function() {
                 document.getElementById('patients-loading').classList.add('d-none');
-            });
-        </script>
-        <script>
-            document.addEventListener("DOMContentLoaded", function() {
                 const patientTabs = document.querySelectorAll('#patientTabs button');
                 const tabContent = document.querySelectorAll('#patientTabsContent .tab-pane');
 
@@ -161,6 +161,14 @@
                         localStorage.setItem('activePatientTab', event.target.id);
                     });
                 });
+                document.querySelectorAll('a[href="#info"]').forEach(el => {
+                    el.addEventListener('click', function(e) {
+                        e.preventDefault();
+                        const tabTrigger = new bootstrap.Tab(document.querySelector('#info-tab'));
+                        tabTrigger.show();
+                    });
+                });
+
             });
         </script>
 

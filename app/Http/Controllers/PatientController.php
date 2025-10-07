@@ -2,23 +2,23 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Clinic;
 use App\Models\Address;
+use App\Models\Clinic;
+use App\Models\Note;
 use App\Models\Patient;
-use Illuminate\Support\Str;
-use App\Models\ProgressNote;
 use App\Services\LogService;
-use Illuminate\Http\Request;
 use App\Traits\RegexPatterns;
 use App\Traits\ValidationMessages;
-use Illuminate\Support\Facades\DB;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
-use Yajra\Address\Entities\Barangay;
-use Yajra\Address\Entities\Province;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
-use Yajra\Address\Entities\City; // if you use logs
+use Illuminate\Support\Str;
+use Yajra\Address\Entities\Barangay;
+use Yajra\Address\Entities\City;
+use Yajra\Address\Entities\Province; // if you use logs
 
 class PatientController extends Controller
 {
@@ -424,40 +424,54 @@ class PatientController extends Controller
         });
     }
 
-   public function specific(Request $request)
-{
-    $clinicId = session('clinic_id');
+    public function specific(Request $request)
+    {
+        $clinicId = session('clinic_id');
 
-    // If patient_id is provided in the URL (first time)
-    if ($request->has('patient_id')) {
-        session(['current_patient_id' => $request->patient_id]);
+        // If patient_id is provided in the URL (first time)
+        if ($request->has('patient_id')) {
+            session(['current_patient_id' => $request->patient_id]);
 
-        return redirect()->route('specific-patient');
+            return redirect()->route('specific-patient');
+        }
+
+        // Retrieve from session
+        $patientId = session('current_patient_id');
+
+        if (! $patientId) {
+            abort(404, 'No patient selected.');
+        }
+
+        // Fetch patient with relationships
+        $patient = Patient::with(['address.barangay', 'address.city', 'address.province', 'clinic'])
+            ->findOrFail($patientId);
+
+        // Redirect back if patient clinic_id is null or different
+        if (! $patient->clinic_id || $patient->clinic_id != $clinicId) {
+            return redirect()->route('patients')->with('error', 'Patient does not belong to your clinic.');
+        }
+
+        // Fetch progress notes for this patient
+        $progressNotes = Note::with(['account', 'clinic'])
+            ->where('patient_id', $patientId)
+            ->where('note_type', 'progress')
+            ->latest()
+            ->paginate(8);
+
+        // For general notes
+        $generalNotes = Note::with(['account', 'clinic'])
+            ->where('patient_id', $patientId)
+            ->where('note_type', 'general')
+            ->latest()
+            ->paginate(8);
+
+        // For treatment notes
+        $treatmentNotes = Note::with(['account', 'clinic'])
+            ->where('patient_id', $patientId)
+            ->where('note_type', 'treatment')
+            ->latest()
+            ->paginate(8);
+
+        return view('pages.patients.specific', compact('patient', 'progressNotes', 'generalNotes', 'treatmentNotes'));
     }
-
-    // Retrieve from session
-    $patientId = session('current_patient_id');
-
-    if (! $patientId) {
-        abort(404, 'No patient selected.');
-    }
-
-    // Fetch patient with relationships
-    $patient = Patient::with(['address.barangay', 'address.city', 'address.province', 'clinic'])
-        ->findOrFail($patientId);
-
-    // Redirect back if patient clinic_id is null or different
-    if (! $patient->clinic_id || $patient->clinic_id != $clinicId) {
-        return redirect()->route('patients')->with('error', 'Patient does not belong to your clinic.');
-    }
-
-    // Fetch progress notes for this patient
-    $progressNotes = ProgressNote::with(['account', 'clinic'])
-        ->where('patient_id', $patientId)
-        ->latest()
-        ->paginate(8);
-
-    return view('pages.patients.specific', compact('patient', 'progressNotes'));
-}
-
 }

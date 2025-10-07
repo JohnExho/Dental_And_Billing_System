@@ -432,8 +432,8 @@ return new class extends Migration
             $table->foreign('visit_id')->references('visit_id')->on('patient_visits')->onDelete('set null');
         });
 
-        Schema::create('progress_notes', function (Blueprint $table) {
-            $table->uuid('progress_note_id')->primary();
+        Schema::create('notes', function (Blueprint $table) {
+            $table->uuid('note_id')->primary();
 
             // Core relationships
             $table->uuid('account_id')->nullable()->index(); // who created it
@@ -443,7 +443,8 @@ return new class extends Migration
 
             // Core content
             $table->text('summary')->nullable(); // short descriptor
-            $table->text('progress_note');
+            $table->text('note');
+            $table->enum('note_type', ['general', 'treatment', 'progress'])->default('general')->index();
 
             // Tracking
             $table->timestamps();
@@ -587,25 +588,6 @@ return new class extends Migration
             $table->foreign('visit_id')->references('visit_id')->on('patient_visits')->onDelete('set null');
         });
 
-        Schema::create('general_notes', function (Blueprint $table) {
-            $table->uuid('note_id')->primary();
-            $table->uuid('account_id')->nullable(); // Account that created the note
-            $table->uuid('patient_id')->nullable();
-            $table->uuid('associate_id')->nullable(); // Associate who added the note
-            $table->uuid('visit_id')->nullable(); // Nullable if historically logged with no visit
-            $table->text('note_content');
-            $table->index('patient_id')->nullable();
-            $table->index('associate_id')->nullable();
-            $table->index('created_at');
-
-            $table->timestamps();
-            $table->softDeletes();
-
-            $table->foreign('account_id')->references('account_id')->on('accounts')->onDelete('set null');
-            $table->foreign('patient_id')->references('patient_id')->on('patients')->onDelete('set null');
-            $table->foreign('associate_id')->references('associate_id')->on('associates')->onDelete('set null');
-            $table->foreign('visit_id')->references('visit_id')->on('patient_visits')->onDelete('set null');
-        });
 
         Schema::create('recalls', function (Blueprint $table) {
             $table->uuid('recall_id')->primary();
@@ -642,7 +624,6 @@ return new class extends Migration
             $table->uuid('tooth_id')->nullable();
             $table->decimal('price', 10, 2);
             $table->integer('quantity')->default(1);
-            $table->text('notes')->nullable();
             $table->dateTime('treatment_date')->nullable();
 
             $table->timestamps();
@@ -671,13 +652,12 @@ return new class extends Migration
     {
         Schema::dropIfExists('patient_treatments');
         Schema::dropIfExists('recalls');
-        Schema::dropIfExists('general_notes');
         Schema::dropIfExists('certificates');
         Schema::dropIfExists('diagnostic_requests');
         Schema::dropIfExists('prescriptions');
         Schema::dropIfExists('payments');
         Schema::dropIfExists('bill_items');
-        Schema::dropIfExists('progress_notes');
+        Schema::dropIfExists('notes');
         Schema::dropIfExists('bills');
         Schema::dropIfExists('patient_visits');
         Schema::dropIfExists('addresses');
