@@ -295,7 +295,7 @@
                 Swal.fire({
                     icon: 'warning',
                     title: 'Oops!',
-                    position: 'top-right',
+                    position: 'top',
                     timer: 3000,
                     text: 'Phone numbers must be exactly 11 digits.',
                     toast: true,
@@ -310,7 +310,7 @@
                 Swal.fire({
                     icon: 'warning',
                     title: 'Oops!',
-                    position: 'top-right',
+                    position: 'top',
                     timer: 3000,
                     text: 'Email must start with a letter and be valid.',
                     toast: true,

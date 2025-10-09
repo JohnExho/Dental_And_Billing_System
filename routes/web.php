@@ -11,6 +11,7 @@ use App\Http\Controllers\PatientController;
 use App\Http\Controllers\ServiceController;
 use App\Http\Controllers\StaffController;
 use App\Http\Controllers\ToothListController;
+use App\Http\Controllers\WaitlistController;
 use Illuminate\Support\Facades\Route;
 
 Route::middleware('web')->group(function () {
@@ -78,7 +79,7 @@ Route::middleware('web')->group(function () {
         Route::view('/dashboard', 'dashboard')->name('dashboard');
         Route::view('/admin/dashboard', 'auth.admin-dashboard')->name('admin.dashboard');
         Route::view('/staff/dashboard', 'auth.staff-dashboard')->name('staff.dashboard');
-        Route::view('/waitlist', 'pages.waitlist.index')->name('waitlist');
+        Route::get('/waitlist', [WaitlistController::class, 'index'])->name('waitlist');
         Route::get('/patients', [PatientController::class, 'index'])->name('patients');
         Route::get('/patient/profile', [PatientController::class, 'specific'])->name('specific-patient');
         Route::get('/settings', [AccountController::class, 'settings'])->name('settings');

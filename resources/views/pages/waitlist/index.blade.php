@@ -9,33 +9,33 @@
                         No of Patient #
                     </div>
                     <a href="#" class="btn btn-light btn-sm d-flex align-items-center gap-1 float-end"
-                        data-bs-toggle="modal" data-bs-target="#add-tooth-modal">
+                        data-bs-toggle="modal" data-bs-target="#add-waitlist-modal">
                         <i class="bi bi-plus-circle"></i> Add Patient To Line
                     </a>
                 </div>
 
             </div>
-            <div id="tooth-container" class="position-relative">
-                <div id="teeth-loading" class="text-center py-5">
+            <div id="waitlist-container" class="position-relative">
+                <div id="waitlist-loading" class="text-center py-5">
                     <div class="spinner-border text-primary" role="status"></div>
-                    <p class="mt-2">Loading Teeth...</p>
+                    <p class="mt-2">Loading waitlist...</p>
                 </div>
 
-                <div id="teeth-content" class="d-none">
-                    {{-- @include('pages.teeth.partials.index-partial') --}}
+                <div id="waitlist-content" class="d-none">
+                    @include('pages.waitlist.partials.index-partial')
                 </div>
             </div>
 
         </div>
         <div class="mt-3 px-3">
-            {{-- {{ $teeth->links('vendor.pagination.bootstrap-5') }} --}}
+            {{ $waitlist->links('vendor.pagination.bootstrap-5') }}
         </div>
-        {{-- Modal lives outside the container but still inside content --}}
-        {{-- @include('pages.teeth.modals.add') --}}
+
+        @include('pages.waitlist.modals.add')
         <script>
             document.addEventListener("DOMContentLoaded", function() {
-                document.getElementById('teeth-loading').classList.add('d-none');
-                document.getElementById('teeth-content').classList.remove('d-none');
+                document.getElementById('waitlist-loading').classList.add('d-none');
+                document.getElementById('waitlist-content').classList.remove('d-none');
             });
         </script>
     @endsection

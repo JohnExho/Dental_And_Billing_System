@@ -36,6 +36,10 @@ class PatientController extends Controller
     {
         $clinicId = session('clinic_id');
 
+        if (! $clinicId) {
+            return redirect(route('staff.dashboard'))->with('error', 'Select a clinic first.');
+        }
+
         $query = Patient::query();
 
         if ($clinicId) {

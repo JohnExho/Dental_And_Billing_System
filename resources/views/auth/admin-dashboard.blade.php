@@ -49,7 +49,7 @@
             </div>
 
             <!-- Right Card with buffer -->
-            <div class="col-md-7" onclick="window.location='{{ route('tools') }}'" style="cursor: pointer;">
+            <div class="col-md-7">
                 <div class="card shadow-sm border-1 border-info">
                     <div class="card-body">
                         <div class="d-flex justify-content-between align-items-center mb-3">
@@ -61,7 +61,8 @@
                                 </button>
                             </div>
                         </div>
-                        <div id="recentActivitiesWrapper" class="col-md-12 position-relative">
+                        <hr>
+                        <div id="recentActivitiesWrapper" class="col-md-12 position-relative" onclick="window.location='{{ route('tools') }}'" style="cursor: pointer;">
                             <!-- Loader -->
                             <div id="recentActivitiesLoading" class="d-flex justify-content-center align-items-center py-5">
                                 <div class="spinner-border text-primary" role="status"></div>

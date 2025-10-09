@@ -16,7 +16,6 @@
                 <!-- Body -->
                 <div class="modal-body p-4">
                     <!-- STEP 1 -->
-                    <!-- STEP 1 -->
                     <div id="step1" class="step-content">
                         <div class="row g-3">
                             <!-- Name Fields -->
@@ -190,154 +189,212 @@
 
 <!-- JS for Step Logic -->
 <script>
-document.addEventListener('DOMContentLoaded', function() {
-    const steps = [
-        document.getElementById('step1'),
-        document.getElementById('step2'),
-        document.getElementById('step3')
-    ];
-    const nextBtn = document.getElementById('nextBtn');
-    const prevBtn = document.getElementById('prevBtn');
-    const submitBtn = document.getElementById('submitBtn');
-    let currentStep = 0;
+    document.addEventListener('DOMContentLoaded', function() {
+        const steps = [
+            document.getElementById('step1'),
+            document.getElementById('step2'),
+            document.getElementById('step3')
+        ];
+        const nextBtn = document.getElementById('nextBtn');
+        const prevBtn = document.getElementById('prevBtn');
+        const submitBtn = document.getElementById('submitBtn');
+        const form = document.querySelector('#add-patient-modal form');
+        let currentStep = 0;
 
-    function updateSteps() {
-        steps.forEach((s, i) => s.classList.toggle('d-none', i !== currentStep));
-        prevBtn.classList.toggle('d-none', currentStep === 0);
-        nextBtn.classList.toggle('d-none', currentStep === steps.length - 1);
-        submitBtn.classList.toggle('d-none', currentStep !== steps.length - 1);
-    }
+        function updateSteps() {
+            steps.forEach((s, i) => s.classList.toggle('d-none', i !== currentStep));
+            prevBtn.classList.toggle('d-none', currentStep === 0);
+            nextBtn.classList.toggle('d-none', currentStep === steps.length - 1);
+            submitBtn.classList.toggle('d-none', currentStep !== steps.length - 1);
+        }
 
-    // --- Step Validation ---
-    function validateStep(stepIndex) {
-        const fields = steps[stepIndex].querySelectorAll('input, select, textarea');
-        let isValid = true;
+        function validateStep(stepIndex) {
+            const fields = steps[stepIndex].querySelectorAll('input, select, textarea');
+            let isValid = true;
+            let missingField = null;
 
-        fields.forEach(field => {
-            field.classList.remove('is-invalid');
+            fields.forEach(field => {
+                // Required field check
+                if (field.hasAttribute('required') && !field.value.trim()) {
+                    if (!missingField) missingField = field;
+                    isValid = false;
+                }
 
-            // Required fields
-            if (field.hasAttribute('required') && !field.value.trim()) {
-                field.classList.add('is-invalid');
-                isValid = false;
+                // Phone number exact length check
+                if (field.classList.contains('phone-number') && field.value.trim().length !== 11) {
+                    if (!missingField) missingField = field;
+                    isValid = false;
+                }
+            });
+
+            if (!isValid) {
+                Swal.fire({
+                    icon: 'warning',
+                    title: 'Incomplete Information',
+                    text: `Please fill out all required fields properly before continuing.`,
+                    position: 'top',
+                    timer: 3000,
+                    toast: true,
+                    showConfirmButton: false,
+                    timerProgressBar: true
+                });
+
+                if (missingField) missingField.focus();
             }
 
-            // Phone number exact length check
-            if (field.classList.contains('phone-number') && field.value.trim().length !== 11) {
-                field.classList.add('is-invalid');
-                isValid = false;
+            return isValid;
+        }
+
+        form.addEventListener('submit', function(e) {
+            const emailInput = form.querySelector('input[name="email"]');
+            const phoneInputs = form.querySelectorAll('.phone-number');
+
+            let phoneValid = true;
+            phoneInputs.forEach(input => {
+                if (input.value.length !== 11) phoneValid = false;
+            });
+
+            const emailPattern = /^[A-Za-z][A-Za-z0-9._%+-]*@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$/;
+            const emailValid = emailPattern.test(emailInput.value);
+
+            if (!phoneValid) {
+                e.preventDefault();
+                Swal.fire({
+                    icon: 'warning',
+                    title: 'Invalid Phone Number',
+                    position: 'top',
+                    timer: 3000,
+                    text: 'Each phone number must be exactly 11 digits.',
+                    toast: true,
+                    showConfirmButton: false,
+                    timerProgressBar: true
+                });
+                return;
+            }
+
+            if (!emailValid) {
+                e.preventDefault();
+                Swal.fire({
+                    icon: 'warning',
+                    title: 'Invalid Email',
+                    position: 'top',
+                    timer: 3000,
+                    text: 'Email must start with a letter and follow a valid format.',
+                    toast: true,
+                    showConfirmButton: false,
+                    timerProgressBar: true
+                });
+                return;
             }
         });
 
-        return isValid;
-    }
+        nextBtn.addEventListener('click', function() {
+            if (validateStep(currentStep)) {
+                currentStep++;
+                updateSteps();
+            }
+        });
 
-    nextBtn.addEventListener('click', function() {
-        if (validateStep(currentStep)) {
-            currentStep++;
+        prevBtn.addEventListener('click', function() {
+            currentStep--;
             updateSteps();
-        }
-    });
+        });
 
-    prevBtn.addEventListener('click', function() {
-        currentStep--;
         updateSteps();
-    });
 
-    updateSteps();
-
-    // --- Phone Number Restriction ---
-    document.querySelectorAll('.phone-number').forEach(input => {
-        input.addEventListener('input', function() {
-            this.value = this.value.replace(/\D/g, '').slice(0, 11);
+        // --- Phone Number Restriction ---
+        document.querySelectorAll('.phone-number').forEach(input => {
+            input.addEventListener('input', function() {
+                this.value = this.value.replace(/\D/g, '').slice(0, 11);
+            });
         });
-    });
 
-    // --- Numeric-only fields ---
-    document.querySelectorAll('.numeric-only').forEach(input => {
-        input.addEventListener('input', function() {
-            this.value = this.value.replace(/[^0-9.]/g, '');
-            const parts = this.value.split('.');
-            if (parts.length > 2) this.value = parts[0] + '.' + parts[1];
+        // --- Numeric-only fields ---
+        document.querySelectorAll('.numeric-only').forEach(input => {
+            input.addEventListener('input', function() {
+                this.value = this.value.replace(/[^0-9.]/g, '');
+                const parts = this.value.split('.');
+                if (parts.length > 2) this.value = parts[0] + '.' + parts[1];
+            });
         });
-    });
 
-    // --- Address cascading ---
-    const provinceSelect = document.getElementById('patient-province-select');
-    const provinceHidden = document.getElementById('patient-province-hidden');
-    const citySelect = document.getElementById('patient-city-select');
-    const cityHidden = document.getElementById('patient-city-hidden');
-    const barangaySelect = document.getElementById('patient-barangay-select');
-    const barangayHidden = document.getElementById('patient-barangay-hidden');
+        // --- Address cascading ---
+        const provinceSelect = document.getElementById('patient-province-select');
+        const provinceHidden = document.getElementById('patient-province-hidden');
+        const citySelect = document.getElementById('patient-city-select');
+        const cityHidden = document.getElementById('patient-city-hidden');
+        const barangaySelect = document.getElementById('patient-barangay-select');
+        const barangayHidden = document.getElementById('patient-barangay-hidden');
 
-    function resetSelects() {
-        citySelect.innerHTML = '<option value="">-- Select City --</option>';
-        citySelect.disabled = true;
-        cityHidden.value = '';
-        barangaySelect.innerHTML = '<option value="">-- Select Barangay --</option>';
-        barangaySelect.disabled = true;
-        barangayHidden.value = '';
-    }
-
-    provinceSelect.addEventListener('change', async function() {
-        resetSelects();
-        const selected = this.selectedOptions[0];
-        provinceHidden.value = selected.dataset.id || '';
-        if (!this.value) return;
-        citySelect.innerHTML = '<option>Loading cities…</option>';
-        try {
-            const res = await fetch(`/locations/cities/${this.value}`);
-            const data = await res.json();
+        function resetSelects() {
             citySelect.innerHTML = '<option value="">-- Select City --</option>';
-            data.forEach(c => {
-                const opt = document.createElement('option');
-                opt.value = c.city_id;
-                opt.dataset.id = c.id;
-                opt.textContent = c.name;
-                citySelect.appendChild(opt);
-            });
-            citySelect.disabled = false;
-        } catch (err) {
-            citySelect.innerHTML = '<option>Error loading cities</option>';
-        }
-    });
-
-    citySelect.addEventListener('change', async function() {
-        barangaySelect.innerHTML = '<option value="">-- Select Barangay --</option>';
-        barangaySelect.disabled = true;
-        cityHidden.value = '';
-        barangayHidden.value = '';
-        const selectedCity = this.selectedOptions[0];
-        cityHidden.value = selectedCity?.dataset.id || '';
-        if (!this.value) return;
-        barangaySelect.innerHTML = '<option>Loading barangays…</option>';
-        try {
-            const res = await fetch(`/locations/barangays/${this.value}`);
-            const data = await res.json();
+            citySelect.disabled = true;
+            cityHidden.value = '';
             barangaySelect.innerHTML = '<option value="">-- Select Barangay --</option>';
-            data.forEach(b => {
-                const opt = document.createElement('option');
-                opt.value = b.barangay_id;
-                opt.dataset.id = b.id;
-                opt.textContent = b.name;
-                barangaySelect.appendChild(opt);
-            });
-            barangaySelect.disabled = false;
-        } catch (err) {
-            barangaySelect.innerHTML = '<option>Error loading barangays</option>';
+            barangaySelect.disabled = true;
+            barangayHidden.value = '';
         }
-    });
 
-    barangaySelect.addEventListener('change', function() {
-        barangayHidden.value = this.selectedOptions[0]?.dataset.id || '';
-    });
+        provinceSelect.addEventListener('change', async function() {
+            resetSelects();
+            const selected = this.selectedOptions[0];
+            provinceHidden.value = selected.dataset.id || '';
+            if (!this.value) return;
+            citySelect.innerHTML = '<option>Loading cities…</option>';
+            try {
+                const res = await fetch(`/locations/cities/${this.value}`);
+                const data = await res.json();
+                citySelect.innerHTML = '<option value="">-- Select City --</option>';
+                data.forEach(c => {
+                    const opt = document.createElement('option');
+                    opt.value = c.city_id;
+                    opt.dataset.id = c.id;
+                    opt.textContent = c.name;
+                    citySelect.appendChild(opt);
+                });
+                citySelect.disabled = false;
+            } catch (err) {
+                citySelect.innerHTML = '<option>Error loading cities</option>';
+            }
+        });
 
-    // Prevent accidental submit on Enter before final step
-    document.getElementById('add-patient-modal').addEventListener('keydown', function(event) {
-        if (event.key === 'Enter') {
-            const submitVisible = !submitBtn.classList.contains('d-none');
-            if (!submitVisible) event.preventDefault();
-        }
+        citySelect.addEventListener('change', async function() {
+            barangaySelect.innerHTML = '<option value="">-- Select Barangay --</option>';
+            barangaySelect.disabled = true;
+            cityHidden.value = '';
+            barangayHidden.value = '';
+            const selectedCity = this.selectedOptions[0];
+            cityHidden.value = selectedCity?.dataset.id || '';
+            if (!this.value) return;
+            barangaySelect.innerHTML = '<option>Loading barangays…</option>';
+            try {
+                const res = await fetch(`/locations/barangays/${this.value}`);
+                const data = await res.json();
+                barangaySelect.innerHTML = '<option value="">-- Select Barangay --</option>';
+                data.forEach(b => {
+                    const opt = document.createElement('option');
+                    opt.value = b.barangay_id;
+                    opt.dataset.id = b.id;
+                    opt.textContent = b.name;
+                    barangaySelect.appendChild(opt);
+                });
+                barangaySelect.disabled = false;
+            } catch (err) {
+                barangaySelect.innerHTML = '<option>Error loading barangays</option>';
+            }
+        });
+
+        barangaySelect.addEventListener('change', function() {
+            barangayHidden.value = this.selectedOptions[0]?.dataset.id || '';
+        });
+
+        // Prevent accidental submit on Enter before final step
+        document.getElementById('add-patient-modal').addEventListener('keydown', function(event) {
+            if (event.key === 'Enter') {
+                const submitVisible = !submitBtn.classList.contains('d-none');
+                if (!submitVisible) event.preventDefault();
+            }
+        });
+
     });
-});
 </script>

@@ -107,7 +107,7 @@
                 @else
                     <!-- Add Patient + Search Bar -->
                     <li class="nav-item d-flex align-items-center me-3">
-                        <a class="badge rounded-pill bg-light text-dark border d-flex align-items-center px-3 py-2 shadow-sm text-decoration-none dropdown-toggle  me-1"
+                        <a class="badge rounded-pill bg-light text-dark border d-flex align-items-center px-3 py-2 shadow-sm text-decoration-none me-1"
                             href="#" id="clinicDropdown" role="button" data-bs-toggle="dropdown"
                             aria-expanded="false">
                             <i class="bi bi-hospital me-2 text-primary"></i>

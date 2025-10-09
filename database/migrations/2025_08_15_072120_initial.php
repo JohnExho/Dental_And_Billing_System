@@ -11,7 +11,6 @@ return new class extends Migration
      */
     public function up(): void
     {
-        // TODO: add this table and reference it on other table for visit
 
         // Independent Tables
         Schema::create('accounts', function (Blueprint $table) {
@@ -146,6 +145,7 @@ return new class extends Migration
             $table->text('height')->nullable();
             $table->text('school')->nullable();
 
+
             $table->timestamps();
             $table->softDeletes();
 
@@ -183,20 +183,14 @@ return new class extends Migration
 
         Schema::create('waitlist', function (Blueprint $table) {
             $table->uuid('waitlist_id')->primary();
-            $table->uuid('account_id')->nullable(); // Account that created the waitlist entry
-            $table->uuid('patient_id')->nullable(); // Patient on the waitlist
-            $table->uuid('associate_id')->nullable(); // Associate handling the waitlist
-            $table->uuid('clinic_id')->nullable();
-            $table->uuid('laboratory_id')->nullable();
+            $table->uuid('account_id')->nullable()->index(); // Account that created the waitlist entry
+            $table->uuid('patient_id')->nullable()->index(); // Patient on the waitlist
+            $table->uuid('associate_id')->nullable()->index(); // Associate handling the waitlist
+            $table->uuid('clinic_id')->nullable()->index();
+            $table->uuid('laboratory_id')->nullable()->index();
             $table->dateTime('requested_at');
             $table->integer('queue_position')->nullable(); // Position in the waitlist
             $table->string('status')->default('waiting'); // waiting, finished, removed
-            $table->index('patient_id');
-            $table->index('associate_id');
-            $table->index('clinic_id');
-            $table->index('laboratory_id');
-            $table->index('requested_at');   // queue by request date
-            $table->index('status');         // waiting/finished/removed
 
             $table->timestamps();
             $table->softDeletes();
@@ -378,13 +372,14 @@ return new class extends Migration
 
         // Table: patient_visits
         Schema::create('patient_visits', function (Blueprint $table) {
-            $table->uuid('visit_id')->primary();
-            $table->uuid('patient_id')->nullable();
-            $table->uuid('associate_id')->nullable();
-            $table->uuid('clinic_id')->nullable();
-            $table->uuid('laboratory_id')->nullable();
+            $table->uuid('patient_visit_id')->primary();
+            $table->uuid('account_id')->nullable()->index();
+            $table->uuid('patient_id')->nullable()->index();
+            $table->uuid('associate_id')->nullable()->index();
+            $table->uuid('clinic_id')->nullable()->index();
+            $table->uuid('laboratory_id')->nullable()->index();
+            $table->uuid('waitlist_id')->nullable()->index();
             $table->dateTime('visit_date')->nullable();
-            $table->text('visit_summary')->nullable();
 
             $table->timestamps();
             $table->softDeletes();
@@ -393,12 +388,7 @@ return new class extends Migration
             $table->foreign('associate_id')->references('associate_id')->on('associates')->onDelete('set null');
             $table->foreign('clinic_id')->references('clinic_id')->on('clinics')->onDelete('set null');
             $table->foreign('laboratory_id')->references('laboratory_id')->on('laboratories')->onDelete('set null');
-
-            // Optional indexes
-            $table->index('patient_id');
-            $table->index('associate_id');
-            $table->index('clinic_id');
-            $table->index('visit_date');
+            $table->foreign('waitlist_id')->references('waitlist_id')->on('waitlist')->onDelete('set null');
         });
 
         Schema::create('bills', function (Blueprint $table) {
@@ -408,7 +398,7 @@ return new class extends Migration
             $table->uuid('associate_id')->nullable();
             $table->uuid('clinic_id')->nullable();
             $table->uuid('laboratory_id')->nullable();
-            $table->uuid('visit_id')->nullable(); // Nullable if historically logged with no visit
+            $table->uuid('patient_visit_id')->nullable(); // Nullable if historically logged with no visit
             $table->decimal('amount', 10, 2);
             $table->decimal('discount', 10, 2)->default(0.00);
             $table->decimal('total_amount', 10, 2);
@@ -429,7 +419,7 @@ return new class extends Migration
             $table->foreign('associate_id')->references('associate_id')->on('associates')->onDelete('set null');
             $table->foreign('clinic_id')->references('clinic_id')->on('clinics')->onDelete('set null');
             $table->foreign('laboratory_id')->references('laboratory_id')->on('laboratories')->onDelete('set null');
-            $table->foreign('visit_id')->references('visit_id')->on('patient_visits')->onDelete('set null');
+            $table->foreign('patient_visit_id')->references('patient_visit_id')->on('patient_visits')->onDelete('set null');
         });
 
         Schema::create('notes', function (Blueprint $table) {
@@ -439,7 +429,7 @@ return new class extends Migration
             $table->uuid('account_id')->nullable()->index(); // who created it
             $table->uuid('patient_id')->nullable()->index();
             $table->uuid('associate_id')->nullable()->index(); // optional staff link
-            $table->uuid('visit_id')->nullable()->index(); // optional if tied to a visit
+            $table->uuid('patient_visit_id')->nullable()->index(); // optional if tied to a visit
 
             // Core content
             $table->text('summary')->nullable(); // short descriptor
@@ -457,7 +447,7 @@ return new class extends Migration
             $table->foreign('account_id')->references('account_id')->on('accounts')->onDelete('set null');
             $table->foreign('patient_id')->references('patient_id')->on('patients')->onDelete('set null');
             $table->foreign('associate_id')->references('associate_id')->on('associates')->onDelete('set null');
-            $table->foreign('visit_id')->references('visit_id')->on('patient_visits')->onDelete('set null');
+            $table->foreign('patient_visit_id')->references('patient_visit_id')->on('patient_visits')->onDelete('set null');
         });
 
         Schema::create('bill_items', function (Blueprint $table) {
@@ -503,7 +493,7 @@ return new class extends Migration
             $table->uuid('associate_id')->nullable(); // Associate who prescribed
             $table->uuid('clinic_id')->nullable(); // Clinic where the prescription is issued
             $table->uuid('laboratory_id')->nullable(); // Laboratory if applicable
-            $table->uuid('visit_id')->nullable(); // Nullable if historically logged with no visit
+            $table->uuid('patient_visit_id')->nullable(); // Nullable if historically logged with no visit
             $table->string('prescription_type'); // e.g., medicine, service
             $table->uuid('medicine_id')->nullable(); // Nullable if prescription_type is service
             $table->uuid('service_id')->nullable(); // Nullable if prescription_type is medicine
@@ -528,7 +518,7 @@ return new class extends Migration
             $table->foreign('tooth_id')->references('tooth_id')->on('teeth')->onDelete('set null');
             $table->foreign('clinic_id')->references('clinic_id')->on('clinics')->onDelete('set null');
             $table->foreign('laboratory_id')->references('laboratory_id')->on('laboratories')->onDelete('set null');
-            $table->foreign('visit_id')->references('visit_id')->on('patient_visits')->onDelete('set null');
+            $table->foreign('patient_visit_id')->references('patient_visit_id')->on('patient_visits')->onDelete('set null');
         });
 
         Schema::create('diagnostic_requests', function (Blueprint $table) {
@@ -537,7 +527,7 @@ return new class extends Migration
             $table->uuid('patient_id')->nullable();
             $table->uuid('associate_id')->nullable(); // Associate who asked the request
             $table->uuid('laboratory_id')->nullable(); // target laboratory
-            $table->uuid('visit_id')->nullable(); // Nullable if historically logged with no visit
+            $table->uuid('patient_visit_id')->nullable(); // Nullable if historically logged with no visit
             $table->string('test_type'); // e.g., X-Ray, Blood Test, etc.
             $table->text('request_details')->nullable();
             $table->enum('status', ['pending', 'in-progress', 'completed', 'cancelled'])->default('pending');
@@ -558,7 +548,7 @@ return new class extends Migration
             $table->foreign('laboratory_id')->references('laboratory_id')->on('laboratories')->onDelete('set null');
             $table->foreign('account_id')->references('account_id')->on('accounts')->onDelete('set null');
             $table->foreign('associate_id')->references('associate_id')->on('associates')->onDelete('set null');
-            $table->foreign('visit_id')->references('visit_id')->on('patient_visits')->onDelete('set null');
+            $table->foreign('patient_visit_id')->references('patient_visit_id')->on('patient_visits')->onDelete('set null');
         });
 
         Schema::create('certificates', function (Blueprint $table) {
@@ -567,7 +557,7 @@ return new class extends Migration
             $table->uuid('patient_id')->nullable();
             $table->uuid('associate_id')->nullable(); // Associate who issued the certificate
             $table->uuid('clinic_id')->nullable(); // Clinic where the certificate is issued
-            $table->uuid('visit_id')->nullable(); // Nullable if historically logged with no visit
+            $table->uuid('patient_visit_id')->nullable(); // Nullable if historically logged with no visit
             $table->string('certificate_type'); // e.g., Medical Certificate, Dental Certificate
             $table->text('certificate_details'); // JSON or text format for details
             $table->dateTime('issued_at');
@@ -585,16 +575,15 @@ return new class extends Migration
             $table->foreign('patient_id')->references('patient_id')->on('patients')->onDelete('set null');
             $table->foreign('associate_id')->references('associate_id')->on('associates')->onDelete('set null');
             $table->foreign('clinic_id')->references('clinic_id')->on('clinics')->onDelete('set null');
-            $table->foreign('visit_id')->references('visit_id')->on('patient_visits')->onDelete('set null');
+            $table->foreign('patient_visit_id')->references('patient_visit_id')->on('patient_visits')->onDelete('set null');
         });
-
 
         Schema::create('recalls', function (Blueprint $table) {
             $table->uuid('recall_id')->primary();
             $table->uuid('account_id')->nullable(); // Account that created the recall
             $table->uuid('patient_id')->nullable();
             $table->uuid('associate_id')->nullable(); // Associate who set the recall
-            $table->uuid('visit_id')->nullable(); // Nullable if historically logged with no visit
+            $table->uuid('patient_visit_id')->nullable(); // Nullable if historically logged with no visit
             $table->dateTime('recall_date');
             $table->text('recall_reason')->nullable();
             $table->string('status')->default('pending'); // pending, completed, cancelled
@@ -609,13 +598,13 @@ return new class extends Migration
             $table->foreign('account_id')->references('account_id')->on('accounts')->onDelete('set null');
             $table->foreign('patient_id')->references('patient_id')->on('patients')->onDelete('set null');
             $table->foreign('associate_id')->references('associate_id')->on('associates')->onDelete('set null');
-            $table->foreign('visit_id')->references('visit_id')->on('patient_visits')->onDelete('set null');
+            $table->foreign('patient_visit_id')->references('patient_visit_id')->on('patient_visits')->onDelete('set null');
         });
 
         // Table: patient_treatments
         Schema::create('patient_treatments', function (Blueprint $table) {
             $table->uuid('patient_treatment_id')->primary();
-            $table->uuid('visit_id')->nullable();   // nullable if historically logged with no visit
+            $table->uuid('patient_visit_id')->nullable();   // nullable if historically logged with no visit
             $table->uuid('patient_id')->nullable();
             $table->uuid('associate_id')->nullable();
             $table->uuid('service_id')->nullable();
@@ -629,7 +618,7 @@ return new class extends Migration
             $table->timestamps();
             $table->softDeletes();
 
-            $table->foreign('visit_id')->references('visit_id')->on('patient_visits')->onDelete('set null');
+            $table->foreign('patient_visit_id')->references('patient_visit_id')->on('patient_visits')->onDelete('set null');
             $table->foreign('patient_id')->references('patient_id')->on('patients')->onDelete('set null');
             $table->foreign('associate_id')->references('associate_id')->on('associates')->onDelete('set null');
             $table->foreign('service_id')->references('service_id')->on('services')->onDelete('set null');
@@ -638,7 +627,7 @@ return new class extends Migration
             $table->foreign('tooth_id')->references('tooth_id')->on('teeth')->onDelete('set null');
 
             // Optional indexes
-            $table->index('visit_id');
+            $table->index('patient_visit_id');
             $table->index('patient_id');
             $table->index('service_id');
             $table->index('associate_id');

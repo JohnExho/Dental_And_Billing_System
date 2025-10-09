@@ -2,12 +2,13 @@
 
 namespace Database\Seeders;
 
-use Illuminate\Database\Seeder;
-use Illuminate\Support\Str;
 use App\Models\Clinic;
+use App\Models\Account;
 use App\Models\Address;
-use App\Models\Account; // Assuming clinics belong to accounts
 use Faker\Factory as Faker;
+use Illuminate\Support\Str;
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Database\Seeder; // Assuming clinics belong to accounts
 
 class ClinicFullSeeder extends Seeder
 {
@@ -59,5 +60,6 @@ class ClinicFullSeeder extends Seeder
             'city_id' => 1456, // Replace with actual valid ID
             'province_id' => 106, // Replace with actual valid ID
         ]);
+
     }
 }
