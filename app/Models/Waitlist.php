@@ -34,7 +34,7 @@ class Waitlist extends Model
     ];
 
     protected $casts = [
-        'requested_at' => 'dateTime',
+        'requested_at' => 'integer',
     ];
 
     public function logs()

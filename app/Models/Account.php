@@ -2,20 +2,24 @@
 
 namespace App\Models;
 
-use App\Models\Logs;
 use App\Traits\HasUuid;
-use Illuminate\Notifications\Notifiable;
-use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Foundation\Auth\User as Authenticatable;
+use Illuminate\Notifications\Notifiable;
 
 class Account extends Authenticatable
 {
-    use HasFactory, SoftDeletes, Notifiable, HasUuid;
+    use HasFactory, HasUuid, Notifiable, SoftDeletes;
+
     protected $table = 'accounts';
+
     protected $primaryKey = 'account_id';
+
     protected $keyType = 'string';
+
     public $incrementing = false;
+
     protected $uuidColumn = 'account_id';
 
     protected $fillable = [
@@ -53,7 +57,7 @@ class Account extends Authenticatable
         'deleted_at' => 'datetime',
     ];
 
-    //function to get full name
+    // function to get full name
     protected $appends = ['full_name']; // optional: auto-include in JSON
 
     public function getFullNameAttribute()
@@ -61,12 +65,11 @@ class Account extends Authenticatable
         return trim("{$this->last_name}, {$this->first_name} {$this->middle_name}") ?: 'N/A';
     }
 
-    //Connections
+    // Connections
     public function logs()
     {
         return $this->morphMany(Logs::class, 'loggable');
     }
-
 
     public function address()
     {
@@ -76,5 +79,10 @@ class Account extends Authenticatable
     public function clinic()
     {
         return $this->belongsTo(Clinic::class, 'clinic_id', 'clinic_id');
+    }
+
+    public function waitlist()
+    {
+        return $this->hasMany(Waitlist::class, 'account_id', 'account_id');
     }
 }

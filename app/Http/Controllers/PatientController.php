@@ -217,7 +217,6 @@ class PatientController extends Controller
                 $request->ip(),
                 $request->userAgent()
             );
-
             return redirect(route('patients'))->with('success', 'Patient created successfully.');
         });
     }

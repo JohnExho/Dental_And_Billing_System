@@ -2,15 +2,34 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Clinic;
 use App\Models\Waitlist;
+use App\Services\LogService;
+use App\Traits\ValidationMessages;
+use Carbon\Carbon;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Str;
 
 class WaitlistController extends Controller
 {
+    use ValidationMessages;
+
+    protected $guard;
+
+    public function __construct()
+    {
+        $this->guard = Auth::guard('account');
+    }
+
     public function index()
     {
         $clinicId = session('clinic_id');
 
-        if (!$clinicId) {
+        if (! $clinicId) {
             return redirect(route('staff.dashboard'))->with('error', 'Select a clinic first.');
         }
         $query = Waitlist::with([
@@ -28,5 +47,128 @@ class WaitlistController extends Controller
         $waitlist = $query->paginate(8);
 
         return view('pages.waitlist.index', compact('waitlist'));
+    }
+
+    public function create(Request $request)
+    {
+        $validator = Validator::make(
+            $request->all(),
+            [
+                'patient_id' => 'required|uuid|exists:patients,patient_id',
+                'associate_id' => 'nullable|uuid',
+                'laboratory_id' => 'nullable|uuid',
+                'queue_position' => 'nullable|integer',
+                'clinic_id' => 'required|uuid',
+            ],
+            self::messages()
+        );
+
+        if ($validator->fails()) {
+            return back()->with('error', $validator->errors()->first());
+        }
+
+        $validated = $validator->validated();
+
+        return DB::transaction(function () use ($validated, $request) {
+
+            $authAccount = $this->guard->user();
+
+            $clinicId = session('clinic_id')
+                ?? $authAccount->clinic_id
+                ?? ($validated['clinic_id'] ?? null);
+
+            if (! $clinicId || ! Clinic::find($clinicId)) {
+                return back()->with('error', 'Select a Clinic First.');
+            }
+
+            // ✅ Get the latest record of this patient in this clinic
+            $latest = Waitlist::where('patient_id', $validated['patient_id'])
+                ->where('clinic_id', $clinicId)
+                ->latest('created_at')
+                ->first();
+
+            // ✅ If there's a record and it's NOT finished, block
+            if ($latest && $latest->status !== 'finished') {
+                return back()->with('error', 'This patient is already in the waitlist.');
+            }
+
+            // ✅ Get today's start and end (PHT)
+            // ✅ Get today's start and end (PHT)
+            $todayStart = Carbon::now('Asia/Manila')->startOfDay();
+            $todayEnd = Carbon::now('Asia/Manila')->endOfDay();
+
+            // ✅ Get last queue_position number for today
+            $lastPosition = Waitlist::whereBetween('created_at', [$todayStart, $todayEnd])
+                ->max('queue_position');
+
+            $nextNumber = $lastPosition ? $lastPosition + 1 : 1;
+
+            // ✅ Create waitlist record
+            $waitlist = Waitlist::create([
+                'waitlist_id' => (string) Str::uuid(),
+                'account_id' => $authAccount->account_id,
+                'patient_id' => $validated['patient_id'],
+                'clinic_id' => $clinicId,
+                'associate_id' => $validated['associate_id'] ?? null,
+                'laboratory_id' => $validated['laboratory_id'] ?? null,
+                'requested_at' => now(),
+                'queue_position' => $nextNumber,
+                'status' => 'waiting',
+            ]);
+
+            // ✅ Log
+            LogService::record(
+                $authAccount,
+                $waitlist,
+                'create',
+                'waitlist',
+                'User created a waitlist record',
+                'Waitlist: '.$waitlist->waitlist_id,
+                $request->ip(),
+                $request->userAgent()
+            );
+
+            return redirect()
+                ->route('waitlist')
+                ->with('success', 'Waitlist created successfully.');
+        });
+    }
+
+    public function destroy(Request $request)
+    {
+        $request->validate([
+            'waitlist_id' => 'required|exists:waitlist,waitlist_id',
+            'password' => 'required',
+        ]);
+
+        $deletor = Auth::guard('account')->user();
+        $waitlist = Waitlist::findOrFail($request->waitlist_id);
+
+        // Check if the password matches the current user's password
+        if (! Hash::check($request->password, $deletor->password)) {
+            return back()->with('error', 'The password is incorrect.');
+        }
+
+        return DB::transaction(function () use ($waitlist, $request, $deletor) {
+
+            $addressId = optional($waitlist->address)->address_id;
+
+            // Delete patient record
+            $waitlist->delete();
+
+            // Logging
+            LogService::record(
+                $deletor,
+                $waitlist,
+                'delete',
+                'patient',
+                'User deleted a patient record',
+                'Waitlist ID: '.$waitlist->waitlist_id,
+                $request->ip(),
+                $request->userAgent()
+            );
+
+            return redirect()->route('waitlist')->with('success', 'Waitlist record deleted successfully.');
+        });
     }
 }

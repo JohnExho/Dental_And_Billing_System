@@ -48,7 +48,7 @@
                             <td class="text-end">
 
                                 <a href="#" class="btn btn-outline-dark btn-sm"
-                                    data-bs-toggle="modal" data-bs-target="#add-patient-waitlist-modal">
+                                    data-bs-toggle="modal" data-bs-target="#add-waitlist-modal">
                                   <i class="fa-solid fa-hourglass-start"></i>
                                 </a>
 
@@ -117,7 +117,7 @@
 
 
 @if (!empty($patient))
-    @include('pages.patients.modals.waitlist-add')
+    @include('pages.waitlist.modals.add')
     @include('pages.patients.modals.edit')
     @include('pages.patients.modals.delete')
 @endif
