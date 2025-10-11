@@ -406,6 +406,7 @@ class PatientController extends Controller
 
             // Delete related address
             $patient->address()->delete();
+            $patient->waitlist()->delete();
 
             // Delete patient record
             $patient->delete();

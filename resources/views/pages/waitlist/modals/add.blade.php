@@ -28,6 +28,7 @@
                                 </label>
                                 @if (!empty($patient))
                                     <div class="col-md-12 mb-3">
+                                        <input type="hidden" name="patient_id" value="{{ $patient->patient_id }}">
                                         <input type="text" class="form-control" value="{{ $patient->full_name }}"
                                             disabled>
                                     </div>
@@ -40,7 +41,7 @@
                                                 </option>
                                             @endforeach
                                         @else
-                                            <option value="add_new">➕ Add Patient</option>
+                                            <option value="add_new" class="bg-primary text-white"> Add Patient</option>
                                         @endif
                                     </select>
                                 @endif

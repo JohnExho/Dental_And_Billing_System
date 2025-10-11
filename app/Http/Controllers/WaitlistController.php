@@ -134,6 +134,61 @@ class WaitlistController extends Controller
         });
     }
 
+    public function update(Request $request)
+{
+    $validator = Validator::make(
+        $request->all(),
+        [
+            'waitlist_id'   => 'required|uuid|exists:waitlist,waitlist_id',
+            'associate_id'  => 'nullable|uuid|exists:associates,associate_id',
+            'laboratory_id' => 'nullable|uuid|exists:laboratories,laboratory_id',
+            'status'        => 'required|in:waiting,in_consultation,completed,finished',
+        ],
+        self::messages()
+    );
+
+    if ($validator->fails()) {
+        return back()->with('error', $validator->errors()->first());
+    }
+
+    $validated = $validator->validated();
+
+    return DB::transaction(function () use ($validated, $request) {
+
+        $authAccount = $this->guard->user();
+
+        // ✅ Fetch waitlist by hidden field
+        $waitlist = Waitlist::where('waitlist_id', $validated['waitlist_id'])->first();
+
+        if (! $waitlist) {
+            return back()->with('error', 'Waitlist record not found.');
+        }
+
+        // ✅ Only update allowed fields
+        $waitlist->associate_id  = $validated['associate_id']  ?? Null;
+        $waitlist->laboratory_id = $validated['laboratory_id'] ?? Null;
+        $waitlist->status        = $validated['status']        ?? $waitlist->status;
+        $waitlist->save();
+
+        // ✅ Log the update
+        LogService::record(
+            $authAccount,
+            $waitlist,
+            'update',
+            'waitlist',
+            'User updated a waitlist record',
+            'Waitlist: '.$waitlist->waitlist_id,
+            $request->ip(),
+            $request->userAgent()
+        );
+
+        return redirect()
+            ->route('waitlist')
+            ->with('success', 'Waitlist updated successfully.');
+    });
+}
+
+
     public function destroy(Request $request)
     {
         $request->validate([

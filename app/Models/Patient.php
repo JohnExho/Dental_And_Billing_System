@@ -106,4 +106,8 @@ class Patient extends Model
     // {
     //     return $this->belongsTo(Clinic::class, 'qr_id', 'qr_id');
     // }
+    public function waitlist(){
+        
+        return $this->hasMany(Waitlist::class, 'patient_id', 'patient_id');
+    }
 }

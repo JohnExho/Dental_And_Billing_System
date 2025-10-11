@@ -29,9 +29,11 @@
                             </td>
                             <td>
                                 @if ($wl->status === 'waiting')
-                                    <span class="badge bg-success">Waiting</span>
-                                @else
-                                    <span class="badge bg-danger">Inactive</span>
+                                    <span class="badge bg-info">Waiting</span>
+                                @elseif ($wl->status === 'in_consultation')
+                                    <span class="badge bg-warning">In Consultation</span>
+                                @elseif ($wl->status === 'completed')
+                                    <span class="badge bg-success">Completed</span>
                                 @endif
                             </td>
 
@@ -43,16 +45,14 @@
                                     data-contact="{{ $wl->contact_no }} / {{ $wl->mobile_no }}">
                                     <i class="bi bi-eye"></i>
                                 </a>
-
-                                <!-- Edit Button -->
                                 <button type="button" class="btn btn-sm btn-outline-secondary" data-bs-toggle="modal"
-                                    data-bs-target="#edit-wl-modal" onclick="event.stopPropagation();"
-                                    data-id="{{ $wl->account_id }}" data-first_name="{{ $wl->first_name }}"
-                                    data-middle_name="{{ $wl->middle_name }}" data-last_name="{{ $wl->last_name }}"
-                                    data-email="{{ $wl->email }}" data-contact_no="{{ $wl->contact_no }}"
-                                    data-mobile_no="{{ $wl->mobile_no }}" data-is_active="{{ $wl->is_active }}">
+                                    data-bs-target="#edit-waitlist-modal" onclick="event.stopPropagation();"
+                                    data-id="{{ $wl->waitlist_id }}" data-associate_id="{{ $wl->associate_id }}"
+                                    data-laboratory_id="{{ $wl->laboratory_id }}" data-status="{{ $wl->status }}">
                                     <i class="bi bi-pencil-square"></i>
                                 </button>
+
+
 
                                 <!-- Delete Button -->
                                 <button type="button" class="btn btn-outline-danger btn-sm delete-wl-btn"
@@ -89,6 +89,7 @@
         });
     });
 </script>
-{{-- @include('pages.waitlist.modals.info') --}}
-{{-- @include('pages.waitlist.modals.edit') --}}
+@foreach ($waitlist as $wl)
+@include('pages.waitlist.modals.edit', ['waitlist' => $wl])
+@endforeach
 @include('pages.waitlist.modals.delete')

@@ -75,6 +75,7 @@ Route::middleware('web')->group(function () {
     Route::delete('/process/delete/patient', [PatientController::class, 'destroy'])->name('process-delete-patient');
 
     Route::post('/process/create/waitlist', [WaitlistController::class, 'create'])->name('process-create-waitlist');
+    Route::put('/process/update/waitlist', [WaitlistController::class, 'update'])->name('process-update-waitlist');
     Route::delete('/process/delete/waitlist', [WaitlistController::class, 'destroy'])->name('process-delete-waitlist');
 
 

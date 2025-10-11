@@ -48,8 +48,8 @@
 
                             <!-- Contact -->
                             <div class="col-md-6">
-                                <label class="form-label">Mobile <span class="text-danger">*</span></label>
-                                <input type="text" name="mobile_no" class="form-control phone-number" required>
+                                <label class="form-label">Mobile</label>
+                                <input type="text" name="mobile_no" class="form-control">
                             </div>
                             <div class="col-md-6">
                                 <label class="form-label">Contact No. <span class="text-danger">*</span></label>
