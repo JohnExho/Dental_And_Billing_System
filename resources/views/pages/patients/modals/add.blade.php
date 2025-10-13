@@ -49,7 +49,7 @@
                             <!-- Contact -->
                             <div class="col-md-6">
                                 <label class="form-label">Mobile</label>
-                                <input type="text" name="mobile_no" class="form-control">
+                                <input type="text" name="mobile_no" class="form-control phone-number">
                             </div>
                             <div class="col-md-6">
                                 <label class="form-label">Contact No. <span class="text-danger">*</span></label>
@@ -220,11 +220,7 @@
                     isValid = false;
                 }
 
-                // Phone number exact length check
-                if (field.classList.contains('phone-number') && field.value.trim().length !== 11) {
-                    if (!missingField) missingField = field;
-                    isValid = false;
-                }
+                
             });
 
             if (!isValid) {

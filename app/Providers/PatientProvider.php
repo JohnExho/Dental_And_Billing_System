@@ -4,6 +4,7 @@ namespace App\Providers;
 
 use App\Models\Patient;
 use Illuminate\Support\Facades\View;
+use Illuminate\Support\Facades\Session;
 use Illuminate\Support\ServiceProvider;
 
 class PatientProvider extends ServiceProvider
@@ -21,8 +22,12 @@ class PatientProvider extends ServiceProvider
      */
     public function boot(): void
     {
-          View::composer(['pages.waitlist.modals.add'], function ($view) {
-            $view->with('patients', Patient::all());
+        View::composer(['pages.waitlist.modals.add'], function ($view) {
+            $clinicId = Session::get('clinic_id');
+
+            $patients = Patient::where('clinic_id', $clinicId)->get();
+
+            $view->with('patients', $patients);
         });
     }
 }
