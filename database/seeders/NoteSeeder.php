@@ -26,7 +26,7 @@ class NoteSeeder extends Seeder
                 'account_id' => $account?->account_id,
                 'patient_id' => $patient?->patient_id,
                 'associate_id' => $associate?->associate_id,
-                'visit_id' => null, // or assign a random visit if needed
+                'patient_visit_id' => null, // or assign a random visit if needed
                 'note_type' => $faker->randomElement(['general', 'treatment', 'progress']),
                 'summary' => ($faker->sentence(6)),
                 'note' => ($faker->paragraph(3)),

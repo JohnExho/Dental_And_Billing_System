@@ -104,9 +104,7 @@
                     </div>
 
                     <div class="tab-pane fade" id="progress" role="tabpanel" aria-labelledby="progress-tab">
-                        @include('pages.patients.partials.progress-notes', [
-                            'progressNotes' => $progressNotes,
-                        ])
+                        @include('pages.patients.partials.progress-notes' )
                     </div>
 
                     <div class="tab-pane fade" id="prescriptions" role="tabpanel" aria-labelledby="prescriptions-tab">

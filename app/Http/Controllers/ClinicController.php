@@ -10,6 +10,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Str;
 use Yajra\Address\Entities\Barangay;
 use Yajra\Address\Entities\City;
@@ -332,11 +333,12 @@ class ClinicController extends Controller
                 $request->ip(),
                 $request->userAgent()
             );
-            if (route('waitlist')) {
+            if (Route::currentRouteName() === 'waitlist') {
                 return redirect(route('staff.dashboard'))->with('success', 'Clinic deselected.');
             } else {
                 return redirect()->back()->with('success', 'Clinic deselected, back to global mode.');
             }
+
         }
 
         // Otherwise set new selection

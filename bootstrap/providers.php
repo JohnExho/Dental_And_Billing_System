@@ -9,4 +9,6 @@ return [
     App\Providers\LaboratoryProvider::class,
     App\Providers\LogViewServiceProvider::class,
     App\Providers\PatientProvider::class,
+    App\Providers\ServicesProvider::class,
+    App\Providers\ToothProvider::class,
 ];

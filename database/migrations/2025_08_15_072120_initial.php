@@ -290,7 +290,7 @@ return new class extends Migration
             $table->uuid('account_id')->nullable()->index();
             $table->uuid('patient_id')->nullable()->index();
             $table->uuid('tooth_list_id')->nullable()->index();
-            $table->uuid('clinic_id')->nullable(); // clinic where treatment happened
+            $table->uuid('clinic_id')->nullable(); // clinic where treatment happeniled
             $table->text('condition')->nullable(); // e.g., healthy, decayed, missing
             $table->decimal('price', 10, 2)->nullable(); // price at the time of treatment
 
@@ -457,7 +457,7 @@ return new class extends Migration
             $table->string('item_type'); // service, medicine, other
             $table->uuid('medicine_id')->nullable(); // Nullable if item_type is service
             $table->uuid('service_id')->nullable(); // Nullable if item_type is medicine
-            $table->uuid('tooth_id')->nullable(); // Nullable if item_type is not tooth-related
+            $table->uuid('tooth_list_id')->nullable(); // Nullable if item_type is not tooth-related
             $table->decimal('amount', 10, 2);
             $table->timestamps();
             $table->softDeletes();
@@ -466,8 +466,10 @@ return new class extends Migration
             $table->foreign('account_id')->references('account_id')->on('accounts')->onDelete('set null');
             $table->foreign('medicine_id')->references('medicine_id')->on('medicines')->onDelete('set null');
             $table->foreign('service_id')->references('service_id')->on('services')->onDelete('set null');
-            $table->foreign('tooth_id')->references('tooth_id')->on('teeth')->onDelete('set null');
+            $table->foreign('tooth_list_id')->references('tooth_list_id')->on('tooth_list')->onDelete('set null');
         });
+
+        
         Schema::create('payments', function (Blueprint $table) {
             $table->uuid('payment_id')->primary();
             $table->uuid('account_id')->nullable(); // Account that created the payment
@@ -554,19 +556,14 @@ return new class extends Migration
         Schema::create('certificates', function (Blueprint $table) {
             $table->uuid('certificate_id')->primary();
             $table->uuid('account_id')->nullable(); // Account that created the certificate
-            $table->uuid('patient_id')->nullable();
-            $table->uuid('associate_id')->nullable(); // Associate who issued the certificate
-            $table->uuid('clinic_id')->nullable(); // Clinic where the certificate is issued
+            $table->uuid('patient_id')->nullable()->index();
+            $table->uuid('associate_id')->nullable()->index(); // Associate who issued the certificate
+            $table->uuid('clinic_id')->nullable()->index(); // Clinic where the certificate is issued
             $table->uuid('patient_visit_id')->nullable(); // Nullable if historically logged with no visit
             $table->string('certificate_type'); // e.g., Medical Certificate, Dental Certificate
             $table->text('certificate_details'); // JSON or text format for details
-            $table->dateTime('issued_at');
+            $table->dateTime('issued_at')->index();
             $table->string('file_path')->nullable(); // store certificate file or external link
-
-            $table->index('patient_id');
-            $table->index('associate_id');
-            $table->index('clinic_id');
-            $table->index('issued_at');      // filtering by date
 
             $table->timestamps();
             $table->softDeletes();
