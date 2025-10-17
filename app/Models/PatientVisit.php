@@ -33,7 +33,7 @@ class PatientVisit extends Model
     ];
 
     protected $casts = [
-        'visit_date' => 'dateTime',
+        'visit_date' => 'datetime',
     ];
 
     public function logs()
@@ -64,5 +64,9 @@ class PatientVisit extends Model
     public function laboratory()
     {
         return $this->belongsTo(Laboratories::class, 'laboratory_id', 'laboratory_id');
+    }
+
+    public function note(){
+        return $this->hasMany(Note::class, 'patient_visit_id', 'patient_visit_id');
     }
 }

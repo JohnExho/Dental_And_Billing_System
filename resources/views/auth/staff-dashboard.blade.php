@@ -17,33 +17,10 @@
                         <div class="d-flex justify-content-between align-items-center mb-3">
                             <h5 class="card-title mb-0 text-danger">Patients with Balance</h5>
                             <span class="badge bg-danger-subtle text-danger border border-danger">
-                                3
+                                {{ $unpaidBills->count() }}
                             </span>
                         </div>
-
-                        <div class="list-group list-group-flush">
-                            <div class="list-group-item d-flex justify-content-between align-items-center">
-                                <div>
-                                    <strong>Doe, John</strong><br>
-                                    <small class="text-muted">#101</small>
-                                </div>
-                                <span class="badge bg-danger">₱1,200.00</span>
-                            </div>
-                            <div class="list-group-item d-flex justify-content-between align-items-center">
-                                <div>
-                                    <strong>Smith, Jane</strong><br>
-                                    <small class="text-muted">#102</small>
-                                </div>
-                                <span class="badge bg-danger">₱850.00</span>
-                            </div>
-                            <div class="list-group-item d-flex justify-content-between align-items-center">
-                                <div>
-                                    <strong>Lee, Alex</strong><br>
-                                    <small class="text-muted">#103</small>
-                                </div>
-                                <span class="badge bg-danger">₱500.00</span>
-                            </div>
-                        </div>
+                    @include("auth.partials.dashboard-bill-partial")
                     </div>
                 </div>
             </div>

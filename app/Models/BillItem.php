@@ -63,7 +63,7 @@ class BillItem extends Model
 
     public function tooth()
     {
-        return $this->belongsTo(Tooth::class, 'tooth_id', 'tooth_id');
+        return $this->belongsTo(ToothList::class, 'tooth_id', 'tooth_id');
     }
 
     public function logs()

@@ -46,6 +46,12 @@ class Bill extends Model
     ];
 
     // Relationships (ready to hook up)
+
+    public function items()
+    {
+        return $this->hasMany(BillItem::class, 'bill_id', 'bill_id');
+    }
+
     public function account()
     {
         return $this->belongsTo(Account::class, 'account_id', 'account_id');
@@ -68,7 +74,7 @@ class Bill extends Model
 
     public function laboratory()
     {
-        return $this->belongsTo(Laboratory::class, 'laboratory_id', 'laboratory_id');
+        return $this->belongsTo(Laboratories::class, 'laboratory_id', 'laboratory_id');
     }
 
     public function visit()

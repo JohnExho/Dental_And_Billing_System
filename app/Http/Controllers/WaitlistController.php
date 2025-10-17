@@ -45,8 +45,9 @@ class WaitlistController extends Controller
         }
 
         $waitlist = $query->paginate(8);
+       $patientCount = $query->count(); 
 
-        return view('pages.waitlist.index', compact('waitlist'));
+        return view('pages.waitlist.index', compact('waitlist', 'patientCount'));
     }
 
     public function create(Request $request)

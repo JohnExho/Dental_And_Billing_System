@@ -80,6 +80,8 @@ Route::middleware('web')->group(function () {
     Route::delete('/process/delete/waitlist', [WaitlistController::class, 'destroy'])->name('process-delete-waitlist');
 
     Route::post('/process/create/process-note', [ProgressNoteController::class, 'create'])->name('process-create-progress-note');
+    Route::put('/process/update/process-note', [ProgressNoteController::class, 'update'])->name('process-update-progress-note');
+    Route::delete('/process/delete/process-note', [ProgressNoteController::class, 'destroy'])->name('process-delete-progress-note');
 
 
     // Protected routes

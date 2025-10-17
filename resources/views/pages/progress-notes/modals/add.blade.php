@@ -6,7 +6,7 @@
                 @csrf
 
                 <input type="hidden" name="patient_id" value="{{ $patient->patient_id }}">
-                
+
                 <!-- Header -->
                 <div class="modal-header bg-gradient bg-primary text-white">
                     <h5 class="modal-title fw-bold d-flex align-items-center">
@@ -20,12 +20,16 @@
                     <div class="row g-3">
                         <div class="col-md-6">
                             <label for="visit_date" class="form-label">Visit Date</label>
-                            <input type="date" class="form-control" id="visit_date" name="visit_date" required>
+                            <input type="date" class="form-control" id="visit_date" name="visit_date"
+                                value="{{ date('Y-m-d') }}" disabled>
+                            <input type="hidden" name="visit_date" value="{{ date('Y-m-d') }}">
+
                         </div>
                         <div class="col-md-6">
                             <label for="patient_name" class="form-label">Patient Name</label>
                             <input type="text" class="form-control" id="patient_name" name="patient_name"
-                                value="{{ $patient->full_name }}" required>
+                                value="{{ $patient->full_name }}" required disabled>
+
                         </div>
                         <div class="col-md-6">
                             <label for="followup_date" class="form-label">Follow-up Date</label>
@@ -70,22 +74,13 @@
                                 <div class="mb-2"><strong>Total Cost:</strong> <span id="total_cost">0.00</span></div>
                                 <div class="mb-2"><strong>Discount(%):</strong> <span id="discount">0.00</span></div>
                                 <div><strong>Net Cost:</strong> <span id="net_cost">0.00</span></div>
+                                <input type="hidden" name="net_cost" id="net_cost_input" value="0.00">
                             </div>
 
                         </div>
                         <div class="col-12">
                             <label for="remarks" class="form-label">Remarks/Notes</label>
                             <textarea class="form-control" id="remarks" name="remarks" rows="2"></textarea>
-                        </div>
-                        <div class="col-12">
-                            <input type="file" class="form-control" id="attachments" name="attachments"
-                                accept=".pdf,.jpg,.jpeg,.png,.doc,.docx" />
-
-                        </div>
-                        <div class="col-12">
-                            <label for="signature" class="form-label">Patient Signature</label>
-                            <input type="text" class="form-control border-0 border-bottom border-warning"
-                                id="signature" name="signature" placeholder="Patient Signature">
                         </div>
                     </div>
                 </div>
@@ -113,6 +108,19 @@
         const totalCost = document.getElementById("total_cost");
         const discount = document.getElementById("discount");
         const netCost = document.getElementById("net_cost");
+        const netCostInput = document.getElementById("net_cost_input");
+        const reasonField = document.getElementById("followup_reason");
+        const dateField = document.getElementById("followup_date");
+
+        function toggleFollowupRequirement() {
+            if (reasonField.value.trim() !== "") {
+                dateField.setAttribute("required", "required");
+            } else {
+                dateField.removeAttribute("required");
+            }
+        }
+
+        reasonField.addEventListener("input", toggleFollowupRequirement);
 
         function updateCosts() {
             const servicePrice = parseFloat(serviceSelect.selectedOptions[0]?.getAttribute("data-price")) || 0;
@@ -127,6 +135,7 @@
 
             const net = total - discountAmount;
             netCost.textContent = net.toFixed(2);
+            if (netCostInput) netCostInput.value = net.toFixed(2);
         }
 
         serviceSelect.addEventListener("change", updateCosts);

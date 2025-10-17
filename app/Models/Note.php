@@ -30,6 +30,7 @@ class Note extends Model
         'summary',
         'note',
         'note_type',
+        'clinic_id',
     ];
 
     protected $casts = [
@@ -60,6 +61,11 @@ class Note extends Model
     {
         return $this->belongsTo(Patient::class, 'patient_id', 'patient_id');
     }
+
+    public function patientVisit()
+    {
+        return $this->belongsTo(PatientVisit::class, 'patient_visit_id', 'patient_visit_id');
+    }   
 
     public function clinic(){
         return $this->belongsTo(Clinic::class, 'clinic_id', 'clinic_id');
