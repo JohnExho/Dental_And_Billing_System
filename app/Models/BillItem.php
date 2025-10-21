@@ -28,7 +28,7 @@ class BillItem extends Model
         'item_type',
         'medicine_id',
         'service_id',
-        'tooth_id',
+        'tooth_list_id',
         'amount',
     ];
 
@@ -63,7 +63,7 @@ class BillItem extends Model
 
     public function tooth()
     {
-        return $this->belongsTo(ToothList::class, 'tooth_id', 'tooth_id');
+        return $this->belongsTo(ToothList::class, 'tooth_list_id', 'tooth_list_id');
     }
 
     public function logs()

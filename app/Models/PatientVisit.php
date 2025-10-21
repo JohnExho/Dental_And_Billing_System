@@ -66,7 +66,8 @@ class PatientVisit extends Model
         return $this->belongsTo(Laboratories::class, 'laboratory_id', 'laboratory_id');
     }
 
-    public function note(){
-        return $this->hasMany(Note::class, 'patient_visit_id', 'patient_visit_id');
+    public function note()
+    {
+        return $this->hasOne(Note::class, 'patient_visit_id', 'patient_visit_id');
     }
 }

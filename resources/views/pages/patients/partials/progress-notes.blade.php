@@ -29,11 +29,12 @@
                                 <td>{{ $note->account?->full_name ?? 'Unknown' }}</td>
                                 <td>{{ $note->summary ?? '-' }}</td>
                                 <td class="text-end">
-                                    <button class="btn btn-sm btn-outline-primary">
+                                    <button class="btn btn-sm btn-outline-primary"
+                                        onclick="openProgressNoteInfoModal({{ json_encode($note->note_id) }}, {{ json_encode($note->summary) }}, {{ json_encode($note->note) }}, {{ json_encode($note->account?->full_name ?? 'Unknown') }}, {{ json_encode($note->created_at?->format('M d, Y') ?? '-') }})">
                                         <i class="bi bi-eye"></i>
                                     </button>
                                     <button class="btn btn-sm btn-outline-warning"
-                                        onclick="openEditProgressNoteModal('{{ $note->note_id }}', '{{ $note->note }}')">
+                                        onclick="openEditProgressNoteModal({{ json_encode($note->note_id) }}, {{ json_encode($note->note) }})">
                                         <i class="bi bi-pencil-square"></i>
                                     </button>
 
@@ -64,6 +65,7 @@
 @include('pages.progress-notes.modals.add')
 @include('pages.progress-notes.modals.edit')
 @include('pages.progress-notes.modals.delete')
+@include('pages.progress-notes.modals.info')
 <script>
     document.addEventListener('DOMContentLoaded', function() {
         document.querySelectorAll('.delete-progress-note-btn').forEach(btn => {

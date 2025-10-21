@@ -54,14 +54,13 @@
                         <div class="col-md-6">
                             <label for="teeth" class="form-label">Teeth</label>
                             <select name="tooth_id" id="tooth_id" class="form-control">
+                                <option selected disabled value="">Select Tooth</option>
                                 @foreach ($teeth as $tooth)
-                                    <option value="{{ $tooth->tooth_id }}" data-price="{{ $tooth->final_price }}">
+                                    <option value="{{ $tooth->tooth_list_id }}" data-price="{{ $tooth->final_price }}">
                                         {{ $tooth->name }} - ₱{{ number_format($tooth->final_price, 2) }}
                                     </option>
                                 @endforeach
                             </select>
-
-
                         </div>
                         <div class="col-md-6">
                             <label for="discount_input" class="form-label">Discount (%)</label>

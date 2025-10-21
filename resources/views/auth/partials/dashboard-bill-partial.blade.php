@@ -4,7 +4,7 @@
             <div>
                 <strong>{{ $bill->patient->last_name ?? 'Unknown' }},
                     {{ $bill->patient->first_name ?? '' }}</strong><br>
-                <small class="text-muted">#{{ $bill->patient->patient_id }}</small>
+                <small class="text-muted">REF# {{ $bill->patient->patient_id }}</small>
             </div>
             <span class="badge bg-danger">
                 ₱{{ number_format($bill->total_amount ?? 0, 2) }}

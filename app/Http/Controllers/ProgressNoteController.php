@@ -3,17 +3,19 @@
 namespace App\Http\Controllers;
 
 use App\Models\Bill;
-use App\Models\BillItem;
 use App\Models\Note;
-use App\Models\PatientVisit;
 use App\Models\Recall;
+use App\Models\BillItem;
+use App\Models\Treatment;
+use Illuminate\Support\Str;
+use App\Models\PatientVisit;
 use App\Services\LogService;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
-use Illuminate\Support\Str;
 
 class ProgressNoteController extends Controller
 {
@@ -43,6 +45,8 @@ class ProgressNoteController extends Controller
             return back()->with('error', $validator->errors()->first());
         }
 
+
+
         $validated = $validator->validated();
 
         return DB::transaction(function () use ($validated, $request) {
@@ -53,7 +57,7 @@ class ProgressNoteController extends Controller
 
             $summary = $remarks
                 ? Str::limit($remarks, 100, '...')
-                : 'Progress Note';
+                : 'Unknown';
 
             $patientVisit = PatientVisit::create([
                 'patient_visit_id' => Str::uuid(),
@@ -93,6 +97,7 @@ class ProgressNoteController extends Controller
                 ->first();
 
             // ✅ 4. If none exists, create a new one
+
             if (! $bill) {
                 $bill = Bill::create([
                     'bill_id' => Str::uuid(),
@@ -111,6 +116,7 @@ class ProgressNoteController extends Controller
                 ]);
             }
 
+                    Log::info('tooth id:1 '.$request->tooth_id);
             // ✅ 5. Create BILL ITEM
             BillItem::create([
                 'bill_item_id' => Str::uuid(),
@@ -125,12 +131,29 @@ class ProgressNoteController extends Controller
                 'updated_at' => now(),
             ]);
 
+                    Log::info('tooth id:2     '.$request->tooth_id);
             // ✅ 6. Update bill totals
             $bill->amount += $totalServiceAndTooth;
             $bill->discount += $discountAmount;
             $bill->total_amount += $netAmount;
             $bill->save();
 
+            if ($bill->save()) {
+                Treatment::create([
+                    'treatment_id' => Str::uuid(),
+                    'patient_visit_id' => $patientVisit->patient_visit_id,
+                    'patient_id' => $validated['patient_id'],
+                    'associate_id' => $validated['associate_id'] ?? null,
+                    'clinic_id' => $clinicId,
+                    'laboratory_id' => null,
+                    'bill_item_id' => BillItem::where('bill_id', $bill->bill_id)
+                        ->latest()
+                        ->first()
+                        ->bill_item_id,
+                    'treatment_date' => now(),
+                ]);
+            }
+            
             // ✅ 7. Recall (if needed)
             if (! empty($validated['followup_date'])) {
                 Recall::create([
