@@ -1,18 +1,19 @@
 <?php
 
+use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\OTPController;
+use App\Http\Controllers\StaffController;
+use App\Http\Controllers\ClinicController;
 use App\Http\Controllers\AccountController;
 use App\Http\Controllers\AddressController;
-use App\Http\Controllers\AssociateController;
-use App\Http\Controllers\ClinicController;
-use App\Http\Controllers\LaboratoryController;
-use App\Http\Controllers\MedicineController;
-use App\Http\Controllers\OTPController;
 use App\Http\Controllers\PatientController;
 use App\Http\Controllers\ServiceController;
-use App\Http\Controllers\StaffController;
-use App\Http\Controllers\ToothListController;
+use App\Http\Controllers\MedicineController;
 use App\Http\Controllers\WaitlistController;
-use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\AssociateController;
+use App\Http\Controllers\ToothListController;
+use App\Http\Controllers\LaboratoryController;
+use App\Http\Controllers\ProgressNoteController;
 
 Route::middleware('web')->group(function () {
     // Login page
@@ -77,6 +78,10 @@ Route::middleware('web')->group(function () {
     Route::post('/process/create/waitlist', [WaitlistController::class, 'create'])->name('process-create-waitlist');
     Route::put('/process/update/waitlist', [WaitlistController::class, 'update'])->name('process-update-waitlist');
     Route::delete('/process/delete/waitlist', [WaitlistController::class, 'destroy'])->name('process-delete-waitlist');
+
+    Route::post('/process/create/process-note', [ProgressNoteController::class, 'create'])->name('process-create-progress-note');
+    Route::put('/process/update/process-note', [ProgressNoteController::class, 'update'])->name('process-update-progress-note');
+    Route::delete('/process/delete/process-note', [ProgressNoteController::class, 'destroy'])->name('process-delete-progress-note');
 
 
     // Protected routes

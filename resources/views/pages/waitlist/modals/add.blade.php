@@ -2,7 +2,7 @@
 <div class="modal fade" id="add-waitlist-modal" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog modal-lg modal-dialog-centered">
         <div class="modal-content shadow-lg border-0 rounded-3">
-            <form action="{{ route('process-create-waitlist')}}" method="POST">
+            <form action="{{ route('process-create-waitlist') }}" method="POST">
                 @csrf
                 <div class="modal-header bg-primary text-white">
                     <h5 class="modal-title">
@@ -33,7 +33,7 @@
                                             disabled>
                                     </div>
                                 @else
-                                    <select id="provider-patient" class="form-select"  name="patient_id">
+                                    <select id="provider-patient" class="form-select" name="patient_id">
                                         <option value="">-- Select Patient --</option>
                                         @if (!$patients->isEmpty())
                                             @foreach ($patients as $patient)
@@ -52,13 +52,17 @@
                                 <label class="form-label fw-semibold">
                                     <i class="bi bi-person-workspace me-1"></i> Associate
                                 </label>
-                                <select id="provider-associate"  name="associate_id"  class="form-select">
+                                <select id="provider-associate" name="associate_id" class="form-select">
                                     <option value="">-- Select Associate --</option>
-                                    @foreach ($associates as $associate)
-                                        <option value="{{ $associate->associate_id }}">{{ $associate->full_name }}
+                                    @forelse ($associates as $associate)
+                                        <option value="{{ $associate->associate_id }}">
+                                            {{ trim($associate->full_name) !== '' ? $associate->full_name : 'N/A' }}
                                         </option>
-                                    @endforeach
+                                    @empty
+                                        <option value="" disabled>No Available Associate</option>
+                                    @endforelse
                                 </select>
+
                             </div>
 
                             <!-- Laboratory -->
@@ -66,7 +70,7 @@
                                 <label class="form-label fw-semibold">
                                     <i class="bi bi-building-gear me-1"></i> Laboratory
                                 </label>
-                                <select id="provider-laboratory" class="form-select"  name="laboratory_id">
+                                <select id="provider-laboratory" class="form-select" name="laboratory_id">
                                     <option value="">-- Select Laboratory --</option>
                                     @foreach ($laboratories as $laboratory)
                                         <option value="{{ $laboratory->laboratory_id }}">{{ $laboratory->name }}

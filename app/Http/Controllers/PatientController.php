@@ -2,22 +2,26 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Address;
-use App\Models\Clinic;
+use App\Models\Bill;
 use App\Models\Note;
+use App\Models\Clinic;
+use App\Models\Recall;
+use App\Models\Address;
 use App\Models\Patient;
+use App\Models\Treatment;
+use Illuminate\Support\Str;
+use App\Models\PatientVisit;
 use App\Services\LogService;
-use App\Traits\RegexPatterns;
-use App\Traits\ValidationMessages;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
+use App\Traits\RegexPatterns;
+use Yajra\Address\Entities\City;
+use App\Traits\ValidationMessages;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
+use Yajra\Address\Entities\Barangay;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
-use Illuminate\Support\Str;
-use Yajra\Address\Entities\Barangay;
-use Yajra\Address\Entities\City;
 use Yajra\Address\Entities\Province; // if you use logs
 
 class PatientController extends Controller
@@ -217,6 +221,7 @@ class PatientController extends Controller
                 $request->ip(),
                 $request->userAgent()
             );
+
             return redirect(route('patients'))->with('success', 'Patient created successfully.');
         });
     }
@@ -454,7 +459,6 @@ class PatientController extends Controller
         if (! $patient->clinic_id || $patient->clinic_id != $clinicId) {
             return redirect()->route('patients')->with('error', 'Patient does not belong to your clinic.');
         }
-
         // Fetch progress notes for this patient
         $progressNotes = Note::with(['account', 'clinic'])
             ->where('patient_id', $patientId)
@@ -462,20 +466,22 @@ class PatientController extends Controller
             ->latest()
             ->paginate(8);
 
-        // For general notes
-        $generalNotes = Note::with(['account', 'clinic'])
+        $bills = Bill::with(['account', 'clinic', 'items'])
             ->where('patient_id', $patientId)
-            ->where('note_type', 'general')
             ->latest()
             ->paginate(8);
 
-        // For treatment notes
-        $treatmentNotes = Note::with(['account', 'clinic'])
+        $recalls = Recall::with(['account'])
             ->where('patient_id', $patientId)
-            ->where('note_type', 'treatment')
             ->latest()
             ->paginate(8);
 
-        return view('pages.patients.specific', compact('patient', 'progressNotes', 'generalNotes', 'treatmentNotes'));
+        $treatments = Treatment::with(['account', 'clinic', 'visit'])
+            ->where('patient_id', $patientId)
+            ->where('clinic_id', $clinicId)
+            ->latest()
+            ->paginate(8);
+
+        return view('pages.patients.specific', compact('patient', 'progressNotes','bills','recalls','treatments' ));
     }
 }

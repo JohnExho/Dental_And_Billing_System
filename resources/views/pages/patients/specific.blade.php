@@ -46,49 +46,43 @@
                     <li class="nav-item" role="presentation">
                         <button class="nav-link active" id="info-tab" data-bs-toggle="tab" data-bs-target="#info"
                             type="button" role="tab" aria-controls="info" aria-selected="true">
-                            Patient Info
+                            <i class="bi bi-person-circle me-2" aria-hidden="true"></i> Patient Info
                         </button>
                     </li>
                     <li class="nav-item" role="presentation">
                         <button class="nav-link" id="progress-tab" data-bs-toggle="tab" data-bs-target="#progress"
                             type="button" role="tab" aria-controls="progress" aria-selected="false">
-                            Progress Notes
+                            <i class="bi bi-journal-text me-2" aria-hidden="true"></i> Progress Notes
                         </button>
                     </li>
                     <li class="nav-item" role="presentation">
                         <button class="nav-link" id="prescriptions-tab" data-bs-toggle="tab" data-bs-target="#prescriptions"
                             type="button" role="tab" aria-controls="prescriptions" aria-selected="false">
-                            Prescriptions
+                            <i class="bi bi-prescription me-2" aria-hidden="true"></i> Prescriptions
                         </button>
                     </li>
                     <li class="nav-item" role="presentation">
                         <button class="nav-link" id="diagnostics-tab" data-bs-toggle="tab" data-bs-target="#diagnostics"
                             type="button" role="tab" aria-controls="diagnostics" aria-selected="false">
-                            Diagnostics
-                        </button>
-                    </li>
-                    <li class="nav-item" role="presentation">
-                        <button class="nav-link" id="certificates-tab" data-bs-toggle="tab" data-bs-target="#certificates"
-                            type="button" role="tab" aria-controls="certificates" aria-selected="false">
-                            Certificates
-                        </button>
-                    </li>
-                    <li class="nav-item" role="presentation">
-                        <button class="nav-link" id="general-tab" data-bs-toggle="tab" data-bs-target="#general"
-                            type="button" role="tab" aria-controls="general" aria-selected="false">
-                            General Notes
+                            <i class="bi bi-heart-pulse me-2" aria-hidden="true"></i> Diagnostics
                         </button>
                     </li>
                     <li class="nav-item" role="presentation">
                         <button class="nav-link" id="recalls-tab" data-bs-toggle="tab" data-bs-target="#recalls"
                             type="button" role="tab" aria-controls="recalls" aria-selected="false">
-                            Recalls
+                            <i class="bi bi-calendar-check me-2" aria-hidden="true"></i> Recalls
                         </button>
                     </li>
                     <li class="nav-item" role="presentation">
                         <button class="nav-link" id="treatment-tab" data-bs-toggle="tab" data-bs-target="#treatment"
                             type="button" role="tab" aria-controls="treatment" aria-selected="false">
-                            Treatment Plans
+                            <i class="bi bi-clipboard-check me-2" aria-hidden="true"></i> Treatment Plans
+                        </button>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link" id="billing-tab" data-bs-toggle="tab" data-bs-target="#billing"
+                            type="button" role="tab" aria-controls="billing" aria-selected="false">
+                            <i class="bi bi-receipt me-2" aria-hidden="true"></i> Billing
                         </button>
                     </li>
                 </ul>
@@ -104,9 +98,7 @@
                     </div>
 
                     <div class="tab-pane fade" id="progress" role="tabpanel" aria-labelledby="progress-tab">
-                        @include('pages.patients.partials.progress-notes', [
-                            'progressNotes' => $progressNotes,
-                        ])
+                        @include('pages.patients.partials.progress-notes' )
                     </div>
 
                     <div class="tab-pane fade" id="prescriptions" role="tabpanel" aria-labelledby="prescriptions-tab">
@@ -117,20 +109,15 @@
                         @include('pages.patients.partials.diagnostics')
                     </div>
 
-                    <div class="tab-pane fade" id="certificates" role="tabpanel" aria-labelledby="certificates-tab">
-                        @include('pages.patients.partials.certificates')
-                    </div>
-
-                    <div class="tab-pane fade" id="general" role="tabpanel" aria-labelledby="general-tab">
-                        @include('pages.patients.partials.general-notes')
-                    </div>
-
                     <div class="tab-pane fade" id="recalls" role="tabpanel" aria-labelledby="recalls-tab">
                         @include('pages.patients.partials.recalls')
                     </div>
 
                     <div class="tab-pane fade" id="treatment" role="tabpanel" aria-labelledby="treatment-tab">
                         @include('pages.patients.partials.treatment-plans')
+                    </div>
+                    <div class="tab-pane fade" id="billing" role="tabpanel" aria-labelledby="billing-tab">
+                        @include('pages.patients.partials.billing')
                     </div>
                 </div>
 

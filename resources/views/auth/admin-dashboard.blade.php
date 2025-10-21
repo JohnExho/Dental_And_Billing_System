@@ -4,261 +4,124 @@
 @section('content')
 
 <style>
-/* --- Base --- */
-body {
-    font-family: 'Poppins', sans-serif;
-    background: #faf9f6;
-    margin: 0;
-    padding: 0;
-}
-
-.dashboard-container {
-    width: 90%;
-    margin: 50px auto;
-}
-
-/* --- Header --- */
-.dashboard-header {
-    text-align: center;
-    margin-bottom: 40px;
-}
-
-.dashboard-header h1 {
-    font-size: 2rem;
-    font-weight: 700;
-    color: #333;
-}
-
-.dashboard-header p {
-    color: #666;
-    margin-top: 8px;
-}
-
-/* --- Grid Layout --- */
-.dashboard-grid {
-    display: grid;
-    grid-template-columns: 1.3fr 1.7fr;
-    gap: 25px;
-}
-
-@media (max-width: 900px) {
-    .dashboard-grid {
-        grid-template-columns: 1fr;
+    body {
+        background-color: #f4f6f9;
+        font-family: 'Poppins', sans-serif;
     }
-}
 
-/* --- Cards --- */
-.card {
-    background: #fff;
-    border-radius: 15px;
-    box-shadow: 0 3px 6px rgba(0, 0, 0, 0.15);
-    padding: 25px;
-    transition: transform 0.3s ease, box-shadow 0.3s ease;
-}
+    .card {
+        border-radius: 15px;
+        box-shadow: 0px 2px 8px rgba(0, 0, 0, 0.1);
+        transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
 
-.card:hover {
-    transform: translateY(-3px);
-    box-shadow: 0 5px 12px rgba(0, 0, 0, 0.25);
-}
+    .card:hover {
+        transform: translateY(-3px);
+        box-shadow: 0px 4px 16px rgba(0, 0, 0, 0.15);
+    }
 
-/* --- Card Headers --- */
-.card-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 15px;
-}
+    .card-title {
+        font-weight: 600;
+    }
 
-.card-header h2 {
-    font-size: 1.2rem;
-    font-weight: 600;
-    margin: 0;
-}
+    .badge {
+        font-size: 0.9rem;
+        padding: 0.4em 0.8em;
+        border-radius: 10px;
+    }
 
-/* --- Patients with Balance --- */
-.card-balance h2 {
-    color: #c0392b;
-    text-transform: uppercase;
-}
+    .text-danger {
+        color: #d9534f !important;
+    }
 
-.count-badge {
-    background: #ffe5e5;
-    color: #c0392b;
-    padding: 5px 10px;
-    border-radius: 10px;
-    font-weight: 600;
-}
+    .border-danger {
+        border-color: #d9534f !important;
+    }
 
-/* --- Patient List --- */
-.patient-list {
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-}
+    .border-info {
+        border-color: #0dcaf0 !important;
+    }
 
-.patient-item {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    border-bottom: 1px solid #eee;
-    padding-bottom: 10px;
-}
+    .btn-outline-primary {
+        border-radius: 8px;
+        transition: background 0.2s, color 0.2s;
+    }
 
-.patient-info small {
-    display: block;
-    color: #888;
-    font-size: 0.85rem;
-}
+    .btn-outline-primary:hover {
+        background: #0d6efd;
+        color: #fff;
+    }
 
-.balance-amount {
-    background: #e74c3c;
-    color: white;
-    border-radius: 8px;
-    padding: 4px 10px;
-    font-weight: 600;
-}
+    #recentActivitiesWrapper {
+        cursor: pointer;
+        border-radius: 10px;
+        overflow: hidden;
+    }
 
-/* --- Recent Activities --- */
-.card-activities h2 {
-    color: #2980b9;
-}
+    #recentActivitiesWrapper:hover {
+        background-color: #f8f9fa;
+    }
 
-.actions {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-}
+    #recentActivitiesLoading {
+        padding: 2rem 0;
+    }
 
-#refreshLogs {
-    background: none;
-    border: 2px solid #2980b9;
-    color: #2980b9;
-    padding: 5px 10px;
-    border-radius: 8px;
-    font-weight: 600;
-    cursor: pointer;
-    transition: 0.3s ease;
-}
+    .spinner-border {
+        width: 1.5rem;
+        height: 1.5rem;
+    }
 
-#refreshLogs:hover {
-    background: #2980b9;
-    color: white;
-}
-
-/* --- Loading Spinner --- */
-.loading {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    flex-direction: row;
-    gap: 10px;
-    padding: 40px 0;
-    color: #2980b9;
-}
-
-.spinner {
-    width: 20px;
-    height: 20px;
-    border: 3px solid #2980b9;
-    border-top: 3px solid transparent;
-    border-radius: 50%;
-    animation: spin 0.8s linear infinite;
-}
-
-@keyframes spin {
-    to { transform: rotate(360deg); }
-}
-
-.hidden {
-    display: none;
-}
-
+    @media (max-width: 768px) {
+        .card {
+            margin-bottom: 1rem;
+        }
+    }
 </style>
 
-<div class="dashboard-container">
-
-    <!-- HEADER -->
-    <div class="dashboard-header">
-        <h1>Welcome to the Dashboard</h1>
-        <p>This is where you can manage your dental practice efficiently.</p>
-    </div>
-
-    <div class="dashboard-grid">
-        <!-- LEFT CARD: PATIENTS WITH BALANCE -->
-        <div class="card card-balance">
-            <div class="card-header">
-                <h2>Patients with Balance</h2>
-                <span class="count-badge">3</span>
-            </div>
-
-            <div class="patient-list">
-                <div class="patient-item">
-                    <div class="patient-info">
-                        <strong>Doe, John</strong>
-                        <small>#101</small>
+<div class="container-fluid px-4 py-4">
+    <div class="row mt-4">
+        <!-- Left Card (Patients with Balance) -->
+        <div class="col-md-5 mb-4">
+            <div class="card border-1 border-danger">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <h5 class="card-title text-danger mb-0">Patients with Balance</h5>
+                        <span class="badge bg-danger-subtle text-danger border border-danger">
+                            {{ $unpaidBills->count() }}
+                        </span>
                     </div>
-                    <span class="balance-amount">₱1,200.00</span>
-                </div>
-
-                <div class="patient-item">
-                    <div class="patient-info">
-                        <strong>Smith, Jane</strong>
-                        <small>#102</small>
-                    </div>
-                    <span class="balance-amount">₱850.00</span>
-                </div>
-
-                <div class="patient-item">
-                    <div class="patient-info">
-                        <strong>Lee, Alex</strong>
-                        <small>#103</small>
-                    </div>
-                    <span class="balance-amount">₱500.00</span>
+                    @include('auth.partials.dashboard-bill-partial')
                 </div>
             </div>
         </div>
 
-        <!-- RIGHT CARD: RECENT ACTIVITIES -->
-        <div class="card card-activities" onclick="window.location='{{ route('tools') }}'">
-            <div class="card-header">
-                <h2>Recent Activities</h2>
-                <div class="actions">
-                    <small id="lastUpdated"></small>
-                    <button id="refreshLogs"><i class="bi bi-arrow-clockwise"></i> Refresh</button>
-                </div>
-            </div>
-
-            <!-- Right Card with buffer -->
-            <div class="col-md-7">
-                <div class="card shadow-sm border-1 border-info">
-                    <div class="card-body">
-                        <div class="d-flex justify-content-between align-items-center mb-3">
-                            <h5 class="card-title mb-0">Recent Activities</h5>
-                            <div class="d-flex align-items-center">
-                                <small class="text-muted me-3" id="lastUpdated"></small>
-                                <button id="refreshLogs" class="btn btn-sm btn-outline-primary">
-                                    <i class="bi bi-arrow-clockwise"></i> Refresh
-                                </button>
-                            </div>
-                        </div>
-                        <hr>
-                        <div id="recentActivitiesWrapper" class="col-md-12 position-relative" onclick="window.location='{{ route('tools') }}'" style="cursor: pointer;">
-                            <!-- Loader -->
-                            <div id="recentActivitiesLoading" class="d-flex justify-content-center align-items-center py-5">
-                                <div class="spinner-border text-primary" role="status"></div>
-                                <span class="ms-2">Loading activities...</span>
-                            </div>
-
-                            <!-- Content (hidden until ready) -->
-                            <div id="recentActivitiesContent" class="d-none">
-                                @include('auth.partials.admin-dashboard-partial', ['logs' => $logs])
-                            </div>
+        <!-- Right Card (Recent Activities) -->
+        <div class="col-md-7">
+            <div class="card border-1 border-info">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <h5 class="card-title mb-0 text-info">Recent Activities</h5>
+                        <div class="d-flex align-items-center">
+                            <small class="text-muted me-3" id="lastUpdated"></small>
+                            <button id="refreshLogs" class="btn btn-sm btn-outline-primary">
+                                <i class="bi bi-arrow-clockwise"></i> Refresh
+                            </button>
                         </div>
                     </div>
-                </div>
+                    <hr>
 
-                <div id="recentActivitiesContent" class="hidden">
-                    @include('auth.partials.admin-dashboard-partial', ['logs' => $logs])
+                    <div id="recentActivitiesWrapper" class="position-relative" onclick="window.location='{{ route('tools') }}'">
+                        <!-- Loader -->
+                        <div id="recentActivitiesLoading" class="d-flex justify-content-center align-items-center py-5">
+                            <div class="spinner-border text-primary" role="status"></div>
+                            <span class="ms-2 text-muted">Loading activities...</span>
+                        </div>
+
+                        <!-- Content (hidden until ready) -->
+                        <div id="recentActivitiesContent" class="d-none">
+                            @include('auth.partials.admin-dashboard-partial', ['logs' => $logs])
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -298,8 +161,8 @@ body {
 
     document.addEventListener("DOMContentLoaded", function() {
         setTimeout(() => {
-            document.getElementById('recentActivitiesLoading').classList.add('hidden');
-            document.getElementById('recentActivitiesContent').classList.remove('hidden');
+            document.getElementById('recentActivitiesLoading').classList.add('d-none');
+            document.getElementById('recentActivitiesContent').classList.remove('d-none');
             updateTimes();
         }, 600);
     });
@@ -312,4 +175,5 @@ body {
         }
     });
 </script>
+
 @endsection

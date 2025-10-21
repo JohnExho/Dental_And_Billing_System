@@ -47,10 +47,15 @@
                                 </label>
                                 <select name="associate_id" class="form-select">
                                     <option value="">-- Select Associate --</option>
-                                    <option value="{{ $wl->associate?->associate_id }}"
-                                        {{ $wl->associate_id == $wl->associate?->associate_id ? 'selected' : '' }}>
-                                        {{ $wl->associate?->full_name ?? 'No Available Associate' }}
-                                    </option>
+                                    @if (!empty($wl->associate))
+                                        <option value="{{ $wl->associate?->associate_id }}"
+                                            {{ $wl->associate_id == $wl->associate?->associate_id ? 'selected' : '' }}>
+                                        </option>
+                                    @else
+                                        <option value="" disabled>
+                                             'No Available Associate' 
+                                        </option>
+                                    @endif
                                 </select>
                             </div>
 

@@ -73,13 +73,19 @@ class Patient extends Model
     }
 
     public function getFullAddressAttribute()
-{
-    if (!$this->address) {
-        return 'N/A';
-    }
+    {
+        if (!$this->address) {
+            return 'N/A';
+        }
 
-    return trim("{$this->address->house_no}, {$this->address->street}, {$this->address->barangay->name}, {$this->address->city->name}, {$this->address->province->name}");
-}
+        $house = trim((string) $this->address->house_no) ?: 'Unknown';
+        $street = trim((string) $this->address->street) ?: 'Unknown';
+        $barangay = optional($this->address->barangay)->name ?: 'N/A';
+        $city = optional($this->address->city)->name ?: 'N/A';
+        $province = optional($this->address->province)->name ?: 'N/A';
+
+        return trim("{$house}, {$street}, {$barangay}, {$city}, {$province}");
+    }
 
 
     public function logs()

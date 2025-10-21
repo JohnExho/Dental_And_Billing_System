@@ -5,9 +5,10 @@
         </p>
     @else
         <div class="table-responsive">
-            <table class="table table-hover align-middle mb-0">
-                <thead class="table-light">
+            <table class="table table-hover align-middle mb-0 table-striped table-primary">
+                <thead class="table-primary">
                     <tr>
+                        <th>Profile Picture</th>
                         <th>Name</th>
                         <th>Email</th>
                         <th>Associate</th>
@@ -19,7 +20,25 @@
                 </thead>
                 <tbody>
                     @forelse ($waitlist as $wl)
+                        @php
+                            // Decide which image to show
+                            $defaultProfile = match ($wl->patient?->sex) {
+                                'male' => asset('storage/defaults/male.png'),
+                                'female' => asset('storage/defaults/female.png'),
+                                default => asset('storage/defaults/other.png'),
+                            };
+
+                            $profileUrl = $wl->patient?->profile_picture
+                                ? Storage::url($wl->patient?->profile_picture)
+                                : $defaultProfile;
+                        @endphp
+
                         <tr>
+                            <td>
+                                <img src="{{ $profileUrl }}" alt="{{ $wl->patient?->full_name ?? 'Profile' }}"
+                                    class="rounded-circle object-fit-cover border-primary border border-2"
+                                    style="width: 60px; height: 60px;">
+
                             <td>{{ $wl->patient?->full_name }}</td>
                             <td>{{ $wl->patient?->email }}</td>
                             <td>{{ $wl->associate?->full_name ?? 'N/A' }}</td>
@@ -38,13 +57,6 @@
                             </td>
 
                             <td class="text-end">
-                                <a role="button" class="btn btn-sm btn-outline-primary" data-bs-toggle="modal"
-                                    data-bs-target="#wl-detail-modal" data-first-name="{{ $wl->first_name }}"
-                                    data-middle-name="{{ $wl->middle_name }}" data-last-name="{{ $wl->last_name }}"
-                                    data-email="{{ $wl->email }}"
-                                    data-contact="{{ $wl->contact_no }} / {{ $wl->mobile_no }}">
-                                    <i class="bi bi-eye"></i>
-                                </a>
                                 <button type="button" class="btn btn-sm btn-outline-secondary" data-bs-toggle="modal"
                                     data-bs-target="#edit-waitlist-modal" onclick="event.stopPropagation();"
                                     data-id="{{ $wl->waitlist_id }}" data-associate_id="{{ $wl->associate_id }}"
@@ -90,6 +102,6 @@
     });
 </script>
 @foreach ($waitlist as $wl)
-@include('pages.waitlist.modals.edit', ['waitlist' => $wl])
+    @include('pages.waitlist.modals.edit', ['waitlist' => $wl])
 @endforeach
 @include('pages.waitlist.modals.delete')

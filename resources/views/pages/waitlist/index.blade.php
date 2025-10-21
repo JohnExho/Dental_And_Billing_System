@@ -6,7 +6,7 @@
             <div class="card-header bg-primary text-white">
                 <div class="d-flex justify-content-between align-items-center">
                     <div class="d-flex align-items-center gap-2">
-                        No of Patient #
+                        No of Patient # {{ $patientCount }}
                     </div>
                     <a href="#" class="btn btn-light btn-sm d-flex align-items-center gap-1 float-end"
                         data-bs-toggle="modal" data-bs-target="#add-waitlist-modal">

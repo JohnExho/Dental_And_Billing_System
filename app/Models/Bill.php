@@ -8,47 +8,53 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Notifications\Notifiable;
 
-class PatientVisit extends Model
+class Bill extends Model
 {
     use HasFactory, HasUuid, Notifiable, SoftDeletes;
 
-    protected $table = 'patient_visits';
+    protected $table = 'bills';
 
-    protected $primaryKey = 'patient_visit_id';
+    protected $primaryKey = 'bill_id';
 
     protected $keyType = 'string';
 
     public $incrementing = false;
 
-    protected $uuidColumn = 'patient_visit_id';
+    protected $uuidColumn = 'bill_id';
 
     protected $fillable = [
         'account_id',
-        'clinic_id',
         'patient_id',
         'associate_id',
+        'clinic_id',
         'laboratory_id',
-        'waitlist_id',
-        'visit_date',
+        'patient_visit_id',
+        'amount',
+        'discount',
+        'total_amount',
+        'status',
     ];
 
     protected $casts = [
-        'visit_date' => 'datetime',
+        'amount' => 'decimal:2',
+        'discount' => 'decimal:2',
+        'total_amount' => 'decimal:2',
+        'status' => 'string',
+        'created_at' => 'datetime',
+        'updated_at' => 'datetime',
+        'deleted_at' => 'datetime',
     ];
 
-    public function logs()
+    // Relationships (ready to hook up)
+
+    public function items()
     {
-        return $this->morphMany(Logs::class, 'loggable');
+        return $this->hasMany(BillItem::class, 'bill_id', 'bill_id');
     }
 
     public function account()
     {
         return $this->belongsTo(Account::class, 'account_id', 'account_id');
-    }
-
-    public function clinic()
-    {
-        return $this->belongsTo(Clinic::class, 'clinic_id', 'clinic_id');
     }
 
     public function patient()
@@ -61,13 +67,23 @@ class PatientVisit extends Model
         return $this->belongsTo(Associate::class, 'associate_id', 'associate_id');
     }
 
+    public function clinic()
+    {
+        return $this->belongsTo(Clinic::class, 'clinic_id', 'clinic_id');
+    }
+
     public function laboratory()
     {
         return $this->belongsTo(Laboratories::class, 'laboratory_id', 'laboratory_id');
     }
 
-    public function note()
+    public function visit()
     {
-        return $this->hasOne(Note::class, 'patient_visit_id', 'patient_visit_id');
+        return $this->belongsTo(PatientVisit::class, 'patient_visit_id', 'patient_visit_id');
+    }
+
+    public function logs()
+    {
+        return $this->morphMany(Logs::class, 'loggable');
     }
 }
