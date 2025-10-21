@@ -17,7 +17,6 @@
         box-shadow: 0 10px 25px rgba(0,0,0,0.15);
         padding: 2.5rem;
         width: 100%;
-        max-width: 420px;
         text-align: center;
         animation: fadeInUp 0.6s ease;
     }
@@ -41,11 +40,11 @@
 
     h5 {
         font-weight: 700;
-        color: #22345A;
+        color: #4E4E4E;
     }
 
     p {
-        color: #6c757d;
+        color: #4E4E4E;
     }
 
     .form-control {
@@ -59,11 +58,26 @@
         border-radius: 10px;
         font-weight: 600;
         transition: all 0.3s ease;
+        color: #FFFEF2;
+
+            transition: 
+        background 0.4s ease-in-out,
+        transform 0.4s ease-in-out,
+        box-shadow 0.4s ease-in-out;
     }
 
     .btn-custom:hover {
-        background: #1b6d91;
-        transform: translateY(-1px);
+        background: #1558a6;
+        color: #FFFEF2;
+        transform: translateY(-2px);   /* subtle lift */
+        box-shadow: 0 6px 12px rgba(0,0,0,0.2); /* soft shadow */
+    }
+
+    .btn-custom:active {
+        color: #FFFEF2;
+        background: #0f3e73;
+        transform: translateY(2px) scale(0.98); /* real press effect */
+        box-shadow: 0 1px 3px rgba(0,0,0,0.2);
     }
 
     .back-link {
@@ -73,10 +87,12 @@
         font-size: 0.9rem;
         color: #555;
         text-decoration: none;
+        margin-left: -300px;
+
     }
 
     .back-link i {
-        margin-right: 6px;
+        margin-right: 5px;
     }
 
     @keyframes fadeInUp {

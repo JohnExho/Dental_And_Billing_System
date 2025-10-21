@@ -16,7 +16,6 @@
             box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
             padding: 2.5rem;
             width: 100%;
-            max-width: 420px;
             text-align: center;
             animation: fadeInUp 0.6s ease;
         }
@@ -50,7 +49,7 @@
         .otp-input {
             display: flex;
             justify-content: center;
-            gap: 0.5rem;
+            gap: 1rem;
             margin: 1.5rem 0;
         }
 
@@ -75,12 +74,27 @@
             border-radius: 10px;
             font-weight: 600;
             transition: all 0.3s ease;
-            color: #fff;
+            width: 120px;
+            color: #FFFEF2;
+
+                    transition: 
+        background 0.4s ease-in-out,
+        transform 0.4s ease-in-out,
+        box-shadow 0.4s ease-in-out;
         }
 
         .btn-custom:hover {
-            background: #1b6d91;
-            transform: translateY(-1px);
+            background: #1558a6;
+            color: #FFFEF2;
+            transform: translateY(-2px);   /* subtle lift */
+            box-shadow: 0 6px 12px rgba(0,0,0,0.2); /* soft shadow */
+        }
+
+        .btn-custom:active {
+            color: #FFFEF2;
+            background: #0f3e73;
+            transform: translateY(2px) scale(0.98); /* real press effect */
+            box-shadow: 0 1px 3px rgba(0,0,0,0.2);
         }
 
         .btn-outline {
@@ -90,6 +104,19 @@
             font-weight: 600;
             transition: all 0.3s ease;
             color: #2c91c5;
+
+                       transition: 
+                        0.4s ease-in-out,
+                        transform 0.4s ease-in-out,
+                        box-shadow 0.4s ease-in-out;
+
+        }
+
+        .btn-outline:hover {
+            color: #2c91c5;
+            background: #1b6d91;
+            border: 1px solid #2c91c5;
+            transform: translateY(-1px);
         }
 
         .btn-outline:hover {
@@ -113,6 +140,7 @@
             font-size: 0.9rem;
             color: #555;
             text-decoration: none;
+            margin-left: -380px;
         }
 
         .back-link i {
