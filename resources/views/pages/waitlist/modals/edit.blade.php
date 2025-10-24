@@ -47,6 +47,7 @@
                                 </label>
                                 <select name="associate_id" class="form-select">
                                     <option value="">-- Select Associate --</option>
+                                    <option value=""> Remove </option>
                                     @if (!empty($wl->associate))
                                         <option value="{{ $wl->associate?->associate_id }}"
                                             {{ $wl->associate_id == $wl->associate?->associate_id ? 'selected' : '' }}>
@@ -66,6 +67,7 @@
                                 </label>
                                 <select name="laboratory_id" class="form-select">
                                     <option value="">-- Select Laboratory --</option>
+                                     <option value=""> Remove </option>
                                     <option value="{{ $wl->laboratory?->laboratory_id }}"
                                         {{ $wl->laboratory_id == $wl->laboratory?->laboratory_id ? 'selected' : '' }}>
                                         {{ $wl->laboratory?->name }}

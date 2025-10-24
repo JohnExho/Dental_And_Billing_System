@@ -136,7 +136,7 @@ return new class extends Migration
             // Other details
             $table->text('profile_picture')->nullable();
             $table->text('sex');
-            $table->text('civil_status')->nullable()->default('single');
+            $table->enum('civil_status', ['Single', 'Married', 'Widowed', 'Divorced', 'Separated', 'Annulled'])->default('Single');
             $table->text('date_of_birth');
             $table->text('referral')->nullable();
             $table->text('occupation')->nullable();
@@ -163,13 +163,13 @@ return new class extends Migration
             $table->uuid('clinic_id')->nullable();
             $table->uuid('laboratory_id')->nullable();
             $table->dateTime('appointment_date');
-            $table->string('status')->default('scheduled'); // scheduled, completed, cancelled
+            $table->enum('status', ['scheduled', 'completed', 'cancelled'])->default('scheduled');
             $table->index('patient_id');     // join
             $table->index('associate_id');   // join
             $table->index('clinic_id');      // join
             $table->index('laboratory_id');  // join
             $table->index('appointment_date'); // upcoming appointments
-            $table->index('status');         // scheduled/completed/cancelled
+
 
             $table->timestamps();
             $table->softDeletes();
@@ -185,12 +185,12 @@ return new class extends Migration
             $table->uuid('waitlist_id')->primary();
             $table->uuid('account_id')->nullable()->index(); // Account that created the waitlist entry
             $table->uuid('patient_id')->nullable()->index(); // Patient on the waitlist
-            $table->uuid('associate_id')->nullable()->index(); // Associate handling the waitlist
             $table->uuid('clinic_id')->nullable()->index();
             $table->uuid('laboratory_id')->nullable()->index();
             $table->dateTime('requested_at');
             $table->integer('queue_position')->nullable(); // Position in the waitlist
-            $table->string('status')->default('waiting'); // waiting, finished, removed
+            $table->integer('queue_snapshot')->nullable();
+            $table->enum('status', ['waiting', 'finished', 'removed'])->default('waiting');
 
             $table->timestamps();
             $table->softDeletes();
@@ -492,7 +492,6 @@ return new class extends Migration
 
             $table->index('patient_id');
             $table->index('clinic_id');
-            $table->index('laboratory_id');
             $table->index('prescribed_at');  // filter by date
 
             $table->timestamps();
@@ -500,12 +499,10 @@ return new class extends Migration
 
             $table->foreign('account_id')->references('account_id')->on('accounts')->onDelete('set null');
             $table->foreign('patient_id')->references('patient_id')->on('patients')->onDelete('set null');
-            $table->foreign('associate_id')->references('associate_id')->on('associates')->onDelete('set null');
             $table->foreign('medicine_id')->references('medicine_id')->on('medicines')->onDelete('set null');
             $table->foreign('service_id')->references('service_id')->on('services')->onDelete('set null');
             $table->foreign('tooth_id')->references('tooth_id')->on('teeth')->onDelete('set null');
             $table->foreign('clinic_id')->references('clinic_id')->on('clinics')->onDelete('set null');
-            $table->foreign('laboratory_id')->references('laboratory_id')->on('laboratories')->onDelete('set null');
             $table->foreign('patient_visit_id')->references('patient_visit_id')->on('patient_visits')->onDelete('set null');
         });
 
@@ -527,7 +524,6 @@ return new class extends Migration
             $table->index('associate_id');
             $table->index('laboratory_id');
             $table->index('requested_at');
-            $table->index('status');         // pending/in-progress/etc
 
             $table->timestamps();
             $table->softDeletes();
@@ -565,7 +561,6 @@ return new class extends Migration
                 $table->uuid('associate_id')->nullable()->index(); // who provided the treatment
                 $table->uuid('patient_visit_id')->nullable()->index();   // nullable if historically logged with no visit
                 $table->uuid('patient_id')->nullable()->index();
-                $table->uuid('associate_id')->nullable()->index(); // Associate who performed the treatment
                 $table->uuid('clinic_id')->nullable()->index();
                 // service and tooth is already related via bill_items
                 $table->uuid('bill_item_id')->nullable()->index();
@@ -578,7 +573,6 @@ return new class extends Migration
                 $table->foreign('associate_id')->references('associate_id')->on('associates')->onDelete('set null');
                 $table->foreign('patient_visit_id')->references('patient_visit_id')->on('patient_visits')->onDelete('set null');
                 $table->foreign('patient_id')->references('patient_id')->on('patients')->onDelete('set null');
-                $table->foreign('associate_id')->references('associate_id')->on('associates')->onDelete('set null');
                 $table->foreign('clinic_id')->references('clinic_id')->on('clinics')->onDelete('set null');
                 $table->foreign('bill_item_id')->references('bill_item_id')->on('bill_items')->onDelete('set null');
             });

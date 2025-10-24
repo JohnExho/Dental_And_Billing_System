@@ -67,6 +67,10 @@ class Note extends Model
         return $this->belongsTo(PatientVisit::class, 'patient_visit_id', 'patient_visit_id');
     }   
 
+    public function recall(){
+        return $this->hasOne(Recall::class, 'note_id', 'note_id');
+    }
+
     public function clinic(){
         return $this->belongsTo(Clinic::class, 'clinic_id', 'clinic_id');
     }

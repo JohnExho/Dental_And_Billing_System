@@ -64,8 +64,6 @@ class ProgressNoteController extends Controller
                 'account_id' => $authAccount->account_id,
                 'clinic_id' => $clinicId,
                 'patient_id' => $validated['patient_id'],
-                'associate_id' => $validated['associate_id'] ?? null,
-                'laboratory_id' => null,
                 'waitlist_id' => null,
                 'visit_date' => $validated['visit_date'],
             ]);
@@ -75,7 +73,6 @@ class ProgressNoteController extends Controller
                 'note_id' => Str::uuid(),
                 'account_id' => $authAccount->account_id,
                 'patient_id' => $validated['patient_id'],
-                'associate_id' => $validated['associate_id'] ?? null,
                 'patient_visit_id' => $patientVisit->patient_visit_id,
                 'note_type' => 'progress',
                 'summary' => $summary,
@@ -105,7 +102,6 @@ class ProgressNoteController extends Controller
                     'patient_id' => $validated['patient_id'],
                     'associate_id' => $validated['associate_id'] ?? null,
                     'clinic_id' => $clinicId,
-                    'laboratory_id' => null,
                     'patient_visit_id' => $patientVisit->patient_visit_id,
                     'amount' => 0,
                     'discount' => 0,
@@ -145,7 +141,6 @@ class ProgressNoteController extends Controller
                     'patient_id' => $validated['patient_id'],
                     'associate_id' => $validated['associate_id'] ?? null,
                     'clinic_id' => $clinicId,
-                    'laboratory_id' => null,
                     'bill_item_id' => BillItem::where('bill_id', $bill->bill_id)
                         ->latest()
                         ->first()
@@ -160,8 +155,8 @@ class ProgressNoteController extends Controller
                     'recall_id' => Str::uuid(),
                     'account_id' => $authAccount->account_id,
                     'patient_id' => $validated['patient_id'],
-                    'associate_id' => $validated['associate_id'] ?? null,
                     'patient_visit_id' => $patientVisit->patient_visit_id,
+                    'note_id' => $note->note_id,
                     'recall_date' => $validated['followup_date'],
                     'recall_reason' => $validated['followup_reason'] ?? null,
                     'status' => 'pending',
@@ -236,7 +231,7 @@ class ProgressNoteController extends Controller
         return DB::transaction(function () use ($note, $request, $deletor) {
 
             $note->patientVisit()->delete();
-
+            $note->recall()->delete();
             // Delete patient record
             $note->delete();
 

@@ -25,16 +25,16 @@ class Recall extends Model
     protected $fillable = [
         'account_id',
         'patient_id',
-        'associate_id',
         'patient_visit_id',
         'recall_date',
+        'note_id',
         'recall_reason',
         'status',
     ];
 
     protected $casts = [
         'recall_date' => 'datetime',
-        'recall_reason' => 'string',
+        'recall_reason' => 'encrypted',
         'status' => 'string',
         'created_at' => 'datetime',
         'updated_at' => 'datetime',
@@ -50,11 +50,6 @@ class Recall extends Model
     public function patient()
     {
         return $this->belongsTo(Patient::class, 'patient_id', 'patient_id');
-    }
-
-    public function associate()
-    {
-        return $this->belongsTo(Associate::class, 'associate_id', 'associate_id');
     }
 
     public function visit()
