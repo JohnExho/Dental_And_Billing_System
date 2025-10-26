@@ -1,8 +1,5 @@
 ### ✅ To-Do List
 
-- Recalls
-  - Only these fields are editable: Next Recall, Note, Status
-
 - Billing
   - Only the Status field is editable.
   - View Shows all Bill Items.

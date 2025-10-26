@@ -136,7 +136,9 @@ return new class extends Migration
             // Other details
             $table->text('profile_picture')->nullable();
             $table->text('sex');
-            $table->enum('civil_status', ['Single', 'Married', 'Widowed', 'Divorced', 'Separated', 'Annulled'])->default('Single');
+            //'Single', 'Married', 'Widowed', 'Divorced', 'Separated', 'Annulled' 
+            // text cause of PII
+            $table->text('civil_status')->default('Single');
             $table->text('date_of_birth');
             $table->text('referral')->nullable();
             $table->text('occupation')->nullable();
