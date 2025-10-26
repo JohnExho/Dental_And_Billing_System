@@ -9,6 +9,13 @@ use Illuminate\Notifications\Notifiable;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 
+/**
+ * @method static Builder whereNotIn(string $column, mixed $values)
+ * @method static Builder where(string $column, string $operator = null, mixed $value = null, string $boolean = 'and')
+ * @method static Builder latest(string $column = 'created_at')
+ * @method static \Illuminate\Contracts\Pagination\LengthAwarePaginator paginate(int $perPage = null, array|string $columns = ['*'], string $pageName = 'page', int|null $page = null)
+ */
+
 class Logs extends Model
 {
     /** @use HasFactory<\Database\Factories\LogsFactory> */
