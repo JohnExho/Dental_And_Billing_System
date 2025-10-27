@@ -2,26 +2,25 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Bill;
-use App\Models\Note;
-use App\Models\Clinic;
-use App\Models\Recall;
 use App\Models\Address;
+use App\Models\Bill;
+use App\Models\Clinic;
+use App\Models\Note;
 use App\Models\Patient;
+use App\Models\Recall;
 use App\Models\Treatment;
-use Illuminate\Support\Str;
-use App\Models\PatientVisit;
 use App\Services\LogService;
-use Illuminate\Http\Request;
 use App\Traits\RegexPatterns;
-use Yajra\Address\Entities\City;
 use App\Traits\ValidationMessages;
-use Illuminate\Support\Facades\DB;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
-use Yajra\Address\Entities\Barangay;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Str;
+use Yajra\Address\Entities\Barangay;
+use Yajra\Address\Entities\City;
 use Yajra\Address\Entities\Province; // if you use logs
 
 class PatientController extends Controller
@@ -466,10 +465,12 @@ class PatientController extends Controller
             ->latest()
             ->paginate(8);
 
-        $bills = Bill::with(['account', 'clinic', 'items'])
-            ->where('patient_id', $patientId)
-            ->latest()
-            ->paginate(8);
+        $bills = Bill::with([
+            'billItems.service',
+            'billItems.tooth',
+            'account',
+            'patient',
+        ])->paginate(8);
 
         $recalls = Recall::with(['account'])
             ->where('patient_id', $patientId)
@@ -482,6 +483,6 @@ class PatientController extends Controller
             ->latest()
             ->paginate(8);
 
-        return view('pages.patients.specific', compact('patient', 'progressNotes','bills','recalls','treatments' ));
+        return view('pages.patients.specific', compact('patient', 'progressNotes', 'bills', 'recalls', 'treatments'));
     }
 }
