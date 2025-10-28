@@ -26,11 +26,11 @@ class Waitlist extends Model
         'account_id',
         'clinic_id',
         'patient_id',
-        'associate_id',
         'laboratory_id',
         'requested_at',
         'queue_position',
         'status',
+        'queue_snapshot'
     ];
 
     protected $casts = [

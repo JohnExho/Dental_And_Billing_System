@@ -3,19 +3,19 @@
 namespace App\Http\Controllers;
 
 use App\Models\Bill;
-use App\Models\Note;
-use App\Models\Recall;
 use App\Models\BillItem;
-use App\Models\Treatment;
-use Illuminate\Support\Str;
+use App\Models\Note;
 use App\Models\PatientVisit;
+use App\Models\Recall;
+use App\Models\Treatment;
 use App\Services\LogService;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Str;
 
 class ProgressNoteController extends Controller
 {
@@ -33,7 +33,6 @@ class ProgressNoteController extends Controller
             'associate_id' => 'nullable|uuid|exists:associates,associate_id',
             'service' => 'required|uuid|exists:services,service_id',
             'tooth_id' => 'nullable|uuid|exists:tooth_list,tooth_list_id',
-            'discount' => 'nullable|numeric|min:0|max:100',
             'remarks' => 'nullable|string',
             'visit_date' => 'required|date',
             'followup_date' => 'nullable|date',
@@ -44,8 +43,6 @@ class ProgressNoteController extends Controller
         if ($validator->fails()) {
             return back()->with('error', $validator->errors()->first());
         }
-
-
 
         $validated = $validator->validated();
 
@@ -64,8 +61,6 @@ class ProgressNoteController extends Controller
                 'account_id' => $authAccount->account_id,
                 'clinic_id' => $clinicId,
                 'patient_id' => $validated['patient_id'],
-                'associate_id' => $validated['associate_id'] ?? null,
-                'laboratory_id' => null,
                 'waitlist_id' => null,
                 'visit_date' => $validated['visit_date'],
             ]);
@@ -75,7 +70,6 @@ class ProgressNoteController extends Controller
                 'note_id' => Str::uuid(),
                 'account_id' => $authAccount->account_id,
                 'patient_id' => $validated['patient_id'],
-                'associate_id' => $validated['associate_id'] ?? null,
                 'patient_visit_id' => $patientVisit->patient_visit_id,
                 'note_type' => 'progress',
                 'summary' => $summary,
@@ -85,10 +79,7 @@ class ProgressNoteController extends Controller
             ]);
 
             // ✅ 2. Compute monetary values
-            $discountPercent = $validated['discount'] ?? 0;
             $totalServiceAndTooth = (float) ($request->net_cost ?? 0);
-            $discountAmount = $totalServiceAndTooth * ($discountPercent / 100);
-            $netAmount = $totalServiceAndTooth - $discountAmount;
 
             // ✅ 3. Try to find an existing unpaid bill for the patient
             $bill = Bill::where('patient_id', $validated['patient_id'])
@@ -105,10 +96,8 @@ class ProgressNoteController extends Controller
                     'patient_id' => $validated['patient_id'],
                     'associate_id' => $validated['associate_id'] ?? null,
                     'clinic_id' => $clinicId,
-                    'laboratory_id' => null,
                     'patient_visit_id' => $patientVisit->patient_visit_id,
                     'amount' => 0,
-                    'discount' => 0,
                     'total_amount' => 0,
                     'status' => 'unpaid',
                     'created_at' => now(),
@@ -116,7 +105,7 @@ class ProgressNoteController extends Controller
                 ]);
             }
 
-                    Log::info('tooth id:1 '.$request->tooth_id);
+            Log::info('tooth id:1 '.$request->tooth_id);
             // ✅ 5. Create BILL ITEM
             BillItem::create([
                 'bill_item_id' => Str::uuid(),
@@ -126,16 +115,15 @@ class ProgressNoteController extends Controller
                 'medicine_id' => null,
                 'service_id' => $validated['service'],
                 'tooth_list_id' => $validated['tooth_id'] ?? null,
-                'amount' => $netAmount,
+                'amount' => $totalServiceAndTooth,
                 'created_at' => now(),
                 'updated_at' => now(),
             ]);
 
-                    Log::info('tooth id:2     '.$request->tooth_id);
+            Log::info('tooth id:2     '.$request->tooth_id);
             // ✅ 6. Update bill totals
             $bill->amount += $totalServiceAndTooth;
-            $bill->discount += $discountAmount;
-            $bill->total_amount += $netAmount;
+            $bill->total_amount += $totalServiceAndTooth;
             $bill->save();
 
             if ($bill->save()) {
@@ -145,7 +133,6 @@ class ProgressNoteController extends Controller
                     'patient_id' => $validated['patient_id'],
                     'associate_id' => $validated['associate_id'] ?? null,
                     'clinic_id' => $clinicId,
-                    'laboratory_id' => null,
                     'bill_item_id' => BillItem::where('bill_id', $bill->bill_id)
                         ->latest()
                         ->first()
@@ -153,15 +140,15 @@ class ProgressNoteController extends Controller
                     'treatment_date' => now(),
                 ]);
             }
-            
+
             // ✅ 7. Recall (if needed)
             if (! empty($validated['followup_date'])) {
                 Recall::create([
                     'recall_id' => Str::uuid(),
                     'account_id' => $authAccount->account_id,
                     'patient_id' => $validated['patient_id'],
-                    'associate_id' => $validated['associate_id'] ?? null,
                     'patient_visit_id' => $patientVisit->patient_visit_id,
+                    'note_id' => $note->note_id,
                     'recall_date' => $validated['followup_date'],
                     'recall_reason' => $validated['followup_reason'] ?? null,
                     'status' => 'pending',
@@ -177,7 +164,7 @@ class ProgressNoteController extends Controller
                 'create',
                 'Progress Note',
                 'User created a progress note with billing',
-                "Patient ID: {$validated['patient_id']} | Note ID: {$note->note_id} | Amount: {$netAmount}",
+                "Patient ID: {$validated['patient_id']} | Note ID: {$note->note_id} | Amount: {$totalServiceAndTooth}",
                 $request->ip(),
                 $request->userAgent()
             );
@@ -236,7 +223,7 @@ class ProgressNoteController extends Controller
         return DB::transaction(function () use ($note, $request, $deletor) {
 
             $note->patientVisit()->delete();
-
+            $note->recall()->delete();
             // Delete patient record
             $note->delete();
 

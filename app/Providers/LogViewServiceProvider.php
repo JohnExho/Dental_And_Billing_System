@@ -21,6 +21,7 @@ class LogViewServiceProvider extends ServiceProvider
             if ($viewName === 'auth.admin-dashboard') {
                 // ✅ For admin dashboard → EXCLUDE auth logs
                 $logs = Logs::where('log_type', '!=', 'auth')
+                    ->whereNotIn('action', ['select', 'deselect'])
                     ->latest()
                     ->paginate(20);
             } else {

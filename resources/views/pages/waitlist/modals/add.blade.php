@@ -107,7 +107,7 @@
         </div>
     </div>
 </div>
-
+@include('pages.patients.modals.add')
 <script>
     document.addEventListener('DOMContentLoaded', function() {
         const modal = document.getElementById('add-waitlist-modal');

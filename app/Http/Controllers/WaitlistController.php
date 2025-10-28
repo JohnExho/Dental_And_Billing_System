@@ -45,7 +45,7 @@ class WaitlistController extends Controller
         }
 
         $waitlist = $query->paginate(8);
-       $patientCount = $query->count(); 
+        $patientCount = $query->count();
 
         return view('pages.waitlist.index', compact('waitlist', 'patientCount'));
     }
@@ -89,20 +89,24 @@ class WaitlistController extends Controller
                 ->first();
 
             // ✅ If there's a record and it's NOT finished, block
-            if ($latest && $latest->status !== 'finished') {
+            if ($latest && $latest->status !== 'completed') {
                 return back()->with('error', 'This patient is already in the waitlist.');
             }
 
             // ✅ Get today's start and end (PHT)
-            // ✅ Get today's start and end (PHT)
             $todayStart = Carbon::now('Asia/Manila')->startOfDay();
             $todayEnd = Carbon::now('Asia/Manila')->endOfDay();
 
-            // ✅ Get last queue_position number for today
-            $lastPosition = Waitlist::whereBetween('created_at', [$todayStart, $todayEnd])
-                ->max('queue_position');
-
-            $nextNumber = $lastPosition ? $lastPosition + 1 : 1;
+            // ✅ Get queue position based on previous status
+            $queuePosition = 0;
+            if (! $latest || $latest->status === 'completed') {
+                // Get last queue_position number for today
+                $lastPosition = Waitlist::whereBetween('created_at', [$todayStart, $todayEnd])
+                    ->max('queue_position');
+                $queuePosition = $lastPosition ? $lastPosition + 1 : 1;
+            } else {
+                $queuePosition = $latest->queue_position;
+            }
 
             // ✅ Create waitlist record
             $waitlist = Waitlist::create([
@@ -113,7 +117,8 @@ class WaitlistController extends Controller
                 'associate_id' => $validated['associate_id'] ?? null,
                 'laboratory_id' => $validated['laboratory_id'] ?? null,
                 'requested_at' => now(),
-                'queue_position' => $nextNumber,
+                'queue_position' => $queuePosition,
+                'queue_snapshot' => $queuePosition,
                 'status' => 'waiting',
             ]);
 
@@ -136,59 +141,74 @@ class WaitlistController extends Controller
     }
 
     public function update(Request $request)
-{
-    $validator = Validator::make(
-        $request->all(),
-        [
-            'waitlist_id'   => 'required|uuid|exists:waitlist,waitlist_id',
-            'associate_id'  => 'nullable|uuid|exists:associates,associate_id',
-            'laboratory_id' => 'nullable|uuid|exists:laboratories,laboratory_id',
-            'status'        => 'required|in:waiting,in_consultation,completed,finished',
-        ],
-        self::messages()
-    );
-
-    if ($validator->fails()) {
-        return back()->with('error', $validator->errors()->first());
-    }
-
-    $validated = $validator->validated();
-
-    return DB::transaction(function () use ($validated, $request) {
-
-        $authAccount = $this->guard->user();
-
-        // ✅ Fetch waitlist by hidden field
-        $waitlist = Waitlist::where('waitlist_id', $validated['waitlist_id'])->first();
-
-        if (! $waitlist) {
-            return back()->with('error', 'Waitlist record not found.');
-        }
-
-        // ✅ Only update allowed fields
-        $waitlist->associate_id  = $validated['associate_id']  ?? Null;
-        $waitlist->laboratory_id = $validated['laboratory_id'] ?? Null;
-        $waitlist->status        = $validated['status']        ?? $waitlist->status;
-        $waitlist->save();
-
-        // ✅ Log the update
-        LogService::record(
-            $authAccount,
-            $waitlist,
-            'update',
-            'waitlist',
-            'User updated a waitlist record',
-            'Waitlist: '.$waitlist->waitlist_id,
-            $request->ip(),
-            $request->userAgent()
+    {
+        $validator = Validator::make(
+            $request->all(),
+            [
+                'waitlist_id' => 'required|uuid|exists:waitlist,waitlist_id',
+                'associate_id' => 'nullable|uuid|exists:associates,associate_id',
+                'laboratory_id' => 'nullable|uuid|exists:laboratories,laboratory_id',
+                'status' => 'required|in:waiting,in_consultation,completed,finished',
+            ],
+            self::messages()
         );
 
-        return redirect()
-            ->route('waitlist')
-            ->with('success', 'Waitlist updated successfully.');
-    });
-}
+        if ($validator->fails()) {
+            return back()->with('error', $validator->errors()->first());
+        }
 
+        $validated = $validator->validated();
+
+        return DB::transaction(function () use ($validated, $request) {
+
+            $authAccount = $this->guard->user();
+
+            // ✅ Fetch waitlist by hidden field
+            $waitlist = Waitlist::where('waitlist_id', $validated['waitlist_id'])->first();
+
+            if ($validated['status'] === 'completed' || $validated['status'] === 'in_consultation') {
+                // Get all waiting patients in this clinic today, ordered by queue_position
+                $waitingPatients = Waitlist::where('clinic_id', $waitlist->clinic_id)
+                    ->where('status', 'waiting')
+                    ->whereDate('created_at', Carbon::today('Asia/Manila'))
+                    ->orderBy('queue_position')
+                    ->get();
+
+                // Reassign queue positions sequentially
+                $position = 0;
+                foreach ($waitingPatients as $patient) {
+                    $patient->queue_position = $position++;
+                    $patient->save();
+                }
+            }
+
+            if (! $waitlist) {
+                return back()->with('error', 'Waitlist record not found.');
+            }
+
+            // ✅ Only update allowed fields
+            $waitlist->associate_id = $validated['associate_id'] ?? null;
+            $waitlist->laboratory_id = $validated['laboratory_id'] ?? null;
+            $waitlist->status = $validated['status'] ?? $waitlist->status;
+            $waitlist->save();
+
+            // ✅ Log the update
+            LogService::record(
+                $authAccount,
+                $waitlist,
+                'update',
+                'waitlist',
+                'User updated a waitlist record',
+                'Waitlist: '.$waitlist->waitlist_id,
+                $request->ip(),
+                $request->userAgent()
+            );
+
+            return redirect()
+                ->route('waitlist')
+                ->with('success', 'Waitlist updated successfully.');
+        });
+    }
 
     public function destroy(Request $request)
     {

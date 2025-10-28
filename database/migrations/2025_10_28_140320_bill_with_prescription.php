@@ -11,11 +11,13 @@ return new class extends Migration
      */
     public function up(): void
     {
-        // 3. then in a separate migration, after both exist:
-        Schema::table('accounts', function (Blueprint $table) {
-              $table->foreign('clinic_id')->references('clinic_id')->on('clinics')->onDelete('set null');
+        Schema::table('bill_items', function (Blueprint $table) {
+            $table->uuid('prescription_id')->nullable(); // Prescription must have the status "purchased" if "prescribed" don't bill
+            $table->foreign('prescription_id')->references('prescription_id')->on('prescriptions')->onDelete('set null');
         });
+
     }
+
     /**
      * Reverse the migrations.
      */

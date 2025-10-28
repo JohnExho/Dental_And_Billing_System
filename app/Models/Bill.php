@@ -47,7 +47,7 @@ class Bill extends Model
 
     // Relationships (ready to hook up)
 
-    public function items()
+    public function billItems()
     {
         return $this->hasMany(BillItem::class, 'bill_id', 'bill_id');
     }

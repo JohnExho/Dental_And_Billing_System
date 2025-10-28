@@ -10,7 +10,7 @@ use App\Models\Address;
 use App\Models\Patient;
 use App\Models\Treatment;
 use Illuminate\Support\Str;
-use App\Models\PatientVisit;
+use App\Models\Prescription;
 use App\Services\LogService;
 use Illuminate\Http\Request;
 use App\Traits\RegexPatterns;
@@ -182,7 +182,7 @@ class PatientController extends Controller
                 'email' => $normalizedEmail,
                 'email_hash' => $newEmailHash,
                 'sex' => $validated['sex'],
-                'civil_status' => $validated['civil_status'] ?? null,
+                'civil_status' => $validated['civil_status'] ?? 'Single',
                 'date_of_birth' => $validated['date_of_birth'],
                 'referral' => $validated['referral'] ?? null,
                 'occupation' => $validated['occupation'] ?? null,
@@ -466,10 +466,12 @@ class PatientController extends Controller
             ->latest()
             ->paginate(8);
 
-        $bills = Bill::with(['account', 'clinic', 'items'])
-            ->where('patient_id', $patientId)
-            ->latest()
-            ->paginate(8);
+        $bills = Bill::with([
+            'billItems.service',
+            'billItems.tooth',
+            'account',
+            'patient',
+        ])->paginate(8);
 
         $recalls = Recall::with(['account'])
             ->where('patient_id', $patientId)
@@ -482,6 +484,12 @@ class PatientController extends Controller
             ->latest()
             ->paginate(8);
 
-        return view('pages.patients.specific', compact('patient', 'progressNotes','bills','recalls','treatments' ));
+        $prescriptions = Prescription::with(['account', 'clinic', 'visit'])
+            ->where('patient_id', $patientId)
+            ->where('clinic_id', $clinicId)
+            ->latest()
+            ->paginate(8);
+
+        return view('pages.patients.specific', compact('patient', 'progressNotes', 'bills', 'recalls', 'treatments', 'prescriptions'));
     }
 }

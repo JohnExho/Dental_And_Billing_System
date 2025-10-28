@@ -62,24 +62,9 @@
                                 @endforeach
                             </select>
                         </div>
-                        <div class="col-md-6">
-                            <label for="discount_input" class="form-label">Discount (%)</label>
-                            <input type="number" class="form-control" id="discount_input" name="discount"
-                                min="0" max="100" step="0.01" value="0">
-                        </div>
-
-                        <div class="col-md-6">
-                            <div class="bg-light p-3 rounded">
-                                <div class="mb-2"><strong>Total Cost:</strong> <span id="total_cost">0.00</span></div>
-                                <div class="mb-2"><strong>Discount(%):</strong> <span id="discount">0.00</span></div>
-                                <div><strong>Net Cost:</strong> <span id="net_cost">0.00</span></div>
-                                <input type="hidden" name="net_cost" id="net_cost_input" value="0.00">
-                            </div>
-
-                        </div>
                         <div class="col-12">
                             <label for="remarks" class="form-label">Remarks/Notes</label>
-                            <textarea class="form-control" id="remarks" name="remarks" rows="2"></textarea>
+                            <textarea class="form-control" id="remarks" name="remarks" rows="4" style="resize: none;"></textarea>
                         </div>
                     </div>
                 </div>

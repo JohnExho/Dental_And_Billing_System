@@ -29,30 +29,31 @@
                     <tbody>
                         @foreach ($recalls as $recall)
                             <tr></tr>
-                                <td>{{ $recall->created_at ? $recall->created_at->format('M d, Y') : '-' }}</td>
+                            <td>{{ $recall->created_at ? $recall->created_at->format('M d, Y') : '-' }}</td>
 
-                                <td>{{ $recall->account?->full_name ?? 'Unknown' }}</td>
-                                <td>{{ $recall->patient?->full_name ?? 'Unknown' }}</td>
-                                <td>{{ $recall->recall_date ? \Carbon\Carbon::parse($recall->recall_date)->format('M d, Y') : '-' }}</td>
-                                <td class="text-truncate" style="max-width:240px;">{{ $recall->recall_reason ?? '-' }}</td>
-                                <td>{{ $recall->status ?? '-' }}</td>
+                            <td>{{ $recall->account?->full_name ?? 'Unknown' }}</td>
+                            <td>{{ $recall->patient?->full_name ?? 'Unknown' }}</td>
+                            <td>{{ $recall->recall_date ? \Carbon\Carbon::parse($recall->recall_date)->format('M d, Y') : '-' }}
+                            </td>
+                            <td class="text-truncate" style="max-width:240px;">{{ $recall->recall_reason ?? '-' }}</td>
+                            <td>{{ $recall->status ?? '-' }}</td>
 
-                                <td class="text-end">
-                                    <button class="btn btn-sm btn-outline-primary"
-                                        onclick="openRecallInfoModal({{ json_encode($recall->id ?? $recall->recall_id) }}, {{ json_encode($recall->patient?->full_name ?? 'Unknown') }}, {{ json_encode($recall->type ?? '-') }}, {{ json_encode($recall->recall_date ? \Carbon\Carbon::parse($recall->recall_date)->format('M d, Y') : '-') }}, {{ json_encode($recall->status ?? '-') }}, {{ json_encode($recall->notes ?? '-') }})">
-                                        <i class="bi bi-eye"></i>
-                                    </button>
+                            <td class="text-end">
 
-                                    <button class="btn btn-sm btn-outline-warning"
-                                        onclick="openEditRecallModal({{ json_encode($recall->id ?? $recall->recall_id) }})">
-                                        <i class="bi bi-pencil-square"></i>
-                                    </button>
+                                <button class="btn btn-sm btn-outline-warning"
+                                    onclick="openEditRecallModal(
+                                        {{ json_encode($recall->recall_id) }},
+                                        {{ json_encode($recall->recall_reason ?? '') }},
+                                        {{ json_encode($recall->status ?? '') }}
+                                    )">
+                                    <i class="bi bi-pencil-square"></i>
+                                </button>
 
-                                    <button type="button" class="btn btn-outline-danger btn-sm delete-recall-btn"
-                                        data-id="{{ $recall->id ?? $recall->recall_id }}">
-                                        <i class="bi bi-trash"></i>
-                                    </button>
-                                </td>
+                                <button type="button" class="btn btn-outline-danger btn-sm delete-recall-btn"
+                                    data-id="{{ $recall->recall_id ?? $recall->recall_id }}">
+                                    <i class="bi bi-trash"></i>
+                                </button>
+                            </td>
                             </tr>
                         @endforeach
                     </tbody>
@@ -71,10 +72,10 @@
 </div>
 
 {{-- Include your recall modals (add / edit / delete / info) as needed --}}
-{{-- @include('pages.patients.modals.add-recall')
-@include('pages.patients.modals.edit-recall')
-@include('pages.patients.modals.delete-recall')
-@include('pages.patients.modals.info-recall') --}}
+@include('pages.recalls.modals.add')
+@include('pages.recalls.modals.edit')
+@include('pages.recalls.modals.delete')
+{{-- @include('pages.patients.modals.info-recall') --}}
 
 <script>
     document.addEventListener('DOMContentLoaded', function() {
@@ -100,11 +101,24 @@
     // Implement these in your JS to populate and show modals.
     function openRecallInfoModal(id, patient, type, recallDate, status, notes) {
         // populate your info modal fields and show modal
-        console.log('openRecallInfoModal', { id, patient, type, recallDate, status, notes });
+        console.log('openRecallInfoModal', {
+            id,
+            patient,
+            type,
+            recallDate,
+            status,
+            notes
+        });
     }
 
-    function openEditRecallModal(id) {
-        // populate your edit modal fields and show modal
-        console.log('openEditRecallModal', { id });
+    function openEditRecallModal(recallId, notes, status) {
+        // populate the modal inputs
+        document.getElementById('edit_recall_id').value = recallId;
+        document.getElementById('edit_notes').value = notes;
+        document.getElementById('edit_status').value = status;
+
+        // show the modal
+        const modal = new bootstrap.Modal(document.getElementById('edit-recall-modal'));
+        modal.show();
     }
 </script>
