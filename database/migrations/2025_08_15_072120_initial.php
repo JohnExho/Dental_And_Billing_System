@@ -445,7 +445,6 @@ return new class extends Migration
             $table->uuid('bill_id')->nullable();
             $table->uuid('account_id')->nullable(); // Account that created the bill item
             $table->string('item_type'); // service, medicine, other
-            $table->uuid('medicine_id')->nullable(); // Nullable if item_type is service
             $table->uuid('service_id')->nullable(); // Nullable if item_type is medicine
             $table->uuid('tooth_list_id')->nullable(); // Nullable if item_type is not tooth-related
             $table->decimal('amount', 10, 2);
@@ -454,7 +453,6 @@ return new class extends Migration
 
             $table->foreign('bill_id')->references('bill_id')->on('bills')->onDelete('set null');
             $table->foreign('account_id')->references('account_id')->on('accounts')->onDelete('set null');
-            $table->foreign('medicine_id')->references('medicine_id')->on('medicines')->onDelete('set null');
             $table->foreign('service_id')->references('service_id')->on('services')->onDelete('set null');
             $table->foreign('tooth_list_id')->references('tooth_list_id')->on('tooth_list')->onDelete('set null');
         });
@@ -483,13 +481,11 @@ return new class extends Migration
             $table->uuid('account_id')->nullable(); // Account that created the prescription
             $table->uuid('patient_id')->nullable();
             $table->uuid('clinic_id')->nullable(); // Clinic where the prescription is issued
-            $table->uuid('patient_visit_id')->nullable(); // Nullable if historically logged with no visit
-            $table->string('prescription_type'); // e.g., medicine, service
             $table->uuid('medicine_id')->nullable(); // Nullable if prescription_type is service
-            $table->uuid('service_id')->nullable(); // Nullable if prescription_type is medicine
-            $table->uuid('tooth_id')->nullable(); // Nullable if prescription is not tooth
-            $table->text('prescription_details'); // JSON or text format for details
+            $table->uuid('tooth_list_id')->nullable(); // Nullable if prescription is not tooth
+            //removed details column and just collect from medicine table
             $table->dateTime('prescribed_at');
+            $table->enum('status', ['purchased', 'prescribed'])->default('prescribed'); // whether medicine is purchased or just prescribed
 
             $table->index('patient_id');
             $table->index('clinic_id');
@@ -501,10 +497,8 @@ return new class extends Migration
             $table->foreign('account_id')->references('account_id')->on('accounts')->onDelete('set null');
             $table->foreign('patient_id')->references('patient_id')->on('patients')->onDelete('set null');
             $table->foreign('medicine_id')->references('medicine_id')->on('medicines')->onDelete('set null');
-            $table->foreign('service_id')->references('service_id')->on('services')->onDelete('set null');
-            $table->foreign('tooth_id')->references('tooth_id')->on('teeth')->onDelete('set null');
+            $table->foreign('tooth_list_id')->references('tooth_list_id')->on('tooth_list')->onDelete('set null');
             $table->foreign('clinic_id')->references('clinic_id')->on('clinics')->onDelete('set null');
-            $table->foreign('patient_visit_id')->references('patient_visit_id')->on('patient_visits')->onDelete('set null');
         });
 
         Schema::create('diagnostic_requests', function (Blueprint $table) {

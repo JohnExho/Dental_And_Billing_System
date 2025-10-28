@@ -4,6 +4,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\OTPController;
 use App\Http\Controllers\StaffController;
 use App\Http\Controllers\ClinicController;
+use App\Http\Controllers\RecallController;
 use App\Http\Controllers\AccountController;
 use App\Http\Controllers\AddressController;
 use App\Http\Controllers\PatientController;
@@ -13,8 +14,9 @@ use App\Http\Controllers\WaitlistController;
 use App\Http\Controllers\AssociateController;
 use App\Http\Controllers\ToothListController;
 use App\Http\Controllers\LaboratoryController;
+use App\Http\Controllers\PrescriptionController;
 use App\Http\Controllers\ProgressNoteController;
-use App\Http\Controllers\RecallController;
+
 Route::middleware('web')->group(function () {
     // Login page
     Route::middleware('guest:account')->group(function () {
@@ -86,6 +88,8 @@ Route::middleware('web')->group(function () {
     Route::post('/process/create/recall', [RecallController::class, 'create'])->name('process-create-recall');
     Route::put('/process/update/recall', [RecallController::class, 'update'])->name('process-update-recall');
     Route::delete('/process/delete/recall', [RecallController::class, 'destroy'])->name('process-delete-recall');
+
+    Route::put('/process/update/prescription', [PrescriptionController::class, 'update'])->name('process-update-prescription');
 
     // Protected routes
     Route::middleware(['auth:account', 'patient.profile'])->group(function () {

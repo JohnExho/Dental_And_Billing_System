@@ -26,10 +26,10 @@ class BillItem extends Model
         'bill_id',
         'account_id',
         'item_type',
-        'medicine_id',
         'service_id',
         'tooth_list_id',
         'amount',
+        'prescription_id',
     ];
 
     protected $casts = [

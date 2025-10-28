@@ -2,25 +2,26 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Address;
 use App\Models\Bill;
-use App\Models\Clinic;
 use App\Models\Note;
-use App\Models\Patient;
+use App\Models\Clinic;
 use App\Models\Recall;
+use App\Models\Address;
+use App\Models\Patient;
 use App\Models\Treatment;
+use Illuminate\Support\Str;
+use App\Models\Prescription;
 use App\Services\LogService;
-use App\Traits\RegexPatterns;
-use App\Traits\ValidationMessages;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
+use App\Traits\RegexPatterns;
+use Yajra\Address\Entities\City;
+use App\Traits\ValidationMessages;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
+use Yajra\Address\Entities\Barangay;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
-use Illuminate\Support\Str;
-use Yajra\Address\Entities\Barangay;
-use Yajra\Address\Entities\City;
 use Yajra\Address\Entities\Province; // if you use logs
 
 class PatientController extends Controller
@@ -181,7 +182,7 @@ class PatientController extends Controller
                 'email' => $normalizedEmail,
                 'email_hash' => $newEmailHash,
                 'sex' => $validated['sex'],
-                'civil_status' => $validated['civil_status'] ?? null,
+                'civil_status' => $validated['civil_status'] ?? 'Single',
                 'date_of_birth' => $validated['date_of_birth'],
                 'referral' => $validated['referral'] ?? null,
                 'occupation' => $validated['occupation'] ?? null,
@@ -483,6 +484,12 @@ class PatientController extends Controller
             ->latest()
             ->paginate(8);
 
-        return view('pages.patients.specific', compact('patient', 'progressNotes', 'bills', 'recalls', 'treatments'));
+        $prescriptions = Prescription::with(['account', 'clinic', 'visit'])
+            ->where('patient_id', $patientId)
+            ->where('clinic_id', $clinicId)
+            ->latest()
+            ->paginate(8);
+
+        return view('pages.patients.specific', compact('patient', 'progressNotes', 'bills', 'recalls', 'treatments', 'prescriptions'));
     }
 }
