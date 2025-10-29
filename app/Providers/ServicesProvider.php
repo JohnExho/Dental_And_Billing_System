@@ -22,7 +22,7 @@ class ServicesProvider extends ServiceProvider
      */
     public function boot(): void
     {
-        View::composer(['pages.progress-notes.modals.add','pages.progress-notes.modals.add'], function ($view) {
+        View::composer(['pages.progress-notes.modals.add'], function ($view) {
             $clinicId = Session::get('clinic_id');
 
             // Fetch services with clinic-specific price or fallback

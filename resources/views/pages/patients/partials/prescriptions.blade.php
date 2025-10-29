@@ -84,7 +84,7 @@
 </div>
 
 <!-- Include Add/Edit/Delete Modals -->
-{{-- @include('pages.prescriptions.modals.add') --}}
+@include('pages.prescriptions.modals.add')
 @include('pages.prescriptions.modals.edit')
 {{-- @include('pages.prescriptions.modals.delete') --}}
 {{-- @include('pages.prescriptions.modals.info') --}}

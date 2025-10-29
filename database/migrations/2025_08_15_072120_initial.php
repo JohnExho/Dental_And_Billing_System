@@ -483,8 +483,13 @@ return new class extends Migration
             $table->uuid('clinic_id')->nullable(); // Clinic where the prescription is issued
             $table->uuid('medicine_id')->nullable(); // Nullable if prescription_type is service
             $table->uuid('tooth_list_id')->nullable(); // Nullable if prescription is not tooth
+            $table->text('amount_prescribed')->nullable();
+            $table->text('dosage_instructions')->nullable();
+            $table->text('prescription_notes')->nullable();
+            $table->decimal('medicine_cost', 10, 2)->nullable();
             //removed details column and just collect from medicine table
             $table->dateTime('prescribed_at');
+            
             $table->enum('status', ['purchased', 'prescribed'])->default('prescribed'); // whether medicine is purchased or just prescribed
 
             $table->index('patient_id');

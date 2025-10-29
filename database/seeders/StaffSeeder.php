@@ -48,35 +48,5 @@ class StaffSeeder extends Seeder
             'city_id' => 1456, // Replace with actual valid ID
             'province_id' => 106, // Replace with actual valid ID
         ]);
-
-        // Example of another account
-        $OtpAccount = Account::create([
-            'last_name' => 'Doe',
-            'last_name_hash' => hash('sha256', strtolower('Doe')),
-            'middle_name' => 'M',
-            'first_name' => 'John',
-            'email' => 'rci.bsis.hensonjohnvictor@gmail.com',
-            'email_hash' => hash('sha256', strtolower('rci.bsis.hensonjohnvictor@gmail.com')),
-            'mobile_no' => $faker->phoneNumber,
-            'contact_no' => $faker->phoneNumber,
-            'password' => Hash::make('secret123'),
-            'role' => 'staff',
-            'is_active' => true,
-            'otp_hash' => null,
-            'otp_expires_at' => null,
-            'clinic_id' => $clinic->clinic_id,
-        ]);
-
-        Address::create([
-            'account_id' => $OtpAccount->account_id, // Use the ID of the created account
-            'house_no' => $faker->buildingNumber,
-            'street' => $faker->streetName,
-            'barangay_name' => $faker->streetName,
-            'city_name' => $faker->streetName,
-            'province_name' => $faker->streetName,
-            'barangay_id' => 38108, // Replace with actual valid ID
-            'city_id' => 1456, // Replace with actual valid ID
-            'province_id' => 106, // Replace with actual valid ID
-        ]);
     }
 }

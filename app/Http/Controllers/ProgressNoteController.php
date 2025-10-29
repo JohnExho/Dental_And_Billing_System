@@ -80,6 +80,7 @@ class ProgressNoteController extends Controller
 
             // ✅ 2. Compute monetary values
             $totalServiceAndTooth = (float) ($request->net_cost ?? 0);
+            Log::info('Computed net_cost: ' . $totalServiceAndTooth);
 
             // ✅ 3. Try to find an existing unpaid bill for the patient
             $bill = Bill::where('patient_id', $validated['patient_id'])

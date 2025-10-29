@@ -9,6 +9,7 @@ return [
     App\Providers\ClinicViewProvider::class,
     App\Providers\LaboratoryProvider::class,
     App\Providers\LogViewServiceProvider::class,
+    App\Providers\MedicineProvider::class,
     App\Providers\PatientProvider::class,
     App\Providers\ServicesProvider::class,
     App\Providers\ToothProvider::class,

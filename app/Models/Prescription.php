@@ -7,13 +7,6 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Notifications\Notifiable;
-use App\Models\PatientVisit;
-use App\Models\Patient;
-use App\Models\Account;
-use App\Models\Medicine;
-use App\Models\Clinic;
-use App\Models\Tooth;
-use App\Models\Logs;
 
 class Prescription extends Model
 {
@@ -33,16 +26,20 @@ class Prescription extends Model
         'account_id',
         'patient_id',
         'clinic_id',
-        'patient_visit_id',
-        'prescription_type',
         'medicine_id',
-        'tooth_id',
-        'prescription_details',
+        'tooth_list_id',
+        'medicine_cost',
+        'dosage_instructions',
+        'prescription_notes',
         'prescribed_at',
+        'status',
+        'amount_prescribed',
+        
     ];
 
     protected $casts = [
         'prescribed_at' => 'datetime',
+        'prescription_notes' => 'encrypted',
         'created_at' => 'datetime',
         'updated_at' => 'datetime',
         'deleted_at' => 'datetime',
