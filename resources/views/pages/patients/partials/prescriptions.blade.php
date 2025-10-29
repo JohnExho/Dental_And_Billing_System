@@ -36,15 +36,11 @@
                                 <td>{{ Str::limit($prescription->medicine?->description, 50) }}</td>
                                 <td>{{ $prescription->tooth?->name ?? '-' }}</td>
                                 @if ($prescription->status === 'purchased')
-                                    @php
-                                        $toothPrice = $prescription->tooth
-                                            ?->clinicPrices()
-                                            ->where('clinic_id', $prescription->clinic_id)
-                                            ->value('price');
-                                    @endphp
-                                    <td>{{ $toothPrice ?? '-' }}</td>
+                                    <td>{{ $prescription->medicine_cost ?? '-' }}</td>
                                 @else
-                                    <td>--</td>
+                                    <td><span class="text-muted text-decoration-line-through">
+                                        {{ $prescription->medicine_cost  }}
+                                    </span></td>
                                 @endif
                                 <td>
                                     {{ $prescription->status }}
