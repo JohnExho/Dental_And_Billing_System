@@ -8,6 +8,8 @@ use App\Models\Prescription;
 use App\Services\LogService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Str;
 
@@ -71,9 +73,6 @@ class PrescriptionController extends Controller
             'status' => 'prescribed',
         ]);
 
-        // 🧮 Decrease stock
-        $medicineClinic->decrement('stock', $request->amount);
-
         // 🪵 Log action
         LogService::record(
             $authAccount,
@@ -94,6 +93,11 @@ class PrescriptionController extends Controller
         $validator = Validator::make($request->all(), [
             'prescription_id' => 'required|uuid|exists:prescriptions,prescription_id',
             'status' => 'required|string|in:prescribed,purchased',
+            'tooth_list_id' => 'nullable|uuid|exists:tooth_list,tooth_list_id',
+            'amount_prescribed' => 'required|integer|min:1', // ✅ new validation
+            'medicine_cost' => 'required|numeric|min:0',
+            'dosage_instructions' => 'required|string',
+            'prescription_notes' => 'nullable|string',
         ]);
 
         if ($validator->fails()) {
@@ -101,50 +105,51 @@ class PrescriptionController extends Controller
         }
 
         $prescription = Prescription::findOrFail($request->prescription_id);
+
         $oldStatus = $prescription->status;
+        $oldTooth = $prescription->tooth_list_id;
+        $oldAmount = $prescription->amount_prescribed;
+
         $prescription->status = $request->status;
+        $prescription->tooth_list_id = $request->tooth_list_id;
+        $prescription->amount_prescribed = $request->amount_prescribed;
+        $prescription->medicine_cost = $request->medicine_cost; // total cost from modal
+        $prescription->dosage_instructions = $request->dosage_instructions;
+        $prescription->prescription_notes = $request->prescription_notes;
         $prescription->save();
 
-        // Only perform logic if the status actually changed
+        // ✅ Total cost is already provided by frontend (not per-unit)
+        $totalPrice = $prescription->medicine_cost;
+
+        // Billing logic (only if status changed)
         if ($oldStatus !== $prescription->status) {
 
             if ($prescription->status === 'purchased') {
-
-                // Find or create an unpaid bill for this patient and clinic
-                $bill = Bill::where('patient_id', $prescription->patient_id)
-                    ->where('clinic_id', $prescription->clinic_id)
-                    ->where('status', 'unpaid')
-                    ->first();
-
-                if (! $bill) {
-                    $bill = Bill::create([
-                        'bill_id' => Str::uuid(),
-                        'account_id' => auth()->id(),
+                // Create or attach to unpaid bill
+                $bill = Bill::firstOrCreate(
+                    [
                         'patient_id' => $prescription->patient_id,
                         'clinic_id' => $prescription->clinic_id,
+                        'status' => 'unpaid',
+                    ],
+                    [
+                        'bill_id' => Str::uuid(),
+                        'account_id' => auth()->id(),
                         'amount' => 0,
                         'discount' => 0,
                         'total_amount' => 0,
-                        'status' => 'unpaid',
-                    ]);
-                }
+                    ]
+                );
 
-                // Get the price of the medicine for this clinic
-                $medicine = $prescription->medicine;
-                $price = $medicine->medicineClinics()
-                    ->where('clinic_id', $prescription->clinic_id)
-                    ->value('price') ?? 0;
-
-                // Check if a bill item already exists for this prescription
+                // Create bill item if none exists
                 $existingBillItem = BillItem::where('prescription_id', $prescription->prescription_id)
-                    ->whereHas('bill', function ($query) use ($prescription) {
-                        $query->where('patient_id', $prescription->patient_id)
-                            ->where('clinic_id', $prescription->clinic_id)
-                            ->where('status', 'unpaid');
-                    })
+                    ->whereHas('bill', fn ($q) => $q
+                        ->where('patient_id', $prescription->patient_id)
+                        ->where('clinic_id', $prescription->clinic_id)
+                        ->where('status', 'unpaid')
+                    )
                     ->first();
 
-                // Only create if it doesn't exist
                 if (! $existingBillItem) {
                     BillItem::create([
                         'bill_item_id' => Str::uuid(),
@@ -153,49 +158,135 @@ class PrescriptionController extends Controller
                         'item_type' => 'prescription',
                         'prescription_id' => $prescription->prescription_id,
                         'service_id' => null,
-                        'tooth_list_id' => $prescription->tooth_id,
-                        'amount' => $price,
+                        'tooth_list_id' => $prescription->tooth_list_id,
+                        'amount' => $totalPrice, // ✅ respects quantity
                     ]);
 
-                    $bill->increment('amount', $price);
-                    $bill->increment('total_amount', $price);
+                    $bill->increment('amount', $totalPrice);
+                    $bill->increment('total_amount', $totalPrice);
                 }
 
             } elseif ($prescription->status === 'prescribed') {
-                // Reverting — remove linked bill items only if still unpaid
+                // Revert unpaid item
                 $billItem = BillItem::where('prescription_id', $prescription->prescription_id)
-                    ->whereHas('bill', function ($query) use ($prescription) {
-                        $query->where('patient_id', $prescription->patient_id)
-                            ->where('clinic_id', $prescription->clinic_id)
-                            ->where('status', 'unpaid');
-                    })
+                    ->whereHas('bill', fn ($q) => $q
+                        ->where('patient_id', $prescription->patient_id)
+                        ->where('clinic_id', $prescription->clinic_id)
+                        ->where('status', 'unpaid')
+                    )
                     ->first();
 
                 if ($billItem) {
                     $bill = $billItem->bill;
-                    $amount = (float) $billItem->amount; // ✅ ensure numeric
+                    $amount = (float) $billItem->amount;
 
-                    // Decrement totals before deleting
                     $bill->decrement('amount', $amount);
                     $bill->decrement('total_amount', $amount);
-
                     $billItem->forceDelete();
                 }
             }
         }
 
-        // ✅ Log the change
+        // ✅ If only tooth or amount changed, sync them to unpaid BillItem
+        if ($oldTooth !== $prescription->tooth_list_id || $oldAmount !== $prescription->amount_prescribed) {
+            $billItem = BillItem::where('prescription_id', $prescription->prescription_id)
+                ->whereHas('bill', fn ($q) => $q
+                    ->where('patient_id', $prescription->patient_id)
+                    ->where('clinic_id', $prescription->clinic_id)
+                    ->where('status', 'unpaid')
+                )
+                ->first();
+
+            if ($billItem) {
+                $oldAmountValue = (float) $billItem->amount;
+                $bill = $billItem->bill;
+
+                // Update the bill item
+                $billItem->update([
+                    'tooth_list_id' => $prescription->tooth_list_id,
+                    'amount' => $totalPrice,
+                ]);
+
+                // Adjust bill totals
+                $difference = $totalPrice - $oldAmountValue;
+                $bill->increment('amount', $difference);
+                $bill->increment('total_amount', $difference);
+            }
+        }
+
+        // ✅ Log the update
         LogService::record(
             $this->guard->user(),
             $prescription,
             'update',
             'Prescription',
-            'User updated a prescription status',
-            'Prescription ID: '.$prescription->prescription_id.' | Status: '.$prescription->status,
+            'User updated prescription details',
+            'Prescription ID: '.$prescription->prescription_id.
+            ' | Status: '.$prescription->status.
+            ' | Tooth: '.$prescription->tooth_list_id.
+            ' | Amount Prescribed: '.$prescription->amount_prescribed,
             $request->ip(),
             $request->userAgent()
         );
 
         return back()->with('success', 'Prescription updated successfully.');
+    }
+
+    public function destroy(Request $request)
+    {
+        $request->validate([
+            'prescription_id' => 'required|exists:prescriptions,prescription_id',
+            'password' => 'required',
+        ]);
+
+        $deletor = Auth::guard('account')->user();
+        $prescription = Prescription::findOrFail($request->prescription_id);
+
+        // 🔒 Verify password
+        if (! Hash::check($request->password, $deletor->password)) {
+            return back()->with('error', 'The password is incorrect.');
+        }
+
+        return DB::transaction(function () use ($prescription, $request, $deletor) {
+
+            // 🧾 Find related unpaid BillItem (if any)
+            $billItem = BillItem::where('prescription_id', $prescription->prescription_id)
+                ->whereHas('bill', fn ($q) => $q
+                    ->where('patient_id', $prescription->patient_id)
+                    ->where('clinic_id', $prescription->clinic_id)
+                    ->where('status', 'unpaid')
+                )
+                ->first();
+
+            if ($billItem) {
+                $bill = $billItem->bill;
+                $amount = (float) $billItem->amount;
+
+                // ✅ Update the bill before deleting the bill item
+                $bill->decrement('amount', $amount);
+                $bill->decrement('total_amount', $amount);
+
+                $billItem->delete();
+            }
+
+            // 🗑️ Delete the prescription
+            $prescription->delete();
+
+            // 🪵 Log the deletion
+            LogService::record(
+                $deletor,
+                $prescription,
+                'delete',
+                'Prescription',
+                'User deleted a prescription',
+                'Prescription ID: '.$prescription->prescription_id,
+                $request->ip(),
+                $request->userAgent()
+            );
+
+            return redirect()
+                ->route('specific-patient', ['id' => $prescription->patient_id])
+                ->with('success', 'Prescription deleted and bill updated successfully.');
+        });
     }
 }

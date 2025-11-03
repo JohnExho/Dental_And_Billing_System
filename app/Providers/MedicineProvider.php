@@ -22,7 +22,7 @@ class MedicineProvider extends ServiceProvider
      */
     public function boot(): void
     {
-        View::composer(['pages.prescriptions.modals.add'], function ($view) {
+        View::composer(['pages.prescriptions.modals.add','pages.prescriptions.modals.edit'], function ($view) {
             $clinicId = Session::get('clinic_id');
 
             // Fetch medicines with clinic-specific price or fallback

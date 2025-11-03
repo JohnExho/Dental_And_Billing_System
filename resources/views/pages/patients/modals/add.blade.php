@@ -48,12 +48,12 @@
 
                             <!-- Contact -->
                             <div class="col-md-6">
-                                <label class="form-label">Mobile  <span class="text-danger">*</span></label>
-                                <input type="text" name="mobile_no" class="form-control phone-number" required>
+                                <label class="form-label">Mobile <span class="text-danger">*</span></label>
+                                <input type="text" name="mobile_no" class="form-control phone-number" placeholder="09" required>
                             </div>
                             <div class="col-md-6">
                                 <label class="form-label">Contact No. <span class="text-danger">*</span></label>
-                                <input type="text" name="contact_no" class="form-control phone-number" required>
+                                <input type="text" name="contact_no" class="form-control phone-number" placeholder="09" required>
                             </div>
 
                             <div class="col-md-6">
@@ -220,11 +220,11 @@
                     isValid = false;
                 }
 
-                                if (field.classList.contains('phone-number') && field.value.trim().length !== 11) {
+                if (field.classList.contains('phone-number') && field.value.trim().length !== 11) {
                     if (!missingField) missingField = field;
                     isValid = false;
                 }
-                
+
             });
 
             if (!isValid) {
@@ -305,7 +305,16 @@
         // --- Phone Number Restriction ---
         document.querySelectorAll('.phone-number').forEach(input => {
             input.addEventListener('input', function() {
-                this.value = this.value.replace(/\D/g, '').slice(0, 11);
+                // Remove all non-digit characters
+                let value = this.value.replace(/\D/g, '');
+
+                // Enforce starting digits "09"
+                if (!value.startsWith('09')) {
+                    value = '09' + value.replace(/^0+|^9+/, ''); // Force prefix "09"
+                }
+
+                // Limit to 11 digits total
+                this.value = value.slice(0, 11);
             });
         });
 

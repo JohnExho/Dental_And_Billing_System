@@ -166,6 +166,14 @@
                         <i class="bi bi-list-check"></i>
                     </a>
                 </li>
+                <li class="nav-item mb-1">
+                    <a class="text-decoration-none fw-bold fs-4
+                    {{ request()->routeIs('appointments') ? 'active text-primary' : 'text-dark' }}"
+                        href="{{ route('appointments') }}" style="{{ request()->routeIs('appointments') }}">
+                        <span class="nav-text">Appointments</span>
+                        <i class="bi bi-calendar-check-fill"></i>
+                    </a>
+                </li>
             @endif
 
         </ul>

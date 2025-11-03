@@ -18,12 +18,11 @@
                         <tr>
                             <th>Date</th>
                             <th>Medicine</th>
-                            <th>Details</th>
+                            <th>Dosage Instruction</th>
                             <th>Tooth</th>
 
                             <th>Price</th>
                             <th>Status</th>
-                            <th>Author</th>
                             <th class="text-end">Actions</th>
                         </tr>
                     </thead>
@@ -32,30 +31,28 @@
                             <tr>
                                 <td>{{ $prescription->prescribed_at ? $prescription->prescribed_at->format('M d, Y') : '-' }}
                                 </td>
-                                <td>{{ $prescription->medicine?->name ?? 'N/A' }}</td>
-                                <td>{{ Str::limit($prescription->medicine?->description, 50) }}</td>
+                                <td>{{ $prescription->medicine?->name ?? 'N/A' }}
+                                    ({{ $prescription->amount_prescribed }})</td>
+                                <td>{{ $prescription->dosage_instructions ?? 'N/A' }}</td>
                                 <td>{{ $prescription->tooth?->name ?? '-' }}</td>
                                 @if ($prescription->status === 'purchased')
                                     <td>{{ $prescription->medicine_cost ?? '-' }}</td>
                                 @else
                                     <td><span class="text-muted text-decoration-line-through">
-                                        {{ $prescription->medicine_cost  }}
-                                    </span></td>
+                                            {{ $prescription->medicine_cost }}
+                                        </span></td>
                                 @endif
                                 <td>
                                     {{ $prescription->status }}
                                     {{-- if purchased add to bill --}}
                                 </td>
-                                <td>{{ $prescription->account?->full_name ?? 'Unknown' }}</td>
+
                                 <td class="text-end">
-                                    <button class="btn btn-sm btn-outline-primary"
-                                        onclick="openPrescriptionInfo({{ json_encode($prescription->prescription_id) }})">
-                                        <i class="bi bi-eye"></i>
-                                    </button>
                                     <button class="btn btn-sm btn-outline-warning"
-                                        onclick="openEditPrescription({{ json_encode($prescription->prescription_id) }})">
+                                        onclick="openEditPrescription({{ json_encode($prescription) }})">
                                         <i class="bi bi-pencil-square"></i>
                                     </button>
+
                                     <button type="button" class="btn btn-outline-danger btn-sm delete-prescription-btn"
                                         data-id="{{ $prescription->prescription_id }}">
                                         <i class="bi bi-trash"></i>
@@ -82,8 +79,7 @@
 <!-- Include Add/Edit/Delete Modals -->
 @include('pages.prescriptions.modals.add')
 @include('pages.prescriptions.modals.edit')
-{{-- @include('pages.prescriptions.modals.delete') --}}
-{{-- @include('pages.prescriptions.modals.info') --}}
+@include('pages.prescriptions.modals.delete')
 
 <script>
     document.addEventListener('DOMContentLoaded', function() {

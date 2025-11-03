@@ -220,7 +220,6 @@
         'other' => asset('storage/defaults/other.png'),
     ];
 @endphp
-<!-- JS: Edit Modal populate, step logic, cascading, preview -->
 <script>
     document.addEventListener('DOMContentLoaded', function() {
         const modal = document.getElementById('edit-patient-modal');
@@ -271,22 +270,6 @@
         });
 
         updateSteps();
-
-        // Phone restriction & numeric-only (reuse logic)
-        modal.querySelectorAll('.phone-number').forEach(input => {
-            input.addEventListener('input', function() {
-                let v = this.value.replace(/\D/g, '');
-                this.value = v.slice(0, 11);
-            });
-        });
-
-        modal.querySelectorAll('.numeric-only').forEach(input => {
-            input.addEventListener('input', function() {
-                this.value = this.value.replace(/[^0-9.]/g, '');
-                const parts = this.value.split('.');
-                if (parts.length > 2) this.value = parts[0] + '.' + parts[1];
-            });
-        });
 
         // --- Cascading selects elements ---
         const provinceSelect = modal.querySelector('#edit_province_select');

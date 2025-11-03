@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\AccountController;
 use App\Http\Controllers\AddressController;
+use App\Http\Controllers\AppointmentController;
 use App\Http\Controllers\AssociateController;
 use App\Http\Controllers\ClinicController;
 use App\Http\Controllers\LaboratoryController;
@@ -91,6 +92,7 @@ Route::middleware('web')->group(function () {
 
     Route::post('/process/create/prescription', [PrescriptionController::class, 'create'])->name('process-create-prescription');
     Route::put('/process/update/prescription', [PrescriptionController::class, 'update'])->name('process-update-prescription');
+    Route::delete('/process/delete/prescription', [PrescriptionController::class, 'destroy'])->name('process-delete-prescription');
 
     // Protected routes
     Route::middleware(['auth:account', 'patient.profile'])->group(function () {
@@ -99,6 +101,7 @@ Route::middleware('web')->group(function () {
         Route::view('/staff/dashboard', 'auth.staff-dashboard')->name('staff.dashboard');
         Route::get('/waitlist', [WaitlistController::class, 'index'])->name('waitlist');
         Route::get('/patients', [PatientController::class, 'index'])->name('patients');
+        Route::get('/appointments', [AppointmentController::class, 'index'])->name('appointments');
         Route::get('/patient/profile', [PatientController::class, 'specific'])->name('specific-patient');
         Route::get('/settings', [AccountController::class, 'settings'])->name('settings');
         Route::view('/dump', 'dd')->name('dump');

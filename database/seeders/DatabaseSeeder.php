@@ -21,5 +21,6 @@ class DatabaseSeeder extends Seeder
         $this->call(ToothListSeeder::class);
         $this->call(ServiceSeeder::class);
         $this->call(StaffSeeder::class);
+        $this->call(MedicineSeeder::class);
     }
 }
