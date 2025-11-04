@@ -1,5 +1,12 @@
 ### ✅ To-Do List
 
+### Add the following fields:
+- **Procedure**
+- **Tooth** — allow multiple selections (requires a new table)
+- **Note**
+- **Status**
+
+
 - **Fix Billing Process**
 - **Receipt**
   - Display an itemized list showing **service name** and **tooth**.
