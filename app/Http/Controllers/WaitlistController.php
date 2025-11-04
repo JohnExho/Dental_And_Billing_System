@@ -37,7 +37,6 @@ class WaitlistController extends Controller
             'account',
             'patient',
             'associate',
-            'laboratory',
         ])->latest()->whereNotNull('clinic_id');
 
         if (session()->has('clinic_id') && $clinicId = session('clinic_id')) {
@@ -57,7 +56,6 @@ class WaitlistController extends Controller
             [
                 'patient_id' => 'required|uuid|exists:patients,patient_id',
                 'associate_id' => 'nullable|uuid',
-                'laboratory_id' => 'nullable|uuid',
                 'queue_position' => 'nullable|integer',
                 'clinic_id' => 'required|uuid',
             ],
@@ -115,7 +113,6 @@ class WaitlistController extends Controller
                 'patient_id' => $validated['patient_id'],
                 'clinic_id' => $clinicId,
                 'associate_id' => $validated['associate_id'] ?? null,
-                'laboratory_id' => $validated['laboratory_id'] ?? null,
                 'requested_at' => now(),
                 'queue_position' => $queuePosition,
                 'queue_snapshot' => $queuePosition,
@@ -147,7 +144,6 @@ class WaitlistController extends Controller
             [
                 'waitlist_id' => 'required|uuid|exists:waitlist,waitlist_id',
                 'associate_id' => 'nullable|uuid|exists:associates,associate_id',
-                'laboratory_id' => 'nullable|uuid|exists:laboratories,laboratory_id',
                 'status' => 'required|in:waiting,in_consultation,completed,finished',
             ],
             self::messages()
@@ -188,7 +184,6 @@ class WaitlistController extends Controller
 
             // ✅ Only update allowed fields
             $waitlist->associate_id = $validated['associate_id'] ?? null;
-            $waitlist->laboratory_id = $validated['laboratory_id'] ?? null;
             $waitlist->status = $validated['status'] ?? $waitlist->status;
             $waitlist->save();
 

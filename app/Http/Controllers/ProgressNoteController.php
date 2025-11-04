@@ -131,6 +131,7 @@ class ProgressNoteController extends Controller
                 Treatment::create([
                     'treatment_id' => Str::uuid(),
                     'patient_visit_id' => $patientVisit->patient_visit_id,
+                    'account_id' => $authAccount->account_id,
                     'patient_id' => $validated['patient_id'],
                     'associate_id' => $validated['associate_id'] ?? null,
                     'clinic_id' => $clinicId,

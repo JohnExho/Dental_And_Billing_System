@@ -12,6 +12,8 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/sweetalert/1.1.3/sweetalert.min.css">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flag-icons/css/flag-icons.min.css"/>
+
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <link rel="icon" href="{{ asset('favicon.ico') }}">
     @stack('styles')
@@ -91,7 +93,7 @@
         @endif
         @yield('content')
         @yield('modals')
-        @if (Auth::check() && Auth::user()->role === 'staff')
+        @if (Auth::check() && $activeRole === 'staff')
             @include('pages.patients.modals.add')
         @endif
 

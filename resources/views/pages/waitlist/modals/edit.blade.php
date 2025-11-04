@@ -60,21 +60,6 @@
                                 </select>
                             </div>
 
-                            <!-- Laboratory (Editable) -->
-                            <div class="mb-3">
-                                <label class="form-label fw-semibold">
-                                    <i class="bi bi-building-gear me-1"></i> Laboratory
-                                </label>
-                                <select name="laboratory_id" class="form-select">
-                                    <option value="">-- Select Laboratory --</option>
-                                     <option value=""> Remove </option>
-                                    <option value="{{ $wl->laboratory?->laboratory_id }}"
-                                        {{ $wl->laboratory_id == $wl->laboratory?->laboratory_id ? 'selected' : '' }}>
-                                        {{ $wl->laboratory?->name }}
-                                    </option>
-                                </select>
-                            </div>
-
                             <!-- Status (Editable) -->
                             <div class="mb-3">
                                 <label class="form-label fw-semibold">

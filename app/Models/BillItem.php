@@ -27,7 +27,6 @@ class BillItem extends Model
         'account_id',
         'item_type',
         'service_id',
-        'tooth_list_id',
         'amount',
         'prescription_id',
     ];

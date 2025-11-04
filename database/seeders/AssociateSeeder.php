@@ -30,7 +30,6 @@ class AssociateSeeder extends Seeder
             'specialty' => $faker->word,
             'account_id' => null,
             'clinic_id' => null,
-            'laboratory_id' => null,
             'is_active' => true,
         ]);
 

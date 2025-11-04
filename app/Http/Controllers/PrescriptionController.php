@@ -121,6 +121,8 @@ class PrescriptionController extends Controller
         // ✅ Total cost is already provided by frontend (not per-unit)
         $totalPrice = $prescription->medicine_cost;
 
+        $authAccount = $this->guard->user();
+        
         // Billing logic (only if status changed)
         if ($oldStatus !== $prescription->status) {
 
@@ -134,7 +136,7 @@ class PrescriptionController extends Controller
                     ],
                     [
                         'bill_id' => Str::uuid(),
-                        'account_id' => auth()->id(),
+                        'account_id' => $authAccount->account_id,
                         'amount' => 0,
                         'discount' => 0,
                         'total_amount' => 0,

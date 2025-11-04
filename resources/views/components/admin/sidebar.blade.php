@@ -113,15 +113,6 @@
             </li>
             <li class="nav-item mb-1">
                 <a class="text-decoration-none fw-bold fs-4
-                    {{ request()->routeIs('laboratories') ? 'active text-primary' : 'text-dark' }}"
-                    href="{{ route('laboratories') }}"
-                    style="{{ request()->routeIs('laboratories') ? 'background: gray;' : '' }}">
-                    <span class="nav-text">Laboratories</span>
-                    <i class="bi bi-buildings"></i>
-                </a>
-            </li>
-            <li class="nav-item mb-1">
-                <a class="text-decoration-none fw-bold fs-4
                     {{ request()->routeIs('teeth') ? 'active text-primary' : 'text-dark' }}"
                     href="{{ route('teeth') }}" style="{{ request()->routeIs('teeth') ? 'background: gray;' : '' }}">
                     <span class="nav-text">Teeth</span>

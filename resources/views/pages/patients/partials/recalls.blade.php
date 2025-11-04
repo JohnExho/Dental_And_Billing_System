@@ -111,11 +111,34 @@
         });
     }
 
+    function _setSelectValueCaseInsensitive(selectEl, value) {
+        if (!selectEl || value === null || value === undefined) return;
+        const v = String(value);
+        try {
+            selectEl.value = v;
+            if ([...selectEl.options].some(o => o.value === v)) return;
+        } catch (e) {
+            // fallback
+        }
+        const low = v.toLowerCase();
+        for (let i = 0; i < selectEl.options.length; i++) {
+            const opt = selectEl.options[i];
+            if (String(opt.value).toLowerCase() === low) {
+                selectEl.selectedIndex = i;
+                return;
+            }
+        }
+    }
+
     function openEditRecallModal(recallId, notes, status) {
         // populate the modal inputs
         document.getElementById('edit_recall_id').value = recallId;
         document.getElementById('edit_notes').value = notes;
-        document.getElementById('edit_status').value = status;
+
+    // Scope the selector to the recall modal to avoid selecting the wrong element when multiple
+    // elements on the page share the same id (e.g., prescription modal).
+    const statusSelect = document.querySelector('#edit-recall-modal #edit_status');
+    _setSelectValueCaseInsensitive(statusSelect, status);
 
         // show the modal
         const modal = new bootstrap.Modal(document.getElementById('edit-recall-modal'));

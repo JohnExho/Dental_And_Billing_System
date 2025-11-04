@@ -56,7 +56,6 @@ class StaffController extends Controller
             'password' => 'required|string|min:8|confirmed',
             'email' => 'nullable|email|max:255',
             'clinic_id' => 'nullable|exists:clinics,clinic_id',
-            'laboratory_id' => 'nullable|exists:laboratories,laboratory_id',
             'address' => 'nullable|array',
             'address.house_no' => 'nullable|string|max:50',
             'address.street' => 'nullable|string|max:255',
@@ -93,7 +92,6 @@ class StaffController extends Controller
                 'email' => $normalizedEmail,
                 'email_hash' => $newEmailHash,
                 'clinic_id' => $request->clinic_id,
-                'laboratory_id' => $request->laboratory_id,
                 'role' => 'staff', // mark as staff
                 'password' => Hash::make($request->password), // important
             ]);
@@ -145,7 +143,6 @@ class StaffController extends Controller
             'contact_no' => 'nullable|string|max:20',
             'email' => 'nullable|email|max:255',
             'clinic_id' => 'nullable|exists:clinics,clinic_id',
-            'laboratory_id' => 'nullable|exists:laboratories,laboratory_id',
             'address' => 'nullable|array',
             'address.house_no' => 'nullable|string|max:50',
             'address.street' => 'nullable|string|max:255',
@@ -184,7 +181,6 @@ class StaffController extends Controller
                 'email' => $normalizedEmail,
                 'email_hash' => $newEmailHash,
                 'clinic_id' => $request->clinic_id,
-                'laboratory_id' => $request->laboratory_id,
                 'is_active' => $request->has('is_active') ? 1 : 0,
             ];
 

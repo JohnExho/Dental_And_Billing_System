@@ -17,7 +17,7 @@ class AppointmentController extends Controller
 
         $cacheKey = "holidays_{$year}_{$month}";
         $holidayEvents = Cache::remember($cacheKey, now()->addDays(1), function () use ($year, $month) {
-            $apiKey = 'bdfce213aa5d45b6b4dcfb3b47bacde0';
+            $apiKey = env('HOLIDAY_API_KEY');
             $country = 'PH'; // Philippines
 
             $events = [];

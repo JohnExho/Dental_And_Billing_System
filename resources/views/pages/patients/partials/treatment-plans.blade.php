@@ -36,7 +36,7 @@
                                 <td>{{ $treatment->billItem?->service?->name ?? $treatment->billItem?->name ?? $treatment->treatment_name ?? '-' }}</td>
 
                                 {{-- make tooth clickable so it can be updated with condition --}}
-                                <td>{{ $treatment->billItem?->tooth?->number ?? '-' }}</td>
+                                <td>{{ $treatment->billItem?->tooth?->name ?? '-' }}</td>
 
                                 <td class="text-truncate" style="max-width:240px;">{{ $treatment->notes ?? '-' }}</td>
 
