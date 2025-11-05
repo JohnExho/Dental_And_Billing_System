@@ -379,7 +379,6 @@ return new class extends Migration
             $table->uuid('account_id')->nullable()->index(); // who created it
             $table->uuid('patient_id')->nullable()->index();
             $table->uuid('patient_visit_id')->nullable()->index(); // optional if tied to a visit
-
             // Core content
             $table->text('summary')->nullable(); // short descriptor
             $table->text('note');
@@ -393,6 +392,7 @@ return new class extends Migration
             $table->foreign('account_id')->references('account_id')->on('accounts')->onDelete('set null');
             $table->foreign('patient_id')->references('patient_id')->on('patients')->onDelete('set null');
             $table->foreign('patient_visit_id')->references('patient_visit_id')->on('patient_visits')->onDelete('set null');
+
         });
 
         Schema::create('bill_items', function (Blueprint $table) {
@@ -401,7 +401,6 @@ return new class extends Migration
             $table->uuid('account_id')->nullable(); // Account that created the bill item
             $table->string('item_type'); // service, medicine, other
             $table->uuid('service_id')->nullable(); // Nullable if item_type is medicine
-            $table->uuid('tooth_list_id')->nullable(); // Nullable if item_type is not tooth-related
             $table->decimal('amount', 10, 2);
             $table->timestamps();
             $table->softDeletes();
@@ -409,21 +408,20 @@ return new class extends Migration
             $table->foreign('bill_id')->references('bill_id')->on('bills')->onDelete('set null');
             $table->foreign('account_id')->references('account_id')->on('accounts')->onDelete('set null');
             $table->foreign('service_id')->references('service_id')->on('services')->onDelete('set null');
-            $table->foreign('tooth_list_id')->references('tooth_list_id')->on('tooth_list')->onDelete('set null');
         });
 
         
-    //   Schema::create('bill_item_tooth', function (Blueprint $table) {
-    //         $table->uuid('bill_item_tooth_id')->primary();
-    //         $table->uuid('bill_item_id')->nullable()->index();
-    //         $table->uuid('tooth_list_id')->nullable()->index();
+        Schema::create('bill_item_tooth', function (Blueprint $table) {
+                $table->uuid('bill_item_tooth_id')->primary();
+                $table->uuid('bill_item_id')->nullable()->index();
+                $table->uuid('tooth_list_id')->nullable()->index();
 
-    //         $table->timestamps();
-    //         $table->softDeletes();
+                $table->timestamps();
+                $table->softDeletes();
 
-    //         $table->foreign('bill_item_id')->references('bill_item_id')->on('bill_items')->onDelete('set null');
-    //         $table->foreign('tooth_list_id')->references('tooth_list_id')->on('tooth_list')->onDelete('set null');
-    //     });
+                $table->foreign('bill_item_id')->references('bill_item_id')->on('bill_items')->onDelete('set null');
+                $table->foreign('tooth_list_id')->references('tooth_list_id')->on('tooth_list')->onDelete('set null');
+            });
 
 
         Schema::create('payments', function (Blueprint $table) {
@@ -497,19 +495,18 @@ return new class extends Migration
             Schema::create('patient_treatments', function (Blueprint $table) {
                 $table->uuid('patient_treatment_id')->primary();
                 $table->uuid('account_id')->nullable()->index(); // Account that created the treatment record
-                $table->uuid('associate_id')->nullable()->index(); // who provided the treatment
                 $table->uuid('patient_visit_id')->nullable()->index();   // nullable if historically logged with no visit
                 $table->uuid('patient_id')->nullable()->index();
                 $table->uuid('clinic_id')->nullable()->index();
                 // service and tooth is already related via bill_items
                 $table->uuid('bill_item_id')->nullable()->index();
                 $table->dateTime('treatment_date')->nullable();
+                $table->enum('status', ['planned', 'in_progress', 'completed', 'cancelled'])->default('planned')->index();
 
                 $table->timestamps();
                 $table->softDeletes();
 
                 $table->foreign('account_id')->references('account_id')->on('accounts')->onDelete('set null');
-                $table->foreign('associate_id')->references('associate_id')->on('associates')->onDelete('set null');
                 $table->foreign('patient_visit_id')->references('patient_visit_id')->on('patient_visits')->onDelete('set null');
                 $table->foreign('patient_id')->references('patient_id')->on('patients')->onDelete('set null');
                 $table->foreign('clinic_id')->references('clinic_id')->on('clinics')->onDelete('set null');

@@ -478,7 +478,7 @@ class PatientController extends Controller
             ->latest()
             ->paginate(8);
 
-        $treatments = Treatment::with(['account', 'clinic', 'visit'])
+        $treatments = Treatment::with(['account', 'clinic', 'visit', 'bill.billItemTooths.tooth'])
             ->where('patient_id', $patientId)
             ->where('clinic_id', $clinicId)
             ->latest()

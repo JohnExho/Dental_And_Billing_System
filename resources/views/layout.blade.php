@@ -63,6 +63,8 @@
         $activeRole = session('active_role', auth()->user()?->role);
     @endphp
 
+
+    {{-- remove in production --}}
     @if ($errors->any())
         <div class="alert alert-danger" style="z-index: 99999;">
             <ul>

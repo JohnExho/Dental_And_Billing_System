@@ -53,15 +53,18 @@
                         </div>
 
                         <div class="col-md-6">
-                            <label for="tooth_id" class="form-label">Tooth</label>
-                            <select name="tooth_id" id="tooth_id" class="form-select">
-                                <option selected disabled value="">Select Tooth</option>
+                            <label for="tooth_id" class="form-label">Tooth (select one or more)</label>
+                            <div id="tooth_list" class="border rounded p-2" style="max-height:220px; overflow:auto;">
                                 @foreach ($teeth as $tooth)
-                                    <option value="{{ $tooth->tooth_list_id }}" data-price="{{ $tooth->final_price }}">
-                                        {{ $tooth->name }} - ₱{{ number_format($tooth->final_price, 2) }}
-                                    </option>
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" name="tooth_id[]" value="{{ $tooth->tooth_list_id }}" id="tooth_{{ $loop->index }}" data-price="{{ $tooth->final_price }}">
+                                        <label class="form-check-label" for="tooth_{{ $loop->index }}">
+                                            {{ $tooth->name }} - ₱{{ number_format($tooth->final_price, 2) }}
+                                        </label>
+                                    </div>
                                 @endforeach
-                            </select>
+                            </div>
+                            <div class="form-text">Check one or more teeth.</div>
                         </div>
 
                         <!-- 💰 Net Cost only -->
@@ -98,7 +101,8 @@
 <script>
 document.addEventListener("DOMContentLoaded", function() {
     const serviceSelect = document.getElementById("service");
-    const toothSelect = document.getElementById("tooth_id");
+    // tooth checkboxes are named tooth_id[]
+    const toothCheckboxSelector = 'input[name="tooth_id[]"]';
     const netCostDisplay = document.getElementById("net_cost");
     const netCostInput = document.getElementById("net_cost_input");
     const reasonField = document.getElementById("followup_reason");
@@ -114,17 +118,26 @@ document.addEventListener("DOMContentLoaded", function() {
     }
     reasonField.addEventListener("input", toggleFollowupRequirement);
 
-    // Compute net cost = service + tooth
+    // Compute net cost = service + sum of checked tooth checkboxes
     function updateNetCost() {
         const servicePrice = parseFloat(serviceSelect.selectedOptions[0]?.getAttribute("data-price")) || 0;
-        const toothPrice = parseFloat(toothSelect.selectedOptions[0]?.getAttribute("data-price")) || 0;
+
+        let toothPrice = 0;
+        const checked = document.querySelectorAll(`${toothCheckboxSelector}:checked`);
+        checked.forEach(cb => {
+            toothPrice += parseFloat(cb.getAttribute('data-price')) || 0;
+        });
 
         const total = servicePrice + toothPrice;
         netCostDisplay.value = total.toFixed(2);
         netCostInput.value = total.toFixed(2);
     }
 
+    // Attach listeners
     serviceSelect.addEventListener("change", updateNetCost);
-    toothSelect.addEventListener("change", updateNetCost);
+    document.querySelectorAll(toothCheckboxSelector).forEach(cb => cb.addEventListener('change', updateNetCost));
+
+    // initialize displayed cost
+    updateNetCost();
 });
 </script>

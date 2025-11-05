@@ -5,7 +5,7 @@ use App\Http\Controllers\AddressController;
 use App\Http\Controllers\AppointmentController;
 use App\Http\Controllers\AssociateController;
 use App\Http\Controllers\ClinicController;
-use App\Http\Controllers\LaboratoryController;
+use App\Http\Controllers\TreatmentController;
 use App\Http\Controllers\MedicineController;
 use App\Http\Controllers\OTPController;
 use App\Http\Controllers\PatientController;
@@ -54,10 +54,6 @@ Route::middleware('web')->group(function () {
     Route::put('/process/update/staff', [StaffController::class, 'update'])->name('process-update-staff');
     Route::delete('/process/delete/staff', [StaffController::class, 'destroy'])->name('process-delete-staff');
 
-    Route::post('/process/create/laboratory', [LaboratoryController::class, 'create'])->name('process-create-laboratory');
-    Route::put('/process/update/laboratory', [LaboratoryController::class, 'update'])->name('process-update-laboratory');
-    Route::delete('/process/delete/laboratory', [LaboratoryController::class, 'destroy'])->name('process-delete-laboratory');
-
     Route::post('/process/create/associate', [AssociateController::class, 'create'])->name('process-create-associate');
     Route::put('/process/update/associate', [AssociateController::class, 'update'])->name('process-update-associate');
     Route::delete('/process/delete/associate', [AssociateController::class, 'destroy'])->name('process-delete-associate');
@@ -94,6 +90,8 @@ Route::middleware('web')->group(function () {
     Route::put('/process/update/prescription', [PrescriptionController::class, 'update'])->name('process-update-prescription');
     Route::delete('/process/delete/prescription', [PrescriptionController::class, 'destroy'])->name('process-delete-prescription');
 
+    Route::post('/process/create/treatment', [TreatmentController::class, 'create'])->name('process-create-treatment');
+
     // Protected routes
     Route::middleware(['auth:account', 'patient.profile'])->group(function () {
         Route::view('/dashboard', 'dashboard')->name('dashboard');
@@ -109,7 +107,6 @@ Route::middleware('web')->group(function () {
             Route::get('/clinics', [ClinicController::class, 'index'])->name('clinics');
             Route::get('/associates', [AssociateController::class, 'index'])->name('associates');
             Route::get('/staffs', [StaffController::class, 'index'])->name('staffs');
-            Route::get('/laboratories', [LaboratoryController::class, 'index'])->name('laboratories');
             Route::get('/teeth', [ToothListController::class, 'index'])->name('teeth');
             Route::get('/medicines', [MedicineController::class, 'index'])->name('medicines');
             Route::get('/services', [ServiceController::class, 'index'])->name('services');

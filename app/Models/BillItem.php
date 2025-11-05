@@ -69,4 +69,23 @@ class BillItem extends Model
     {
         return $this->morphMany(Logs::class, 'loggable');
     }
+
+    public function billItemTooths()
+    {
+        return $this->hasMany(BillItemTooth::class);
+    }
+
+    public function teeth()
+    {
+        // Many-to-many via pivot table `bill_item_tooth`.
+        // Explicit keys are provided because the models use non-standard PK names.
+        return $this->belongsToMany(
+            \App\Models\ToothList::class,
+            'bill_item_tooth', // pivot table
+            'bill_item_id', // foreign key on pivot referencing this model
+            'tooth_list_id', // related key on pivot referencing ToothList
+            'bill_item_id', // local key on this model
+            'tooth_list_id' // local key on related model
+        );
+    }
 }

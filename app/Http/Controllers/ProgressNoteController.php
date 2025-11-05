@@ -8,6 +8,7 @@ use App\Models\Note;
 use App\Models\PatientVisit;
 use App\Models\Recall;
 use App\Models\Treatment;
+use App\Models\BillItemTooth;
 use App\Services\LogService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -16,9 +17,11 @@ use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Str;
+use App\Traits\ValidationMessages;
 
 class ProgressNoteController extends Controller
 {
+    use ValidationMessages;
     protected $guard;
 
     public function __construct()
@@ -30,15 +33,15 @@ class ProgressNoteController extends Controller
     {
         $validator = Validator::make($request->all(), [
             'patient_id' => 'required|uuid|exists:patients,patient_id',
-            'associate_id' => 'nullable|uuid|exists:associates,associate_id',
             'service' => 'required|uuid|exists:services,service_id',
-            'tooth_id' => 'nullable|uuid|exists:tooth_list,tooth_list_id',
+            'tooth_id' => 'nullable|array',
+            'tooth_id.*' => 'nullable|uuid|exists:tooth_list,tooth_list_id',
             'remarks' => 'nullable|string',
             'visit_date' => 'required|date',
             'followup_date' => 'nullable|date',
             'followup_reason' => 'nullable|string',
             'net_cost' => 'nullable',
-        ]);
+        ], self::messages());
 
         if ($validator->fails()) {
             return back()->with('error', $validator->errors()->first());
@@ -106,22 +109,33 @@ class ProgressNoteController extends Controller
                 ]);
             }
 
-            Log::info('tooth id:1 '.$request->tooth_id);
-            // ✅ 5. Create BILL ITEM
-            BillItem::create([
+            Log::info('tooth id(s): ' . json_encode($request->tooth_id));
+            // ✅ 5. Create BILL ITEM (for the service)
+            $billItem = BillItem::create([
                 'bill_item_id' => Str::uuid(),
                 'bill_id' => $bill->bill_id,
                 'account_id' => $authAccount->account_id,
                 'item_type' => 'service',
                 'medicine_id' => null,
                 'service_id' => $validated['service'],
-                'tooth_list_id' => $validated['tooth_id'] ?? null,
                 'amount' => $totalServiceAndTooth,
                 'created_at' => now(),
                 'updated_at' => now(),
             ]);
 
-            Log::info('tooth id:2     '.$request->tooth_id);
+            // If multiple teeth were selected, create BillItemTooth rows
+            if (! empty($validated['tooth_id']) && is_array($validated['tooth_id'])) {
+                foreach ($validated['tooth_id'] as $toothId) {
+                    if (empty($toothId)) continue;
+                    BillItemTooth::create([
+                        'bill_item_tooth_id' => Str::uuid(),
+                        'bill_item_id' => $billItem->bill_item_id,
+                        'tooth_list_id' => $toothId,
+                        'created_at' => now(),
+                        'updated_at' => now(),
+                    ]);
+                }
+            }
             // ✅ 6. Update bill totals
             $bill->amount += $totalServiceAndTooth;
             $bill->total_amount += $totalServiceAndTooth;
@@ -133,12 +147,8 @@ class ProgressNoteController extends Controller
                     'patient_visit_id' => $patientVisit->patient_visit_id,
                     'account_id' => $authAccount->account_id,
                     'patient_id' => $validated['patient_id'],
-                    'associate_id' => $validated['associate_id'] ?? null,
                     'clinic_id' => $clinicId,
-                    'bill_item_id' => BillItem::where('bill_id', $bill->bill_id)
-                        ->latest()
-                        ->first()
-                        ->bill_item_id,
+                    'bill_item_id' => $billItem->bill_item_id,
                     'treatment_date' => now(),
                 ]);
             }

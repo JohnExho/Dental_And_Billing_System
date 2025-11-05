@@ -22,7 +22,7 @@ class ToothProvider extends ServiceProvider
      */
     public function boot(): void
     {
-        View::composer(['pages.progress-notes.modals.add','pages.prescriptions.modals.add','pages.prescriptions.modals.edit'], function ($view) {
+        View::composer(['pages.progress-notes.modals.add','pages.prescriptions.modals.add','pages.prescriptions.modals.edit', 'pages.treatments.modals.add'], function ($view) {
             $clinicId = Session::get('clinic_id');
 
             $teeth = ToothList::with(['clinicPrices' => function ($query) use ($clinicId) {
