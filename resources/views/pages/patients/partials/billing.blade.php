@@ -31,35 +31,31 @@
                                 <td>{{ isset($bill->amount) ? number_format($bill->amount, 2) : '-' }}</td>
                                 <td>{{ $bill->status ?? '-' }}</td>
                                 <td class="text-end">
-                                    <button class="btn btn-sm btn-outline-secondary"
-                                        onclick="openProcessBillModal(
-        {{ json_encode($bill->bill_id) }},
-        {{ json_encode($bill->bill_number ?? $bill->bill_id) }},
-        {{ json_encode($bill->account?->full_name ?? 'Unknown') }},
-        {{ json_encode(
-            $bill->billItems->map(
-                fn($item) => [
-                    'item_type' => $item->item_type,
-                    'name' => $item->service?->name ?? ($item->tooth?->name ?? 'Unknown Item'),
-                    'amount' => $item->amount,
-                ],
-            ),
-        ) }}
-    )">
-                                        <i class="bi bi-arrow-bar-right"></i>
-                                    </button>
+                                    @unless ($bill->status === 'cancelled')
+                                        <button class="btn btn-sm btn-outline-secondary"
+                                            onclick="openProcessBillModal(
+            {{ json_encode($bill->bill_id) }},
+            {{ json_encode($bill->bill_number ?? $bill->bill_id) }},
+            {{ json_encode($bill->account?->full_name ?? 'Unknown') }},
+            {{ json_encode(
+                $bill->billItems->map(
+                    fn($item) => [
+                        'item_type' => $item->item_type,
+                        'name' => $item->service?->name ?? ($item->tooth?->name ?? 'Unknown Item'),
+                        'amount' => $item->amount,
+                    ],
+                ),
+            ) }}
+        )">
+                                            <i class="bi bi-arrow-bar-right"></i>
+                                        </button>
+                                    @else
+                                        <button type="button" class="btn btn-outline-danger btn-sm delete-bill-btn"
+                                            data-id="{{ $bill->bill_id }}">
+                                            <i class="bi bi-trash"></i>
+                                        </button>
+                                    @endunless
 
-
-
-                                    <button class="btn btn-sm btn-outline-primary"
-                                        onclick="openBillInfoModal({{ json_encode($bill->bill_id) }}, {{ json_encode($bill->bill_number ?? '') }}, {{ json_encode($bill->account?->full_name ?? 'Unknown') }}, {{ json_encode(isset($bill->amount) ? number_format($bill->amount, 2) : '-') }}, {{ json_encode($bill->status ?? '-') }}, {{ json_encode($bill->created_at?->format('M d, Y') ?? '-') }})">
-                                        <i class="bi bi-eye"></i>
-                                    </button>
-
-                                    <button type="button" class="btn btn-outline-danger btn-sm delete-bill-btn"
-                                        data-id="{{ $bill->bill_id }}">
-                                        <i class="bi bi-trash"></i>
-                                    </button>
                                 </td>
                             </tr>
                         @endforeach
@@ -80,9 +76,7 @@
 </div>
 
 @include('pages.billing.modals.process')
-{{-- @include('pages.bills.modals.add')
-@include('pages.bills.modals.delete')
-@include('pages.bills.modals.info') --}}
+@include('pages.billing.modals.delete')
 
 <script>
     document.addEventListener('DOMContentLoaded', function() {

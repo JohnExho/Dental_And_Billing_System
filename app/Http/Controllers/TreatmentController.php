@@ -237,7 +237,7 @@ class TreatmentController extends Controller
             $treatment = Treatment::findOrFail($validated['treatment_id']);
 
             // 2. Compute new cost
-            $totalCost = (float) ($request->net_cost ?? 0);
+            $totalCost = $request->net_cost ?? 0;
 
             // 3. Update existing bill item
             $billItem = $treatment->billItem;

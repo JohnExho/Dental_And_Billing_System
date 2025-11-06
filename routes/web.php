@@ -1,22 +1,23 @@
 <?php
 
+use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\OTPController;
+use App\Http\Controllers\BillController;
+use App\Http\Controllers\StaffController;
+use App\Http\Controllers\ClinicController;
+use App\Http\Controllers\RecallController;
 use App\Http\Controllers\AccountController;
 use App\Http\Controllers\AddressController;
-use App\Http\Controllers\AppointmentController;
-use App\Http\Controllers\AssociateController;
-use App\Http\Controllers\ClinicController;
-use App\Http\Controllers\TreatmentController;
-use App\Http\Controllers\MedicineController;
-use App\Http\Controllers\OTPController;
 use App\Http\Controllers\PatientController;
+use App\Http\Controllers\ServiceController;
+use App\Http\Controllers\MedicineController;
+use App\Http\Controllers\WaitlistController;
+use App\Http\Controllers\AssociateController;
+use App\Http\Controllers\ToothListController;
+use App\Http\Controllers\TreatmentController;
+use App\Http\Controllers\AppointmentController;
 use App\Http\Controllers\PrescriptionController;
 use App\Http\Controllers\ProgressNoteController;
-use App\Http\Controllers\RecallController;
-use App\Http\Controllers\ServiceController;
-use App\Http\Controllers\StaffController;
-use App\Http\Controllers\ToothListController;
-use App\Http\Controllers\WaitlistController;
-use Illuminate\Support\Facades\Route;
 
 Route::middleware('web')->group(function () {
     // Login page
@@ -94,6 +95,8 @@ Route::middleware('web')->group(function () {
     Route::put('/process/update/treatment', [TreatmentController::class, 'update'])->name('process-update-treatment');
     Route::delete('/process/delete/treatment', [TreatmentController::class, 'destroy'])->name('process-delete-treatment');
 
+    // Route::put('/process/process/bill', [BillController::class, 'store'])->name('process-process-bill');
+    Route::delete('/process/delete/bill', [BillController::class, 'destroy'])->name('process-delete-bill'); 
     // Protected routes
     Route::middleware(['auth:account', 'patient.profile'])->group(function () {
         Route::view('/dashboard', 'dashboard')->name('dashboard');

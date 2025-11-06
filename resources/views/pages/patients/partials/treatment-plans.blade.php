@@ -119,11 +119,6 @@
                                 <td>{{ $treatment->status ?? '-' }}</td>
 
                                 <td class="text-end">
-                                    <button class="btn btn-sm btn-outline-primary"
-                                        onclick="openTreatmentInfoModal({{ json_encode($treatment->id ?? $treatment->treatment_id) }}, {{ json_encode($treatment->patient?->full_name ?? 'Unknown') }}, {{ json_encode($treatment->procedure?->name ?? ($treatment->treatment_name ?? '-')) }}, {{ json_encode($treatment->performed_at ? \Carbon\Carbon::parse($treatment->performed_at)->format('M d, Y') : '-') }}, {{ json_encode($treatment->status ?? '-') }}, {{ json_encode($treatment->notes ?? '-') }})">
-                                        <i class="bi bi-eye"></i>
-                                    </button>
-
                                     <button class="btn btn-sm btn-outline-warning"
                                         onclick="openEditTreatmentModal('{{ $treatment->patient_treatment_id }}')">
                                         <i class="bi bi-pencil-square"></i>

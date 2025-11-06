@@ -72,7 +72,7 @@ class BillItem extends Model
 
     public function billItemTooths()
     {
-        return $this->hasMany(BillItemTooth::class);
+        return $this->hasMany(BillItemTooth::class)->whereNull('deleted_at');
     }
 
     public function teeth()
@@ -87,8 +87,8 @@ class BillItem extends Model
             'bill_item_id', // local key on this model
             'tooth_list_id' // local key on related model
         )
-        ->withPivot('bill_item_tooth_id', 'deleted_at')
+            ->withPivot('bill_item_tooth_id', 'deleted_at')
         // exclude soft-deleted pivot rows
-        ->whereNull('bill_item_tooth.deleted_at');
+            ->whereNull('bill_item_tooth.deleted_at');
     }
 }
