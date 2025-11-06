@@ -287,7 +287,7 @@ class PrescriptionController extends Controller
             );
 
             return redirect()
-                ->route('specific-patient', ['id' => $prescription->patient_id])
+                ->route('specific-patient')
                 ->with('success', 'Prescription deleted and bill updated successfully.');
         });
     }

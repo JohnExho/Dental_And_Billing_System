@@ -207,7 +207,7 @@ class TreatmentController extends Controller
                 $request->userAgent()
             );
 
-            return redirect()->route('specific-patient', ['id' => $treatment->patient_id])->with('success', 'Patient treatment deleted successfully.');
+            return redirect()->route('specific-patient')->with('success', 'Patient treatment deleted successfully.');
         });
     }
 

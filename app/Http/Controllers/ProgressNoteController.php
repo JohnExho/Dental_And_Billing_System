@@ -251,7 +251,7 @@ class ProgressNoteController extends Controller
                 $request->userAgent()
             );
 
-            return redirect()->route('specific-patient', ['id' => $note->patient_id])->with('success', 'Patient note deleted successfully.');
+            return redirect()->route('specific-patient')->with('success', 'Patient note deleted successfully.');
         });
     }
 }

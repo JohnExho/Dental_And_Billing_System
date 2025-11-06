@@ -72,7 +72,7 @@ class BillController extends Controller
             );
 
             return redirect()
-                ->route('specific-patient', ['id' => $bill->patient_id])
+                ->route('specific-patient')
                 ->with('success', 'Patient bill deleted successfully.');
         });
     }

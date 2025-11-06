@@ -134,7 +134,7 @@ class RecallController extends Controller
                 $request->userAgent()
             );
 
-            return redirect()->route('specific-patient', ['id' => $recall->patient_id])->with('success', 'Patient recall deleted successfully.');
+            return redirect()->route('specific-patient')->with('success', 'Patient recall deleted successfully.');
         });
     }
 }
