@@ -3,11 +3,6 @@
         <h6 class="mb-0 fw-bold text-primary">
             <i class="bi bi-receipt me-2"></i> Bills
         </h6>
-
-        <!-- Add Bill Button -->
-        <button class="btn btn-sm btn-primary" data-bs-toggle="modal" data-bs-target="#add-bill-modal">
-            <i class="bi bi-plus-circle me-1"></i> Add Bill
-        </button>
     </div>
 
     <div class="card-body p-0">

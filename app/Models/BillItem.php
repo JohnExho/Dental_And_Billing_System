@@ -86,6 +86,9 @@ class BillItem extends Model
             'tooth_list_id', // related key on pivot referencing ToothList
             'bill_item_id', // local key on this model
             'tooth_list_id' // local key on related model
-        );
+        )
+        ->withPivot('bill_item_tooth_id', 'deleted_at')
+        // exclude soft-deleted pivot rows
+        ->whereNull('bill_item_tooth.deleted_at');
     }
 }

@@ -26,7 +26,7 @@ class Note extends Model
         'account_id',
         'patient_id',
         'associate_id',
-        'patient_visit_id',
+        'patient_treatment_id',
         'summary',
         'note',
         'note_type',
@@ -73,5 +73,10 @@ class Note extends Model
 
     public function clinic(){
         return $this->belongsTo(Clinic::class, 'clinic_id', 'clinic_id');
+    }
+
+    public function treatment()
+    {
+        return $this->belongsTo(Treatment::class, 'patient_treatment_id', 'patient_treatment_id');
     }
 }

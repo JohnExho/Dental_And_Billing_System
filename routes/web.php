@@ -91,6 +91,8 @@ Route::middleware('web')->group(function () {
     Route::delete('/process/delete/prescription', [PrescriptionController::class, 'destroy'])->name('process-delete-prescription');
 
     Route::post('/process/create/treatment', [TreatmentController::class, 'create'])->name('process-create-treatment');
+    Route::put('/process/update/treatment', [TreatmentController::class, 'update'])->name('process-update-treatment');
+    Route::delete('/process/delete/treatment', [TreatmentController::class, 'destroy'])->name('process-delete-treatment');
 
     // Protected routes
     Route::middleware(['auth:account', 'patient.profile'])->group(function () {

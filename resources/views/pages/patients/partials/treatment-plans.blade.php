@@ -35,7 +35,7 @@
                                 <td>{{ $treatment->account?->full_name ?? ($treatment->account?->full_name ?? 'Unknown') }}
                                 </td>
 
-                                <td>
+                                <td data-procedure-id="{{ $treatment->billItem?->service?->service_id }}">
                                     @php
                                         $teeth = $treatment->billItem?->teeth ?? collect();
                                         $count = $teeth->count();
@@ -64,7 +64,8 @@
                                     <!-- Display the service price -->
                                     @if ($servicePrice > 0)
                                         <div>
-                                           <strong>{{ $treatment->billItem?->service?->name ?? 'Unknown Service' }}</strong> ${{ number_format($servicePrice, 2) }}
+                                            <strong>{{ $treatment->billItem?->service?->name ?? 'Unknown Service' }}</strong>
+                                            ${{ number_format($servicePrice, 2) }}
                                         </div>
                                         @php
                                             $totalPrice += $servicePrice; // Add service price to the total price
@@ -80,24 +81,21 @@
                                     @if ($teeth && $teeth->count() > 0)
                                         @foreach ($chunkedTeeth as $chunk)
                                             @foreach ($chunk as $tooth)
+                                                @if ($tooth->pivot && $tooth->pivot->deleted_at)
+                                                    @continue
+                                                @endif
+
                                                 @php
-                                                    // Fetch the clinic prices for the current tooth (filtered by clinic_id)
                                                     $clinicPrices = $tooth
                                                         ->clinicPrices()
                                                         ->where('clinic_id', $clinicId)
                                                         ->get();
-
-                                                    $price = 0;
-
-                                                    // If there are clinic prices, choose the first one (or adjust your logic here)
-                                                    if ($clinicPrices->count() > 0) {
-                                                        $price = $clinicPrices->first()->price; // Assuming you want the first price for the selected clinic
-                                                    }
-
+                                                    $price = $clinicPrices->first()->price ?? 0;
                                                     $totalPrice += $price;
                                                 @endphp
+
                                                 <div>
-                                                    <strong>{{ $tooth->name }}:</strong>
+                                                    <strong data-tooth-id="{{ $tooth->tooth_list_id }}">{{ $tooth->name }}:</strong>
                                                     ${{ number_format($price, 2) }}
                                                 </div>
                                             @endforeach
@@ -106,15 +104,16 @@
                                         No Tooth Assigned
                                     @endif
                                 </td>
-
-
-
-
                                 <td class="text-truncate" style="max-width:240px;">
-                                    @php
-                                        $note = \App\Models\Note::find($treatment->notes);
-                                    @endphp
-                                    {{ $note ? $note->note : '-' }}
+                                    @if ($treatment->notes->count() > 0)
+                                        @foreach ($treatment->notes as $note)
+                                            <div class="mb-1" title="{{ $note->note }}">
+                                                {{ $note->summary ?? Str::limit($note->note, 100, '...') }}
+                                            </div>
+                                        @endforeach
+                                    @else
+                                        -
+                                    @endif
                                 </td>
 
                                 <td>{{ $treatment->status ?? '-' }}</td>
@@ -126,12 +125,12 @@
                                     </button>
 
                                     <button class="btn btn-sm btn-outline-warning"
-                                        onclick="openEditTreatmentModal({{ json_encode($treatment->id ?? $treatment->treatment_id) }})">
+                                        onclick="openEditTreatmentModal('{{ $treatment->patient_treatment_id }}')">
                                         <i class="bi bi-pencil-square"></i>
                                     </button>
 
                                     <button type="button" class="btn btn-outline-danger btn-sm delete-treatment-btn"
-                                        data-id="{{ $treatment->id ?? $treatment->treatment_id }}">
+                                        data-id="{{ $treatment->patient_treatment_id ?? $treatment->treatment_id }}">
                                         <i class="bi bi-trash"></i>
                                     </button>
                                 </td>
@@ -154,8 +153,8 @@
 
 {{-- Include your treatment modals (add / edit / delete / info) as needed --}}
 @include('pages.treatments.modals.add')
-{{-- @include('pages.patients.modals.edit-treatment') --}}
-{{-- @include('pages.patients.modals.delete-treatment') --}}
+@include('pages.treatments.modals.edit')
+@include('pages.treatments.modals.delete')
 {{-- @include('pages.patients.modals.info-treatment') --}}
 
 <script>
@@ -178,23 +177,23 @@
         });
     });
 
-    // Placeholder functions expected by the buttons.
-    function openTreatmentInfoModal(id, patient, procedure, date, status, notes) {
-        // populate your info modal fields and show modal
-        console.log('openTreatmentInfoModal', {
-            id,
-            patient,
-            procedure,
-            date,
-            status,
-            notes
-        });
-    }
+    function openEditTreatmentModal(treatmentId) {
+        // Find the treatment data from the current row
+        const treatment = {
+            id: treatmentId,
+            procedure_id: event.target.closest('tr').querySelector('td:nth-child(3)').dataset.procedureId,
+            status: event.target.closest('tr').querySelector('td:nth-child(6)').textContent.trim(),
+            note: event.target.closest('tr').querySelector('td:nth-child(5)').getAttribute('title'),
+            teeth: Array.from(event.target.closest('tr').querySelector('td:nth-child(4)').querySelectorAll(
+                    'strong'))
+                .map(el => el.dataset.toothId)
+        };
 
-    function openEditTreatmentModal(id) {
-        // populate your edit modal fields and show modal
-        console.log('openEditTreatmentModal', {
-            id
-        });
+        // Call the populate function
+        window.populateEditTreatmentModal(treatment);
+
+        // Show the modal
+        const editModal = new bootstrap.Modal(document.getElementById('edit-treatment-modal'));
+        editModal.show();
     }
 </script>

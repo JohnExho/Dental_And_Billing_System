@@ -2,26 +2,26 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Bill;
-use App\Models\Note;
-use App\Models\Clinic;
-use App\Models\Recall;
 use App\Models\Address;
+use App\Models\Bill;
+use App\Models\Clinic;
+use App\Models\Note;
 use App\Models\Patient;
-use App\Models\Treatment;
-use Illuminate\Support\Str;
 use App\Models\Prescription;
+use App\Models\Recall;
+use App\Models\Treatment;
 use App\Services\LogService;
-use Illuminate\Http\Request;
 use App\Traits\RegexPatterns;
-use Yajra\Address\Entities\City;
 use App\Traits\ValidationMessages;
-use Illuminate\Support\Facades\DB;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
-use Yajra\Address\Entities\Barangay;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Str;
+use Yajra\Address\Entities\Barangay;
+use Yajra\Address\Entities\City;
 use Yajra\Address\Entities\Province; // if you use logs
 
 class PatientController extends Controller
@@ -478,7 +478,13 @@ class PatientController extends Controller
             ->latest()
             ->paginate(8);
 
-        $treatments = Treatment::with(['account', 'clinic', 'visit', 'bill.billItemTooths.tooth'])
+        $treatments = Treatment::with([
+            'account',
+            'clinic',
+            'visit',
+            'bill.billItemTooths' => fn ($q) => $q->whereNull('deleted_at'), // 🚀 ignore deleted pivot rows
+            'bill.billItemTooths.tooth',
+        ])
             ->where('patient_id', $patientId)
             ->where('clinic_id', $clinicId)
             ->latest()

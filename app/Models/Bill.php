@@ -45,6 +45,20 @@ class Bill extends Model
         'deleted_at' => 'datetime',
     ];
 
+    protected static function booted()
+    {
+        static::saving(function ($bill) {
+
+            $hadBalance = $bill->getOriginal('total_amount') > 0;
+            $isZeroNow = $bill->total_amount <= 0;
+
+            if ($bill->status === 'unpaid' && $hadBalance && $isZeroNow) {
+                $bill->status = 'cancelled';
+            }
+
+        });
+    }
+
     // Relationships (ready to hook up)
 
     public function billItems()

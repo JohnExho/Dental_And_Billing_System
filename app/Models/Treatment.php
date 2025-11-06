@@ -96,6 +96,11 @@ class Treatment extends Model
         return $this->morphMany(Logs::class, 'loggable');
     }
 
+    public function notes()
+    {
+        return $this->hasMany(Note::class, 'patient_treatment_id', 'patient_treatment_id');
+    }
+
     public function bill()
     {
         return $this->belongsTo(Bill::class);
