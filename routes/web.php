@@ -95,7 +95,7 @@ Route::middleware('web')->group(function () {
     Route::put('/process/update/treatment', [TreatmentController::class, 'update'])->name('process-update-treatment');
     Route::delete('/process/delete/treatment', [TreatmentController::class, 'destroy'])->name('process-delete-treatment');
 
-    // Route::put('/process/process/bill', [BillController::class, 'store'])->name('process-process-bill');
+    Route::post('/process/process/bill', [BillController::class, 'create'])->name('process-process-bill');
     Route::delete('/process/delete/bill', [BillController::class, 'destroy'])->name('process-delete-bill'); 
     // Protected routes
     Route::middleware(['auth:account', 'patient.profile'])->group(function () {

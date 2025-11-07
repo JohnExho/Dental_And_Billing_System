@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Bill;
+use App\Models\Payment;
 use App\Services\LogService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -11,6 +12,85 @@ use Illuminate\Support\Facades\Hash;
 
 class BillController extends Controller
 {
+    public function create(Request $request)
+    {
+        $request->validate([
+            'bill_id' => 'required|exists:bills,bill_id',
+            'payment_method' => 'required|in:cash,online,credit_card',
+            'paid_at' => 'required|date',
+            'amount_paid' => 'required|numeric|min:0',
+            'discount' => 'required|numeric|min:0|max:100',
+            'online_payment_type' => 'required_if:payment_method,online',
+            'other_payment_details' => 'required_if:online_payment_type,other',
+            'credit_card_type' => 'required_if:payment_method,credit_card',
+        ]);
+
+        $bill = Bill::findOrFail($request->bill_id);
+
+        // Calculate final amount after discount
+        $discountAmount = bcmul($bill->amount, bcdiv($request->discount, 100, 2), 2);
+        $finalAmount = bcsub($bill->amount, $discountAmount, 2);
+
+        // Verify payment amount matches calculated total
+        if (bccomp($request->amount_paid, $finalAmount, 2) !== 0) {
+            return back()->with('error', 'Payment amount does not match the calculated total.');
+        }
+
+        return DB::transaction(function () use ($request, $bill, $finalAmount) {
+            // Create payment record
+            $payment = new Payment([
+                'bill_id' => $bill->bill_id,
+                'account_id' => Auth::id(),
+                'payment_method' => $request->payment_method,
+                'amount' => $finalAmount,
+                'paid_at' => $request->paid_at,
+                'payment_details' => $this->getPaymentDetails($request),
+            ]);
+            $payment->save();
+
+            // Update bill status and amounts
+            $bill->status = 'paid';
+            $bill->discount = $request->discount;
+            $bill->total_amount = $finalAmount;
+            $bill->save();
+
+            // Log the payment
+            LogService::record(
+                Auth::guard('account')->user(),
+                $bill,
+                'process',
+                'bill',
+                'User processed a bill payment',
+                "Bill ID: {$bill->bill_id}, Amount: {$finalAmount}, Method: {$request->payment_method}",
+                $request->ip(),
+                $request->userAgent()
+            );
+
+            return redirect()
+                ->route('specific-patient')
+                ->with('success', 'Payment processed successfully.');
+        });
+    }
+
+    private function getPaymentDetails(Request $request): array
+    {
+        $details = [];
+
+        switch ($request->payment_method) {
+            case 'online':
+                $details['type'] = $request->online_payment_type;
+                if ($request->online_payment_type === 'other') {
+                    $details['other_details'] = $request->other_payment_details;
+                }
+                break;
+
+            case 'credit_card':
+                $details['card_type'] = $request->credit_card_type;
+                break;
+        }
+
+        return $details;
+    }
     public function destroy(Request $request)
     {
         $request->validate([

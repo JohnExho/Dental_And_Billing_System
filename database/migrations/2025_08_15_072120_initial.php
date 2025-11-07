@@ -431,6 +431,7 @@ return new class extends Migration
             $table->decimal('amount', 10, 2);
             $table->string('payment_method'); // cash, credit_card, online
             $table->dateTime('paid_at');
+            $table->json('payment_details');
             $table->index('bill_id');        // join
             $table->index('account_id');     // who processed
             $table->index('paid_at');        // reporting/filtering

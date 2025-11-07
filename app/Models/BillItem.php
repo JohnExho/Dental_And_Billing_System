@@ -72,7 +72,12 @@ class BillItem extends Model
 
     public function billItemTooths()
     {
-        return $this->hasMany(BillItemTooth::class)->whereNull('deleted_at');
+        // Specify foreign and local keys explicitly because the models use
+        // non-standard primary key names (e.g. `bill_item_id`). Without
+        // explicit keys Laravel can infer the wrong FK name and produce
+        // SQL errors such as `bill_item_bill_item_id`.
+        return $this->hasMany(BillItemTooth::class, 'bill_item_id', 'bill_item_id')
+            ->whereNull('deleted_at');
     }
 
     public function teeth()

@@ -26,35 +26,72 @@
                                 <td>{{ $bill->created_at ? $bill->created_at->format('M d, Y') : '-' }}</td>
 
                                 <td>{{ $bill->account?->full_name ?? 'Unknown' }}</td>
-                                <td>{{ $bill->bill_number ?? $bill->bill_id }}</td>
+                                <td>{{ $bill->bill_id }}</td>
                                 <td>{{ $bill->patient?->full_name ?? 'Unknown' }}</td>
                                 <td>{{ isset($bill->amount) ? number_format($bill->amount, 2) : '-' }}</td>
                                 <td>{{ $bill->status ?? '-' }}</td>
                                 <td class="text-end">
-                                    @unless ($bill->status === 'cancelled')
+                                    @if ($bill->status === 'unpaid')
                                         <button class="btn btn-sm btn-outline-secondary"
                                             onclick="openProcessBillModal(
             {{ json_encode($bill->bill_id) }},
-            {{ json_encode($bill->bill_number ?? $bill->bill_id) }},
+            {{ json_encode($bill->bill_id) }},
             {{ json_encode($bill->account?->full_name ?? 'Unknown') }},
-            {{ json_encode(
-                $bill->billItems->map(
-                    fn($item) => [
-                        'item_type' => $item->item_type,
-                        'name' => $item->service?->name ?? ($item->tooth?->name ?? 'Unknown Item'),
-                        'amount' => $item->amount,
-                    ],
-                ),
-            ) }}
+                {{ json_encode(
+                    $bill->billItems->map(
+                        fn($item) => [
+                            'item_type' => $item->item_type,
+                            'name' => $item->service?->name ?? 'Unknown Item',
+                            'amount' => $item->amount,
+                            'service_id' => $item->service?->service_id ?? null,
+                            'teeth' => $item->teeth->map(
+                                    fn($tooth) => [
+                                        'tooth_id' => $tooth->tooth_list_id,
+                                        'name' => $tooth->name,
+                                        'amount' => $tooth->pivot->amount ?? null,
+                                    ],
+                                )->toArray(),
+                        ],
+                    ),
+                ) }},
+                []  // empty array for billTeeth parameter
         )">
                                             <i class="bi bi-arrow-bar-right"></i>
                                         </button>
-                                    @else
+                                    @elseif ($bill->status === 'cancelled')
                                         <button type="button" class="btn btn-outline-danger btn-sm delete-bill-btn"
                                             data-id="{{ $bill->bill_id }}">
                                             <i class="bi bi-trash"></i>
                                         </button>
-                                    @endunless
+                                    @else
+                                        <button type="button" class="btn btn-outline-primary btn-sm view-bill-btn"
+                                            onclick="openProcessBillModal(
+        {{ json_encode($bill->bill_id) }},
+        {{ json_encode($bill->bill_id) }},
+        {{ json_encode($bill->account?->full_name ?? 'Unknown') }},
+        {{ json_encode(
+            $bill->billItems->map(
+                fn($item) => [
+                    'item_type' => $item->item_type,
+                    'name' => $item->service?->name ?? 'Unknown Item',
+                    'amount' => $item->amount,
+                    'service_id' => $item->service?->service_id ?? null,
+                    'teeth' => $item->teeth->map(
+                            fn($tooth) => [
+                                'tooth_id' => $tooth->tooth_list_id,
+                                'name' => $tooth->name,
+                                'amount' => $tooth->pivot->amount ?? null,
+                            ],
+                        )->toArray(),
+                ],
+            ),
+        ) }},
+        [],  // empty array for billTeeth parameter
+        true  // marks it as read-only
+    )">
+                                            <i class="bi bi-eye"></i>
+                                        </button>
+                                    @endif
 
                                 </td>
                             </tr>
@@ -77,9 +114,9 @@
 
 @include('pages.billing.modals.process')
 @include('pages.billing.modals.delete')
-
 <script>
     document.addEventListener('DOMContentLoaded', function() {
+        // Handle delete bill buttons
         document.querySelectorAll('.delete-bill-btn').forEach(btn => {
             btn.addEventListener('click', function(e) {
                 e.stopPropagation();

@@ -468,7 +468,7 @@ class PatientController extends Controller
 
         $bills = Bill::with([
             'billItems.service',
-            'billItems.tooth',
+            'billItems.teeth', // Load the many-to-many teeth relationship
             'account',
             'patient',
         ])->paginate(8);

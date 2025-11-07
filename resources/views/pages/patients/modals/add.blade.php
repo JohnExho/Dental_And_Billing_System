@@ -49,11 +49,13 @@
                             <!-- Contact -->
                             <div class="col-md-6">
                                 <label class="form-label">Mobile <span class="text-danger">*</span></label>
-                                <input type="text" name="mobile_no" class="form-control phone-number" placeholder="09" required>
+                                <input type="text" name="mobile_no" class="form-control phone-number"
+                                    placeholder="09" required>
                             </div>
                             <div class="col-md-6">
                                 <label class="form-label">Contact No. <span class="text-danger">*</span></label>
-                                <input type="text" name="contact_no" class="form-control phone-number" placeholder="09" required>
+                                <input type="text" name="contact_no" class="form-control phone-number"
+                                    placeholder="09" required>
                             </div>
 
                             <div class="col-md-6">
@@ -186,6 +188,14 @@
         </div>
     </div>
 </div>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+        const today = new Date().toISOString().split("T")[0];
+        document.querySelector('input[name="date_of_birth"]').max = today;
+    });
+</script>
+
 
 <!-- JS for Step Logic -->
 <script>
