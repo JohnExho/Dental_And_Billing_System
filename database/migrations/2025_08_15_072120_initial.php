@@ -94,8 +94,11 @@ return new class extends Migration
             $table->uuid('qr_id')->primary();
             $table->text('qr_code'); // could store string or path to QR image
             $table->text('qr_password')->nullable(); // optional password for QR code access
+            $table->uuid('clinic_id')->nullable()->index();
             $table->timestamps();
             $table->softDeletes();
+
+            $table->foreign('clinic_id')->references('clinic_id')->on('clinics')->onDelete('set null');
         });
 
         Schema::create('patients', function (Blueprint $table) {

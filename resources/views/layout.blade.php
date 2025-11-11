@@ -59,7 +59,7 @@
 
 <body class="sidebar-collapsed">
     @php
-        $invalidRoute = ['login', 'forgot-password', 'confirm-otp', 'reset-password', 'dashboard'];
+        $invalidRoute = ['login', 'forgot-password', 'confirm-otp', 'reset-password', 'dashboard', 'qr.show', 'qr.verify', 'qr.view'];
         $activeRole = session('active_role', auth()->user()?->role);
     @endphp
 

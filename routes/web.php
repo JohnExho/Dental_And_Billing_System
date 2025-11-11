@@ -1,23 +1,25 @@
 <?php
 
-use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\OTPController;
-use App\Http\Controllers\BillController;
-use App\Http\Controllers\StaffController;
-use App\Http\Controllers\ClinicController;
-use App\Http\Controllers\RecallController;
 use App\Http\Controllers\AccountController;
 use App\Http\Controllers\AddressController;
-use App\Http\Controllers\PatientController;
-use App\Http\Controllers\ServiceController;
-use App\Http\Controllers\MedicineController;
-use App\Http\Controllers\WaitlistController;
-use App\Http\Controllers\AssociateController;
-use App\Http\Controllers\ToothListController;
-use App\Http\Controllers\TreatmentController;
 use App\Http\Controllers\AppointmentController;
+use App\Http\Controllers\AssociateController;
+use App\Http\Controllers\BillController;
+use App\Http\Controllers\ClinicController;
+use App\Http\Controllers\MedicineController;
+use App\Http\Controllers\OTPController;
+use App\Http\Controllers\PatientController;
+use App\Http\Controllers\PatientQrController;
 use App\Http\Controllers\PrescriptionController;
 use App\Http\Controllers\ProgressNoteController;
+use App\Http\Controllers\RecallController;
+use App\Http\Controllers\ServiceController;
+use App\Http\Controllers\StaffController;
+use App\Http\Controllers\ToolController;
+use App\Http\Controllers\ToothListController;
+use App\Http\Controllers\TreatmentController;
+use App\Http\Controllers\WaitlistController;
+use Illuminate\Support\Facades\Route;
 
 Route::middleware('web')->group(function () {
     // Login page
@@ -96,7 +98,13 @@ Route::middleware('web')->group(function () {
     Route::delete('/process/delete/treatment', [TreatmentController::class, 'destroy'])->name('process-delete-treatment');
 
     Route::post('/process/process/bill', [BillController::class, 'create'])->name('process-process-bill');
-    Route::delete('/process/delete/bill', [BillController::class, 'destroy'])->name('process-delete-bill'); 
+    Route::delete('/process/delete/bill', [BillController::class, 'destroy'])->name('process-delete-bill');
+
+    Route::post('/process/generate/qr', [PatientQrController::class, 'generateQr'])->name('process-generate-qr');
+    Route::get('/qr/{qr_id}', [PatientQrController::class, 'showPasswordForm'])->name('qr.show');
+    Route::post('/qr/{qr_id}/verify', [PatientQrController::class, 'verifyPassword'])->name('qr.verify');
+    Route::get('/qr/{qr_id}/view', action: [PatientQrController::class, 'showProtectedView'])->name('qr.view');
+
     // Protected routes
     Route::middleware(['auth:account', 'patient.profile'])->group(function () {
         Route::view('/dashboard', 'dashboard')->name('dashboard');
@@ -115,7 +123,7 @@ Route::middleware('web')->group(function () {
             Route::get('/teeth', [ToothListController::class, 'index'])->name('teeth');
             Route::get('/medicines', [MedicineController::class, 'index'])->name('medicines');
             Route::get('/services', [ServiceController::class, 'index'])->name('services');
-            Route::view('/tools', 'pages.tools.index')->name('tools');
+            Route::get('/tools', [ToolController::class, 'index'])->name('tools');
         });
     });
 });
