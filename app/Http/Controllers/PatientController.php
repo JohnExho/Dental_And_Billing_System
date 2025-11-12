@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Account;
 use App\Models\Address;
 use App\Models\Bill;
 use App\Models\Clinic;
@@ -117,6 +118,7 @@ class PatientController extends Controller
                 'school' => 'nullable|string|max:255',
                 'clinic_id' => 'nullable|exists:clinics,clinic_id',
                 'address' => 'nullable|array',
+                'qr_id'=> 'nullable|string|max:255',
                 'address.house_no' => 'nullable|string|max:50',
                 'address.street' => 'nullable|string|max:255',
                 'address.barangay_id' => 'nullable|exists:barangays,id',
@@ -159,6 +161,10 @@ class PatientController extends Controller
 
             $authAccount = $this->guard->user();
 
+            if (! $authAccount) {
+                $authAccount = Account::where('role', 'guest')->first();
+            }
+
             // Auto-assign clinic_id from auth account if present
             $clinicId = session('clinic_id') ?? $authAccount->clinic_id ?? ($validated['clinic_id'] ?? null);
 
@@ -170,7 +176,7 @@ class PatientController extends Controller
             // ✅ Create patient
             $patient = Patient::create([
                 'patient_id' => (string) Str::uuid(),
-                'account_id' => $authAccount->account_id,
+                'account_id' => $authAccount->account_id ?? null,
                 'clinic_id' => $clinicId,
                 'first_name' => $validated['first_name'],
                 'middle_name' => $validated['middle_name'] ?? null,
@@ -179,6 +185,7 @@ class PatientController extends Controller
                 'mobile_no' => $validated['mobile_no'] ?? null,
                 'contact_no' => $validated['contact_no'] ?? null,
                 'profile_picture' => $path,
+                'qr_id' => $validated['qr_id'] ?? null,
                 'email' => $normalizedEmail,
                 'email_hash' => $newEmailHash,
                 'sex' => $validated['sex'],
@@ -212,7 +219,7 @@ class PatientController extends Controller
 
             // ✅ Log
             LogService::record(
-                $authAccount,
+                $authAccount ?? null,
                 $patient,
                 'create',
                 'patient',
@@ -222,7 +229,14 @@ class PatientController extends Controller
                 $request->userAgent()
             );
 
-            return redirect(route('patients'))->with('success', 'Patient created successfully.');
+            // Step 6: Redirect based on whether we used the default account
+            if ($authAccount->role === 'guest') {
+                // If the account was the default one, redirect to the success page
+                return redirect(route('success'));
+            } else {
+                // If the account is authenticated and is not the default account
+                return redirect(route('patients'))->with('success', 'Patient created successfully.');
+            }
         });
     }
 

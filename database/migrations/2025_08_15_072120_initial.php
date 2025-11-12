@@ -25,7 +25,7 @@ return new class extends Migration
             $table->text('mobile_no')->nullable();
             $table->text('contact_no')->nullable();
             $table->string('password');
-            $table->enum('role', ['admin', 'staff'])->default('staff')->index();
+            $table->enum('role', ['admin', 'staff', 'guest'])->default('staff')->index();
             $table->boolean('can_act_as_staff')->default(false);
             $table->boolean('is_active')->default(true)->index();
             $table->string('otp_hash', 255)->nullable();

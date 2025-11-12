@@ -49,8 +49,8 @@ class AccountSeeder extends Seeder
 
         // Example of another account
         $staffAccount = Account::create([
-            'last_name' => 'Doe',
-            'last_name_hash' => hash('sha256', strtolower('Doe')),
+            'last_name' => 'Guest',
+            'last_name_hash' => hash('sha256', strtolower('Guest')),
             'middle_name' => 'M',
             'first_name' => 'John',
             'email' => 'rci.bsis.hensonjohnvictor@gmail.com',
@@ -58,7 +58,7 @@ class AccountSeeder extends Seeder
             'mobile_no' => $faker->phoneNumber,
             'contact_no' => $faker->phoneNumber,
             'password' => Hash::make('secret123'),
-            'role' => 'staff',
+            'role' => 'guest',
             'is_active' => true,
             'otp_hash' => null,
             'otp_expires_at' => null,

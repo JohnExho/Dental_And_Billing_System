@@ -1,5 +1,6 @@
 <!-- Add Patient Modal -->
 @extends('layout')
+@section('title', 'Register')
 
 <!-- Mobile-Optimized Styles -->
 <style>
@@ -9,104 +10,113 @@
             margin: 0.5rem;
             max-width: calc(100% - 1rem);
         }
-        
+
         .modal-content {
             border-radius: 1rem !important;
         }
-        
+
         .modal-body {
             padding: 1rem !important;
             max-height: calc(100vh - 200px);
             overflow-y: auto;
         }
-        
+
         .modal-header {
             padding: 0.75rem 1rem;
         }
-        
+
         .modal-title {
             font-size: 1rem;
         }
-        
+
         .modal-footer {
             padding: 0.75rem 1rem;
             flex-direction: column;
             gap: 0.5rem;
         }
-        
-        .modal-footer > div {
+
+        .modal-footer>div {
             width: 100%;
             display: flex;
             gap: 0.5rem;
         }
-        
+
         .modal-footer button {
             flex: 1;
             font-size: 0.875rem;
             padding: 0.5rem;
         }
-        
+
         .form-label {
             font-size: 0.875rem;
             margin-bottom: 0.25rem;
         }
-        
-        .form-control, .form-select {
+
+        .form-control,
+        .form-select {
             font-size: 0.875rem;
             padding: 0.5rem;
         }
-        
+
         .row.g-3 {
             --bs-gutter-y: 0.75rem;
         }
-        
+
         /* Stack all columns on mobile */
-        .col-md-3, .col-md-4, .col-md-6, .col-md-8, .col-md-12 {
+        .col-md-3,
+        .col-md-4,
+        .col-md-6,
+        .col-md-8,
+        .col-md-12 {
             width: 100%;
         }
     }
-    
+
     /* Tablet Adjustments */
     @media (min-width: 769px) and (max-width: 1024px) {
         .modal-dialog {
             max-width: 90%;
         }
-        
+
         .modal-body {
             max-height: calc(100vh - 180px);
             overflow-y: auto;
         }
     }
-    
+
     /* Small mobile devices */
     @media (max-width: 576px) {
         .modal-header h5 i {
-            display: none; /* Hide icon on very small screens */
+            display: none;
+            /* Hide icon on very small screens */
         }
-        
+
         .btn i {
             margin: 0 !important;
         }
-        
+
         .btn-text {
             display: none;
         }
     }
 </style>
 
-<div class="modal fade" id="add-patient-modal" tabindex="-1" aria-hidden="true">
+<div class="modal fade" id="add-patient-modal" tabindex="-1" aria-hidden="true" data-bs-backdrop="static"
+    data-bs-keyboard="false">
     <div class="modal-dialog modal-lg modal-dialog-centered modal-dialog-scrollable">
         <div class="modal-content shadow-lg border-0 rounded-4 overflow-hidden">
             <form action="{{ route('process-create-patient') }}" method="POST" enctype="multipart/form-data">
                 @csrf
 
+
                 <!-- Header -->
                 <div class="modal-header bg-gradient bg-primary text-white">
                     <h5 class="modal-title fw-bold d-flex align-items-center">
-                        <i class="bi bi-capsule me-2"></i> 
+                        <i class="bi bi-capsule me-2"></i>
                         <span>Add New Patient</span>
                     </h5>
-                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"
+                        aria-label="Close"></button>
                 </div>
 
                 <!-- Body -->
@@ -260,12 +270,14 @@
                     </div>
                 </div>
 
+                <input type="hidden" name="qr_id" value="{{ $qr_id }}">
+
                 <!-- Footer -->
                 <div class="modal-footer bg-light d-flex justify-content-end">
                     <!-- Step Buttons -->
                     <div>
                         <button type="button" id="prevBtn" class="btn btn-secondary d-none">
-                            <i class="bi bi-arrow-left"></i> 
+                            <i class="bi bi-arrow-left"></i>
                             <span class="btn-text ms-1">Back</span>
                         </button>
                         <button type="button" id="nextBtn" class="btn btn-primary">
@@ -273,7 +285,7 @@
                             <i class="bi bi-arrow-right"></i>
                         </button>
                         <button type="submit" id="submitBtn" class="btn btn-success d-none">
-                            <i class="bi bi-upload"></i> 
+                            <i class="bi bi-upload"></i>
                             <span class="btn-text ms-1">Upload</span>
                         </button>
                     </div>

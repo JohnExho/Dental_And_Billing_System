@@ -1,5 +1,5 @@
 @extends('layout')
-
+@section('title', 'Verify QR Code Password')
 @section('content')
 <style>
     .verify-container {

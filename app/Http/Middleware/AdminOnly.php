@@ -11,7 +11,6 @@ class AdminOnly
     /**
      * Handle an incoming request.
      */
-
     protected $guard;
 
     public function __construct()
@@ -25,13 +24,8 @@ class AdminOnly
         $activeRole = session('active_role', $account?->role);
 
         // Check if logged in, role is admin, and active role is admin
-        if (!$account || $account->role !== 'admin' || $activeRole !== 'admin') {
-            // Option 1: redirect to staff dashboard
-            return redirect()->route('staff.dashboard')
-                ->with('error', 'You do not have permission to access this page.');
-
-            // Option 2 (if you prefer a 403 page):
-            // abort(403, 'Unauthorized action.');
+        if (! $account || $account->role !== 'admin' || $activeRole !== 'admin') {
+            return redirect()->route('404');
         }
 
         return $next($request);

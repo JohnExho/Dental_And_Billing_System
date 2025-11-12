@@ -32,13 +32,23 @@ Route::middleware('web')->group(function () {
             return view('auth.confirm-otp');
         })->name('confirm-otp');
         Route::get('/reset-password', [OTPController::class, 'showResetForm'])->name('reset-password');
+        Route::get('/success', function () {
+            // Check if a specific session variable is set
+            if (session()->has('successes')) {
+                // If the session key exists, show the success page
+                return view('pages.tools.modals.success');
+            } else {
+                return redirect()->route('404');
+            }
+        })->name('success');
+        Route::view('/dump', 'dd')->name('dump');
     });
 
     Route::get('/locations/cities/{province}', [AddressController::class, 'cities']);
     Route::get('/locations/barangays/{city}', [AddressController::class, 'barangays']);
     Route::post('/process/login', [AccountController::class, 'login'])->name('process-login');
     Route::post('/process/logout', [AccountController::class, 'logout'])->name('process-logout');
-    Route::post('/process/chang/role', [AccountController::class, 'switchRole'])->name('process-switch-role');
+    Route::post('/process/change/role', [AccountController::class, 'switchRole'])->name('process-switch-role');
     Route::put('/process/change/name', [AccountController::class, 'changeName'])->name('process-change-name');
     Route::put('/process/change/password', [AccountController::class, 'updatePassword'])->name('process-change-password');
     Route::delete('/process/delete/account', [AccountController::class, 'deleteAccount'])->name('process-delete-account');
@@ -115,7 +125,7 @@ Route::middleware('web')->group(function () {
         Route::get('/appointments', [AppointmentController::class, 'index'])->name('appointments');
         Route::get('/patient/profile', [PatientController::class, 'specific'])->name('specific-patient');
         Route::get('/settings', [AccountController::class, 'settings'])->name('settings');
-        Route::view('/dump', 'dd')->name('dump');
+        Route::view('/404', '404')->name('404');
         Route::middleware('admin.only')->group(function () {
             Route::get('/clinics', [ClinicController::class, 'index'])->name('clinics');
             Route::get('/associates', [AssociateController::class, 'index'])->name('associates');

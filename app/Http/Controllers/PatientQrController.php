@@ -81,25 +81,28 @@ class PatientQrController extends Controller
 
         // Store session flag and clinic_id
         session([
-            "qr_access_{$qr_id}" => true,
-            "clinic_id_{$qr_id}" => $qr->clinic_id, // store clinic_id
+            'qr_access' => true,
+            'clinic_id' => $qr->clinic_id, // store clinic_id
         ]);
 
         // Redirect to the protected view
-        return redirect()->route('qr.view', $qr_id);
+        return redirect()->route('qr.view', $qr_id)->with('success', 'Password verified!');
     }
 
     // Step 3: Show the protected view
     public function showProtectedView($qr_id)
     {
         // Check if user has verified password
-        if (! session("qr_access_{$qr_id}")) {
+        if (! session('qr_access')) {
             abort(403, 'Unauthorized access');
         }
 
-        $qr = PatientQrCode::findOrFail($qr_id);
+        // Optionally store additional session data or retrieve data related to $qr_id
+        session(['successes' => true]);
 
-        // You can load related patient info here later
-        return view(view: 'pages.patients.modals.self-add');
+        // Use the $qr_id as needed
+        $qr = PatientQrCode::findOrFail($qr_id); // Retrieve additional QR code details if necessary
+
+        return view('pages.patients.modals.self-add', compact('qr_id', 'qr'));
     }
 }
