@@ -32,6 +32,8 @@
     $events = $holidayEvents->union($customEvents);
 @endphp
 
+
+
 <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
     <a href="?month={{ $prevMonth->month }}&year={{ $prevMonth->year }}" class="btn btn-light btn-sm">
         <i class="bi bi-arrow-left-circle"></i> Prev
