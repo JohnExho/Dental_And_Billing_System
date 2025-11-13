@@ -1,167 +1,206 @@
 <style>
+    /* ==== SIDEBAR BASE ==== */
     .sidebar-wrapper {
-        /* make the sidebar fixed under the navbar so it fills the viewport on every page */
         position: fixed;
         top: 0;
-        /* matches navbar height (see navbar CSS) */
-        left: 0;
-        height: calc(100vh - 56px);
-        width: 240px;
-        background-color: #f8f9fa;
+        left: 0; /* ✅ stays at very left */
+        height: 100vh;
+        width: 80px; /* collapsed width */
+        background-color: #1f3556;
         border-right: 1px solid #dee2e6;
-        padding: 1rem 0.75rem;
-        transition: left 0.28s ease, width 0.28s ease;
-        z-index: 1050;
-        overflow-y: auto;
-        /* allow scrolling if content is taller than viewport */
+        overflow: hidden;
+        transition: width 0.3s ease;
+        z-index: 1050; /* ✅ make sure it overlays on top of content */
+        pointer-events: auto;
+    }
+
+    /* ✅ expands on hover */
+    .sidebar-wrapper.expanded {
+        width: 240px;
+    }
+
+    .sidebar {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        height: 100%;
+        padding-top: 1rem;
+        background-color: #1f3556;
+    }
+
+    .sidebar-brand {
+        text-align: center;
+        color: white;
+        margin-bottom: 2rem;
+        transition: opacity 0.3s;
+    }
+
+    .sidebar-brand img {
+        width: 60px;
+        border-radius: 50%;
+        margin-bottom: 10px;
+    }
+
+    .sidebar-wrapper:not(.expanded) .sidebar-brand h3,
+    .sidebar-wrapper:not(.expanded) .sidebar-brand p {
+        display: none;
+    }
+
+    .sidebar .nav {
+        width: 100%;
+        padding: 0;
+        margin: 0; /* ✅ prevent unwanted spacing */
+    }
+
+    .sidebar .nav-item {
+        list-style: none;
+        width: 100%;
+        margin-bottom: 0.5rem;
     }
 
     .sidebar .nav a {
         display: flex;
         align-items: center;
-        gap: .5rem;
-        padding: 0.5rem;
+        gap: 1rem;
+        color: #dcdcdc;
         text-decoration: none;
+        font-weight: 600;
+        padding: 12px 20px;
+        transition: background-color 0.3s, color 0.3s;
+        position: relative;
         white-space: nowrap;
-        overflow: hidden;
     }
 
-    .sidebar a:hover {
-        background-color: rgba(0, 0, 0, 0.05);
+    .sidebar .nav a:hover {
+        background-color: #304b78;
     }
 
-    /* small toggle located on the sidebar */
-    #sidebarToggle {
+    /* Active link styling */
+    .sidebar .nav a.active {
+        background-color: #3c537d;
+    }
+
+    .sidebar .nav a.active::after {
+        content: '';
         position: absolute;
-        top: 8px;
-        right: 8px;
-        z-index: 1100;
-        border: none;
-        background: transparent;
-        color: #333;
-        padding: .25rem .4rem;
+        right: 0;
+        top: 0;
+        height: 100%;
+        width: 5px;
+        background-color: #ff5c5c;
+        border-radius: 10px 0 0 10px;
     }
 
-    /* hide text labels and brand when compacted */
-    body.sidebar-collapsed .sidebar .nav-text,
-    body.sidebar-collapsed .sidebar .sidebar-brand {
+    /* Icons */
+    .sidebar .nav i {
+        font-size: 1.5rem;
+        min-width: 30px;
+        text-align: center;
+        flex-shrink: 0;
+    }
+
+    /* Hide labels when collapsed */
+    .sidebar-wrapper:not(.expanded) .nav-text {
         display: none;
     }
 
-    /* add top space so nav items don't overlap the toggle when brand is hidden */
-    body.sidebar-collapsed .sidebar .nav {
-        padding-top: 56px;
-        /* adjust value (e.g. 40-64px) to match your toggle/brand height */
+    .sidebar-wrapper.expanded .nav-text {
+        display: inline;
     }
 
-    /* center icons in compact mode */
-    body.sidebar-collapsed .sidebar .nav a {
-        justify-content: center;
-        padding-left: 0;
-        padding-right: 0;
+    /* ✅ Smooth label fade animation */
+    .nav-text {
+        transition: opacity 0.3s ease;
+    }
+
+    .sidebar-wrapper:not(.expanded) .nav-text {
+        opacity: 0;
+    }
+
+    .sidebar-wrapper.expanded .nav-text {
+        opacity: 1;
     }
 </style>
 
-
-<aside class="sidebar-wrapper h-100">
-
-    {{-- toggle moved here --}}
-    <button id="sidebarToggle" aria-label="Toggle sidebar" title="Toggle sidebar">
-        <i class="bi bi-list"></i>
-    </button>
-    <nav class="sidebar text-center ">
-        <div class="mb-4 sidebar-brand">
-            <img src="https://placehold.co/400x400?text=placeholder" alt="Logo" class="mb-3 border-round rounded-3"
-                style="width:80px;">
-            <h3 class="fw-bold">Dayao</h3>
-            <p class="text-light">Dental Home</p>
+<aside class="sidebar-wrapper" id="sidebar">
+    <nav class="sidebar">
+        <div class="sidebar-brand">
+            <img src="https://placehold.co/80x80?text=Logo" alt="Logo">
+            <h3 class="fw-bold">Dayao Dental</h3>
+            <p class="text-light">Home</p>
         </div>
-        <ul class="nav flex-column text-start">
-            <li class="nav-item mb-1">
-                <a href="{{ route('admin.dashboard') }}"
-                    class="text-decoration-none fw-bold fs-4
-                   {{ request()->routeIs('admin.dashboard') ? 'text-primary' : 'text-dark' }}">
+        <ul class="nav flex-column">
+            <li class="nav-item">
+                <a href="{{ route('admin.dashboard') }}" 
+                   class="{{ request()->routeIs('admin.dashboard') ? 'active' : '' }}">
+                    <i class="bi bi-speedometer2"></i>
                     <span class="nav-text">Dashboard</span>
-                    <i class="bi bi-speedometer2 ms-1"></i>
                 </a>
             </li>
-            <li class="nav-item mb-1">
-                <a class="text-decoration-none fw-bold fs-4
-                    {{ request()->routeIs('clinics') ? 'active text-primary' : 'text-dark' }}"
-                    href="{{ route('clinics') }}"
-                    style="{{ request()->routeIs('clinics') ? 'background: gray;' : '' }}">
-                    <span class="nav-text">Clinics</span>
+            <li class="nav-item">
+                <a href="{{ route('clinics') }}" 
+                   class="{{ request()->routeIs('clinics') ? 'active' : '' }}">
                     <i class="bi bi-building"></i>
+                    <span class="nav-text">Clinics</span>
                 </a>
             </li>
-            <li class="nav-item mb-1">
-                <a class="text-decoration-none fw-bold fs-4
-                    {{ request()->routeIs('associates') ? 'active text-primary' : 'text-dark' }}"
-                    href="{{ route('associates') }}"
-                    style="{{ request()->routeIs('associates') ? 'background: gray;' : '' }}">
-                    <span class="nav-text">Associates</span>
+            <li class="nav-item">
+                <a href="{{ route('associates') }}" 
+                   class="{{ request()->routeIs('associates') ? 'active' : '' }}">
                     <i class="bi bi-person-bounding-box"></i>
+                    <span class="nav-text">Associates</span>
                 </a>
             </li>
-            <li class="nav-item mb-1">
-                <a class="text-decoration-none fw-bold fs-4
-                    {{ request()->routeIs('staffs') ? 'active text-primary' : 'text-dark' }}"
-                    href="{{ route('staffs') }}" style="{{ request()->routeIs('staffs') ? 'background: gray;' : '' }}">
-                    <span class="nav-text">Staffs</span>
+            <li class="nav-item">
+                <a href="{{ route('staffs') }}" 
+                   class="{{ request()->routeIs('staffs') ? 'active' : '' }}">
                     <i class="bi bi-person-badge-fill"></i>
+                    <span class="nav-text">Staff</span>
                 </a>
             </li>
-            <li class="nav-item mb-1">
-                <a class="text-decoration-none fw-bold fs-4
-                    {{ request()->routeIs('laboratories') ? 'active text-primary' : 'text-dark' }}"
-                    href="{{ route('laboratories') }}"
-                    style="{{ request()->routeIs('laboratories') ? 'background: gray;' : '' }}">
-                    <span class="nav-text">Laboratories</span>
+            <li class="nav-item">
+                <a href="{{ route('laboratories') }}" 
+                   class="{{ request()->routeIs('laboratories') ? 'active' : '' }}">
                     <i class="bi bi-buildings"></i>
+                    <span class="nav-text">Laboratories</span>
                 </a>
             </li>
-            <li class="nav-item mb-1">
-                <a class="text-decoration-none fw-bold fs-4
-                    {{ request()->routeIs('teeth') ? 'active text-primary' : 'text-dark' }}"
-                    href="{{ route('teeth') }}" style="{{ request()->routeIs('teeth') ? 'background: gray;' : '' }}">
-                    <span class="nav-text">Teeth</span>
+            <li class="nav-item">
+                <a href="{{ route('teeth') }}" 
+                   class="{{ request()->routeIs('teeth') ? 'active' : '' }}">
                     <i class="fa-solid fa-tooth"></i>
+                    <span class="nav-text">Teeth</span>
                 </a>
             </li>
-            <li class="nav-item mb-1">
-                <a class="text-decoration-none fw-bold fs-4
-                    {{ request()->routeIs('medicines') ? 'active text-primary' : 'text-dark' }}"
-                    href="{{ route('medicines') }}"
-                    style="{{ request()->routeIs('medicines') ? 'background: gray;' : '' }}">
-                    <span class="nav-text">Medicine</span>
+            <li class="nav-item">
+                <a href="{{ route('medicines') }}" 
+                   class="{{ request()->routeIs('medicines') ? 'active' : '' }}">
                     <i class="fa-solid fa-tablets"></i>
+                    <span class="nav-text">Medicine</span>
                 </a>
             </li>
-            <li class="nav-item mb-1">
-                <a class="text-decoration-none fw-bold fs-4
-                    {{ request()->routeIs('services') ? 'active text-primary' : 'text-dark' }}"
-                    href="{{ route('services') }}"
-                    style="{{ request()->routeIs('services') ? 'background: gray;' : '' }}">
-                    <span class="nav-text">Service</span>
+            <li class="nav-item">
+                <a href="{{ route('services') }}" 
+                   class="{{ request()->routeIs('services') ? 'active' : '' }}">
                     <i class="fa-solid fa-stethoscope"></i>
+                    <span class="nav-text">Service</span>
                 </a>
             </li>
-            <li class="nav-item mb-1">
-                <a class="text-decoration-none fw-bold fs-4
-                    {{ request()->routeIs('tools') ? 'active text-primary' : 'text-dark' }}"
-                    href="{{ route('tools') }}" style="{{ request()->routeIs('tools') ? 'background: gray;' : '' }}">
+            <li class="nav-item">
+                <a href="{{ route('tools') }}" 
+                   class="{{ request()->routeIs('tools') ? 'active' : '' }}">
+                    <i class="bi bi-wrench-adjustable"></i>
                     <span class="nav-text">Tools</span>
-                    <i class="bi bi-person-badge-fill"></i>
                 </a>
             </li>
-            <li class="nav-item mb-1">
-                <a class="text-decoration-none fw-bold fs-4 text-secondary
-                    {{-- request()->routeIs('staffs') ? 'active text-primary' : 'text-dark' --}}"
-                    href="{{-- route('staffs') --}}" style="{{-- request()->routeIs('staffs') ? 'background: gray;' : '' --}}">
+            <li class="nav-item">
+                <a href="#">
+                    <i class="bi bi-file-earmark-text"></i>
                     <span class="nav-text">Reports</span>
-                    <i class="bi bi-person-badge-fill"></i>
                 </a>
             </li>
         </ul>
     </nav>
 </aside>
+
+<script> const sidebar = document.getElementById('sidebar'); sidebar.addEventListener('mouseenter', () => { sidebar.classList.add('expanded'); }); sidebar.addEventListener('mouseleave', () => { sidebar.classList.remove('expanded'); }); </script>
