@@ -61,10 +61,5 @@ class Waitlist extends Model
     {
         return $this->belongsTo(Associate::class, 'associate_id', 'associate_id');
     }
-
-    public function laboratory()
-    {
-        return $this->belongsTo(Laboratories::class, 'laboratory_id', 'laboratory_id');
-    }
 }
 

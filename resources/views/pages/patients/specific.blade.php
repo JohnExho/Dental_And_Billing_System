@@ -42,44 +42,38 @@
 
 
             <div id="patient-container" class="position-relative">
-                <ul class="nav nav-tabs" id="patientTabs" role="tablist">
-                    <li class="nav-item" role="presentation">
+                <ul class="nav nav-tabs flex-nowrap gap-5" id="patientTabs" role="tablist">
+                    <li role="presentation">
                         <button class="nav-link active" id="info-tab" data-bs-toggle="tab" data-bs-target="#info"
                             type="button" role="tab" aria-controls="info" aria-selected="true">
                             <i class="bi bi-person-circle me-2" aria-hidden="true"></i> Patient Info
                         </button>
                     </li>
-                    <li class="nav-item" role="presentation">
+                    <li role="presentation">
                         <button class="nav-link" id="progress-tab" data-bs-toggle="tab" data-bs-target="#progress"
                             type="button" role="tab" aria-controls="progress" aria-selected="false">
                             <i class="bi bi-journal-text me-2" aria-hidden="true"></i> Progress Notes
                         </button>
                     </li>
-                    <li class="nav-item" role="presentation">
+                    <li role="presentation">
                         <button class="nav-link" id="prescriptions-tab" data-bs-toggle="tab" data-bs-target="#prescriptions"
                             type="button" role="tab" aria-controls="prescriptions" aria-selected="false">
                             <i class="bi bi-prescription me-2" aria-hidden="true"></i> Prescriptions
                         </button>
                     </li>
-                    <li class="nav-item" role="presentation">
-                        <button class="nav-link" id="diagnostics-tab" data-bs-toggle="tab" data-bs-target="#diagnostics"
-                            type="button" role="tab" aria-controls="diagnostics" aria-selected="false">
-                            <i class="bi bi-heart-pulse me-2" aria-hidden="true"></i> Diagnostics
-                        </button>
-                    </li>
-                    <li class="nav-item" role="presentation">
+                    <li role="presentation">
                         <button class="nav-link" id="recalls-tab" data-bs-toggle="tab" data-bs-target="#recalls"
                             type="button" role="tab" aria-controls="recalls" aria-selected="false">
                             <i class="bi bi-calendar-check me-2" aria-hidden="true"></i> Recalls
                         </button>
                     </li>
-                    <li class="nav-item" role="presentation">
+                    <li role="presentation">
                         <button class="nav-link" id="treatment-tab" data-bs-toggle="tab" data-bs-target="#treatment"
                             type="button" role="tab" aria-controls="treatment" aria-selected="false">
                             <i class="bi bi-clipboard-check me-2" aria-hidden="true"></i> Treatment Plans
                         </button>
                     </li>
-                    <li class="nav-item" role="presentation">
+                    <li role="presentation">
                         <button class="nav-link" id="billing-tab" data-bs-toggle="tab" data-bs-target="#billing"
                             type="button" role="tab" aria-controls="billing" aria-selected="false">
                             <i class="bi bi-receipt me-2" aria-hidden="true"></i> Billing
@@ -103,10 +97,6 @@
 
                     <div class="tab-pane fade" id="prescriptions" role="tabpanel" aria-labelledby="prescriptions-tab">
                         @include('pages.patients.partials.prescriptions')
-                    </div>
-
-                    <div class="tab-pane fade" id="diagnostics" role="tabpanel" aria-labelledby="diagnostics-tab">
-                        @include('pages.patients.partials.diagnostics')
                     </div>
 
                     <div class="tab-pane fade" id="recalls" role="tabpanel" aria-labelledby="recalls-tab">

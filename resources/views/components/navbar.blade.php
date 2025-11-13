@@ -45,7 +45,6 @@
         'settings' => 'Settings',
         'clinics' => 'Clinics',
         'associates' => 'Associates',
-        'laboratories' => 'Laboratories',
         'teeth' => 'Teeth',
         'medicines' => 'Medicines',
         'services' => 'Services',
@@ -55,6 +54,9 @@
     if (session('clinic_id')) {
         $currentClinic = \App\Models\Clinic::find(session('clinic_id'));
     }
+
+            $activeRole = session('active_role', auth()->user()?->role);
+
 @endphp
 
 
@@ -77,7 +79,7 @@
 
         <div class="collapse navbar-collapse justify-content-end" id="navbarNav">
             <ul class="navbar-nav ms-auto" style="margin-right: 0; margin-left: 250px;">
-                @if (Auth::user()->role === 'admin')
+                @if ($activeRole === 'admin')
                     <li class="nav-item dropdown d-flex align-items-center me-3">
                         <a class="badge rounded-pill bg-light text-dark border d-flex align-items-center px-3 py-2 shadow-sm text-decoration-none dropdown-toggle  me-1"
                             href="#" id="clinicDropdown" role="button" data-bs-toggle="dropdown"
@@ -130,7 +132,7 @@
                 <li class="nav-item dropdown">
                     <a class="nav-link dropdown-toggle fs-4" href="#" id="userDropdown" role="button"
                         data-bs-toggle="dropdown" aria-expanded="false">
-                        {{ Auth::user()->last_name }}, {{ Auth::user()->first_name }}
+                        {{ auth()->user()->last_name }}, {{ auth()->user()->first_name }}
                     </a>
                     <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
                         <li>

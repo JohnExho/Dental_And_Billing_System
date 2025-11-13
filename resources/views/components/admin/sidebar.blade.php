@@ -158,16 +158,11 @@
                     <span class="nav-text">Staff</span>
                 </a>
             </li>
-            <li class="nav-item">
-                <a href="{{ route('laboratories') }}" 
-                   class="{{ request()->routeIs('laboratories') ? 'active' : '' }}">
-                    <i class="bi bi-buildings"></i>
-                    <span class="nav-text">Laboratories</span>
-                </a>
-            </li>
-            <li class="nav-item">
-                <a href="{{ route('teeth') }}" 
-                   class="{{ request()->routeIs('teeth') ? 'active' : '' }}">
+            <li class="nav-item mb-1">
+                <a class="text-decoration-none fw-bold fs-4
+                    {{ request()->routeIs('teeth') ? 'active text-primary' : 'text-dark' }}"
+                    href="{{ route('teeth') }}" style="{{ request()->routeIs('teeth') ? 'background: gray;' : '' }}">
+                    <span class="nav-text">Teeth</span>
                     <i class="fa-solid fa-tooth"></i>
                     <span class="nav-text">Teeth</span>
                 </a>

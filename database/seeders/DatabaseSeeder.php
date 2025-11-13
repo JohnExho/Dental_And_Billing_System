@@ -16,10 +16,10 @@ class DatabaseSeeder extends Seeder
         $this->call(AddressSeeder::class);
         $this->call(AccountSeeder::class);
         $this->call(ClinicFullSeeder::class);
-        $this->call(ClinicFullSeeder::class);
-        $this->call(LaboratorySeeder::class);
+        $this->call(class: ClinicFullSeeder::class);
         $this->call(ToothListSeeder::class);
         $this->call(ServiceSeeder::class);
         $this->call(StaffSeeder::class);
+        $this->call(MedicineSeeder::class);
     }
 }

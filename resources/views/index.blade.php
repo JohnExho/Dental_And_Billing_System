@@ -6,6 +6,10 @@
 
 @vite('resources/css/index.blade.css')
 
+@php
+        session()->forget(['successes', 'clinic_id', 'qr_access']);
+        
+@endphp
 
 <div class="login-container">
     <div class="login-card">

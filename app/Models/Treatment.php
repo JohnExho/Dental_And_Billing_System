@@ -16,6 +16,7 @@ use App\Models\Laboratory;
 use App\Models\BillItem;
 use App\Models\Tooth;
 use App\Models\Logs;
+use App\Models\Bill;
 
 class Treatment extends Model
 {
@@ -34,14 +35,13 @@ class Treatment extends Model
     protected $fillable = [
         'patient_visit_id',
         'patient_id',
-        'associate_id',
         'service_id',
         'clinic_id',
-        'laboratory_id',
         'bill_item_id',
         'account_id',
         'tooth_id',
         'treatment_date',
+        'status'
     ];
 
     protected $casts = [
@@ -81,11 +81,6 @@ class Treatment extends Model
         return $this->belongsTo(Clinic::class, 'clinic_id', 'clinic_id');
     }
 
-    public function laboratory()
-    {
-        return $this->belongsTo(Laboratories::class, 'laboratory_id', 'laboratory_id');
-    }
-
     public function billItem()
     {
         return $this->belongsTo(BillItem::class, 'bill_item_id', 'bill_item_id');
@@ -99,5 +94,15 @@ class Treatment extends Model
     public function logs()
     {
         return $this->morphMany(Logs::class, 'loggable');
+    }
+
+    public function notes()
+    {
+        return $this->hasMany(Note::class, 'patient_treatment_id', 'patient_treatment_id');
+    }
+
+    public function bill()
+    {
+        return $this->belongsTo(Bill::class);
     }
 }

@@ -65,20 +65,6 @@
 
                             </div>
 
-                            <!-- Laboratory -->
-                            <div class="mb-3">
-                                <label class="form-label fw-semibold">
-                                    <i class="bi bi-building-gear me-1"></i> Laboratory
-                                </label>
-                                <select id="provider-laboratory" class="form-select" name="laboratory_id">
-                                    <option value="">-- Select Laboratory --</option>
-                                    @foreach ($laboratories as $laboratory)
-                                        <option value="{{ $laboratory->laboratory_id }}">{{ $laboratory->name }}
-                                        </option>
-                                    @endforeach
-                                </select>
-                            </div>
-
                             <div class="mb-3">
                                 <label class="form-label fw-semibold">
                                     <i class="bi bi-calendar-check me-1"></i>Status

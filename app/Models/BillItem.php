@@ -27,7 +27,6 @@ class BillItem extends Model
         'account_id',
         'item_type',
         'service_id',
-        'tooth_list_id',
         'amount',
         'prescription_id',
     ];
@@ -69,5 +68,32 @@ class BillItem extends Model
     public function logs()
     {
         return $this->morphMany(Logs::class, 'loggable');
+    }
+
+    public function billItemTooths()
+    {
+        // Specify foreign and local keys explicitly because the models use
+        // non-standard primary key names (e.g. `bill_item_id`). Without
+        // explicit keys Laravel can infer the wrong FK name and produce
+        // SQL errors such as `bill_item_bill_item_id`.
+        return $this->hasMany(BillItemTooth::class, 'bill_item_id', 'bill_item_id')
+            ->whereNull('deleted_at');
+    }
+
+    public function teeth()
+    {
+        // Many-to-many via pivot table `bill_item_tooth`.
+        // Explicit keys are provided because the models use non-standard PK names.
+        return $this->belongsToMany(
+            \App\Models\ToothList::class,
+            'bill_item_tooth', // pivot table
+            'bill_item_id', // foreign key on pivot referencing this model
+            'tooth_list_id', // related key on pivot referencing ToothList
+            'bill_item_id', // local key on this model
+            'tooth_list_id' // local key on related model
+        )
+            ->withPivot('bill_item_tooth_id', 'deleted_at')
+        // exclude soft-deleted pivot rows
+            ->whereNull('bill_item_tooth.deleted_at');
     }
 }

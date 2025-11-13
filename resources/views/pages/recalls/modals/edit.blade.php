@@ -21,15 +21,15 @@
                     <div class="row g-3">
                         <div class="col-12">
                             <label for="edit_notes" class="form-label">Notes</label>
-                            <textarea class="form-control" id="edit_notes" name="notes" rows="4" required style="resize: none;"></textarea>
+                            <textarea class="form-control" id="edit_notes" name="recall_reason" rows="4" required style="resize: none;"></textarea>
                         </div>
                         <div class="col-12">
                             <label for="edit_status" class="form-label">Status</label>
                             <select class="form-select" id="edit_status" name="status" required>
                                 <option value="">Select Status</option>
-                                <option value="pending">Pending</option>
-                                <option value="completed">Completed</option>
-                                <option value="cancelled">Cancelled</option>
+                                <option value="Pending">Pending</option>
+                                <option value="Completed">Completed</option>
+                                <option value="Cancelled">Cancelled</option>
                             </select>
 
                         </div>
@@ -60,10 +60,35 @@
         modal.show();
     }
 
+    function _setSelectValueCaseInsensitive(selectEl, value) {
+        if (!selectEl || value === null || value === undefined) return;
+        const v = String(value);
+        // Try direct set first
+        try {
+            selectEl.value = v;
+            // If set succeeded and option exists, we're done
+            if ([...selectEl.options].some(o => o.value === v)) return;
+        } catch (e) {
+            // ignore and fallback to manual matching
+        }
+
+        // Fallback: match case-insensitively
+        const low = v.toLowerCase();
+        for (let i = 0; i < selectEl.options.length; i++) {
+            const opt = selectEl.options[i];
+            if (String(opt.value).toLowerCase() === low) {
+                selectEl.selectedIndex = i;
+                return;
+            }
+        }
+    }
+
     function openEditRecallModal(recallId, notes, status) {
         document.getElementById('edit_recall_id').value = recallId;
         document.getElementById('edit_notes').value = notes;
-        document.getElementById('edit_status').value = status;
+
+        const statusSelect = document.getElementById('edit_status');
+        _setSelectValueCaseInsensitive(statusSelect, status);
 
         const modal = new bootstrap.Modal(document.getElementById('edit-recall-modal'));
         modal.show();

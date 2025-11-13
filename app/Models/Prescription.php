@@ -40,6 +40,7 @@ class Prescription extends Model
     protected $casts = [
         'prescribed_at' => 'datetime',
         'prescription_notes' => 'encrypted',
+        'dosage_instructions' => 'encrypted',
         'created_at' => 'datetime',
         'updated_at' => 'datetime',
         'deleted_at' => 'datetime',
@@ -78,5 +79,10 @@ class Prescription extends Model
     public function logs()
     {
         return $this->morphMany(Logs::class, 'loggable');
+    }
+
+    public function billItem()
+    {
+        return $this->hasOne(BillItem::class, 'prescription_id', 'prescription_id');
     }
 }

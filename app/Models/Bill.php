@@ -45,6 +45,20 @@ class Bill extends Model
         'deleted_at' => 'datetime',
     ];
 
+    protected static function booted()
+    {
+        static::saving(function ($bill) {
+
+            $hadBalance = $bill->getOriginal('total_amount') > 0;
+            $isZeroNow = $bill->total_amount <= 0;
+
+            if ($bill->status === 'unpaid' && $hadBalance && $isZeroNow) {
+                $bill->status = 'cancelled';
+            }
+
+        });
+    }
+
     // Relationships (ready to hook up)
 
     public function billItems()
@@ -70,11 +84,6 @@ class Bill extends Model
     public function clinic()
     {
         return $this->belongsTo(Clinic::class, 'clinic_id', 'clinic_id');
-    }
-
-    public function laboratory()
-    {
-        return $this->belongsTo(Laboratories::class, 'laboratory_id', 'laboratory_id');
     }
 
     public function visit()

@@ -21,6 +21,10 @@ trait ValidationMessages
             'clinic_id.exists' => 'Selected clinic is invalid.',
             'date_of_birth.required' => 'Date of birth is required.',
             'date_of_birth.date' => 'Please provide a valid date.',
+            // Service field messages
+            'service.required' => 'Service is required.',
+            'service.exists' => 'Selected service is invalid.',
+
             // Add more custom messages as needed
         ];
     }
