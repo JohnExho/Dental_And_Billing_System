@@ -37,7 +37,8 @@ class PatientQrController extends Controller
 
         // Save directly to public folder
         $fileName = 'qr_codes/'.$qr_id.'.png';
-        $outputPath = 'C:/Users/Administrator/Documents/Dental_And_Billing_System/public/'.$fileName;
+ $outputPath = storage_path('app/public/' . $fileName);
+
 
         if (! file_exists(dirname($outputPath))) {
             mkdir(dirname($outputPath), 0755, true);

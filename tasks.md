@@ -1,8 +1,8 @@
 ### ✅ To-Do List
 
-BILLING INFO not FIXED //double check
-
 //Change the QR Path to storage/app/public for security
+
+BILLING INFO not FIXED // create a new modal instead
 
 //appointment
 
