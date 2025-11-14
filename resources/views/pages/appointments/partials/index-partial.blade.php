@@ -1,101 +1,125 @@
-@php
-    use Illuminate\Support\Str;
-    use Carbon\Carbon;
-    use Illuminate\Support\Collection;
+<div class="container-fluid col-md-12">
+    <div class="row">
+        <!-- Calendar Main Area -->
+        <div class="col-md-12">
+            <div class="card border-0 shadow-sm">
+                <!-- Header with Navigation -->
+                <div class="card-header bg-white border-bottom d-flex justify-content-between align-items-center py-3">
+                    @php
+                        $queryParams = array_merge(request()->except(['month', 'year', 'view']), [
+                            'year' => $currentYear,
+                            'month' => $currentMonth,
+                            'view' => $viewMode,
+                        ]);
+                    @endphp
+                    <div class="filler">
 
-    // Get current or navigated month/year from query
-    $currentYear = request('year', now()->year);
-    $currentMonth = request('month', now()->month);
+                    </div>
 
-    // Set up Carbon dates
-    $firstDayOfMonth = Carbon::create($currentYear, $currentMonth, 1);
-    $monthName = $firstDayOfMonth->format('F Y');
-    $daysInMonth = $firstDayOfMonth->daysInMonth;
-    $startDayOfWeek = $firstDayOfMonth->dayOfWeek; // 0 = Sunday, 6 = Saturday
+                    <h4 class="mb-0 fw-bold">{{ $monthName }}</h4>
 
-    // Prev/Next months for navigation
-    $prevMonth = $firstDayOfMonth->copy()->subMonth();
-    $nextMonth = $firstDayOfMonth->copy()->addMonth();
+                    <div class="d-flex gap-2">
 
-    // Safely convert holidayEvents to a collection (even if null or array)
-    $holidayEvents = collect($holidayEvents ?? []);
+                        <a href="{{ route('appointments', array_merge($queryParams, ['month' => $prevMonth->month, 'year' => $prevMonth->year])) }}"
+                            class="btn btn-outline-primary btn-sm">Previous</a>
 
-    // Example internal events (manual for now)
-    $customEvents = collect([
-        10 => ['🎂 Dr. Ramos Birthday'],
-        18 => ['🎂 Assistant Lea Birthday'],
-        5 => ['🏠 Consultation - John Doe'],
-        7 => ['🏠 Follow-up - Alex Tan'],
-    ]);
+                        <a href="{{ route('appointments', array_merge($queryParams, ['month' => $today->month, 'year' => $today->year])) }}"
+                            class="btn btn-outline-primary btn-sm">Today</a>
 
-    // Merge API + custom events
-    $events = $holidayEvents->union($customEvents);
-@endphp
+                        <a href="{{ route('appointments', array_merge($queryParams, ['month' => $nextMonth->month, 'year' => $nextMonth->year])) }}"
+                            class="btn btn-outline-primary btn-sm">Next</a>
+                    </div>
 
+                </div>
 
+                <!-- Calendar Grid -->
+                <div class="card-body p-0">
+                    <div class="table-responsive">
+                        <table class="table table-bordered mb-0" style="table-layout: fixed;">
+                            <thead class="bg-light">
+                                <tr>
+                                    @foreach (['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'] as $day)
+                                        <th class="text-center fw-semibold py-3" style="width: 14.28%;">
+                                            {{ $day }}</th>
+                                    @endforeach
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @for ($week = 0; $week < 6; $week++)
+                                    <tr>
+                                        @for ($dow = 0; $dow < 7; $dow++)
+                                            @php
+                                                $cellDate = $week * 7 + $dow - $startDayOfWeek + 1;
+                                                $isToday =
+                                                    $cellDate == $today->day &&
+                                                    $currentMonth == $today->month &&
+                                                    $currentYear == $today->year;
+                                                $dayEvents = $events[$cellDate] ?? [];
+                                            @endphp
 
-<div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
-    <a href="?month={{ $prevMonth->month }}&year={{ $prevMonth->year }}" class="btn btn-light btn-sm">
-        <i class="bi bi-arrow-left-circle"></i> Prev
-    </a>
+                                            @if ($cellDate < 1 || $cellDate > $daysInMonth)
+                                                <td class="bg-light" style="height: 70px;"></td>
+                                            @else
+                                                <td class="{{ $isToday ? 'bg-success bg-opacity-10' : '' }} position-relative"
+                                                    style="height: 120px; vertical-align: top;">
+                                                    <div class="p-2">
+                                                        <div
+                                                            class="d-flex justify-content-between align-items-start mb-2">
+                                                            <span
+                                                                class="badge {{ $isToday ? 'bg-success' : 'bg-light text-dark' }} rounded-circle"
+                                                                style="width: 28px; height: 28px; display: flex; align-items: center; justify-content: center;">
+                                                                {{ $cellDate }}
+                                                            </span>
+                                                        </div>
 
-    <h4 class="mb-0 fw-semibold text-center flex-grow-1"><span class="fi fi-ph"></span> {{ $monthName }}</h4>
-
-    <a href="?month={{ $nextMonth->month }}&year={{ $nextMonth->year }}" class="btn btn-light btn-sm">
-        Next <i class="bi bi-arrow-right-circle"></i>
-    </a>
-</div>
-<div class="card-body bg-light">
-    <div class="table-responsive">
-        <table class="table table-bordered text-center align-middle mb-0">
-            <thead class="table-primary">
-                <tr>
-                    <th>Sun</th>
-                    <th>Mon</th>
-                    <th>Tue</th>
-                    <th>Wed</th>
-                    <th>Thu</th>
-                    <th>Fri</th>
-                    <th>Sat</th>
-                </tr>
-            </thead>
-            <tbody>
-                @for ($week = 0; $week < 6; $week++)
-                    <tr>
-                        @for ($dow = 0; $dow < 7; $dow++)
-                            @php
-                                $cellDate = $week * 7 + $dow - $startDayOfWeek + 1;
-                                $isToday =
-                                    $cellDate == now()->day &&
-                                    $currentMonth == now()->month &&
-                                    $currentYear == now()->year;
-                            @endphp
-
-                            @if ($cellDate < 1 || $cellDate > $daysInMonth)
-                                <td class="bg-white"></td>
-                            @else
-                                <td class="{{ $isToday ? 'bg-success text-white fw-bold' : 'bg-white' }}">
-                                    <div>{{ $cellDate }}</div>
-
-                                    @if (isset($events[$cellDate]))
-                                        <div class="mt-2">
-                                            @foreach ($events[$cellDate] as $event)
-                                                <div
-                                                    class="badge 
-                                                            @if (Str::contains($event, '🎂')) bg-danger 
-                                                            @elseif(Str::contains($event, '🏠')) bg-primary 
-                                                            @else bg-warning text-dark @endif
-                                                            mb-1 w-100">
-                                                    {{ $event }}
-                                                </div>
-                                            @endforeach
-                                        </div>
-                                    @endif
-                                </td>
-                            @endif
-                        @endfor
-                    </tr>
-                @endfor
-            </tbody>
-        </table>
+@if (count($dayEvents))
+    <div class="d-flex flex-wrap gap-1">
+        @foreach ($dayEvents as $event)
+            @php
+                $eventType = $eventTypes[$event['type']] ?? [
+                    'icon' => 'bi-question',
+                    'label' => 'Unknown',
+                ];
+                $color = $event['color'] ?? '#6c757d'; // fallback gray
+            @endphp
+            <a href="{{ $event['url'] }}" class="text-decoration-none">
+                <span
+                    class="badge rounded-circle d-inline-flex align-items-center justify-content-center"
+                    style="width: 24px; height: 24px; font-size: 0.7rem; background-color: {{ $color }};"
+                    title="{{ $eventType['label'] }}: {{ $event['text'] }}"
+                    data-bs-toggle="tooltip">
+                    <i class="bi {{ $eventType['icon'] }}"></i>
+                </span>
+            </a>
+        @endforeach
     </div>
+@endif
+
+
+
+
+                                                    </div>
+                                                </td>
+                                            @endif
+                                        @endfor
+                                    </tr>
+                                @endfor
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@push('scripts')
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+            var tooltipList = tooltipTriggerList.map(function(tooltipTriggerEl) {
+                return new bootstrap.Tooltip(tooltipTriggerEl);
+            });
+        });
+    </script>
+@endpush

@@ -30,6 +30,7 @@ class Associate extends Model
         'email_hash',
         'account_id',
         'clinic_id',
+        'color'
     ];
 
     protected $casts = [
@@ -67,10 +68,10 @@ class Associate extends Model
         return $this->belongsTo(Account::class, 'account_id', 'account_id');
     }
 
-    public function laboratory()
-    {
-        return $this->belongsTo(Laboratories::class, 'laboratory_id', 'laboratory_id');
-    }
+    // public function laboratory()
+    // {
+    //     return $this->belongsTo(Laboratories::class, 'laboratory_id', 'laboratory_id');
+    // }
 
     public function clinic()
     {

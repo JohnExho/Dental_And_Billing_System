@@ -64,32 +64,14 @@
                                             <i class="bi bi-trash"></i>
                                         </button>
                                     @else
-                                        <button type="button" class="btn btn-outline-primary btn-sm view-bill-btn"
-                                            onclick="openProcessBillModal(
-        {{ json_encode($bill->bill_id) }},
-        {{ json_encode($bill->bill_id) }},
-        {{ json_encode($bill->account?->full_name ?? 'Unknown') }},
-        {{ json_encode(
-            $bill->billItems->map(
-                fn($item) => [
-                    'item_type' => $item->item_type,
-                    'name' => $item->service?->name ?? 'Unknown Item',
-                    'amount' => $item->amount,
-                    'service_id' => $item->service?->service_id ?? null,
-                    'teeth' => $item->teeth->map(
-                            fn($tooth) => [
-                                'tooth_id' => $tooth->tooth_list_id,
-                                'name' => $tooth->name,
-                                'amount' => $tooth->pivot->amount ?? null,
-                            ],
-                        )->toArray(),
-                ],
-            ),
-        ) }},
-        [],  // empty array for billTeeth parameter
-        true  // marks it as read-only
-    )">
-                                            <i class="bi bi-eye"></i>
+                                        <button class="btn btn-outline-primary btn-sm" data-bs-toggle="modal"
+                                            data-bs-target="#receipt-modal" data-bill_id="{{ $bill->bill_id }}"
+                                            data-discount="{{ $bill->discount ?? '' }}"
+                                            data-payment_id="{{ $bill->payment->payment_id ?? '' }}"
+                                            data-amount="{{ $bill->payment->amount ?? '' }}"
+                                            data-paid_at="{{ $bill->payment->paid_at ?? '' }}"
+                                            data-method="{{ $bill->payment->payment_method ?? '' }}">
+                                            <i class="bi bi-receipt"></i>
                                         </button>
                                     @endif
 
@@ -113,6 +95,7 @@
 </div>
 
 @include('pages.billing.modals.process')
+@include('pages.billing.modals.info')
 @include('pages.billing.modals.delete')
 <script>
     document.addEventListener('DOMContentLoaded', function() {

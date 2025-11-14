@@ -23,6 +23,17 @@
                             <label for="edit_notes" class="form-label">Notes</label>
                             <textarea class="form-control" id="edit_notes" name="recall_reason" rows="4" required style="resize: none;"></textarea>
                         </div>
+
+                        <div class="col-12">
+                            <label for="edit_associate_id" class="form-label">Assign to Associate</label>
+                            <select class="form-select" id="edit_associate_id" name="associate_id" required>
+                                <option value="" disabled selected>Select an associate</option>
+                                @foreach ($associates as $associate)
+                                    <option value="{{ $associate->associate_id }}">{{ $associate->full_name }}</option>
+                                @endforeach
+                            </select>
+                        </div>
+
                         <div class="col-12">
                             <label for="edit_status" class="form-label">Status</label>
                             <select class="form-select" id="edit_status" name="status" required>
@@ -52,9 +63,10 @@
 
 <script>
     // Populate modal dynamically
-    function openEditProgressNoteModal(noteId, noteText) {
+    function openEditProgressNoteModal(noteId, noteText, associateId) {
         document.getElementById('edit_note_id').value = noteId;
         document.getElementById('edit_remarks').value = noteText;
+        document.getElementById('edit_associate_id').value = associateId;
 
         const modal = new bootstrap.Modal(document.getElementById('edit-progress-note-modal'));
         modal.show();

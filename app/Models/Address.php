@@ -78,10 +78,10 @@ class Address extends Model
         return $this->belongsTo(Clinic::class, 'clinic_id', 'clinic_id');
     }
 
-    public function laboratory()
-    {
-        return $this->belongsTo(Laboratories::class, 'laboratory_id', 'laboratory_id');
-    }
+    // public function laboratory()
+    // {
+    //     return $this->belongsTo(Laboratories::class, 'laboratory_id', 'laboratory_id');
+    // }
 
     public function associate()
     {

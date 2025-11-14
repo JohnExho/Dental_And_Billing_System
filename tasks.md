@@ -1,9 +1,10 @@
 ### ✅ To-Do List
 
-//Change the QR Path to storage/app/public for security
 
-BILLING INFO not FIXED // create a new modal instead
 
 //appointment
 
 //machine learning
+
+
+//recall at the same day shouldn't be possible unless other record is completed or cancelled

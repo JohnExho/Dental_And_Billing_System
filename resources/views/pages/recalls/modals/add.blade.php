@@ -26,6 +26,16 @@
                     </div>
 
                     <div class="mb-3">
+                        <label for="associate_id" class="form-label fw-semibold">Assign to Associate</label>
+                        <select class="form-select" id="associate_id" name="associate_id" required>
+                            <option value="" disabled selected>Select an associate</option>
+                            @foreach ($associates as $associate)
+                                <option value="{{ $associate->associate_id }}">{{ $associate->full_name }}</option>
+                            @endforeach
+                        </select>
+                    </div>
+
+                    <div class="mb-3">
                         <label for="followup_reason" class="form-label fw-semibold">Reason</label>
                         <textarea class="form-control" id="followup_reason" name="followup_reason" rows="4" style="resize: none;"
                             placeholder="Enter reason..." required></textarea>

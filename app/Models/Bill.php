@@ -91,6 +91,11 @@ class Bill extends Model
         return $this->belongsTo(PatientVisit::class, 'patient_visit_id', 'patient_visit_id');
     }
 
+    public function payment()
+{
+    return $this->hasOne(Payment::class, 'bill_id', 'bill_id');
+}
+
     public function logs()
     {
         return $this->morphMany(Logs::class, 'loggable');

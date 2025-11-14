@@ -170,7 +170,7 @@
                     <a class="text-decoration-none fw-bold fs-4
                     {{ request()->routeIs('appointments') ? 'active text-primary' : 'text-dark' }}"
                         href="{{ route('appointments') }}" style="{{ request()->routeIs('appointments') }}">
-                        <span class="nav-text">Appointments</span>
+                        <span class="nav-text">Calendar</span>
                         <i class="bi bi-calendar-check-fill"></i>
                     </a>
                 </li>
