@@ -1,3 +1,48 @@
+<style>
+/* Modal Footer Buttons */
+.modal-footer .btn {
+        transition: 
+        background 0.4s ease-in-out,
+        transform 0.4s ease-in-out,
+        box-shadow 0.4s ease-in-out;
+}
+
+.modal-footer .btn-success {
+        background: #1A73FF;
+}
+/* Hover: slightly darker blue */
+.modal-footer .btn-success:hover {
+        background: #1e3765;
+        color: #FFFEF2;
+        transform: translateY(-2px);   /* subtle lift */
+        box-shadow: 0 6px 12px rgba(0,0,0,0.2); /* soft shadow */
+}
+
+/* Active/Click: lighter blue */
+.modal-footer .btn-success:active {
+        color: #FFFEF2;
+        background: #0f3e73;
+        transform: translateY(2px) scale(0.98); /* real press effect */
+        box-shadow: 0 1px 3px rgba(0,0,0,0.2);
+}
+
+
+/* Optional: Secondary button hover */
+.modal-footer .btn-secondary:hover {
+        background: #1e3rgb(112, 112, 112)
+        color: #FFFEF2;
+        transform: translateY(-2px);   /* subtle lift */
+        box-shadow: 0 6px 12px rgba(0,0,0,0.2); /* soft shadow */
+}
+
+.modal-footer .btn-secondary:active {
+        color: #FFFEF2;
+        background: #0f3e73;
+        transform: translateY(2px) scale(0.98); /* real press effect */
+        box-shadow: 0 1px 3px rgba(0,0,0,0.2);
+}
+</style>
+
 <!-- Edit Medicine Modal -->
 <div class="modal fade" id="edit-medicine-modal" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog modal-lg modal-dialog-centered">
@@ -59,11 +104,11 @@
 
                 <!-- Footer -->
                 <div class="modal-footer bg-light d-flex justify-content-between">
-                    <button type="button" class="btn btn-outline-secondary px-4" data-bs-dismiss="modal">
-                        <i class="bi bi-x-circle me-1"></i> Cancel
+                    <button type="button" class="btn btn-outline-secondary px-2" data-bs-dismiss="modal">
+                        ✖️ Cancel
                     </button>
-                    <button type="submit" class="btn btn-success px-4">
-                        <i class="bi bi-save me-1"></i> Update Medicine
+                    <button type="submit" class="btn btn-success px-2">
+                        💾 Update Medicine
                     </button>
                 </div>
             </form>

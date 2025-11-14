@@ -1,3 +1,43 @@
+<style>
+.btn {
+    transition:
+        background 0.4s ease-in-out,
+        transform 0.4s ease-in-out,
+        box-shadow 0.4s ease-in-out;
+}
+
+.btn.btn-primary:hover {
+    background: #1558a6;    
+    transform: translateY(-2px);
+    box-shadow: 0 6px 12px rgba(0,0,0,0.15);
+}
+
+.btn.btn-primary:active {
+        color: #FFFEF2;
+        background: #0f3e73;
+        transform: translateY(2px) scale(0.98); /* real press effect */
+        box-shadow: 0 1px 3px rgba(0,0,0,0.2);
+}
+
+.btn.btn-outline-secondary {
+    color: black;
+}
+
+.btn.btn-outline-secondary:hover {
+    background: #6c757d;    
+    color: #fff;
+    transform: translateY(-2px);
+    box-shadow: 0 6px 12px rgba(0,0,0,0.15);
+}
+
+.btn.btn-secondary.btn-sm:hover {
+    background: #5c636a;
+    color: #fff;
+    transform: translateY(-2px);
+    box-shadow: 0 6px 12px rgba(0,0,0,0.15);
+}
+</style>
+
 <!-- Add Staff Modal -->
 <div class="modal fade" id="add-staff-modal" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog modal-lg modal-dialog-centered">
@@ -17,18 +57,18 @@
                         <div class="col-md-6">
                             <!-- Staff Name -->
                             <h6 class="text-muted mb-2"><i class="bi bi-person me-1"></i> Staff Information</h6>
-                            <div class="row">
-                                <div class="col-md-4 mb-3">
+                            <div class="column">
+                                <div class="col-md-12 mb-3">
                                     <input type="text" class="form-control" name="first_name"
                                         placeholder="First Name"
                                         value="{{ old('first_name', $staff->first_name ?? '') }}" required>
                                 </div>
-                                <div class="col-md-4 mb-3">
+                                <div class="col-md-12 mb-3">
                                     <input type="text" class="form-control" name="middle_name"
                                         placeholder="Middle Name"
                                         value="{{ old('middle_name', $staff->middle_name ?? '') }}">
                                 </div>
-                                <div class="col-md-4 mb-3">
+                                <div class="col-md-12 mb-3">
                                     <input type="text" class="form-control" name="last_name" placeholder="Last Name"
                                         value="{{ old('last_name', $staff->last_name ?? '') }}" required>
                                 </div>
@@ -85,8 +125,8 @@
                                 </div>
                             </div>
 
-                            <div class="row">
-                                <div class="col-md-4 mb-3">
+                            <div class="column">
+                                <div class="col-md-12 mb-3">
                                     <select id="province-select" class="form-select" required>
                                         <option value="">-- Province --</option>
                                         @foreach ($provinces as $province)
@@ -100,14 +140,14 @@
                                     <input type="hidden" name="address[province_id]" id="province-hidden">
                                 </div>
 
-                                <div class="col-md-4 mb-3">
+                                <div class="col-md-12 mb-3">
                                     <select id="city-select" class="form-select" disabled required>
                                         <option value="">-- City --</option>
                                     </select>
                                     <input type="hidden" name="address[city_id]" id="city-hidden">
                                 </div>
 
-                                <div class="col-md-4 mb-3">
+                                <div class="col-md-12 mb-3">
                                     <select id="barangay-select" class="form-select" disabled required>
                                         <option value="">-- Barangay --</option>
                                     </select>
@@ -137,7 +177,7 @@
                             <h6 class="text-muted mt-4 mb-2">
                                 <i class="bi bi-building me-1"></i> Clinic
                             </h6>
-                            <div class="col-md-6 mb-3">
+                            <div class="col-md-12 mb-3">
                                 <input type="hidden" name="clinic_id" value="{{ session('clinic_id') }}">
                                 <input type="text" class="form-control"
                                     value="{{ \App\Models\Clinic::find(session('clinic_id'))->name }}" disabled>

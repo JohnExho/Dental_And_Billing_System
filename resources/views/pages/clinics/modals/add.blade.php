@@ -1,3 +1,61 @@
+<style>
+/* Apply smooth transition to modal footer buttons */
+.modal-footer .btn {
+    transition: 
+        background 0.4s ease-in-out,
+        transform 0.4s ease-in-out,
+        box-shadow 0.4s ease-in-out;
+}
+
+/* Save Clinic button (btn-success) */
+.modal-footer .btn-success {
+    background: #2c91c5;
+    color: #FFFEF2;
+    border: none;
+    border-radius: 8px;
+    font-weight: 600;
+}
+
+/* Hover: slightly darker blue */
+.modal-footer .btn-success:hover {
+    background: #1558a6;
+    transform: translateY(-2px);
+    box-shadow: 0 6px 12px rgba(0,0,0,0.2);
+}
+
+/* Active: pressed effect */
+.modal-footer .btn-success:active {
+    background: #0f3e73;
+    transform: translateY(2px) scale(0.98);
+    box-shadow: 0 1px 3px rgba(0,0,0,0.2);
+}
+
+/* Cancel button (btn-outline-secondary) */
+.modal-footer .btn-outline-secondary {
+    background: #e0e0e0;
+    color: #333;
+    border: none;
+    border-radius: 8px;
+    font-weight: 600;
+}
+
+/* Hover: slightly darker gray + lift */
+.modal-footer .btn-outline-secondary:hover {
+    background: #c2c2c2;
+    color: #000000;
+    transform: translateY(-2px);
+    box-shadow: 0 6px 12px rgba(0,0,0,0.2);
+}
+
+/* Active: pressed effect */
+.modal-footer .btn-outline-secondary:active {
+    background: #a0a0a0;
+    color: #FFFEF2;
+    transform: translateY(2px) scale(0.98);
+    box-shadow: 0 1px 3px rgba(0,0,0,0.2);
+}
+</style>
+
 <!-- Add Clinic Modal -->
 <div class="modal fade" id="add-clinic-modal" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog modal-lg modal-dialog-centered">
@@ -37,8 +95,8 @@
 
                             <!-- Contact -->
                             <h6 class="text-muted mt-4 mb-2"><i class="bi bi-envelope me-1"></i> Contact</h6>
-                            <div class="row">
-                                <div class="col-md-6 mb-3">
+                            <div class="column">
+                                <div class="col-md-15 mb-3">
                                     <div class="input-group">
                                         <span class="input-group-text"><i class="bi bi-heart-pulse"></i></span>
                                         <input type="text" class="form-control" id="specialty" name="specialty"
@@ -46,7 +104,7 @@
                                             value="{{ old('specialty', $clinic->specialty ?? '') }}">
                                     </div>
                                 </div>
-                                <div class="col-md-6 mb-3">
+                                <div class="col-md-15 mb-3">
                                     <div class="input-group">
                                         <span class="input-group-text"><i class="bi bi-at"></i></span>
                                         <input type="email" class="form-control" id="email" name="email"
@@ -57,8 +115,8 @@
                                 </div>
                             </div>
 
-                            <div class="row">
-                                <div class="col-md-6 mb-3">
+                            <div class="column">
+                                <div class="col-md-15 mb-3">
                                     <div class="input-group">
                                         <span class="input-group-text"><i class="bi bi-telephone"></i></span>
                                         <input type="text" class="form-control phone-number" id="contact_no"
@@ -68,7 +126,7 @@
                                     </div>
                                     <div class="form-text">11-digit format only</div>
                                 </div>
-                                <div class="col-md-6 mb-3">
+                                <div class="col-md-15 mb-3">
                                     <div class="input-group">
                                         <span class="input-group-text"><i class="bi bi-phone"></i></span>
                                         <input type="text" class="form-control phone-number" id="mobile_no"

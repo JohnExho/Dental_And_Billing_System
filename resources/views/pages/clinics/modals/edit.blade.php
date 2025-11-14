@@ -1,3 +1,45 @@
+<style>
+/* Modal Footer Buttons */
+.modal-footer .btn {
+        transition: 
+        background 0.4s ease-in-out,
+        transform 0.4s ease-in-out,
+        box-shadow 0.4s ease-in-out;
+}
+
+/* Hover: slightly darker blue */
+.modal-footer .btn-primary:hover {
+        background: #1e3765;
+        color: #FFFEF2;
+        transform: translateY(-2px);   /* subtle lift */
+        box-shadow: 0 6px 12px rgba(0,0,0,0.2); /* soft shadow */
+}
+
+/* Active/Click: lighter blue */
+.modal-footer .btn-primary:active {
+        color: #FFFEF2;
+        background: #0f3e73;
+        transform: translateY(2px) scale(0.98); /* real press effect */
+        box-shadow: 0 1px 3px rgba(0,0,0,0.2);
+}
+
+
+/* Optional: Secondary button hover */
+.modal-footer .btn-secondary:hover {
+        background: #1e3rgb(112, 112, 112)
+        color: #FFFEF2;
+        transform: translateY(-2px);   /* subtle lift */
+        box-shadow: 0 6px 12px rgba(0,0,0,0.2); /* soft shadow */
+}
+
+.modal-footer .btn-secondary:active {
+        color: #FFFEF2;
+        background: #0f3e73;
+        transform: translateY(2px) scale(0.98); /* real press effect */
+        box-shadow: 0 1px 3px rgba(0,0,0,0.2);
+}
+</style>
+
 <!-- Edit Clinic Modal -->
 <div class="modal fade" id="edit-clinic-modal" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog modal-xl">
@@ -28,12 +70,12 @@
 
                             <!-- Contact -->
                             <h6 class="text-muted mt-3">☎️ Contact</h6>
-                            <div class="row">
-                                <div class="col-md-6 mb-3">
+                            <div class="column">
+                                <div class="col-md-15 mb-3">
                                     <label for="edit_specialty" class="form-label">Specialty</label>
                                     <input type="text" class="form-control form-control-sm" id="edit_specialty" name="specialty">
                                 </div>
-                                <div class="col-md-6 mb-3">
+                                <div class="col-md-15 mb-3">
                                     <label for="edit_email" class="form-label">Email</label>
                                     <input type="email" class="form-control" id="edit_email" name="email" required>
                                 </div>
@@ -131,8 +173,8 @@
                 </div>
 
                 <div class="modal-footer">
-                    <button type="submit" class="btn btn-primary">Update Clinic</button>
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    <button type="submit" class="btn btn-primary">💾Update Clinic</button>
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">✖️Close</button>
                 </div>
             </form>
         </div>

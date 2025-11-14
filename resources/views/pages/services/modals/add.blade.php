@@ -1,3 +1,43 @@
+<style>
+.btn {
+    transition:
+        background 0.4s ease-in-out,
+        transform 0.4s ease-in-out,
+        box-shadow 0.4s ease-in-out;
+}
+
+.btn.btn-primary:hover {
+    background: #1558a6;    
+    transform: translateY(-2px);
+    box-shadow: 0 6px 12px rgba(0,0,0,0.15);
+}
+
+.btn.btn-primary:active {
+        color: #FFFEF2;
+        background: #0f3e73;
+        transform: translateY(2px) scale(0.98); /* real press effect */
+        box-shadow: 0 1px 3px rgba(0,0,0,0.2);
+}
+
+.btn.btn-outline-secondary {
+    color: black;
+}
+
+.btn.btn-outline-secondary:hover {
+    background: #6c757d;    
+    color: #fff;
+    transform: translateY(-2px);
+    box-shadow: 0 6px 12px rgba(0,0,0,0.15);
+}
+
+.btn.btn-secondary.btn-sm:hover {
+    background: #5c636a;
+    color: #fff;
+    transform: translateY(-2px);
+    box-shadow: 0 6px 12px rgba(0,0,0,0.15);
+}
+</style>
+
 <!-- Add Service Modal -->
 <div class="modal fade" id="add-service-modal" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog modal-xl modal-dialog-centered">

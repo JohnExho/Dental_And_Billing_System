@@ -125,7 +125,7 @@
 <aside class="sidebar-wrapper" id="sidebar">
     <nav class="sidebar">
         <div class="sidebar-brand">
-            <img src="https://placehold.co/80x80?text=Logo" alt="Logo">
+            <img src="{{ asset('images/dayao.jpg') }}" alt="Logo" width="50" height="50">
             <h3 class="fw-bold">Dayao Dental</h3>
             <p class="text-light">Home</p>
         </div>
@@ -158,15 +158,14 @@
                     <span class="nav-text">Staff</span>
                 </a>
             </li>
-            <li class="nav-item mb-1">
-                <a class="text-decoration-none fw-bold fs-4
-                    {{ request()->routeIs('teeth') ? 'active text-primary' : 'text-dark' }}"
-                    href="{{ route('teeth') }}" style="{{ request()->routeIs('teeth') ? 'background: gray;' : '' }}">
-                    <span class="nav-text">Teeth</span>
-                    <i class="fa-solid fa-tooth"></i>
-                    <span class="nav-text">Teeth</span>
-                </a>
-            </li>
+            <li class="nav-item">
+    <a href="{{ route('teeth') }}" 
+       class="{{ request()->routeIs('teeth') ? 'active' : '' }}">
+        <i class="fa-solid fa-tooth"></i>
+        <span class="nav-text">Teeth</span>
+    </a>
+</li>
+
             <li class="nav-item">
                 <a href="{{ route('medicines') }}" 
                    class="{{ request()->routeIs('medicines') ? 'active' : '' }}">

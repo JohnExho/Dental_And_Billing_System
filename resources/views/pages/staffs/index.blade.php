@@ -1,3 +1,28 @@
+<style>
+.btn.btn-light.btn-sm {
+    transition:
+        background 0.4s ease-in-out,
+        transform 0.4s ease-in-out,
+        box-shadow 0.4s ease-in-out;
+}
+
+.btn.btn-light.btn-sm i {
+    transition: transform 0.3s ease-in-out;
+}
+
+.btn.btn-light.btn-sm:hover i {
+    transform: rotate(90deg);
+}
+
+.btn.btn-light.btn-sm:hover {
+    background: #e2e6ea;
+    color: #000;
+    transform: translateY(-1px);
+    box-shadow: 0 6px 12px rgba(0,0,0,0.15);
+}
+
+</style>
+
 @extends('layout')
 @section('title', 'Staffs | Chomply')
 @section('content')
