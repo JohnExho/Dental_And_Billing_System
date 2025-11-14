@@ -26,6 +26,11 @@ class PatientQrCode extends Model
         'qr_id',
         'qr_code',
         'qr_password',
-        'clinic_id'
+        'clinic_id',
     ];
+
+    public function logs()
+    {
+        return $this->morphMany(Logs::class, 'loggable');
+    }
 }

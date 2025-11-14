@@ -4,7 +4,7 @@
         <div class="col-md-12">
             <div class="card border-0 shadow-sm">
                 <!-- Header with Navigation -->
-                <div class="card-header bg-white border-bottom d-flex justify-content-between align-items-center py-3">
+                <div class="card-header bg-info border-bottom d-flex justify-content-between align-items-center py-3">
                     @php
                         $queryParams = array_merge(request()->except(['month', 'year', 'view']), [
                             'year' => $currentYear,
@@ -12,9 +12,9 @@
                             'view' => $viewMode,
                         ]);
                     @endphp
-                    <div class="filler">
 
-                    </div>
+                    <h4 class="mb-0 fw-bold">Calendar</h4>
+
 
                     <h4 class="mb-0 fw-bold">{{ $monthName }}</h4>
 
@@ -72,28 +72,29 @@
                                                             </span>
                                                         </div>
 
-@if (count($dayEvents))
-    <div class="d-flex flex-wrap gap-1">
-        @foreach ($dayEvents as $event)
-            @php
-                $eventType = $eventTypes[$event['type']] ?? [
-                    'icon' => 'bi-question',
-                    'label' => 'Unknown',
-                ];
-                $color = $event['color'] ?? '#6c757d'; // fallback gray
-            @endphp
-            <a href="{{ $event['url'] }}" class="text-decoration-none">
-                <span
-                    class="badge rounded-circle d-inline-flex align-items-center justify-content-center"
-                    style="width: 24px; height: 24px; font-size: 0.7rem; background-color: {{ $color }};"
-                    title="{{ $eventType['label'] }}: {{ $event['text'] }}"
-                    data-bs-toggle="tooltip">
-                    <i class="bi {{ $eventType['icon'] }}"></i>
-                </span>
-            </a>
-        @endforeach
-    </div>
-@endif
+                                                        @if (count($dayEvents))
+                                                            <div class="d-flex flex-wrap gap-1">
+                                                                @foreach ($dayEvents as $event)
+                                                                    @php
+                                                                        $eventType = $eventTypes[$event['type']] ?? [
+                                                                            'icon' => 'bi-question',
+                                                                            'label' => 'Unknown',
+                                                                        ];
+                                                                        $color = $event['color'] ?? '#6c757d'; // fallback gray
+                                                                    @endphp
+                                                                    <a href="{{ $event['url'] }}"
+                                                                        class="text-decoration-none">
+                                                                        <span
+                                                                            class="badge rounded-circle d-inline-flex align-items-center justify-content-center"
+                                                                            style="width: 24px; height: 24px; font-size: 0.7rem; background-color: {{ $color }};"
+                                                                            title="{{ $eventType['label'] }}: {{ $event['text'] }}"
+                                                                            data-bs-toggle="tooltip">
+                                                                            <i class="bi {{ $eventType['icon'] }}"></i>
+                                                                        </span>
+                                                                    </a>
+                                                                @endforeach
+                                                            </div>
+                                                        @endif
 
 
 

@@ -1,25 +1,26 @@
 <?php
 
+use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\OTPController;
+use App\Http\Controllers\BillController;
+use App\Http\Controllers\ToolController;
+use App\Http\Controllers\StaffController;
+use App\Http\Controllers\ClinicController;
+use App\Http\Controllers\RecallController;
+use App\Http\Controllers\ReportController;
 use App\Http\Controllers\AccountController;
 use App\Http\Controllers\AddressController;
-use App\Http\Controllers\AppointmentController;
-use App\Http\Controllers\AssociateController;
-use App\Http\Controllers\BillController;
-use App\Http\Controllers\ClinicController;
-use App\Http\Controllers\MedicineController;
-use App\Http\Controllers\OTPController;
 use App\Http\Controllers\PatientController;
-use App\Http\Controllers\PatientQrController;
-use App\Http\Controllers\PrescriptionController;
-use App\Http\Controllers\ProgressNoteController;
-use App\Http\Controllers\RecallController;
 use App\Http\Controllers\ServiceController;
-use App\Http\Controllers\StaffController;
-use App\Http\Controllers\ToolController;
+use App\Http\Controllers\MedicineController;
+use App\Http\Controllers\WaitlistController;
+use App\Http\Controllers\AssociateController;
+use App\Http\Controllers\PatientQrController;
 use App\Http\Controllers\ToothListController;
 use App\Http\Controllers\TreatmentController;
-use App\Http\Controllers\WaitlistController;
-use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\AppointmentController;
+use App\Http\Controllers\PrescriptionController;
+use App\Http\Controllers\ProgressNoteController;
 
 Route::middleware('web')->group(function () {
     // Login page
@@ -41,7 +42,6 @@ Route::middleware('web')->group(function () {
                 return redirect()->route('404');
             }
         })->name('success');
-        Route::view('/dump', 'dd')->name('dump');
     });
 
     Route::get('/locations/cities/{province}', [AddressController::class, 'cities']);
@@ -86,6 +86,7 @@ Route::middleware('web')->group(function () {
     Route::post('/process/create/patient', [PatientController::class, 'create'])->name('process-create-patient');
     Route::put('/process/update/patient', [PatientController::class, 'update'])->name('process-update-patient');
     Route::delete('/process/delete/patient', [PatientController::class, 'destroy'])->name('process-delete-patient');
+    Route::get('/patients/search', [PatientController::class, 'search'])->name('patients.search');
 
     Route::post('/process/create/waitlist', [WaitlistController::class, 'create'])->name('process-create-waitlist');
     Route::put('/process/update/waitlist', [WaitlistController::class, 'update'])->name('process-update-waitlist');
@@ -115,6 +116,10 @@ Route::middleware('web')->group(function () {
     Route::post('/qr/{qr_id}/verify', [PatientQrController::class, 'verifyPassword'])->name('qr.verify');
     Route::get('/qr/{qr_id}/view', action: [PatientQrController::class, 'showProtectedView'])->name('qr.view');
 
+    Route::post('/process/create/appointment', [AppointmentController::class, 'create'])->name('process-create-appointment');
+    Route::put('/process/update/appointment', [AppointmentController::class, 'update'])->name('process-update-appointment');
+    Route::delete('/process/delete/appointment', [AppointmentController::class, 'destroy'])->name('process-delete-appointment');
+
     // Protected routes
     Route::middleware(['auth:account', 'patient.profile'])->group(function () {
         Route::view('/dashboard', 'dashboard')->name('dashboard');
@@ -134,6 +139,9 @@ Route::middleware('web')->group(function () {
             Route::get('/medicines', [MedicineController::class, 'index'])->name('medicines');
             Route::get('/services', [ServiceController::class, 'index'])->name('services');
             Route::get('/tools', [ToolController::class, 'index'])->name('tools');
+            Route::get('/Reports', [ReportController::class, 'index'])->name('reports');
+                    Route::view('/dump', 'dd')->name('dump');
+
         });
     });
 });

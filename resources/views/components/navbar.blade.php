@@ -52,6 +52,7 @@
         'patients' => 'Patients',
         'specific-patient' => 'Patient Details',
         'appointments' => 'Calendar',
+        'reports' => 'Reports',
     ];
 
     $currentClinic = null;

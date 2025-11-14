@@ -3,14 +3,17 @@
     .sidebar-wrapper {
         position: fixed;
         top: 0;
-        left: 0; /* ✅ stays at very left */
+        left: 0;
+        /* ✅ stays at very left */
         height: 100vh;
-        width: 80px; /* collapsed width */
+        width: 80px;
+        /* collapsed width */
         background-color: #1f3556;
         border-right: 1px solid #dee2e6;
         overflow: hidden;
         transition: width 0.3s ease;
-        z-index: 1050; /* ✅ make sure it overlays on top of content */
+        z-index: 1050;
+        /* ✅ make sure it overlays on top of content */
         pointer-events: auto;
     }
 
@@ -49,7 +52,8 @@
     .sidebar .nav {
         width: 100%;
         padding: 0;
-        margin: 0; /* ✅ prevent unwanted spacing */
+        margin: 0;
+        /* ✅ prevent unwanted spacing */
     }
 
     .sidebar .nav-item {
@@ -131,29 +135,26 @@
         </div>
         <ul class="nav flex-column">
             <li class="nav-item">
-                <a href="{{ route('admin.dashboard') }}" 
-                   class="{{ request()->routeIs('admin.dashboard') ? 'active' : '' }}">
+                <a href="{{ route('admin.dashboard') }}"
+                    class="{{ request()->routeIs('admin.dashboard') ? 'active' : '' }}">
                     <i class="bi bi-speedometer2"></i>
                     <span class="nav-text">Dashboard</span>
                 </a>
             </li>
             <li class="nav-item">
-                <a href="{{ route('clinics') }}" 
-                   class="{{ request()->routeIs('clinics') ? 'active' : '' }}">
+                <a href="{{ route('clinics') }}" class="{{ request()->routeIs('clinics') ? 'active' : '' }}">
                     <i class="bi bi-building"></i>
                     <span class="nav-text">Clinics</span>
                 </a>
             </li>
             <li class="nav-item">
-                <a href="{{ route('associates') }}" 
-                   class="{{ request()->routeIs('associates') ? 'active' : '' }}">
+                <a href="{{ route('associates') }}" class="{{ request()->routeIs('associates') ? 'active' : '' }}">
                     <i class="bi bi-person-bounding-box"></i>
                     <span class="nav-text">Associates</span>
                 </a>
             </li>
             <li class="nav-item">
-                <a href="{{ route('staffs') }}" 
-                   class="{{ request()->routeIs('staffs') ? 'active' : '' }}">
+                <a href="{{ route('staffs') }}" class="{{ request()->routeIs('staffs') ? 'active' : '' }}">
                     <i class="bi bi-person-badge-fill"></i>
                     <span class="nav-text">Staff</span>
                 </a>
@@ -168,28 +169,25 @@
                 </a>
             </li>
             <li class="nav-item">
-                <a href="{{ route('medicines') }}" 
-                   class="{{ request()->routeIs('medicines') ? 'active' : '' }}">
+                <a href="{{ route('medicines') }}" class="{{ request()->routeIs('medicines') ? 'active' : '' }}">
                     <i class="fa-solid fa-tablets"></i>
                     <span class="nav-text">Medicine</span>
                 </a>
             </li>
             <li class="nav-item">
-                <a href="{{ route('services') }}" 
-                   class="{{ request()->routeIs('services') ? 'active' : '' }}">
+                <a href="{{ route('services') }}" class="{{ request()->routeIs('services') ? 'active' : '' }}">
                     <i class="fa-solid fa-stethoscope"></i>
                     <span class="nav-text">Service</span>
                 </a>
             </li>
             <li class="nav-item">
-                <a href="{{ route('tools') }}" 
-                   class="{{ request()->routeIs('tools') ? 'active' : '' }}">
+                <a href="{{ route('tools') }}" class="{{ request()->routeIs('tools') ? 'active' : '' }}">
                     <i class="bi bi-wrench-adjustable"></i>
                     <span class="nav-text">Tools</span>
                 </a>
             </li>
             <li class="nav-item">
-                <a href="#">
+                <a href="{{ route('reports') }}" class="{{ request()->routeIs('reports') ? 'active' : '' }}">
                     <i class="bi bi-file-earmark-text"></i>
                     <span class="nav-text">Reports</span>
                 </a>
@@ -198,4 +196,12 @@
     </nav>
 </aside>
 
-<script> const sidebar = document.getElementById('sidebar'); sidebar.addEventListener('mouseenter', () => { sidebar.classList.add('expanded'); }); sidebar.addEventListener('mouseleave', () => { sidebar.classList.remove('expanded'); }); </script>
+<script>
+    const sidebar = document.getElementById('sidebar');
+    sidebar.addEventListener('mouseenter', () => {
+        sidebar.classList.add('expanded');
+    });
+    sidebar.addEventListener('mouseleave', () => {
+        sidebar.classList.remove('expanded');
+    });
+</script>

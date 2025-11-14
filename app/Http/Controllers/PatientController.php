@@ -118,7 +118,7 @@ class PatientController extends Controller
                 'school' => 'nullable|string|max:255',
                 'clinic_id' => 'nullable|exists:clinics,clinic_id',
                 'address' => 'nullable|array',
-                'qr_id'=> 'nullable|string|max:255',
+                'qr_id' => 'nullable|string|max:255',
                 'address.house_no' => 'nullable|string|max:50',
                 'address.street' => 'nullable|string|max:255',
                 'address.barangay_id' => 'nullable|exists:barangays,id',
@@ -235,6 +235,7 @@ class PatientController extends Controller
                 return redirect(route('success'));
             } else {
                 // If the account is authenticated and is not the default account
+                session(['active_role' => 'staff']);
                 return redirect(route('patients'))->with('success', 'Patient created successfully.');
             }
         });
