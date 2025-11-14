@@ -12,7 +12,6 @@
                         <th>Name</th>
                         <th>Email</th>
                         <th>Associate</th>
-                        <th>Laboratory</th>
                         <th>Queue</th>
                         <th>Status</th>
                         <th class="text-end">Actions</th>
@@ -23,9 +22,9 @@
                         @php
                             // Decide which image to show
                             $defaultProfile = match ($wl->patient?->sex) {
-                                'male' => asset('storage/defaults/male.png'),
-                                'female' => asset('storage/defaults/female.png'),
-                                default => asset('storage/defaults/other.png'),
+                                'male' => asset('images/defaults/male.png'),
+                                'female' => asset('images/defaults/female.png'),
+                                default => asset('images/defaults/other.png'),
                             };
 
                             $profileUrl = $wl->patient?->profile_picture
@@ -42,7 +41,6 @@
                             <td>{{ $wl->patient?->full_name }}</td>
                             <td>{{ $wl->patient?->email }}</td>
                             <td>{{ $wl->associate?->full_name ?? 'N/A' }}</td>
-                            <td>{{ $wl->laboratory?->name ?? 'N/A' }}</td>
                             <td>
                                 {{ $wl->queue_position ?? 'N/A' }}
                             </td>

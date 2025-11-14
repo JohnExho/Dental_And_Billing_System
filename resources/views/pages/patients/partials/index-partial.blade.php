@@ -20,9 +20,9 @@
                         @php
                             // Decide which image to show
                             $defaultProfile = match ($patient->sex) {
-                                'male' => asset('storage/defaults/male.png'),
-                                'female' => asset('storage/defaults/female.png'),
-                                default => asset('storage/defaults/other.png'),
+                                'male' => asset('images/defaults/male.png'),
+                                'female' => asset('images/defaults/female.png'),
+                                default => asset('images/defaults/other.png'),
                             };
 
                             $profileUrl = $patient->profile_picture

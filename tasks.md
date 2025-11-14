@@ -1,9 +1,10 @@
 ### ✅ To-Do List
 
-BILLING INFO not FIXED //double check
 
-//Change the QR Path to storage/app/public for security
 
-//appointment
+//reports
 
 //machine learning
+
+
+//recall at the same day shouldn't be possible unless other record is completed or cancelled

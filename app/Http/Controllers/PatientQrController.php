@@ -2,12 +2,26 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Account;
 use App\Models\PatientQrCode;
+use App\Services\LogService;
+use Endroid\QrCode\Encoding\Encoding;
+use Endroid\QrCode\QrCode;
+use Endroid\QrCode\Writer\PngWriter;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Str;
 
 class PatientQrController extends Controller
 {
-    public function generateQr()
+    protected $guard;
+
+    public function __construct()
+    {
+        $this->guard = Auth::guard('account');
+    }
+
+    public function generateQr(Request $request)
     {
         $clinicId = session('clinic_id');
 
@@ -22,22 +36,22 @@ class PatientQrController extends Controller
         }
 
         // Generate new QR
-        $qr_id = \Str::uuid()->toString();
-        $password = \Str::random(8);
+        $qr_id = Str::uuid()->toString();
+        $password = Str::random(8);
 
         $url = route('qr.show', ['qr_id' => $qr_id]);
 
-        $qrCode = \Endroid\QrCode\QrCode::create($url)
-            ->setEncoding(new \Endroid\QrCode\Encoding\Encoding('UTF-8'))
+        $qrCode = QrCode::create($url)
+            ->setEncoding(new Encoding('UTF-8'))
             ->setSize(300)
             ->setMargin(10);
 
-        $writer = new \Endroid\QrCode\Writer\PngWriter;
+        $writer = new PngWriter;
         $result = $writer->write($qrCode);
 
         // Save directly to public folder
         $fileName = 'qr_codes/'.$qr_id.'.png';
-        $outputPath = 'C:/Users/Administrator/Documents/Dental_And_Billing_System/public/'.$fileName;
+        $outputPath = storage_path('app/public/'.$fileName);
 
         if (! file_exists(dirname($outputPath))) {
             mkdir(dirname($outputPath), 0755, true);
@@ -46,12 +60,25 @@ class PatientQrController extends Controller
         $result->saveToFile($outputPath);
 
         // Save record in DB
-        PatientQrCode::create([
+        $patientQr = PatientQrCode::create([
             'clinic_id' => $clinicId,
             'qr_id' => $qr_id,
             'qr_code' => $fileName, // store relative to public
             'qr_password' => $password,
         ]);
+
+        $authAccount = $this->guard->user();
+
+        LogService::record(
+            $authAccount,
+            $patientQr,
+            'create',
+            'Patient QR Code',
+            'User has generated a new patient QR code',
+            "QR ID: {$qr_id}".' '."Clinic ID: {$clinicId}",
+            $request->ip(),
+            $request->userAgent()
+        );
 
         // ✅ Redirect to the same page with updated data
         return redirect()->route('tools')->with('success', 'QR regenerated!');
@@ -84,6 +111,20 @@ class PatientQrController extends Controller
             'qr_access' => true,
             'clinic_id' => $qr->clinic_id, // store clinic_id
         ]);
+
+        $authAccount = $this->guard->user();
+        $guestAccount = Account::where('role', 'guest')->first();
+
+        LogService::record(
+            $authAccount ?? $guestAccount,
+            $qr,
+            'access',
+            'Patient QR Code',
+            'User has accessed the patient QR code',
+            "QR ID: {$qr_id}".' '."Clinic ID: {$qr->clinic_id}",
+            $request->ip(),
+            $request->userAgent()
+        );
 
         // Redirect to the protected view
         return redirect()->route('qr.view', $qr_id)->with('success', 'Password verified!');

@@ -48,6 +48,11 @@
         'teeth' => 'Teeth',
         'medicines' => 'Medicines',
         'services' => 'Services',
+        'waitlist' => 'Waitlist',
+        'patients' => 'Patients',
+        'specific-patient' => 'Patient Details',
+        'appointments' => 'Calendar',
+        'reports' => 'Reports',
     ];
 
     $currentClinic = null;
@@ -55,7 +60,7 @@
         $currentClinic = \App\Models\Clinic::find(session('clinic_id'));
     }
 
-            $activeRole = session('active_role', auth()->user()?->role);
+    $activeRole = session('active_role', auth()->user()?->role);
 
 @endphp
 
@@ -116,8 +121,8 @@
                         </a>
 
                         {{-- Add Patient Button --}}
-                        <a href="#" class="btn btn-primary"
-                            style="font-size: 0.875rem;" data-bs-target="#add-patient-modal" data-bs-toggle="modal">
+                        <a href="#" class="btn btn-primary" style="font-size: 0.875rem;"
+                            data-bs-target="#add-patient-modal" data-bs-toggle="modal">
                             <i class="bi bi-person-plus-fill me-1"></i> Add Patient
                         </a>
 

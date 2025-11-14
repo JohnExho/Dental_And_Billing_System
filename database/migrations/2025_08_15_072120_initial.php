@@ -121,7 +121,7 @@ return new class extends Migration
             // Other details
             $table->text('profile_picture')->nullable();
             $table->text('sex');
-            //'Single', 'Married', 'Widowed', 'Divorced', 'Separated', 'Annulled' 
+            // 'Single', 'Married', 'Widowed', 'Divorced', 'Separated', 'Annulled'
             // text cause of PII
             $table->text('civil_status')->default('Single');
             $table->text('date_of_birth');
@@ -131,7 +131,6 @@ return new class extends Migration
             $table->text('weight')->nullable();
             $table->text('height')->nullable();
             $table->text('school')->nullable();
-
 
             $table->timestamps();
             $table->softDeletes();
@@ -149,12 +148,11 @@ return new class extends Migration
             $table->uuid('associate_id')->nullable();
             $table->uuid('clinic_id')->nullable();
             $table->dateTime('appointment_date');
-            $table->enum('status', ['scheduled', 'completed', 'cancelled'])->default('scheduled');
+            $table->enum('status', ['scheduled', 'completed', 'cancelled', 'no_show', 'rescheduled'])->default('scheduled');
             $table->index('patient_id');     // join
             $table->index('associate_id');   // join
             $table->index('clinic_id');      // join
             $table->index('appointment_date'); // upcoming appointments
-
 
             $table->timestamps();
             $table->softDeletes();
@@ -265,8 +263,6 @@ return new class extends Migration
 
             $table->unique(['clinic_id', 'tooth_list_id']); // one price per tooth per clinic
         });
-
-
 
         Schema::create('logs', function (Blueprint $table) {
             $table->uuid('log_id')->primary();
@@ -413,19 +409,17 @@ return new class extends Migration
             $table->foreign('service_id')->references('service_id')->on('services')->onDelete('set null');
         });
 
-        
         Schema::create('bill_item_tooth', function (Blueprint $table) {
-                $table->uuid('bill_item_tooth_id')->primary();
-                $table->uuid('bill_item_id')->nullable()->index();
-                $table->uuid('tooth_list_id')->nullable()->index();
+            $table->uuid('bill_item_tooth_id')->primary();
+            $table->uuid('bill_item_id')->nullable()->index();
+            $table->uuid('tooth_list_id')->nullable()->index();
 
-                $table->timestamps();
-                $table->softDeletes();
+            $table->timestamps();
+            $table->softDeletes();
 
-                $table->foreign('bill_item_id')->references('bill_item_id')->on('bill_items')->onDelete('set null');
-                $table->foreign('tooth_list_id')->references('tooth_list_id')->on('tooth_list')->onDelete('set null');
-            });
-
+            $table->foreign('bill_item_id')->references('bill_item_id')->on('bill_items')->onDelete('set null');
+            $table->foreign('tooth_list_id')->references('tooth_list_id')->on('tooth_list')->onDelete('set null');
+        });
 
         Schema::create('payments', function (Blueprint $table) {
             $table->uuid('payment_id')->primary();
@@ -457,9 +451,9 @@ return new class extends Migration
             $table->text('dosage_instructions')->nullable();
             $table->text('prescription_notes')->nullable();
             $table->decimal('medicine_cost', 10, 2)->nullable();
-            //removed details column and just collect from medicine table
+            // removed details column and just collect from medicine table
             $table->dateTime('prescribed_at');
-            
+
             $table->enum('status', ['purchased', 'prescribed'])->default('prescribed'); // whether medicine is purchased or just prescribed
 
             $table->index('patient_id');
@@ -495,27 +489,27 @@ return new class extends Migration
             $table->foreign('note_id')->references('note_id')->on('notes')->onDelete('set null');
         });
 
-            // Table: patient_treatments
-            Schema::create('patient_treatments', function (Blueprint $table) {
-                $table->uuid('patient_treatment_id')->primary();
-                $table->uuid('account_id')->nullable()->index(); // Account that created the treatment record
-                $table->uuid('patient_visit_id')->nullable()->index();   // nullable if historically logged with no visit
-                $table->uuid('patient_id')->nullable()->index();
-                $table->uuid('clinic_id')->nullable()->index();
-                // service and tooth is already related via bill_items
-                $table->uuid('bill_item_id')->nullable()->index();
-                $table->dateTime('treatment_date')->nullable();
-                $table->enum('status', ['planned', 'in_progress', 'completed', 'cancelled'])->default('planned')->index();
+        // Table: patient_treatments
+        Schema::create('patient_treatments', function (Blueprint $table) {
+            $table->uuid('patient_treatment_id')->primary();
+            $table->uuid('account_id')->nullable()->index(); // Account that created the treatment record
+            $table->uuid('patient_visit_id')->nullable()->index();   // nullable if historically logged with no visit
+            $table->uuid('patient_id')->nullable()->index();
+            $table->uuid('clinic_id')->nullable()->index();
+            // service and tooth is already related via bill_items
+            $table->uuid('bill_item_id')->nullable()->index();
+            $table->dateTime('treatment_date')->nullable();
+            $table->enum('status', ['planned', 'in_progress', 'completed', 'cancelled'])->default('planned')->index();
 
-                $table->timestamps();
-                $table->softDeletes();
+            $table->timestamps();
+            $table->softDeletes();
 
-                $table->foreign('account_id')->references('account_id')->on('accounts')->onDelete('set null');
-                $table->foreign('patient_visit_id')->references('patient_visit_id')->on('patient_visits')->onDelete('set null');
-                $table->foreign('patient_id')->references('patient_id')->on('patients')->onDelete('set null');
-                $table->foreign('clinic_id')->references('clinic_id')->on('clinics')->onDelete('set null');
-                $table->foreign('bill_item_id')->references('bill_item_id')->on('bill_items')->onDelete('set null');
-            });
+            $table->foreign('account_id')->references('account_id')->on('accounts')->onDelete('set null');
+            $table->foreign('patient_visit_id')->references('patient_visit_id')->on('patient_visits')->onDelete('set null');
+            $table->foreign('patient_id')->references('patient_id')->on('patients')->onDelete('set null');
+            $table->foreign('clinic_id')->references('clinic_id')->on('clinics')->onDelete('set null');
+            $table->foreign('bill_item_id')->references('bill_item_id')->on('bill_items')->onDelete('set null');
+        });
     }
 
     /**

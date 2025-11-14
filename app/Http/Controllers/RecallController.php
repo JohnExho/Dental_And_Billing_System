@@ -27,6 +27,7 @@ class RecallController extends Controller
             'patient_id' => 'required|uuid|exists:patients,patient_id',
             'followup_date' => 'required|date|after_or_equal:today',
             'followup_reason' => 'required|string|max:500',
+            'associate_id' => 'nullable|uuid|exists:associates,associate_id',
         ]);
 
         if ($validator->fails()) {
@@ -41,7 +42,7 @@ class RecallController extends Controller
             'recall_id' => Str::uuid(),
             'account_id' => $authAccount->account_id,
             'patient_id' => $request->patient_id,
-            'associate_id' => $authAccount->associate_id ?? null, // optional, if applicable
+            'associate_id' => $request->associate_id ?? null, // optional, if applicable
             'recall_date' => $request->followup_date,
             'recall_reason' => $request->followup_reason,
             'status' => 'Pending', // default status, you can modify this
@@ -70,6 +71,7 @@ class RecallController extends Controller
             'recall_id' => 'required|uuid|exists:recalls,recall_id',
             'recall_reason' => 'required|string|max:500',
             'status' => 'required|in:Pending,Completed,Cancelled',
+            'associate_id' => 'nullable|uuid|exists:associates,associate_id',
         ]);
 
         if ($validator->fails()) {
@@ -85,6 +87,7 @@ class RecallController extends Controller
         // 4. Update the recall record
         $recall->recall_reason = $request->recall_reason;
         $recall->status = $request->status;
+        $recall->associate_id = $request->associate_id ?? null; // optional, if applicable
         $recall->save();
 
         LogService::record(

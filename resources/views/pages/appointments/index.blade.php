@@ -23,13 +23,127 @@
 @endsection
 @section('content')
 
+    <div class="container-fluid py-1">
+        <div class="row">
+            <!-- Sidebar (spans full height) -->
+            <div class="col-md-2 bg-light p-3 border-end" style="height: 100vh">
+                <h5 class="mb-3 fw-bold">Associates</h5>
+                <form id="filterForm" method="GET">
+                    <input type="hidden" name="year" value="{{ $currentYear }}">
+                    <input type="hidden" name="month" value="{{ $currentMonth }}">
+                    <input type="hidden" name="view" value="{{ $viewMode }}">
 
-    <div class="container py-5">
-        <div class="card shadow border-0 rounded-4">
+                    @foreach ($associates as $associate)
+                        <div class="form-check mb-2">
+                            <input class="form-check-input" type="checkbox" name="associates[]"
+                                value="{{ $associate->associate_id }}" id="assoc_{{ $associate->associate_id }}"
+                                onchange="this.form.submit()"
+                                {{ in_array($associate->associate_id, $associatesFilter) ? 'checked' : '' }}>
+                            <label class="form-check-label d-flex align-items-center"
+                                for="assoc_{{ $associate->associate_id }}">
+                                <span
+                                    style="width:12px; height:12px; background-color: {{ $associate->color ?? '#6c757d' }}; display:inline-block; border-radius:50%; margin-right:6px;"></span>
+                                {{ $associate->full_name }}
+                            </label>
+                        </div>
+                    @endforeach
 
-            @include('pages.appointments.partials.index-partial')
+
+                    <h5 class="mt-4 mb-3 fw-bold">Event Types</h5>
+
+                    <div class="form-check mb-2">
+                        <input class="form-check-input" type="checkbox" name="show_followups" id="show_followups"
+                            onchange="this.form.submit()" {{ $showFollowups ? 'checked' : '' }}>
+                        <label class="form-check-label" for="show_followups">
+                            <i class="bi bi-arrow-repeat"></i> Follow-Ups/Recalls
+                        </label>
+                    </div>
+
+                    <div class="form-check mb-2">
+                        <input class="form-check-input" type="checkbox" name="show_appointments" id="show_appointments"
+                            onchange="this.form.submit()" {{ $showAppointments ? 'checked' : '' }}>
+                        <label class="form-check-label" for="show_appointments">
+                            <i class="bi bi-calendar-check"></i> Appointments
+                        </label>
+                    </div>
+                </form>
+            </div>
+
+            <!-- Right side: button + calendar -->
+            <div class="col-md-10 d-flex flex-column gap-3">
+
+                <!-- Action Button -->
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <!-- Toggle Button -->
+                    <button id="toggle-partial" class="btn btn-outline-primary">
+                        <i class="bi bi-arrow-repeat me-2"></i> Show Appointments
+                    </button>
+
+                    <button type="button" class="btn btn-primary" data-bs-toggle="modal"
+                        data-bs-target="#add-appointment-modal">
+                        <i class="bi bi-plus-circle"></i> New Appointment
+                    </button>
+                </div>
+                @include('pages.appointments.modals.add')
+                @include('pages.appointments.modals.edit')
+                @include('pages.appointments.modals.delete')
+
+                <!-- Partial Content -->
+                <div id="calendar-partial">
+                    @include('pages.appointments.partials.index-partial')
+                </div>
+                <div id="appointments-partial" class="d-none">
+                    @include('pages.appointments.partials.list-partial')
+                </div>
+            </div>
         </div>
     </div>
-    <a href="#">Add Appointment</a>
-    </div>
+@push('scripts')
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+    // Elements
+    const toggleBtn = document.getElementById('toggle-partial');
+    const calendarPartial = document.getElementById('calendar-partial');
+    const appointmentsPartial = document.getElementById('appointments-partial');
+
+    // If URL contains ?tab=appointments → show the list immediately
+    const params = new URLSearchParams(window.location.search);
+    if (params.get('tab') === 'appointments') {
+        calendarPartial.classList.add('d-none');
+        appointmentsPartial.classList.remove('d-none');
+        toggleBtn.innerHTML = '<i class="bi bi-arrow-repeat me-2"></i> Show Calendar';
+    }
+
+    // Toggle button
+    toggleBtn.addEventListener('click', () => {
+        const isCalendarVisible = !calendarPartial.classList.contains('d-none');
+
+        if (isCalendarVisible) {
+            calendarPartial.classList.add('d-none');
+            appointmentsPartial.classList.remove('d-none');
+            toggleBtn.innerHTML = '<i class="bi bi-arrow-repeat me-2"></i> Show Calendar';
+        } else {
+            calendarPartial.classList.remove('d-none');
+            appointmentsPartial.classList.add('d-none');
+            toggleBtn.innerHTML = '<i class="bi bi-arrow-repeat me-2"></i> Show Appointments';
+        }
+    });
+
+    // Delete appointment buttons
+    document.querySelectorAll('.delete-appointment-btn').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+            e.stopPropagation();
+
+            const appointmentId = btn.dataset.id;
+            const input = document.getElementById('delete_appointment_id');
+            if (input) input.value = appointmentId;
+
+            const deleteModalEl = document.getElementById('delete-appointment-modal');
+            if (deleteModalEl) new bootstrap.Modal(deleteModalEl).show();
+        });
+    });
+});
+</script>
+@endpush
+
 @endsection

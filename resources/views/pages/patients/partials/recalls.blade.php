@@ -44,7 +44,8 @@
                                     onclick="openEditRecallModal(
                                         {{ json_encode($recall->recall_id) }},
                                         {{ json_encode($recall->recall_reason ?? '') }},
-                                        {{ json_encode($recall->status ?? '') }}
+                                        {{ json_encode($recall->status ?? '') }},
+                                        {{ json_encode($recall->associate_id ?? '') }}
                                     )">
                                     <i class="bi bi-pencil-square"></i>
                                 </button>
@@ -130,10 +131,11 @@
         }
     }
 
-    function openEditRecallModal(recallId, notes, status) {
+    function openEditRecallModal(recallId, notes, status, associateId) {
         // populate the modal inputs
         document.getElementById('edit_recall_id').value = recallId;
         document.getElementById('edit_notes').value = notes;
+        document.getElementById('edit_associate_id').value = associateId;
 
     // Scope the selector to the recall modal to avoid selecting the wrong element when multiple
     // elements on the page share the same id (e.g., prescription modal).

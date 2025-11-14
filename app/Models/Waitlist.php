@@ -26,7 +26,7 @@ class Waitlist extends Model
         'account_id',
         'clinic_id',
         'patient_id',
-        'laboratory_id',
+'associate_id',
         'requested_at',
         'queue_position',
         'status',
