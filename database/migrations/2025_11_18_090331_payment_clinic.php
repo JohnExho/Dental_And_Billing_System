@@ -11,7 +11,10 @@ return new class extends Migration
      */
     public function up(): void
     {
-        //
+              Schema::table('payments', function (Blueprint $table) {
+            $table->uuid(column: 'clinic_id')->nullable()->index();
+            $table->foreign('clinic_id')->references('clinic_id')->on('clinics')->onDelete('set null');
+        });
     }
 
     /**
