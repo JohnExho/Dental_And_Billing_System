@@ -86,8 +86,11 @@ class ReportController extends Controller
             ])
             ->unique('id')
             ->values();
-        $forecastJson = shell_exec('python3 forecast.py');
-        $forecastedValue = json_decode($forecastJson, true);
+
+        $forecastedWaitlistValue = json_decode(file_get_contents('http://127.0.0.1:5000/forecastwaitlist'), true);
+        $forecastedRevenueValue = json_decode(file_get_contents('http://127.0.0.1:5000/forecastrevenue'), true);
+        $forecastedLocationValue = json_decode(file_get_contents('http://127.0.0.1:5000/forecastlocation'), true);
+        $forecastedTreatmentValue = json_decode(file_get_contents('http://127.0.0.1:5000/forecasttreatment'), true);
 
         return view('pages.reports.index', compact(
             'waitlist',
