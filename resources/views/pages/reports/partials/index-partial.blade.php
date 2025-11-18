@@ -49,10 +49,8 @@
                     </div>
                     <div class="card-body">
                         <canvas id="waitlistChart" style="height:250px;"></canvas>
-
-                        {{-- Data for ChartJS --}}
                         <script>
-                            window.waitlistData = @json($waitlist->groupBy(fn($w) => $w->created_at?->format('Y-m-d'))->map->count());
+                            window.waitlistData = @json($waitlistByDateTime);
                         </script>
                     </div>
                 </div>
@@ -69,10 +67,8 @@
                     </div>
                     <div class="card-body">
                         <canvas id="revenueChart" style="height:250px;"></canvas>
-
-                        {{-- Data for ChartJS --}}
                         <script>
-                            window.revenueData = @json($payments->groupBy(fn($p) => $p->created_at?->format('Y-m-d'))->map->sum('amount'));
+                            window.revenueData = @json($revenueData);
                         </script>
                     </div>
                 </div>
@@ -89,8 +85,6 @@
                     </div>
                     <div class="card-body">
                         <canvas id="locationChart" style="height:250px;"></canvas>
-
-                        {{-- Data for ChartJS --}}
                         <script>
                             window.locationData = @json(collect($locations)->groupBy(fn($loc) => $loc['province_name'] ?? 'Unknown')->map(fn($group) => count($group)));
                         </script>
@@ -109,10 +103,8 @@
                     </div>
                     <div class="card-body">
                         <canvas id="treatmentChart" style="height:250px;"></canvas>
-
-                        {{-- Data for ChartJS --}}
                         <script>
-                            window.treatmentData = @json($treatment->groupBy('treatment_type')->map->count());
+                            window.treatmentData = @json($treatmentData);
                         </script>
                     </div>
                 </div>
@@ -134,7 +126,7 @@
         <button class="btn btn-secondary btn-sm mb-3" onclick="backToDashboard()">
             <i class="bi bi-arrow-left me-1"></i> Back to Dashboard
         </button>
-        {{-- @include('reports.partials.revenue-partial') --}}
+        @include('pages.reports.partials.payment-partial') 
     </div>
 
     <!-- Location Detail -->
@@ -142,7 +134,7 @@
         <button class="btn btn-secondary btn-sm mb-3" onclick="backToDashboard()">
             <i class="bi bi-arrow-left me-1"></i> Back to Dashboard
         </button>
-         @include('pages.reports.partials.location-partial')
+        @include('pages.reports.partials.location-partial')
     </div>
 
     <!-- Treatment Detail -->
@@ -153,216 +145,268 @@
         {{-- @include('reports.partials.treatment-partial') --}}
     </div>
 </div>
+
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/moment@2.29.4/moment.min.js"></script>
 <script>
+    function backToDashboard() {
+        const dashboardTabButton = document.querySelector('#dashboard-tab');
+        if (!dashboardTabButton) return console.warn('Dashboard tab button not found!');
+
+        // Get the existing Bootstrap tab instance or create it
+        let tabInstance = bootstrap.Tab.getInstance(dashboardTabButton);
+        if (!tabInstance) {
+            tabInstance = new bootstrap.Tab(dashboardTabButton);
+        }
+
+        // Show the dashboard tab
+        tabInstance.show();
+    }
+
+
     document.addEventListener('DOMContentLoaded', function() {
         let charts = {};
 
-        function aggregateDataByPeriod(data, period) {
-            const entries = Object.entries(data).sort((a, b) => {
-                return moment(a[0]).valueOf() - moment(b[0]).valueOf();
-            });
+        function aggregateWaitlistData(period) {
+            const data = window.waitlistData || {};
+            const entries = Object.entries(data).sort((a, b) => moment(a[0]).valueOf() - moment(b[0])
+                .valueOf());
+            const now = moment();
+            let labels = [],
+                values = [];
 
-            let labels = [], values = [];
+            const mapByDay = (daysBack) => {
+                const map = {};
+                entries.forEach(([date, count]) => {
+                    const day = moment(date).format('YYYY-MM-DD');
+                    map[day] = (map[day] || 0) + count;
+                });
+                for (let i = daysBack - 1; i >= 0; i--) {
+                    const day = now.clone().subtract(i, 'days').format('YYYY-MM-DD');
+                    labels.push(moment(day).format('MMM DD'));
+                    values.push(map[day] || 0);
+                }
+            };
+
+            const mapByMonth = (monthsBack) => {
+                const map = {};
+                entries.forEach(([date, count]) => {
+                    const month = moment(date).format('YYYY-MM');
+                    map[month] = (map[month] || 0) + count;
+                });
+                for (let i = monthsBack - 1; i >= 0; i--) {
+                    const month = now.clone().subtract(i, 'months').format('YYYY-MM');
+                    labels.push(moment(month).format('MMM YYYY'));
+                    values.push(map[month] || 0);
+                }
+            };
 
             if (period === 'daily') {
-                labels = entries.map(e => moment(e[0]).format('MMM DD'));
-                values = entries.map(e => e[1]);
-            } else if (period === 'weekly') {
-                const weeks = {};
-                entries.forEach(([date, value]) => {
-                    const weekYear = moment(date).format('YYYY-[W]WW');
-                    const weekLabel = `Week ${moment(date).week()}, ${moment(date).year()}`;
-                    if (!weeks[weekYear]) {
-                        weeks[weekYear] = { label: weekLabel, value: 0, sortKey: moment(date).valueOf() };
+                const today = now.format('YYYY-MM-DD');
+                const hourlyMap = {};
+                entries.forEach(([date, count]) => {
+                    if (moment(date).format('YYYY-MM-DD') === today) {
+                        const hour = moment(date).hour();
+                        hourlyMap[hour] = (hourlyMap[hour] || 0) + count;
                     }
-                    weeks[weekYear].value += value;
                 });
-                const sorted = Object.values(weeks).sort((a, b) => a.sortKey - b.sortKey);
-                labels = sorted.map(w => w.label);
-                values = sorted.map(w => w.value);
-            } else if (period === 'monthly') {
-                const months = {};
+                for (let i = 0; i < 24; i++) {
+                    labels.push(moment(`${today} ${i}:00`, 'YYYY-MM-DD HH:mm').format('HH:mm'));
+                    values.push(hourlyMap[i] || 0);
+                }
+            } else if (period === 'weekly') mapByDay(7);
+            else if (period === 'monthly') mapByDay(31);
+            else if (period === 'quarterly') mapByMonth(4);
+            else if (period === 'semi-annual') mapByMonth(6);
+            else if (period === 'annually') mapByMonth(12);
+
+            return {
+                labels,
+                values
+            };
+        }
+
+        function aggregateRevenueData(period) {
+            const data = window.revenueData || {};
+            const entries = Object.entries(data).sort((a, b) => moment(a[0]).valueOf() - moment(b[0])
+                .valueOf());
+            const now = moment();
+            let labels = [],
+                values = [];
+
+            const mapByDay = (daysBack) => {
+                const map = {};
+                entries.forEach(([date, value]) => {
+                    const day = moment(date).format('YYYY-MM-DD');
+                    map[day] = (map[day] || 0) + value;
+                });
+                for (let i = daysBack - 1; i >= 0; i--) {
+                    const day = now.clone().subtract(i, 'days').format('YYYY-MM-DD');
+                    labels.push(moment(day).format('MMM DD'));
+                    values.push(map[day] || 0);
+                }
+            };
+
+            const mapByMonth = (monthsBack) => {
+                const map = {};
                 entries.forEach(([date, value]) => {
                     const month = moment(date).format('YYYY-MM');
-                    const monthLabel = moment(date).format('MMM YYYY');
-                    if (!months[month]) {
-                        months[month] = { label: monthLabel, value: 0, sortKey: moment(date).valueOf() };
-                    }
-                    months[month].value += value;
+                    map[month] = (map[month] || 0) + value;
                 });
-                const sorted = Object.values(months).sort((a, b) => a.sortKey - b.sortKey);
-                labels = sorted.map(m => m.label);
-                values = sorted.map(m => m.value);
-            } else if (period === 'quarterly') {
-                const periods = {};
-                entries.forEach(([date, value]) => {
-                    const monthNum = moment(date).month();
-                    const year = moment(date).year();
-                    const periodNum = Math.floor(monthNum / 4) + 1;
-                    const key = `${year}-P${periodNum}`;
-                    const periodLabel = `Period ${periodNum} ${year}`;
-                    if (!periods[key]) {
-                        periods[key] = { label: periodLabel, value: 0, sortKey: moment(date).valueOf() };
-                    }
-                    periods[key].value += value;
-                });
-                const sorted = Object.values(periods).sort((a, b) => a.sortKey - b.sortKey);
-                labels = sorted.map(p => p.label);
-                values = sorted.map(p => p.value);
-            } else if (period === 'semi-annual') {
-                const semiAnnuals = {};
-                entries.forEach(([date, value]) => {
-                    const monthNum = moment(date).month();
-                    const year = moment(date).year();
-                    const half = monthNum < 6 ? 1 : 2;
-                    const key = `${year}-H${half}`;
-                    const halfLabel = `H${half} ${year}`;
-                    if (!semiAnnuals[key]) {
-                        semiAnnuals[key] = { label: halfLabel, value: 0, sortKey: moment(date).valueOf() };
-                    }
-                    semiAnnuals[key].value += value;
-                });
-                const sorted = Object.values(semiAnnuals).sort((a, b) => a.sortKey - b.sortKey);
-                labels = sorted.map(h => h.label);
-                values = sorted.map(h => h.value);
-            } else if (period === 'annually') {
-                const years = {};
-                entries.forEach(([date, value]) => {
-                    const year = moment(date).year();
-                    years[year] = (years[year] || 0) + value;
-                });
-                const sorted = Object.entries(years).sort((a, b) => a[0] - b[0]);
-                labels = sorted.map(y => y[0]);
-                values = sorted.map(y => y[1]);
-            }
+                for (let i = monthsBack - 1; i >= 0; i--) {
+                    const month = now.clone().subtract(i, 'months').format('YYYY-MM');
+                    labels.push(moment(month).format('MMM YYYY'));
+                    values.push(map[month] || 0);
+                }
+            };
 
-            return { labels, values };
+            if (period === 'daily') {
+                const today = now.format('YYYY-MM-DD');
+                const hourlyMap = {};
+                entries.forEach(([date, value]) => {
+                    if (moment(date).format('YYYY-MM-DD') === today) {
+                        const hour = moment(date).hour();
+                        hourlyMap[hour] = (hourlyMap[hour] || 0) + value;
+                    }
+                });
+                for (let i = 0; i < 24; i++) {
+                    labels.push(moment(`${today} ${i}:00`, 'YYYY-MM-DD HH:mm').format('HH:mm'));
+                    values.push(hourlyMap[i] || 0);
+                }
+            } else if (period === 'weekly') mapByDay(7);
+            else if (period === 'monthly') mapByDay(31);
+            else if (period === 'quarterly') mapByMonth(4);
+            else if (period === 'semi-annual') mapByMonth(6);
+            else if (period === 'annually') mapByMonth(12);
+
+            return {
+                labels,
+                values
+            };
         }
+
 
         function initCharts() {
             const period = document.getElementById('timePeriod')?.value || 'daily';
 
             // Waitlist Chart
-            const waitlistAgg = aggregateDataByPeriod(window.waitlistData, period);
-            charts.waitlist = new Chart(
-                document.getElementById('waitlistChart'), {
-                    type: 'bar',
-                    data: {
-                        labels: waitlistAgg.labels,
-                        datasets: [{
-                            label: 'Waitlist Volume',
-                            data: waitlistAgg.values,
-                            backgroundColor: '#0d6efd'
-                        }]
-                    },
-                    options: {
-                        responsive: true,
-                        maintainAspectRatio: false
-                    }
-                }
-            );
-
-            // Revenue Chart
-            const revenueAgg = aggregateDataByPeriod(window.revenueData, period);
-            charts.revenue = new Chart(
-                document.getElementById('revenueChart'), {
-                    type: 'line',
-                    data: {
-                        labels: revenueAgg.labels,
-                        datasets: [{
-                            label: 'Revenue',
-                            data: revenueAgg.values,
-                            borderColor: '#198754',
-                            backgroundColor: 'rgba(25,135,84,0.2)',
-                            fill: true,
-                            tension: 0.4
-                        }]
-                    },
-                    options: {
-                        responsive: true,
-                        maintainAspectRatio: false
-                    }
-                }
-            );
-
-            // Location Demand Chart (doesn't change with time period)
-            charts.location = new Chart(
-                document.getElementById('locationChart'), {
-                    type: 'doughnut',
-                    data: {
-                        labels: Object.keys(window.locationData),
-                        datasets: [{
-                            label: 'Location Demand',
-                            data: Object.values(window.locationData),
-                            backgroundColor: ['#ffc107', '#0dcaf0', '#198754', '#6c757d', '#6f42c1', '#fd7e14', '#d63384', '#0d6efd']
-                        }]
-                    },
-                    options: {
-                        responsive: true,
-                        maintainAspectRatio: false
-                    }
-                }
-            );
-
-            // Treatment Chart (doesn't change with time period)
-            charts.treatment = new Chart(
-                document.getElementById('treatmentChart'), {
-                    type: 'bar',
-                    data: {
-                        labels: Object.keys(window.treatmentData),
-                        datasets: [{
-                            label: 'Treatments',
-                            data: Object.values(window.treatmentData),
-                            backgroundColor: '#0dcaf0'
-                        }]
-                    },
-                    options: {
-                        responsive: true,
-                        maintainAspectRatio: false,
-                        indexAxis: 'y',
-                        plugins: {
-                            legend: {
-                                display: false
+            const waitlistAgg = aggregateWaitlistData(period);
+            charts.waitlist = new Chart(document.getElementById('waitlistChart'), {
+                type: 'line',
+                data: {
+                    labels: waitlistAgg.labels,
+                    datasets: [{
+                        label: 'Waitlist Volume',
+                        data: waitlistAgg.values,
+                        borderColor: '#0d6efd',
+                        backgroundColor: 'rgba(13,110,253,0.2)',
+                        fill: true,
+                        tension: 0.4
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            ticks: {
+                                stepSize: 1
                             }
                         }
                     }
                 }
-            );
+            });
+
+            // Revenue Chart
+            // Revenue Chart
+            const revenueAgg = aggregateRevenueData(period);
+            charts.revenue = new Chart(document.getElementById('revenueChart'), {
+                type: 'line',
+                data: {
+                    labels: revenueAgg.labels,
+                    datasets: [{
+                        label: 'Revenue',
+                        data: revenueAgg.values,
+                        borderColor: '#198754',
+                        backgroundColor: 'rgba(25,135,84,0.2)',
+                        fill: true,
+                        tension: 0.4
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: {
+                            beginAtZero: true
+                        }
+                    }
+                }
+            });
+
+
+            // Location Chart
+            charts.location = new Chart(document.getElementById('locationChart'), {
+                type: 'doughnut',
+                data: {
+                    labels: Object.keys(window.locationData),
+                    datasets: [{
+                        data: Object.values(window.locationData),
+                        backgroundColor: ['#ffc107', '#0dcaf0', '#198754', '#6c757d', '#6f42c1',
+                            '#fd7e14', '#d63384', '#0d6efd'
+                        ]
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false
+                }
+            });
+
+            // Treatment Chart
+            charts.treatment = new Chart(document.getElementById('treatmentChart'), {
+                type: 'doughnut',
+                data: {
+                    labels: Object.keys(window.treatmentData),
+                    datasets: [{
+                        data: Object.values(window.treatmentData),
+                        backgroundColor: ['#ffc107', '#0dcaf0', '#198754', '#6c757d', '#6f42c1',
+                            '#fd7e14', '#d63384', '#0d6efd'
+                        ]
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            display: false
+                        }
+                    }
+                }
+            });
+
         }
 
         function updateCharts(period) {
-            // Update Waitlist Chart
             if (charts.waitlist) {
-                const waitlistAgg = aggregateDataByPeriod(window.waitlistData, period);
-                charts.waitlist.data.labels = waitlistAgg.labels;
-                charts.waitlist.data.datasets[0].data = waitlistAgg.values;
+                const agg = aggregateWaitlistData(period);
+                charts.waitlist.data.labels = agg.labels;
+                charts.waitlist.data.datasets[0].data = agg.values;
                 charts.waitlist.update();
             }
-
-            // Update Revenue Chart
             if (charts.revenue) {
-                const revenueAgg = aggregateDataByPeriod(window.revenueData, period);
-                charts.revenue.data.labels = revenueAgg.labels;
-                charts.revenue.data.datasets[0].data = revenueAgg.values;
+                const agg = aggregateRevenueData(period);
+                charts.revenue.data.labels = agg.labels;
+                charts.revenue.data.datasets[0].data = agg.values;
                 charts.revenue.update();
             }
 
-            // Location and Treatment charts don't need time period updates
         }
 
         initCharts();
 
-        // Listen for time period changes
-        const timePeriodSelect = document.getElementById('timePeriod');
-        if (timePeriodSelect) {
-            timePeriodSelect.addEventListener('change', (e) => {
-                updateCharts(e.target.value);
-            });
-        }
-
-        // View detail buttons
         document.querySelectorAll('.view-detail').forEach(button => {
             button.addEventListener('click', function() {
                 const tabId = this.getAttribute('data-tab');
@@ -370,23 +414,62 @@
             });
         });
 
-        // Restore last active tab
+        document.querySelectorAll('#reportTabs button').forEach(tab => {
+            tab.addEventListener('shown.bs.tab', e => localStorage.setItem('activeReportTab', e.target
+                .id));
+        });
+
         const activeTabId = localStorage.getItem('activeReportTab');
         if (activeTabId) {
             const trigger = document.querySelector(`#reportTabs button#${activeTabId}`);
             if (trigger) new bootstrap.Tab(trigger).show();
         }
 
-        // Remember active tab
-        document.querySelectorAll('#reportTabs button').forEach(tab => {
-            tab.addEventListener('shown.bs.tab', e => {
-                localStorage.setItem('activeReportTab', e.target.id);
-            });
-        });
-    });
+        const timePeriodSelect = document.getElementById('timePeriod');
+        if (timePeriodSelect) timePeriodSelect.addEventListener('change', e => updateCharts(e.target.value));
 
-    // Back button
-    function backToDashboard() {
-        new bootstrap.Tab(document.querySelector('#dashboard-tab')).show();
-    }
+
+        function aggregateDataByPeriod(data, period) {
+            const entries = Object.entries(data).sort((a, b) => moment(a[0]).valueOf() - moment(b[0])
+                .valueOf());
+            let labels = [],
+                values = [];
+            if (period === 'daily') {
+                labels = entries.map(e => moment(e[0]).format('HH:mm'));
+                values = entries.map(e => e[1]);
+            } else if (period === 'weekly') {
+                const weeks = {};
+                entries.forEach(([date, value]) => {
+                    const weekKey = moment(date).format('YYYY-[W]WW');
+                    weeks[weekKey] ??= {
+                        value: 0,
+                        label: `Week ${moment(date).week()}, ${moment(date).year()}`,
+                        sortKey: moment(date).valueOf()
+                    };
+                    weeks[weekKey].value += value;
+                });
+                const sorted = Object.values(weeks).sort((a, b) => a.sortKey - b.sortKey);
+                labels = sorted.map(w => w.label);
+                values = sorted.map(w => w.value);
+            } else if (period === 'monthly') {
+                const months = {};
+                entries.forEach(([date, value]) => {
+                    const m = moment(date).format('YYYY-MM');
+                    months[m] ??= {
+                        value: 0,
+                        label: moment(date).format('MMM YYYY'),
+                        sortKey: moment(date).valueOf()
+                    };
+                    months[m].value += value;
+                });
+                const sorted = Object.values(months).sort((a, b) => a.sortKey - b.sortKey);
+                labels = sorted.map(m => m.label);
+                values = sorted.map(m => m.value);
+            }
+            return {
+                labels,
+                values
+            };
+        }
+    });
 </script>

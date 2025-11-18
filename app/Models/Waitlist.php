@@ -3,14 +3,14 @@
 namespace App\Models;
 
 use App\Traits\HasUuid;
-use Illuminate\Database\Eloquent\Model;
-use Illuminate\Notifications\Notifiable;
-use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Notifications\Notifiable;
 
 class Waitlist extends Model
 {
-     use HasFactory, HasUuid, Notifiable, SoftDeletes;
+    use HasFactory, HasUuid, Notifiable, SoftDeletes;
 
     protected $table = 'waitlist';
 
@@ -26,15 +26,12 @@ class Waitlist extends Model
         'account_id',
         'clinic_id',
         'patient_id',
-'associate_id',
-        'requested_at',
+        'associate_id',
+        'requested_at_date',
+        'requested_at_time',
         'queue_position',
         'status',
-        'queue_snapshot'
-    ];
-
-    protected $casts = [
-        'requested_at' => 'integer',
+        'queue_snapshot',
     ];
 
     public function logs()
@@ -62,4 +59,3 @@ class Waitlist extends Model
         return $this->belongsTo(Associate::class, 'associate_id', 'associate_id');
     }
 }
-

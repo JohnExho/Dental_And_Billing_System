@@ -3,18 +3,19 @@
 namespace App\Http\Controllers;
 
 use App\Models\Bill;
-use App\Models\BillItem;
-use App\Models\BillItemTooth;
 use App\Models\Note;
+use App\Models\Service;
+use App\Models\BillItem;
 use App\Models\Treatment;
+use Illuminate\Support\Str;
 use App\Services\LogService;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
+use App\Models\BillItemTooth;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
-use Illuminate\Support\Str;
 
 class TreatmentController extends Controller
 {
@@ -104,7 +105,7 @@ class TreatmentController extends Controller
             $bill->amount += $totalCost;
             $bill->total_amount += $totalCost;
             $bill->save();
-
+            $service = Service::find($validated['procedure_id']);
             // 7. Create Treatment
             $treatment = Treatment::create([
                 'patient_treatment_id' => Str::uuid(),
@@ -114,6 +115,7 @@ class TreatmentController extends Controller
                 'clinic_id' => $clinicId,
                 'status' => $validated['status'],
                 'treatment_date' => now(),
+                'treatment_name' => $service?->name,
             ]);
 
             // 8. Create Note

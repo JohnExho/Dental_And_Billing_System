@@ -6,6 +6,8 @@ use App\Models\Address;
 use App\Models\Payment;
 use App\Models\Treatment;
 use App\Models\Waitlist;
+use Carbon\Carbon;
+use Illuminate\Support\Collection;
 
 class ReportController extends Controller
 {
@@ -13,13 +15,16 @@ class ReportController extends Controller
     {
         $clinicId = session('clinic_id'); // if you want clinic-specific filtering
 
-        $waitlist = Waitlist::whereHas('patient', function ($q) {
-            $q->where('clinic_id', $clinic->clinic_id ?? 0);
+        $waitlist = Waitlist::whereHas('patient', function ($q) use ($clinicId) {
+            if ($clinicId) {
+                $q->where('clinic_id', $clinicId);
+            }
         })->get();
 
-        $payments = Payment::whereHas('bill', function ($q) {
-            $q->where('clinic_id', $clinic->clinic_id ?? 0);
-        })->get();
+        $revenueData = Payment::where('clinic_id', $clinicId)
+            ->selectRaw('DATE_FORMAT(created_at, "%Y-%m-%d %H:%i:%s") as timestamp, amount')
+            ->get()
+            ->pluck('amount', 'timestamp');
 
         // Only addresses with patients
         $locations = Address::whereNotNull('patient_id')
@@ -39,7 +44,19 @@ class ReportController extends Controller
                 'barangay_name' => $loc->barangay?->name ?? 'N/A',
             ]);
 
-        $treatment = Treatment::all();
+        $waitlistByDateTime = $waitlist->groupBy(function ($w) {
+            // Group by date + hour + minute
+            return Carbon::parse($w->requested_at_date.' '.$w->requested_at_time)
+                ->format('Y-m-d H:i');
+        })->map(function (Collection $items) {
+            return $items->count();
+        });
+
+        $treatment = Treatment::where('status', 'completed')->get();
+
+            $treatmentData = $treatment
+        ->groupBy('treatment_name') // group by actual name
+        ->map->count(); // count occurrences
 
         // Prepare filter options
         $provinces = collect($locations)
@@ -68,11 +85,13 @@ class ReportController extends Controller
 
         return view('pages.reports.index', compact(
             'waitlist',
-            'payments',
+            'revenueData',
             'locations',
             'treatment',
+            'treatmentData',
             'provinces',
             'cities',
+            'waitlistByDateTime',
             'barangays'
         ));
     }

@@ -141,6 +141,8 @@
                                     class="form-control" readonly>
                             </div>
 
+                            <input type="hidden" name="clinic_id" value="{{ session('clinic_id') }}">
+
                             <div class="mt-4">
                                 <button type="submit" class="btn btn-primary w-100" id="process-payment-btn">Process
                                     Payment</button>

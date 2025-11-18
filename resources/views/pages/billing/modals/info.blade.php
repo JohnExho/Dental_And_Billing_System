@@ -45,7 +45,7 @@
                     <!-- Discount -->
                     <div class="d-flex justify-content-between align-items-center py-2 border-bottom">
                         <span class="text-muted small">Discount</span>
-                        <span class="fw-medium text-success" id="receipt_discount">₱0.00</span>
+                        <span class="fw-medium text-success" id="receipt_discount">%0.00</span>
                     </div>
 
                     <!-- Total Amount -->
@@ -130,7 +130,7 @@
         
         const discountAmount = Number(data.discount || 0);
         const discountEl = receiptModal.querySelector('#receipt_discount');
-        discountEl.textContent = '₱' + discountAmount.toFixed(2);
+        discountEl.textContent = '%' + discountAmount.toFixed(2);
         discountEl.classList.toggle('text-success', discountAmount > 0);
         discountEl.classList.toggle('fw-medium', discountAmount === 0);
     });

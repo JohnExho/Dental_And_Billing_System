@@ -139,7 +139,7 @@ Route::middleware('web')->group(function () {
             Route::get('/medicines', [MedicineController::class, 'index'])->name('medicines');
             Route::get('/services', [ServiceController::class, 'index'])->name('services');
             Route::get('/tools', [ToolController::class, 'index'])->name('tools');
-            Route::get('/Reports', [ReportController::class, 'index'])->name('reports');
+            Route::get('/reports', [ReportController::class, 'index'])->name('reports');
                     Route::view('/dump', 'dd')->name('dump');
 
         });

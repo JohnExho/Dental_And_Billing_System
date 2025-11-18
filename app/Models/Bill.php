@@ -27,7 +27,6 @@ class Bill extends Model
         'patient_id',
         'associate_id',
         'clinic_id',
-        'laboratory_id',
         'patient_visit_id',
         'amount',
         'discount',

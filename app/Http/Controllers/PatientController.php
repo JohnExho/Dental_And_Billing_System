@@ -236,6 +236,7 @@ class PatientController extends Controller
             } else {
                 // If the account is authenticated and is not the default account
                 session(['active_role' => 'staff']);
+
                 return redirect(route('patients'))->with('success', 'Patient created successfully.');
             }
         });
@@ -486,7 +487,7 @@ class PatientController extends Controller
             'billItems.teeth', // Load the many-to-many teeth relationship
             'account',
             'patient',
-        ])->paginate(8);
+        ])->where('patient_id', $patientId)->paginate(8);
 
         $recalls = Recall::with(['account'])
             ->where('patient_id', $patientId)

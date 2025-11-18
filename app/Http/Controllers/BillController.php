@@ -12,12 +12,19 @@ use Illuminate\Support\Facades\Hash;
 
 class BillController extends Controller
 {
+    protected $guard;
+
+    public function __construct()
+    {
+        $this->guard = Auth::guard('account');
+    }
+
     public function create(Request $request)
     {
         $request->validate([
             'bill_id' => 'required|exists:bills,bill_id',
             'payment_method' => 'required|in:cash,online,credit_card',
-            'paid_at' => 'required|date',
+            'clinic_id' => 'required|exists:clinics,clinic_id',
             'amount_paid' => 'required|numeric|min:0',
             'discount' => 'required|numeric|min:0|max:100',
             'online_payment_type' => 'required_if:payment_method,online',
@@ -26,6 +33,7 @@ class BillController extends Controller
         ]);
 
         $bill = Bill::findOrFail($request->bill_id);
+
 
         // Calculate final amount after discount
         $discountAmount = bcmul($bill->amount, bcdiv($request->discount, 100, 2), 2);
@@ -36,15 +44,19 @@ class BillController extends Controller
             return back()->with('error', 'Payment amount does not match the calculated total.');
         }
 
-        return DB::transaction(function () use ($request, $bill, $finalAmount) {
+        return DB::transaction(function () use ($request, $bill, $finalAmount,) {
             // Create payment record
+
+
             $payment = new Payment([
                 'bill_id' => $bill->bill_id,
-                'account_id' => Auth::id(),
+                'account_id' => $this->guard->user()->account_id,
                 'payment_method' => $request->payment_method,
                 'amount' => $finalAmount,
-                'paid_at' => $request->paid_at,
+                'paid_at_date' => now(),
+                'paid_at_time' => now(),
                 'payment_details' => $this->getPaymentDetails($request),
+                'clinic_id' => $request->clinic_id,
             ]);
             $payment->save();
 
@@ -91,6 +103,7 @@ class BillController extends Controller
 
         return $details;
     }
+
     public function destroy(Request $request)
     {
         $request->validate([

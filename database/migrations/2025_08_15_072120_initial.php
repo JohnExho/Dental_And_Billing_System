@@ -168,7 +168,8 @@ return new class extends Migration
             $table->uuid('account_id')->nullable()->index(); // Account that created the waitlist entry
             $table->uuid('patient_id')->nullable()->index(); // Patient on the waitlist
             $table->uuid('clinic_id')->nullable()->index();
-            $table->dateTime('requested_at');
+            $table->date('requested_at_date');
+            $table->time('requested_at_time');
             $table->integer('queue_position')->nullable(); // Position in the waitlist
             $table->integer('queue_snapshot')->nullable();
             $table->enum('status', ['waiting', 'finished', 'removed', 'completed'])->default('waiting');
@@ -427,11 +428,11 @@ return new class extends Migration
             $table->uuid('bill_id')->nullable();
             $table->decimal('amount', 10, 2);
             $table->string('payment_method'); // cash, credit_card, online
-            $table->dateTime('paid_at');
+            $table->date('paid_at_date');
+            $table->time('paid_at_time');
             $table->json('payment_details');
             $table->index('bill_id');        // join
             $table->index('account_id');     // who processed
-            $table->index('paid_at');        // reporting/filtering
 
             $table->timestamps();
             $table->softDeletes();

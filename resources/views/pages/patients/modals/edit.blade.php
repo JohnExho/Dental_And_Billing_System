@@ -69,7 +69,7 @@
                                                 <label class="form-label">Gender <span
                                                         class="text-danger">*</span></label>
                                                 <select name="sex" id="edit_sex" class="form-select" required>
-                                                    <option value="">-- Select --</option>
+                                                    <option value="other" selected>-- Select --</option>
                                                     <option value="male">Male</option>
                                                     <option value="female">Female</option>
                                                     <option value="other">Other</option>

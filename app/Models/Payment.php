@@ -27,8 +27,10 @@ class Payment extends Model
         'account_id',
         'payment_method',
         'amount',
-        'paid_at',
+        'paid_at_date',
+        'paid_at_time',
         'payment_details',
+        'clinic_id',
     ];
 
     protected $casts = [

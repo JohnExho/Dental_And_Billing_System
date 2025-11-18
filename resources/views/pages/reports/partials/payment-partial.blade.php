@@ -1,30 +1,29 @@
 <div class="card shadow-sm border-0">
-    <div class="card-header bg-primary text-white">
+    <div class="card-header bg-success text-white">
         <h6 class="mb-0 fw-bold">
-            <i class="bi bi-people-fill me-2"></i> Waitlist Detail
+            <i class="bi bi-cash-stack me-2"></i> Revenue Detail
         </h6>
     </div>
 
     <div class="card-body">
-        <canvas id="waitlistDetailChart" style="height:400px;"></canvas>
+        <canvas id="revenueDetailChart" style="height:400px;"></canvas>
 
         <script src="https://cdn.jsdelivr.net/npm/moment@2.29.4/moment.min.js"></script>
         <script>
         document.addEventListener('DOMContentLoaded', function() {
-            let waitlistDetailChart = null;
+            let revenueDetailChart = null;
 
-            // Aggregate waitlist data based on selected period
-            function aggregateWaitlistData(period) {
-                const waitlistData = window.waitlistData || {};
-                const entries = Object.entries(waitlistData).sort((a, b) => moment(a[0]).valueOf() - moment(b[0]).valueOf());
+            function aggregateRevenueData(period) {
+                const revenueData = window.revenueData || {};
+                const entries = Object.entries(revenueData).sort((a, b) => moment(a[0]).valueOf() - moment(b[0]).valueOf());
                 let labels = [], data = [];
                 const now = moment();
 
                 const mapByDay = (daysBack) => {
                     const map = {};
-                    entries.forEach(([date, count]) => {
+                    entries.forEach(([date, value]) => {
                         const day = moment(date).format('YYYY-MM-DD');
-                        map[day] = (map[day] || 0) + count;
+                        map[day] = (map[day] || 0) + value;
                     });
                     for (let i = daysBack - 1; i >= 0; i--) {
                         const day = now.clone().subtract(i, 'days').format('YYYY-MM-DD');
@@ -35,9 +34,9 @@
 
                 const mapByMonth = (monthsBack) => {
                     const map = {};
-                    entries.forEach(([date, count]) => {
+                    entries.forEach(([date, value]) => {
                         const month = moment(date).format('YYYY-MM');
-                        map[month] = (map[month] || 0) + count;
+                        map[month] = (map[month] || 0) + value;
                     });
                     for (let i = monthsBack - 1; i >= 0; i--) {
                         const month = now.clone().subtract(i, 'months').format('YYYY-MM');
@@ -74,24 +73,24 @@
                 return { labels, data };
             }
 
-            function initWaitlistDetailChart() {
-                const ctx = document.getElementById('waitlistDetailChart');
+            function initRevenueDetailChart() {
+                const ctx = document.getElementById('revenueDetailChart');
                 if (!ctx) return;
 
-                if (waitlistDetailChart) waitlistDetailChart.destroy();
+                if (revenueDetailChart) revenueDetailChart.destroy();
 
                 const period = document.getElementById('timePeriod')?.value || 'daily';
-                const { labels, data } = aggregateWaitlistData(period);
+                const { labels, data } = aggregateRevenueData(period);
 
-                waitlistDetailChart = new Chart(ctx.getContext('2d'), {
+                revenueDetailChart = new Chart(ctx.getContext('2d'), {
                     type: 'line',
                     data: {
                         labels: labels,
                         datasets: [{
-                            label: 'Waitlist Volume',
+                            label: 'Revenue',
                             data: data,
-                            borderColor: '#0d6efd',
-                            backgroundColor: 'rgba(13,110,253,0.2)',
+                            borderColor: '#198754',
+                            backgroundColor: 'rgba(25,135,84,0.2)',
                             fill: true,
                             tension: 0.4
                         }]
@@ -101,30 +100,29 @@
                         maintainAspectRatio: false,
                         scales: {
                             y: {
-                                beginAtZero: true,
-                                ticks: { stepSize: 1 }
+                                beginAtZero: true
                             }
                         }
                     }
                 });
             }
 
-            function updateWaitlistDetailChart(period) {
-                if (!waitlistDetailChart) return;
-                const { labels, data } = aggregateWaitlistData(period);
-                waitlistDetailChart.data.labels = labels;
-                waitlistDetailChart.data.datasets[0].data = data;
-                waitlistDetailChart.update();
+            function updateRevenueDetailChart(period) {
+                if (!revenueDetailChart) return;
+                const { labels, data } = aggregateRevenueData(period);
+                revenueDetailChart.data.labels = labels;
+                revenueDetailChart.data.datasets[0].data = data;
+                revenueDetailChart.update();
             }
 
-            const waitlistTab = document.querySelector('#waitlist-detail-tab');
-            if (waitlistTab) waitlistTab.addEventListener('shown.bs.tab', () => setTimeout(initWaitlistDetailChart, 100));
+            const revenueTab = document.querySelector('#revenue-detail-tab');
+            if (revenueTab) revenueTab.addEventListener('shown.bs.tab', () => setTimeout(initRevenueDetailChart, 100));
 
-            const waitlistPane = document.querySelector('#waitlist-detail');
-            if (waitlistPane && waitlistPane.classList.contains('show')) setTimeout(initWaitlistDetailChart, 100);
+            const revenuePane = document.querySelector('#revenue-detail');
+            if (revenuePane && revenuePane.classList.contains('show')) setTimeout(initRevenueDetailChart, 100);
 
             const timePeriodSelect = document.getElementById('timePeriod');
-            if (timePeriodSelect) timePeriodSelect.addEventListener('change', e => updateWaitlistDetailChart(e.target.value));
+            if (timePeriodSelect) timePeriodSelect.addEventListener('change', e => updateRevenueDetailChart(e.target.value));
         });
         </script>
     </div>

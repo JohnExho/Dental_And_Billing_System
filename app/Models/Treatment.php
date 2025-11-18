@@ -41,7 +41,8 @@ class Treatment extends Model
         'account_id',
         'tooth_id',
         'treatment_date',
-        'status'
+        'status',
+        'treatment_name',
     ];
 
     protected $casts = [
