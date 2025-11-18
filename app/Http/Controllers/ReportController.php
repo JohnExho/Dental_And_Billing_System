@@ -52,11 +52,15 @@ class ReportController extends Controller
             return $items->count();
         });
 
-        $treatment = Treatment::where('status', 'completed')->get();
+        $treatment = Treatment::where('status', 'completed')->whereHas('patient', function ($q) use ($clinicId) {
+            if ($clinicId) {
+                $q->where('clinic_id', $clinicId);
+            }
+        })->get();
 
-            $treatmentData = $treatment
-        ->groupBy('treatment_name') // group by actual name
-        ->map->count(); // count occurrences
+        $treatmentData = $treatment
+            ->groupBy('treatment_name') // group by actual name
+            ->map->count(); // count occurrences
 
         // Prepare filter options
         $provinces = collect($locations)
@@ -82,6 +86,8 @@ class ReportController extends Controller
             ])
             ->unique('id')
             ->values();
+        $forecastJson = shell_exec('python3 forecast.py');
+        $forecastedValue = json_decode($forecastJson, true);
 
         return view('pages.reports.index', compact(
             'waitlist',
@@ -92,7 +98,7 @@ class ReportController extends Controller
             'provinces',
             'cities',
             'waitlistByDateTime',
-            'barangays'
+            'barangays',
         ));
     }
 }

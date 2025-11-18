@@ -142,7 +142,7 @@
         <button class="btn btn-secondary btn-sm mb-3" onclick="backToDashboard()">
             <i class="bi bi-arrow-left me-1"></i> Back to Dashboard
         </button>
-        {{-- @include('reports.partials.treatment-partial') --}}
+        @include('pages.reports.partials.treatment-partial')
     </div>
 </div>
 
