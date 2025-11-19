@@ -51,6 +51,7 @@
                         <canvas id="waitlistChart" style="height:250px;"></canvas>
                         <script>
                             window.waitlistData = @json($waitlistByDateTime);
+                            window.forecastedWaitlistValue = @json($forecastedWaitlistValue);
                         </script>
                     </div>
                 </div>
@@ -126,7 +127,7 @@
         <button class="btn btn-secondary btn-sm mb-3" onclick="backToDashboard()">
             <i class="bi bi-arrow-left me-1"></i> Back to Dashboard
         </button>
-        @include('pages.reports.partials.payment-partial') 
+        @include('pages.reports.partials.payment-partial')
     </div>
 
     <!-- Location Detail -->
@@ -285,28 +286,68 @@
             };
         }
 
-
         function initCharts() {
             const period = document.getElementById('timePeriod')?.value || 'daily';
 
-            // Waitlist Chart
+            // Waitlist Chart with Forecast (only for weekly)
             const waitlistAgg = aggregateWaitlistData(period);
+
+            let allLabels = [...waitlistAgg.labels];
+            let historicalData = [...waitlistAgg.values];
+            let forecastData = [];
+
+            if (period === 'weekly') {
+                const waitlistForecast = window.forecastedWaitlistValue?.forecast_next_7_days || {};
+                const forecastDates = Object.keys(waitlistForecast).sort();
+
+                // Add forecast labels
+                const forecastLabels = forecastDates.map(d => moment(d).format('MMM DD'));
+                allLabels = [...allLabels, ...forecastLabels];
+
+                // Get forecast values
+                const forecastValues = forecastDates.map(date => waitlistForecast[date]);
+
+                // Historical data ends, then nulls for forecast period
+                historicalData = [...historicalData, ...new Array(forecastValues.length).fill(null)];
+
+                // Forecast data: nulls for all historical, then the actual forecast values
+                forecastData = [...new Array(waitlistAgg.values.length).fill(null), ...forecastValues];
+            } else {
+                forecastData = [];
+            }
+
             charts.waitlist = new Chart(document.getElementById('waitlistChart'), {
                 type: 'line',
                 data: {
-                    labels: waitlistAgg.labels,
+                    labels: allLabels,
                     datasets: [{
-                        label: 'Waitlist Volume',
-                        data: waitlistAgg.values,
-                        borderColor: '#0d6efd',
-                        backgroundColor: 'rgba(13,110,253,0.2)',
-                        fill: true,
-                        tension: 0.4
-                    }]
+                            label: 'Historical Waitlist',
+                            data: historicalData,
+                            borderColor: '#0d6efd',
+                            backgroundColor: 'rgba(13,110,253,0.2)',
+                            fill: true,
+                            tension: 0.4,
+                            spanGaps: false
+                        },
+                        {
+                            label: 'Forecasted Waitlist',
+                            data: forecastData,
+                            borderColor: '#fd7e14',
+                            backgroundColor: 'rgba(253,126,20,0.2)',
+                            fill: true,
+                            tension: 0.4,
+                            borderDash: [5, 5],
+                            spanGaps: true // This allows the line to connect from last historical point
+                        }
+                    ]
                 },
                 options: {
                     responsive: true,
                     maintainAspectRatio: false,
+                    interaction: {
+                        mode: 'index',
+                        intersect: false,
+                    },
                     scales: {
                         y: {
                             beginAtZero: true,
@@ -314,11 +355,23 @@
                                 stepSize: 1
                             }
                         }
+                    },
+                    plugins: {
+                        legend: {
+                            display: true,
+                            position: 'top'
+                        },
+                        tooltip: {
+                            mode: 'index',
+                            intersect: false,
+                            filter: function(tooltipItem) {
+                                return tooltipItem.parsed.y !== null;
+                            }
+                        }
                     }
                 }
             });
 
-            // Revenue Chart
             // Revenue Chart
             const revenueAgg = aggregateRevenueData(period);
             charts.revenue = new Chart(document.getElementById('revenueChart'), {
@@ -344,7 +397,6 @@
                     }
                 }
             });
-
 
             // Location Chart
             charts.location = new Chart(document.getElementById('locationChart'), {
@@ -386,23 +438,44 @@
                     }
                 }
             });
-
         }
 
         function updateCharts(period) {
             if (charts.waitlist) {
                 const agg = aggregateWaitlistData(period);
-                charts.waitlist.data.labels = agg.labels;
-                charts.waitlist.data.datasets[0].data = agg.values;
+
+                let allLabels = [...agg.labels];
+                let historicalData = [...agg.values];
+                let forecastData = [];
+
+                if (period === 'weekly') {
+                    const waitlistForecast = window.forecastedWaitlistValue?.forecast_next_7_days || {};
+                    const forecastDates = Object.keys(waitlistForecast).sort();
+
+                    const forecastLabels = forecastDates.map(d => moment(d).format('MMM DD'));
+                    allLabels = [...allLabels, ...forecastLabels];
+
+                    const forecastValues = forecastDates.map(date => waitlistForecast[date]);
+
+                    historicalData = [...historicalData, ...new Array(forecastValues.length).fill(null)];
+
+                    forecastData = [...new Array(agg.values.length).fill(null), ...forecastValues];
+                } else {
+                    forecastData = [];
+                }
+
+                charts.waitlist.data.labels = allLabels;
+                charts.waitlist.data.datasets[0].data = historicalData;
+                charts.waitlist.data.datasets[1].data = forecastData;
                 charts.waitlist.update();
             }
+
             if (charts.revenue) {
                 const agg = aggregateRevenueData(period);
                 charts.revenue.data.labels = agg.labels;
                 charts.revenue.data.datasets[0].data = agg.values;
                 charts.revenue.update();
             }
-
         }
 
         initCharts();
