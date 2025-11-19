@@ -21,10 +21,21 @@ class ReportController extends Controller
             }
         })->get();
 
-        $revenueData = Payment::where('clinic_id', $clinicId)
-            ->selectRaw('DATE_FORMAT(created_at, "%Y-%m-%d %H:%i:%s") as timestamp, amount')
+        // Modified revenue query to show all revenue when no clinic is selected
+        $revenueQuery = Payment::query();
+        
+        if ($clinicId) {
+            $revenueQuery->where('clinic_id', $clinicId);
+        }
+        
+        // Convert to array format for JavaScript consumption
+        $revenueData = $revenueQuery
             ->get()
-            ->pluck('amount', 'timestamp');
+            ->mapWithKeys(function ($item) {
+                $timestamp = $item->paid_at_date . ' ' . $item->paid_at_time;
+                return [$timestamp => (float) $item->amount];
+            })
+            ->toArray();
 
         // Only addresses with patients
         $locations = Address::whereNotNull('patient_id')
@@ -50,7 +61,7 @@ class ReportController extends Controller
                 ->format('Y-m-d H:i');
         })->map(function (Collection $items) {
             return $items->count();
-        });
+        })->toArray();
 
         $treatment = Treatment::where('status', 'completed')->whereHas('patient', function ($q) use ($clinicId) {
             if ($clinicId) {
@@ -60,7 +71,7 @@ class ReportController extends Controller
 
         $treatmentData = $treatment
             ->groupBy('treatment_name') // group by actual name
-            ->map->count(); // count occurrences
+            ->map->count();
 
         // Prepare filter options
         $provinces = collect($locations)

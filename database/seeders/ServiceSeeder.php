@@ -23,13 +23,12 @@ class ServiceSeeder extends Seeder
         $service = Service::create([
             'service_id'    => (string) Str::uuid(),
             'account_id'    => $accountId,
-            'service_type'  => 'Dental',
-            'name'          => 'Teeth Cleaning',
-            'name_hash'     => hash('sha256', 'Teeth Cleaning'),
-            'description'   => 'Professional dental cleaning service.',
+            'service_type'  => $faker->randomElement(['Dental', 'Medical', 'Surgical']),
+            'name'          => $faker->word,
+            'name_hash'     => hash('sha256', $faker->word),
+            'description'   => $faker->sentence,
             'default_price' => $faker->randomFloat(2, 50, 500),
         ]);
-
         // Get all clinics using Eloquent
         $clinics = Clinic::all();
 
