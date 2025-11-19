@@ -23,17 +23,21 @@ class ReportController extends Controller
 
         // Modified revenue query to show all revenue when no clinic is selected
         $revenueQuery = Payment::query();
-        
+
         if ($clinicId) {
             $revenueQuery->where('clinic_id', $clinicId);
         }
-        
+
         // Convert to array format for JavaScript consumption
         $revenueData = $revenueQuery
             ->get()
-            ->mapWithKeys(function ($item) {
-                $timestamp = $item->paid_at_date . ' ' . $item->paid_at_time;
-                return [$timestamp => (float) $item->amount];
+            ->groupBy('clinic_id') // group by clinic
+            ->map(function ($items) {
+                return $items->mapWithKeys(function ($item) {
+                    $timestamp = $item->paid_at_date.' '.$item->paid_at_time;
+
+                    return [$timestamp => (float) $item->amount];
+                });
             })
             ->toArray();
 
@@ -102,7 +106,7 @@ class ReportController extends Controller
             file_get_contents('http://127.0.0.1:5000/forecastwaitlist?clinic_id='.($clinicId ?? '')),
             true
         );
-        // $forecastedRevenueValue = json_decode(file_get_contents('http://127.0.0.1:5000/forecastrevenue'), true);
+        $forecastedRevenueValue = json_decode(file_get_contents('http://127.0.0.1:5000/forecastrevenue?clinic_id='.($clinicId ?? '')), true);
         $forecastedLocationValue = json_decode(file_get_contents('http://127.0.0.1:5000/forecastlocation'), true);
         // $forecastedTreatmentValue = json_decode(file_get_contents('http://127.0.0.1:5000/forecasttreatment'), true);
 
@@ -130,6 +134,7 @@ class ReportController extends Controller
             'barangays',
             'forecastedLocationValue',
             'forecastedWaitlistValue',
+            'forecastedRevenueValue',
         ));
     }
 }

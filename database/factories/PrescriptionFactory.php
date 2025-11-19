@@ -6,14 +6,13 @@ use App\Models\Account;
 use App\Models\Bill;
 use App\Models\BillItem;
 use App\Models\Clinic;
-use App\Models\Medicine;
 use App\Models\MedicineClinic;
 use App\Models\Patient;
 use App\Models\Payment;
 use App\Models\Prescription;
+use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Factories\Factory;
 use Illuminate\Support\Str;
-use Carbon\Carbon;
 
 class PrescriptionFactory extends Factory
 {
@@ -63,8 +62,8 @@ class PrescriptionFactory extends Factory
     {
         return $this->afterCreating(function (Prescription $prescription) {
 
-            // Random payment timestamp between prescribed_at and now
-            $paidAt = $this->faker->dateTimeBetween($prescription->prescribed_at, 'now');
+            // Random payment timestamp between -1 year and now
+            $paidAt = $this->faker->dateTimeBetween('-1 years', 'now');
 
             $bill = Bill::firstOrCreate(
                 [

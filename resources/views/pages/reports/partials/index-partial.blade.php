@@ -70,6 +70,7 @@
                         <canvas id="revenueChart" style="height:250px;"></canvas>
                         <script>
                             window.revenueData = @json($revenueData);
+                            window.forecastedRevenueValue = @json($forecastedRevenueValue);
                         </script>
                     </div>
                 </div>
@@ -170,9 +171,11 @@
 
         function aggregateWaitlistData(period) {
             const data = window.waitlistData || {};
-            const entries = Object.entries(data).sort((a, b) => moment(a[0]).valueOf() - moment(b[0]).valueOf());
+            const entries = Object.entries(data).sort((a, b) => moment(a[0]).valueOf() - moment(b[0])
+                .valueOf());
             const now = moment();
-            let labels = [], values = [];
+            let labels = [],
+                values = [];
 
             const mapByDay = (daysBack) => {
                 const map = {};
@@ -219,63 +222,84 @@
             else if (period === 'semi-annual') mapByMonth(6);
             else if (period === 'annually') mapByMonth(12);
 
-            return { labels, values };
+            return {
+                labels,
+                values
+            };
+        }
+function aggregateRevenueData(period, clinicId = null) {
+    const allData = window.revenueData || {};
+    
+    // If a clinic is selected, use only its data, else sum all clinics
+    let entries = [];
+    if (clinicId && allData[clinicId]) {
+        entries = Object.entries(allData[clinicId]);
+    } else {
+        // sum across all clinics
+        const summed = {};
+        Object.values(allData).forEach(clinic => {
+            Object.entries(clinic).forEach(([ts, val]) => {
+                summed[ts] = (summed[ts] || 0) + parseFloat(val);
+            });
+        });
+        entries = Object.entries(summed);
+    }
+
+    entries.sort((a, b) => moment(a[0]).valueOf() - moment(b[0]).valueOf());
+    const now = moment();
+    let labels = [], values = [], forecastData = [];
+
+    if (period === 'daily') {
+        const today = now.format('YYYY-MM-DD');
+        const hourlyMap = {};
+
+        entries.forEach(([date, value]) => {
+            if (moment(date).format('YYYY-MM-DD') === today) {
+                const hour = moment(date).hour();
+                hourlyMap[hour] = (hourlyMap[hour] || 0) + parseFloat(value);
+            }
+        });
+
+        for (let i = 0; i < 24; i++) {
+            labels.push(moment(`${today} ${i}:00`, 'YYYY-MM-DD HH:mm').format('HH:mm'));
+            values.push(hourlyMap[i] || 0);
         }
 
-        function aggregateRevenueData(period) {
-            const data = window.revenueData || {};
-            const entries = Object.entries(data).sort((a, b) => moment(a[0]).valueOf() - moment(b[0]).valueOf());
-            const now = moment();
-            let labels = [], values = [];
+        forecastData = new Array(24).fill(null); // no hourly forecast
+    } else {
+        // Weekly/Monthly aggregation
+        const mapByDay = (daysBack) => {
+            const map = {};
+            entries.forEach(([date, value]) => {
+                const day = moment(date).format('YYYY-MM-DD');
+                map[day] = (map[day] || 0) + parseFloat(value);
+            });
+            for (let i = daysBack - 1; i >= 0; i--) {
+                const day = now.clone().subtract(i, 'days').format('YYYY-MM-DD');
+                labels.push(moment(day).format('MMM DD'));
+                values.push(map[day] || 0);
+            }
+        };
 
-            const mapByDay = (daysBack) => {
-                const map = {};
-                entries.forEach(([date, value]) => {
-                    const day = moment(date).format('YYYY-MM-DD');
-                    map[day] = (map[day] || 0) + parseFloat(value);
-                });
-                for (let i = daysBack - 1; i >= 0; i--) {
-                    const day = now.clone().subtract(i, 'days').format('YYYY-MM-DD');
-                    labels.push(moment(day).format('MMM DD'));
-                    values.push(map[day] || 0);
-                }
-            };
+        if (period === 'weekly') mapByDay(7);
+        else if (period === 'monthly') mapByDay(31);
 
-            const mapByMonth = (monthsBack) => {
-                const map = {};
-                entries.forEach(([date, value]) => {
-                    const month = moment(date).format('YYYY-MM');
-                    map[month] = (map[month] || 0) + parseFloat(value);
-                });
-                for (let i = monthsBack - 1; i >= 0; i--) {
-                    const month = now.clone().subtract(i, 'months').format('YYYY-MM');
-                    labels.push(moment(month).format('MMM YYYY'));
-                    values.push(map[month] || 0);
-                }
-            };
-
-            if (period === 'daily') {
-                const today = now.format('YYYY-MM-DD');
-                const hourlyMap = {};
-                entries.forEach(([date, value]) => {
-                    if (moment(date).format('YYYY-MM-DD') === today) {
-                        const hour = moment(date).hour();
-                        hourlyMap[hour] = (hourlyMap[hour] || 0) + parseFloat(value);
-                    }
-                });
-                for (let i = 0; i < 24; i++) {
-                    labels.push(moment(`${today} ${i}:00`, 'YYYY-MM-DD HH:mm').format('HH:mm'));
-                    values.push(hourlyMap[i] || 0);
-                }
-            } else if (period === 'weekly') mapByDay(7);
-            else if (period === 'monthly') mapByDay(31);
-            else if (period === 'quarterly') mapByMonth(4);
-            else if (period === 'semi-annual') mapByMonth(6);
-            else if (period === 'annually') mapByMonth(12);
-
-            console.log('Aggregated Revenue:', { labels, values });
-            return { labels, values };
+        // Forecast
+        const revenueForecast = window.forecastedRevenueValue?.forecast_next_7_days || {};
+        if (Object.keys(revenueForecast).length) {
+            const forecastDates = Object.keys(revenueForecast).sort();
+            const forecastLabels = forecastDates.map(d => moment(d).format('MMM DD'));
+            labels = [...labels, ...forecastLabels];
+            forecastData = [...new Array(values.length).fill(null), ...forecastDates.map(d => revenueForecast[d])];
+            values = [...values, ...new Array(forecastDates.length).fill(null)];
         }
+    }
+
+    return { labels, values, forecastData };
+}
+
+
+
 
         function initCharts() {
             const period = document.getElementById('timePeriod')?.value || 'weekly';
@@ -364,38 +388,44 @@
                 data: {
                     labels: revenueAgg.labels,
                     datasets: [{
-                        label: 'Revenue',
-                        data: revenueAgg.values,
-                        borderColor: '#198754',
-                        backgroundColor: 'rgba(25,135,84,0.2)',
-                        fill: true,
-                        tension: 0.4
-                    }]
+                            label: 'Historical Revenue',
+                            data: revenueAgg.values,
+                            borderColor: '#198754',
+                            backgroundColor: 'rgba(25,135,84,0.2)',
+                            fill: true,
+                            tension: 0.4,
+                            spanGaps: false
+                        },
+                        {
+                            label: 'Forecasted Revenue',
+                            data: revenueAgg.forecastData,
+                            borderColor: '#20c997',
+                            backgroundColor: 'rgba(32,201,151,0.2)',
+                            fill: true,
+                            tension: 0.4,
+                            borderDash: [5, 5],
+                            spanGaps: true
+                        }
+                    ]
                 },
                 options: {
                     responsive: true,
                     maintainAspectRatio: false,
+                    interaction: {
+                        mode: 'index',
+                        intersect: false
+                    },
                     scales: {
                         y: {
                             beginAtZero: true,
                             ticks: {
-                                callback: function(value) {
-                                    return '₱' + value.toLocaleString();
-                                }
-                            }
-                        }
-                    },
-                    plugins: {
-                        tooltip: {
-                            callbacks: {
-                                label: function(context) {
-                                    return 'Revenue: ₱' + context.parsed.y.toLocaleString();
-                                }
+                                callback: v => '₱' + v.toLocaleString()
                             }
                         }
                     }
                 }
             });
+
 
             // Location Chart
             charts.location = new Chart(document.getElementById('locationChart'), {
@@ -473,30 +503,32 @@
                 const agg = aggregateRevenueData(period);
                 charts.revenue.data.labels = agg.labels;
                 charts.revenue.data.datasets[0].data = agg.values;
+                charts.revenue.data.datasets[1].data = agg.forecastData;
                 charts.revenue.update();
             }
-        }
+    }
 
-        initCharts();
+    initCharts();
 
-        document.querySelectorAll('.view-detail').forEach(button => {
-            button.addEventListener('click', function() {
-                const tabId = this.getAttribute('data-tab');
-                new bootstrap.Tab(document.querySelector(`#${tabId}`)).show();
-            });
+    document.querySelectorAll('.view-detail').forEach(button => {
+        button.addEventListener('click', function() {
+            const tabId = this.getAttribute('data-tab');
+            new bootstrap.Tab(document.querySelector(`#${tabId}`)).show();
         });
+    });
 
-        document.querySelectorAll('#reportTabs button').forEach(tab => {
-            tab.addEventListener('shown.bs.tab', e => localStorage.setItem('activeReportTab', e.target.id));
-        });
+    document.querySelectorAll('#reportTabs button').forEach(tab => {
+        tab.addEventListener('shown.bs.tab', e => localStorage.setItem('activeReportTab', e.target
+            .id));
+    });
 
-        const activeTabId = localStorage.getItem('activeReportTab');
-        if (activeTabId) {
-            const trigger = document.querySelector(`#reportTabs button#${activeTabId}`);
-            if (trigger) new bootstrap.Tab(trigger).show();
-        }
+    const activeTabId = localStorage.getItem('activeReportTab');
+    if (activeTabId) {
+        const trigger = document.querySelector(`#reportTabs button#${activeTabId}`);
+        if (trigger) new bootstrap.Tab(trigger).show();
+    }
 
-        const timePeriodSelect = document.getElementById('timePeriod');
-        if (timePeriodSelect) timePeriodSelect.addEventListener('change', e => updateCharts(e.target.value));
+    const timePeriodSelect = document.getElementById('timePeriod');
+    if (timePeriodSelect) timePeriodSelect.addEventListener('change', e => updateCharts(e.target.value));
     });
 </script>

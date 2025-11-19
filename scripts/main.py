@@ -9,6 +9,8 @@ from statsmodels.tsa.arima.model import ARIMA
 import joblib
 import os
 from sklearn.metrics import mean_absolute_percentage_error, mean_squared_error, r2_score
+from statsmodels.tsa.holtwinters import ExponentialSmoothing
+
 
 app = FastAPI()
 
@@ -389,6 +391,153 @@ def forecast_waitlist(clinic_id: str = None):
             "recommendation": "Consider collecting more consistent data" if cv > 150 else "Data suitable for forecasting"
         }
     }
+
+@app.get("/forecastrevenue")
+def forecast_revenue(clinic_id: str = None):
+    """
+    Forecast revenue for the next 7 days using log-transformed,
+    zero-inflated model with day-of-week adjustments and exponential smoothing.
+    """
+    conn = get_mysql_connection()
+    cursor = conn.cursor(dictionary=True)
+    
+    # Fetch data
+    if clinic_id:
+        cursor.execute("""
+            SELECT DATE(p.paid_at_date) AS day, SUM(p.amount) AS daily_revenue
+            FROM payments p
+            WHERE p.clinic_id=%s AND p.paid_at_date IS NOT NULL
+            GROUP BY DATE(p.paid_at_date)
+            ORDER BY DATE(p.paid_at_date)
+        """, (clinic_id,))
+    else:
+        cursor.execute("""
+            SELECT DATE(paid_at_date) AS day, SUM(amount) AS daily_revenue
+            FROM payments
+            WHERE paid_at_date IS NOT NULL
+            GROUP BY DATE(paid_at_date)
+            ORDER BY DATE(paid_at_date)
+        """)
+    
+    rows = cursor.fetchall()
+    cursor.close()
+    conn.close()
+    
+    if not rows:
+        return {"error": "No revenue data found"}
+    
+    # Prepare DataFrame
+    df = pd.DataFrame(rows)
+    df['day'] = pd.to_datetime(df['day'])
+    df['daily_revenue'] = df['daily_revenue'].astype(float)
+    df.set_index('day', inplace=True)
+    
+    # Fill missing dates with 0
+    all_days = pd.date_range(df.index.min(), df.index.max(), freq='D')
+    df = df.reindex(all_days, fill_value=0.0)
+    series = df['daily_revenue'].values.astype(float)
+    
+    today = datetime.today()
+    
+    if len(series) < 7:
+        # Fallback: simple average if too little data
+        avg_val = float(np.mean(series))
+        forecast_dict = {
+            (today + timedelta(days=i+1)).strftime("%Y-%m-%d"): round(avg_val, 2)
+            for i in range(7)
+        }
+        return {
+            "forecast_metrics": {"note": "Insufficient data, using average"},
+            "forecast_next_7_days": forecast_dict
+        }
+    
+    # Separate zero vs non-zero days for zero-inflation handling
+    non_zero_mask = series > 0
+    series_non_zero = series[non_zero_mask]
+    
+    # Log-transform non-zero revenue to reduce impact of spikes
+    series_log = np.log1p(series_non_zero)
+    
+    # Linear trend on log-transformed non-zero revenue
+    X = np.arange(len(series_non_zero)).reshape(-1, 1)
+    ltm_model = LinearRegression()
+    ltm_model.fit(X, series_log)
+    
+    trend_slope = float(ltm_model.coef_[0])
+    trend_intercept = float(ltm_model.intercept_)
+    
+    # Exponential smoothing for recent trend capture
+    if len(series_non_zero) >= 14:
+        exp_model = ExponentialSmoothing(series_non_zero, trend="add", seasonal="add", seasonal_periods=7)
+        exp_fit = exp_model.fit()
+        exp_forecast = exp_fit.forecast(7)
+    else:
+        exp_forecast = np.full(7, series_non_zero[-1] if len(series_non_zero) > 0 else 0)
+    
+    # Day-of-week multipliers
+    df_dow = pd.DataFrame({
+        'revenue': series,
+        'dow': [ (df.index.min() + timedelta(days=i)).weekday() for i in range(len(series)) ]
+    })
+    mean_val = float(series_non_zero.mean() if len(series_non_zero) > 0 else 0)
+    dow_multipliers = {}
+    for dow in range(7):
+        dow_vals = df_dow[df_dow['dow'] == dow]['revenue']
+        if len(dow_vals) > 0:
+            dow_avg = float(dow_vals.mean())
+            dow_multipliers[dow] = float(dow_avg / mean_val) if mean_val > 0 else 1.0
+        else:
+            dow_multipliers[dow] = 1.0
+    
+    # Generate forecast combining linear trend (log), exp smoothing, and DOW multiplier
+    forecast_values = []
+    for i in range(7):
+        future_x = len(series_non_zero) + i + 1
+        ltm_pred_log = ltm_model.predict(np.array([[future_x]]))[0]
+        ltm_pred = np.expm1(ltm_pred_log)
+        
+        # Weighted combination
+        base_forecast = 0.5 * ltm_pred + 0.5 * exp_forecast[i]
+        
+        # Apply day-of-week factor
+        future_dow = (today + timedelta(days=i+1)).weekday()
+        forecast = base_forecast * dow_multipliers.get(future_dow, 1.0)
+        
+        forecast_values.append(round(max(0, forecast), 2))
+    
+    # Metrics calculation on non-zero days
+    ltm_pred_series = np.expm1(ltm_model.predict(X))
+    mape = float(np.mean(np.abs((series_non_zero - ltm_pred_series) / (series_non_zero + 0.01))) * 100)
+    rmse = float(np.sqrt(np.mean((series_non_zero - ltm_pred_series)**2)))
+    r2 = float(r2_score(series_non_zero, ltm_pred_series))
+    
+    forecast_dict = {
+        (today + timedelta(days=i+1)).strftime("%Y-%m-%d"): forecast_values[i]
+        for i in range(7)
+    }
+    
+    return {
+        "forecast_metrics": {
+            "MAPE": round(mape, 2),
+            "RMSE": round(rmse, 2),
+            "R2": round(r2, 4),
+            "data_points": len(series),
+            "non_zero_days": int(np.count_nonzero(series)),
+            "zero_days": int(len(series) - np.count_nonzero(series)),
+            "mean_daily": round(mean_val, 2),
+            "trend_slope": round(trend_slope, 4),
+            "total_forecast_7d": round(sum(forecast_values), 2),
+            "forecast_method": "log_zero_inflated_ltm_exp_dow",
+            "clinic_id": clinic_id if clinic_id else "all"
+        },
+        "forecast_next_7_days": forecast_dict,
+        "data_quality": {
+            "status": "good" if np.std(series) / mean_val < 1.5 else "moderate",
+            "recommendation": "Data suitable for forecasting" if np.count_nonzero(series)/len(series) > 0.6 else "Consider collecting more consistent revenue data",
+            "trend_direction": "increasing" if trend_slope > 0 else "decreasing" if trend_slope < 0 else "stable"
+        }
+    }
+
 @app.get("/")
 def root():
     return {"service": "AI forecast running"}
