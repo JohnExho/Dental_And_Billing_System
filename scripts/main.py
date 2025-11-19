@@ -3,14 +3,12 @@ import mysql.connector
 from sklearn.cluster import KMeans
 from sklearn.linear_model import LinearRegression
 import numpy as np
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, date
 import pandas as pd
-from statsmodels.tsa.arima.model import ARIMA
+from statsmodels.tsa.holtwinters import ExponentialSmoothing
 import joblib
 import os
 from sklearn.metrics import mean_absolute_percentage_error, mean_squared_error, r2_score
-from statsmodels.tsa.holtwinters import ExponentialSmoothing
-
 
 app = FastAPI()
 
@@ -28,7 +26,9 @@ def get_mysql_connection():
         database=MYSQL_DB
     )
 
-# --- KMeans Location Model ---
+# ============================================================================
+# LOCATION FORECASTING - Uses saved KMeans model (expensive clustering)
+# ============================================================================
 KMEANS_FILE = "kmeans_model.pkl"
 kmeans_model = None
 trained_data = None
@@ -37,6 +37,7 @@ cluster_variances = None
 last_training_count = 0
 
 def load_kmeans_model():
+    """Load saved KMeans model - this is expensive to train, so we cache it"""
     global kmeans_model, trained_data, location_rows, cluster_variances, last_training_count
     if os.path.exists(KMEANS_FILE):
         saved = joblib.load(KMEANS_FILE)
@@ -44,12 +45,13 @@ def load_kmeans_model():
         trained_data = saved.get("trained_data")
         location_rows = saved.get("location_rows")
         cluster_variances = saved.get("cluster_variances")
-        last_training_count = len(location_rows)
-        print("Loaded saved KMeans model.")
+        last_training_count = len(location_rows) if location_rows else 0
+        print(f"✓ Loaded KMeans model with {last_training_count} locations")
 
 load_kmeans_model()
 
 def train_kmeans():
+    """Train KMeans clustering model - only when needed"""
     global kmeans_model, trained_data, location_rows, cluster_variances, last_training_count
 
     conn = get_mysql_connection()
@@ -63,10 +65,10 @@ def train_kmeans():
     """
     cursor.execute(query)
     location_rows = cursor.fetchall()
+    cursor.close()
+    conn.close()
     
     if not location_rows:
-        cursor.close()
-        conn.close()
         return False
 
     trained_data = np.array([[row["demand_30d"]] for row in location_rows])
@@ -90,34 +92,49 @@ def train_kmeans():
     }, KMEANS_FILE)
 
     last_training_count = len(location_rows)
-    cursor.close()
-    conn.close()
+    print(f"✓ Trained KMeans with {last_training_count} locations, {num_clusters} clusters")
     return True
 
 @app.get("/train/location")
 def train_location():
+    """Manually trigger KMeans retraining"""
     if train_kmeans():
-        return {"status": "trained and saved", "rows": len(trained_data), "clusters": kmeans_model.n_clusters}
+        return {
+            "status": "trained and saved", 
+            "rows": len(trained_data), 
+            "clusters": kmeans_model.n_clusters
+        }
     return {"error": "No data to train on"}
 
 @app.get("/forecastlocation")
 def forecast_location():
+    """
+    Location demand forecast using KMeans clustering.
+    Auto-retrains only when new location data is detected.
+    """
     global kmeans_model, trained_data, location_rows, cluster_variances, last_training_count
 
-    # retrain if new data
+    # Check if we need to retrain (new locations added)
     conn = get_mysql_connection()
     cursor = conn.cursor()
-    cursor.execute("SELECT COUNT(*) FROM addresses WHERE created_at >= DATE_SUB(NOW(), INTERVAL 30 DAY) AND patient_id IS NOT NULL")
+    cursor.execute("""
+        SELECT COUNT(*) FROM addresses 
+        WHERE created_at >= DATE_SUB(NOW(), INTERVAL 30 DAY) 
+        AND patient_id IS NOT NULL
+    """)
     total_rows = cursor.fetchone()[0]
     cursor.close()
     conn.close()
 
+    # Auto-retrain if data changed or model doesn't exist
     if total_rows != last_training_count or kmeans_model is None:
+        print(f"🔄 Retraining KMeans: {last_training_count} -> {total_rows} locations")
         train_kmeans()
 
     if kmeans_model is None:
-        return {"error": "Model not trained."}
+        return {"error": "Model not trained"}
 
+    # Generate forecasts using the (possibly updated) model
     labels = kmeans_model.labels_
     centroids = kmeans_model.cluster_centers_
     results = []
@@ -145,8 +162,12 @@ def forecast_location():
         daily_data = cursor.fetchall()
 
         day_map = {r['day'].strftime('%Y-%m-%d'): r['daily_demand'] for r in daily_data}
-        daily_series = np.array([day_map.get((today - timedelta(days=29-i)).strftime('%Y-%m-%d'), 0) for i in range(30)])
+        daily_series = np.array([
+            day_map.get((today - timedelta(days=29-i)).strftime('%Y-%m-%d'), 0) 
+            for i in range(30)
+        ])
 
+        # Linear regression forecast (fast, always fresh)
         X = np.arange(len(daily_series)).reshape(-1, 1)
         y = daily_series
         model = LinearRegression()
@@ -158,7 +179,10 @@ def forecast_location():
         variance = cluster_variances[cluster_id] or 0.0001
         error_margin = min(distance / variance, 1.0)
 
-        forecast_dict = {(today + timedelta(days=i+1)).strftime("%Y-%m-%d"): forecast_values[i] for i in range(7)}
+        forecast_dict = {
+            (today + timedelta(days=i+1)).strftime("%Y-%m-%d"): forecast_values[i] 
+            for i in range(7)
+        }
 
         results.append({
             "province_id": province_id,
@@ -178,6 +202,7 @@ def forecast_location():
     cursor.close()
     conn.close()
 
+    # Calculate metrics
     try:
         mape = mean_absolute_percentage_error(actuals_all, predicted_all)
         rmse = mean_squared_error(actuals_all, predicted_all, squared=False)
@@ -185,32 +210,30 @@ def forecast_location():
     except:
         mape = rmse = r2 = None
 
-    return {"clusters": results, "forecast_metrics": {"MAPE": mape, "RMSE": rmse, "R2": r2}}
+    return {
+        "clusters": results, 
+        "forecast_metrics": {
+            "MAPE": mape, 
+            "RMSE": rmse, 
+            "R2": r2,
+            "model_status": "retrained" if total_rows != last_training_count else "cached"
+        }
+    }
 
 
-# --- Dynamic ARIMA Waitlist Model ---
-WAITLIST_FILE = "waitlist_arima_model.pkl"
-waitlist_model_fit = None
-last_waitlist_count = 0
-
-def load_waitlist_model():
-    global waitlist_model_fit, last_waitlist_count
-    if os.path.exists(WAITLIST_FILE):
-        saved = joblib.load(WAITLIST_FILE)
-        waitlist_model_fit = saved.get("model_fit")
-        last_waitlist_count = saved.get("row_count")
-        print("Loaded saved waitlist model.")
-
-load_waitlist_model()
-
+# ============================================================================
+# WAITLIST FORECASTING - Always uses fresh data (time-series changes daily)
+# ============================================================================
 @app.get("/forecastwaitlist")
 def forecast_waitlist(clinic_id: str = None):
-    global waitlist_model_fit, last_waitlist_count
-
+    """
+    Waitlist forecast using moving averages and day-of-week patterns.
+    Always trains on fresh data for best accuracy.
+    """
     conn = get_mysql_connection()
     cursor = conn.cursor(dictionary=True)
     
-    # Get ALL historical data with optional clinic filter
+    # Get ALL historical data
     if clinic_id:
         cursor.execute("""
             SELECT DATE(w.requested_at_date) AS day, COUNT(*) AS waitlist_count
@@ -230,17 +253,17 @@ def forecast_waitlist(clinic_id: str = None):
         """)
     
     rows = cursor.fetchall()
+    cursor.close()
     conn.close()
 
     if not rows:
         return {"error": "No waitlist data found"}
 
-    # Prepare data
+    # Prepare time series
     df = pd.DataFrame(rows)
     df['day'] = pd.to_datetime(df['day'])
     df.set_index('day', inplace=True)
     
-    # Fill missing dates with 0
     all_days = pd.date_range(df.index.min(), df.index.max(), freq='D')
     df = df.reindex(all_days, fill_value=0)
     series = df['waitlist_count'].values
@@ -257,30 +280,14 @@ def forecast_waitlist(clinic_id: str = None):
             "forecast_next_7_days": forecast_dict
         }
     
-    # Data diagnostics
+    # Calculate statistics
     non_zero_days = np.count_nonzero(series)
     zero_days = len(series) - non_zero_days
-    max_val = np.max(series)
-    min_val = np.min(series)
     std_dev = np.std(series)
     mean_val = np.mean(series)
-    
-    # Calculate coefficient of variation (std/mean) - high CV means high variability
     cv = (std_dev / mean_val * 100) if mean_val > 0 else 0
     
-    # Recent trend (last 30 days vs previous 30 days)
-    if len(series) >= 60:
-        recent_30 = np.mean(series[-30:])
-        previous_30 = np.mean(series[-60:-30])
-        trend_change = ((recent_30 - previous_30) / previous_30 * 100) if previous_30 > 0 else 0
-    else:
-        recent_30 = np.mean(series[-14:]) if len(series) >= 14 else mean_val
-        trend_change = 0
-    
-    # Use simple moving average + trend for sparse data
-    # This works better than ARIMA for highly variable small counts
-    
-    # Calculate 7-day and 14-day moving averages
+    # Moving averages (weighted toward recent)
     if len(series) >= 14:
         ma_7 = np.mean(series[-7:])
         ma_14 = np.mean(series[-14:])
@@ -288,33 +295,31 @@ def forecast_waitlist(clinic_id: str = None):
     else:
         ma_7 = ma_14 = ma_30 = mean_val
     
-    # Weight recent data more heavily
     base_forecast = ma_7 * 0.5 + ma_14 * 0.3 + ma_30 * 0.2
     
-    # Add trend component
+    # Trend analysis
     X = np.arange(len(series)).reshape(-1, 1)
     y = series
     lr_model = LinearRegression()
     lr_model.fit(X, y)
     trend_slope = lr_model.coef_[0]
     
-    # Day of week pattern analysis
+    # Day-of-week patterns
     df_dow = pd.DataFrame({
         'count': series,
         'dow': [(df.index.min() + timedelta(days=i)).weekday() for i in range(len(series))]
     })
     
-    # Calculate day-of-week multipliers (only if enough data per day)
     dow_multipliers = {}
     for dow in range(7):
         dow_values = df_dow[df_dow['dow'] == dow]['count']
-        if len(dow_values) >= 4:  # At least 4 occurrences
+        if len(dow_values) >= 4:
             dow_avg = dow_values.mean()
             dow_multipliers[dow] = dow_avg / mean_val if mean_val > 0 else 1.0
         else:
             dow_multipliers[dow] = 1.0
     
-    # Generate forecast with variation based on day-of-week
+    # Generate forecast
     forecast_values = []
     today = datetime.today()
     
@@ -322,46 +327,32 @@ def forecast_waitlist(clinic_id: str = None):
         future_date = today + timedelta(days=i+1)
         future_dow = future_date.weekday()
         
-        # Base forecast
         forecast = base_forecast
-        
-        # Apply trend (dampened for stability)
         forecast += trend_slope * (len(series) + i + 1) * 0.3
+        forecast *= dow_multipliers.get(future_dow, 1.0)
         
-        # Apply day-of-week pattern
-        dow_factor = dow_multipliers.get(future_dow, 1.0)
-        forecast *= dow_factor
-        
-        # Add controlled randomness based on historical variance
-        # Use smaller random variation for more stable forecasts
         if std_dev > 0:
             variation = np.random.normal(0, std_dev * 0.2)
             forecast += variation
         
-        # Ensure positive integer, minimum 1 if historical data shows activity
         final_forecast = max(1, int(round(forecast))) if non_zero_days > 0 else 0
-        
         forecast_values.append(final_forecast)
     
-    # Calculate simple metrics using moving average as baseline
+    # Calculate metrics
     predicted = np.convolve(series, np.ones(7)/7, mode='same')
-    
-    # Only calculate metrics on non-zero values to avoid inflation
     mask = series > 0
+    
     if np.sum(mask) > 10:
         actual_nonzero = series[mask]
         predicted_nonzero = predicted[mask]
-        
         mape = float(np.mean(np.abs((actual_nonzero - predicted_nonzero) / actual_nonzero)) * 100)
         rmse = float(np.sqrt(np.mean((series - predicted)**2)))
-        r2 = float(r2_score(series, predicted)) if len(series) > 10 else 0
+        r2 = float(r2_score(series, predicted))
     else:
-        # Use full series for sparse data
         mape = float(np.mean(np.abs((series - predicted) / (series + 0.01))) * 100)
         rmse = float(np.sqrt(np.mean((series - predicted)**2)))
         r2 = 0.0
     
-    # Create forecast dictionary
     forecast_dict = {
         (today + timedelta(days=i+1)).strftime("%Y-%m-%d"): forecast_values[i] 
         for i in range(7)
@@ -374,34 +365,34 @@ def forecast_waitlist(clinic_id: str = None):
             "R2": round(r2, 4),
             "data_points": len(series),
             "non_zero_days": int(non_zero_days),
-            "zero_days": int(zero_days),
             "mean": round(mean_val, 2),
             "std_dev": round(std_dev, 2),
             "cv_percent": round(cv, 2),
-            "recent_avg_7d": round(ma_7, 2),
-            "recent_avg_14d": round(ma_14, 2),
             "trend_slope": round(trend_slope, 4),
-            "trend_change_30d_pct": round(trend_change, 2),
             "forecast_method": "moving_average_with_dow_pattern",
-            "clinic_id": clinic_id if clinic_id else "all"
+            "clinic_id": clinic_id if clinic_id else "all",
+            "model_status": "trained_fresh"
         }, 
         "forecast_next_7_days": forecast_dict,
         "data_quality": {
-            "status": "good" if cv < 100 and non_zero_days > len(series) * 0.5 else "sparse" if non_zero_days < len(series) * 0.3 else "moderate",
-            "recommendation": "Consider collecting more consistent data" if cv > 150 else "Data suitable for forecasting"
+            "status": "good" if cv < 100 and non_zero_days > len(series) * 0.5 else "sparse",
+            "recommendation": "Data suitable for forecasting" if cv < 150 else "Consider collecting more consistent data"
         }
     }
 
+
+# ============================================================================
+# REVENUE FORECASTING - Always uses fresh data (time-series changes daily)
+# ============================================================================
 @app.get("/forecastrevenue")
 def forecast_revenue(clinic_id: str = None):
     """
-    Forecast revenue for the next 7 days using log-transformed,
-    zero-inflated model with day-of-week adjustments and exponential smoothing.
+    Revenue forecast using log-transform, exponential smoothing, and DOW patterns.
+    Always trains on fresh data for best accuracy.
     """
     conn = get_mysql_connection()
     cursor = conn.cursor(dictionary=True)
     
-    # Fetch data
     if clinic_id:
         cursor.execute("""
             SELECT DATE(p.paid_at_date) AS day, SUM(p.amount) AS daily_revenue
@@ -432,7 +423,6 @@ def forecast_revenue(clinic_id: str = None):
     df['daily_revenue'] = df['daily_revenue'].astype(float)
     df.set_index('day', inplace=True)
     
-    # Fill missing dates with 0
     all_days = pd.date_range(df.index.min(), df.index.max(), freq='D')
     df = df.reindex(all_days, fill_value=0.0)
     series = df['daily_revenue'].values.astype(float)
@@ -440,46 +430,63 @@ def forecast_revenue(clinic_id: str = None):
     today = datetime.today()
     
     if len(series) < 7:
-        # Fallback: simple average if too little data
         avg_val = float(np.mean(series))
         forecast_dict = {
             (today + timedelta(days=i+1)).strftime("%Y-%m-%d"): round(avg_val, 2)
             for i in range(7)
         }
         return {
-            "forecast_metrics": {"note": "Insufficient data, using average"},
+            "forecast_metrics": {"note": "Insufficient data"},
             "forecast_next_7_days": forecast_dict
         }
     
-    # Separate zero vs non-zero days for zero-inflation handling
+    # Zero-inflation handling
     non_zero_mask = series > 0
     series_non_zero = series[non_zero_mask]
     
-    # Log-transform non-zero revenue to reduce impact of spikes
+    if len(series_non_zero) == 0:
+        forecast_dict = {
+            (today + timedelta(days=i+1)).strftime("%Y-%m-%d"): 0.0
+            for i in range(7)
+        }
+        return {
+            "forecast_metrics": {"note": "No revenue data available"},
+            "forecast_next_7_days": forecast_dict
+        }
+    
+    # Log-transform for spike reduction
     series_log = np.log1p(series_non_zero)
     
-    # Linear trend on log-transformed non-zero revenue
+    # Linear trend on log-transformed data
     X = np.arange(len(series_non_zero)).reshape(-1, 1)
     ltm_model = LinearRegression()
     ltm_model.fit(X, series_log)
     
     trend_slope = float(ltm_model.coef_[0])
-    trend_intercept = float(ltm_model.intercept_)
     
-    # Exponential smoothing for recent trend capture
+    # Exponential smoothing
     if len(series_non_zero) >= 14:
-        exp_model = ExponentialSmoothing(series_non_zero, trend="add", seasonal="add", seasonal_periods=7)
-        exp_fit = exp_model.fit()
-        exp_forecast = exp_fit.forecast(7)
+        try:
+            exp_model = ExponentialSmoothing(
+                series_non_zero, 
+                trend="add", 
+                seasonal="add", 
+                seasonal_periods=7
+            )
+            exp_fit = exp_model.fit()
+            exp_forecast = exp_fit.forecast(7)
+        except:
+            exp_forecast = np.full(7, series_non_zero[-1])
     else:
-        exp_forecast = np.full(7, series_non_zero[-1] if len(series_non_zero) > 0 else 0)
+        exp_forecast = np.full(7, series_non_zero[-1])
     
     # Day-of-week multipliers
     df_dow = pd.DataFrame({
         'revenue': series,
-        'dow': [ (df.index.min() + timedelta(days=i)).weekday() for i in range(len(series)) ]
+        'dow': [(df.index.min() + timedelta(days=i)).weekday() for i in range(len(series))]
     })
-    mean_val = float(series_non_zero.mean() if len(series_non_zero) > 0 else 0)
+    
+    mean_val = float(series_non_zero.mean())
     dow_multipliers = {}
     for dow in range(7):
         dow_vals = df_dow[df_dow['dow'] == dow]['revenue']
@@ -489,23 +496,21 @@ def forecast_revenue(clinic_id: str = None):
         else:
             dow_multipliers[dow] = 1.0
     
-    # Generate forecast combining linear trend (log), exp smoothing, and DOW multiplier
+    # Generate forecast
     forecast_values = []
     for i in range(7):
         future_x = len(series_non_zero) + i + 1
         ltm_pred_log = ltm_model.predict(np.array([[future_x]]))[0]
         ltm_pred = np.expm1(ltm_pred_log)
         
-        # Weighted combination
         base_forecast = 0.5 * ltm_pred + 0.5 * exp_forecast[i]
         
-        # Apply day-of-week factor
         future_dow = (today + timedelta(days=i+1)).weekday()
         forecast = base_forecast * dow_multipliers.get(future_dow, 1.0)
         
         forecast_values.append(round(max(0, forecast), 2))
     
-    # Metrics calculation on non-zero days
+    # Metrics
     ltm_pred_series = np.expm1(ltm_model.predict(X))
     mape = float(np.mean(np.abs((series_non_zero - ltm_pred_series) / (series_non_zero + 0.01))) * 100)
     rmse = float(np.sqrt(np.mean((series_non_zero - ltm_pred_series)**2)))
@@ -523,21 +528,36 @@ def forecast_revenue(clinic_id: str = None):
             "R2": round(r2, 4),
             "data_points": len(series),
             "non_zero_days": int(np.count_nonzero(series)),
-            "zero_days": int(len(series) - np.count_nonzero(series)),
             "mean_daily": round(mean_val, 2),
             "trend_slope": round(trend_slope, 4),
             "total_forecast_7d": round(sum(forecast_values), 2),
-            "forecast_method": "log_zero_inflated_ltm_exp_dow",
-            "clinic_id": clinic_id if clinic_id else "all"
+            "forecast_method": "log_exp_smoothing_dow",
+            "clinic_id": clinic_id if clinic_id else "all",
+            "model_status": "trained_fresh"
         },
         "forecast_next_7_days": forecast_dict,
         "data_quality": {
             "status": "good" if np.std(series) / mean_val < 1.5 else "moderate",
-            "recommendation": "Data suitable for forecasting" if np.count_nonzero(series)/len(series) > 0.6 else "Consider collecting more consistent revenue data",
+            "recommendation": "Data suitable for forecasting" if np.count_nonzero(series)/len(series) > 0.6 else "Consider more consistent revenue data",
             "trend_direction": "increasing" if trend_slope > 0 else "decreasing" if trend_slope < 0 else "stable"
         }
     }
 
+
 @app.get("/")
 def root():
-    return {"service": "AI forecast running"}
+    return {
+        "service": "AI Forecast API",
+        "version": "2.0",
+        "endpoints": {
+            "/forecastlocation": "Location demand (KMeans clustering - cached)",
+            "/forecastwaitlist": "Waitlist prediction (Moving avg - fresh)",
+            "/forecastrevenue": "Revenue prediction (Exp smoothing - fresh)",
+            "/train/location": "Manually retrain location model"
+        },
+        "strategy": {
+            "location": "Cached KMeans model, auto-retrains on new data",
+            "waitlist": "Fresh training every request (fast algorithms)",
+            "revenue": "Fresh training every request (fast algorithms)"
+        }
+    }

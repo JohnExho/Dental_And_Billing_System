@@ -65,6 +65,17 @@ class PrescriptionFactory extends Factory
             // Random payment timestamp between -1 year and now
             $paidAt = $this->faker->dateTimeBetween('-1 years', 'now');
 
+            // Random hour between 7AM (7) and 5PM (17)
+            $hour = $this->faker->numberBetween(7, 17);
+            $minute = $this->faker->numberBetween(0, 59);
+            $second = $this->faker->numberBetween(0, 59);
+
+            // Combine date and time
+            $paidAtTime = Carbon::instance($paidAt)
+                ->setHour($hour)
+                ->setMinute($minute)
+                ->setSecond($second);
+
             $bill = Bill::firstOrCreate(
                 [
                     'patient_id' => $prescription->patient_id,
@@ -103,7 +114,7 @@ class PrescriptionFactory extends Factory
                 'payment_method' => $this->faker->randomElement(['cash', 'online', 'credit_card']),
                 'amount' => $billItem->amount,
                 'paid_at_date' => Carbon::instance($paidAt)->toDateString(),
-                'paid_at_time' => Carbon::instance($paidAt)->toTimeString(),
+                'paid_at_time' => Carbon::instance($paidAtTime)->toTimeString(),
                 'payment_details' => [],
                 'clinic_id' => $prescription->clinic_id,
                 'created_at' => $paidAt,
