@@ -68,18 +68,26 @@
                             responsive: true,
                             maintainAspectRatio: true,
                             plugins: {
-                                legend: { 
+                                legend: {
                                     position: 'bottom',
                                     labels: {
                                         padding: 15,
-                                        font: { size: 12 }
+                                        font: {
+                                            size: 12
+                                        }
                                     }
                                 },
-                                title: { 
-                                    display: true, 
+                                title: {
+                                    display: true,
                                     text: 'Patient Distribution by Location',
-                                    font: { size: 16, weight: 'bold' },
-                                    padding: { top: 10, bottom: 20 }
+                                    font: {
+                                        size: 16,
+                                        weight: 'bold'
+                                    },
+                                    padding: {
+                                        top: 10,
+                                        bottom: 20
+                                    }
                                 }
                             }
                         }
@@ -114,7 +122,7 @@
 
                     filtered.forEach(loc => {
                         let label;
-                        
+
                         // If barangay is selected, show individual barangays
                         if (barangayId) {
                             label = loc.barangay_name;
@@ -165,3 +173,31 @@
         </script>
     </div>
 </div>
+<!-- Top 3 Forecasted Locations -->
+@if(!session('clinic_id') && !empty($forecastedLocationValue['clusters']))
+<div class="mt-4 row g-3">
+    @php
+        $topForecasts = collect($forecastedLocationValue['clusters'] ?? [])
+            ->sortByDesc(fn($c) => $c['demand_30d'] ?? 0)
+            ->take(3);
+    @endphp
+
+    @foreach($topForecasts as $cluster)
+        <div class="col-md-4">
+            <div class="card border-warning shadow-sm h-100">
+                <div class="card-body">
+                    <h6 class="fw-bold mb-2">{{ $cluster['province_name'] ?? 'N/A' }} - {{ $cluster['city_name'] ?? 'N/A' }}</h6>
+                    <p class="mb-1"><strong>Barangay:</strong> {{ $cluster['barangay_name'] ?? 'N/A' }}</p>
+                    <p class="mb-1"><strong>30-Day Demand:</strong> {{ $cluster['demand_30d'] ?? 0 }}</p>
+                    <p class="mb-1"><strong>Forecast Next 7 Days:</strong></p>
+                    <ul class="mb-0 ps-3">
+                        @foreach($cluster['forecast_next_7_days'] ?? [] as $date => $value)
+                            <li>{{ \Carbon\Carbon::parse($date)->format('M d') }}: {{ $value }}</li>
+                        @endforeach
+                    </ul>
+                </div>
+            </div>
+        </div>
+    @endforeach
+</div>
+@endif

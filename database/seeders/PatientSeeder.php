@@ -11,7 +11,7 @@ class PatientSeeder extends Seeder
     public function run()
     {
         // Create 10 patients
-        Patient::factory(500)->create()->each(function ($patient) {
+        Patient::factory(5000)->create()->each(function ($patient) {
                 Address::factory()->create([
                     'patient_id' => $patient->patient_id
                 ]);

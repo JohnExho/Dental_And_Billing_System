@@ -500,6 +500,8 @@ return new class extends Migration
             // service and tooth is already related via bill_items
             $table->uuid('bill_item_id')->nullable()->index();
             $table->dateTime('treatment_date')->nullable();
+            $table->string('treatment_name')->nullable();
+
             $table->enum('status', ['planned', 'in_progress', 'completed', 'cancelled'])->default('planned')->index();
 
             $table->timestamps();
@@ -510,6 +512,11 @@ return new class extends Migration
             $table->foreign('patient_id')->references('patient_id')->on('patients')->onDelete('set null');
             $table->foreign('clinic_id')->references('clinic_id')->on('clinics')->onDelete('set null');
             $table->foreign('bill_item_id')->references('bill_item_id')->on('bill_items')->onDelete('set null');
+
+            $table->foreign('treatment_name')
+                ->references('name')
+                ->on('services')
+                ->onDelete('set null');
         });
     }
 

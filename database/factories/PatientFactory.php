@@ -41,6 +41,8 @@ class PatientFactory extends Factory
             'weight' => $this->faker->optional()->numberBetween(50, 100),
             'height' => $this->faker->optional()->numberBetween(150, 200),
             'school' => $this->faker->optional()->company(),
+            'created_at' => $this->faker->dateTimeBetween('-1 years', 'now'),
+            'updated_at' => $this->faker->dateTimeBetween('-1 years', 'now'),
         ];
     }
 }

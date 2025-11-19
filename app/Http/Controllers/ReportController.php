@@ -87,11 +87,22 @@ class ReportController extends Controller
             ->unique('id')
             ->values();
 
-        $forecastedWaitlistValue = json_decode(file_get_contents('http://127.0.0.1:5000/forecastwaitlist'), true);
-        $forecastedRevenueValue = json_decode(file_get_contents('http://127.0.0.1:5000/forecastrevenue'), true);
+        // $forecastedWaitlistValue = json_decode(file_get_contents('http://127.0.0.1:5000/forecastwaitlist'), true);
+        // $forecastedRevenueValue = json_decode(file_get_contents('http://127.0.0.1:5000/forecastrevenue'), true);
         $forecastedLocationValue = json_decode(file_get_contents('http://127.0.0.1:5000/forecastlocation'), true);
-        $forecastedTreatmentValue = json_decode(file_get_contents('http://127.0.0.1:5000/forecasttreatment'), true);
+        // $forecastedTreatmentValue = json_decode(file_get_contents('http://127.0.0.1:5000/forecasttreatment'), true);
 
+        if(!empty($forecastedLocationValue['clusters'])) {
+            $provinceMap = $provinces->pluck('name', 'id');
+            $cityMap = $cities->pluck('name', 'id');
+            $barangayMap = $barangays->pluck('name', 'id');
+
+            foreach ($forecastedLocationValue['clusters'] as &$cluster) {
+                $cluster['province_name'] = $provinceMap[$cluster['province_id']] ?? 'N/A';
+                $cluster['city_name'] = $cityMap[$cluster['city_id']] ?? 'N/A';
+                $cluster['barangay_name'] = $barangayMap[$cluster['barangay_id']] ?? 'N/A';
+            }
+        }
         return view('pages.reports.index', compact(
             'waitlist',
             'revenueData',
@@ -102,6 +113,7 @@ class ReportController extends Controller
             'cities',
             'waitlistByDateTime',
             'barangays',
+            'forecastedLocationValue',
         ));
     }
 }
