@@ -12,6 +12,6 @@ class WaitlistSeeder extends Seeder
      */
     public function run(): void
     {
-        Waitlist::factory()->count(100)->create();
+        Waitlist::factory()->count(5000)->create();
     }
 }
