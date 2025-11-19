@@ -28,7 +28,7 @@ class WaitlistFactory extends Factory
             'requested_at_time' => $this->faker->time(),
             'queue_position' => $queuePosition,
             'queue_snapshot' => $queuePosition,
-            'status' => $this->faker->randomElement(['finished','waiting', 'completed', 'cancelled']),
+            'status' => $this->faker->randomElement(['waiting', 'completed', 'cancelled']),
             'created_at' => $this->faker->dateTimeBetween('-1 years', 'now'),
             'updated_at' => $this->faker->dateTimeBetween('-1 years', 'now'),
         ];

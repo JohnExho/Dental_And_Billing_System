@@ -172,7 +172,7 @@ return new class extends Migration
             $table->time('requested_at_time');
             $table->integer('queue_position')->nullable(); // Position in the waitlist
             $table->integer('queue_snapshot')->nullable();
-            $table->enum('status', ['waiting', 'finished', 'removed', 'completed'])->default('waiting');
+            $table->enum('status', ['waiting', 'cancelled', 'completed'])->default('waiting');
 
             $table->timestamps();
             $table->softDeletes();
