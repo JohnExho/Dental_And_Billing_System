@@ -3,6 +3,7 @@
 return [
     App\Providers\AddressProvider::class,
     App\Providers\AppServiceProvider::class,
+    App\Providers\AppointmentProvider::class,
     App\Providers\AssociateProvider::class,
     App\Providers\BillProvider::class,
     App\Providers\BillViewProvider::class,

@@ -108,8 +108,11 @@ class ReportController extends Controller
         );
         $forecastedRevenueValue = json_decode(file_get_contents('http://127.0.0.1:5000/forecastrevenue?clinic_id='.($clinicId ?? '')), true);
         $forecastedLocationValue = json_decode(file_get_contents('http://127.0.0.1:5000/forecastlocation'), true);
-        // $forecastedTreatmentValue = json_decode(file_get_contents('http://127.0.0.1:5000/forecasttreatment'), true);
-
+        // In your ReportController
+        $forecastedTreatmentValue = json_decode(
+            file_get_contents('http://127.0.0.1:5000/forecasttreatment?clinic_id='.($clinicId ?? '')),
+            true
+        );
         if (! empty($forecastedLocationValue['clusters'])) {
             $provinceMap = $provinces->pluck('name', 'id');
             $cityMap = $cities->pluck('name', 'id');
@@ -135,6 +138,7 @@ class ReportController extends Controller
             'forecastedLocationValue',
             'forecastedWaitlistValue',
             'forecastedRevenueValue',
+            'forecastedTreatmentValue',
         ));
     }
 }

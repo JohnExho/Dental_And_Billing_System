@@ -20,109 +20,102 @@
                                 {{ $unpaidBills->count() }}
                             </span>
                         </div>
-                    @include("auth.partials.dashboard-bill-partial")
+                        @include('auth.partials.dashboard-bill-partial')
                     </div>
                 </div>
             </div>
 
-            <!-- Right Card with buffer -->
-            <!-- Right Card (Today's Appointments - Fake Data) -->
+            <!-- Right Card (Today's Appointments - Live Data) -->
             <div class="col-md-7">
                 <div class="card shadow-sm border-1 border-info">
-                    <div class="card-body">
-                        <div class="d-flex justify-content-between align-items-center mb-3">
-                            <h5 class="card-title mb-0 text-info">Today's Appointments</h5>
-                            <span class="badge bg-info-subtle text-info border border-info">
-                                4
-                            </span>
+                    <a href="{{ route('appointments') }}" class="text-decoration-none">
+                        <div class="card-body">
+                            <div class="d-flex justify-content-between align-items-center mb-3">
+                                <h5 class="card-title mb-0 text-info">Today's Appointments</h5>
+                                <span class="badge bg-info-subtle text-info border border-info">
+                                    {{ $todayAppointments->count() }}
+                                </span>
+                            </div>
+
+                            <div class="list-group list-group-flush">
+                                @forelse($todayAppointments as $appointment)
+                                    <div class="list-group-item d-flex justify-content-between align-items-center">
+                                        <div>
+                                            <strong>{{ $appointment->patient->last_name }},
+                                                {{ $appointment->patient->first_name }}</strong><br>
+                                            <small class="text-muted">
+                                                {{ \Carbon\Carbon::parse($appointment->appointment_date)->format('g:i A') }}
+                                            </small>
+                                        </div>
+                                        <span
+                                            class="badge bg-primary">{{ ucfirst($appointment->appointment_type ?? 'Appointment') }}</span>
+                                    </div>
+                                @empty
+                                    <div class="list-group-item text-center text-muted">
+                                        <i class="bi bi-calendar-x"></i> No appointments scheduled for today
+                                    </div>
+                                @endforelse
+
+                            </div>
+
                         </div>
-
-                        <div class="list-group list-group-flush">
-                            <div class="list-group-item d-flex justify-content-between align-items-center">
-                                <div>
-                                    <strong>Garcia, Maria</strong><br>
-                                    <small class="text-muted">10:00 AM</small>
-                                </div>
-                                <span class="badge bg-primary">Check-up</span>
-                            </div>
-
-                            <div class="list-group-item d-flex justify-content-between align-items-center">
-                                <div>
-                                    <strong>Santos, Juan</strong><br>
-                                    <small class="text-muted">11:30 AM</small>
-                                </div>
-                                <span class="badge bg-primary">Cleaning</span>
-                            </div>
-
-                            <div class="list-group-item d-flex justify-content-between align-items-center">
-                                <div>
-                                    <strong>Reyes, Anna</strong><br>
-                                    <small class="text-muted">1:00 PM</small>
-                                </div>
-                                <span class="badge bg-primary">Filling</span>
-                            </div>
-
-                            <div class="list-group-item d-flex justify-content-between align-items-center">
-                                <div>
-                                    <strong>Lopez, Mark</strong><br>
-                                    <small class="text-muted">3:15 PM</small>
-                                </div>
-                                <span class="badge bg-primary">Extraction</span>
-                            </div>
-                        </div>
-                    </div>
+                    </a>
                 </div>
+
             </div>
+        </div>
+    </div>
 
+    <!-- Day.js -->
+    <script src="https://cdn.jsdelivr.net/npm/dayjs/dayjs.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/dayjs/plugin/duration.js"></script>
+    <script>
+        dayjs.extend(window.dayjs_plugin_duration);
 
-            <!-- Day.js -->
-            <script src="https://cdn.jsdelivr.net/npm/dayjs/dayjs.min.js"></script>
-            <script src="https://cdn.jsdelivr.net/npm/dayjs/plugin/duration.js"></script>
-            <script>
-                dayjs.extend(window.dayjs_plugin_duration);
+        function formatPreciseDiff(start, end) {
+            const diffMs = end.diff(start);
+            const dur = dayjs.duration(diffMs);
 
-                function formatPreciseDiff(start, end) {
-                    const diffMs = end.diff(start);
-                    const dur = dayjs.duration(diffMs);
+            if (dur.asSeconds() < 60) return `${Math.floor(dur.asSeconds())}s ago`;
+            if (dur.asMinutes() < 60) return `${Math.floor(dur.asMinutes())}m ${dur.seconds()}s ago`;
+            if (dur.asHours() < 24) return `${Math.floor(dur.asHours())}h ${dur.minutes()}m ago`;
+            if (dur.asDays() < 30) return `${Math.floor(dur.asDays())}d ${dur.hours()}h ago`;
+            if (dur.asMonths() < 12) return `${Math.floor(dur.asMonths())}mo ${dur.days()}d ago`;
 
-                    if (dur.asSeconds() < 60) return `${Math.floor(dur.asSeconds())}s ago`;
-                    if (dur.asMinutes() < 60) return `${Math.floor(dur.asMinutes())}m ${dur.seconds()}s ago`;
-                    if (dur.asHours() < 24) return `${Math.floor(dur.asHours())}h ${dur.minutes()}m ago`;
-                    if (dur.asDays() < 30) return `${Math.floor(dur.asDays())}d ${dur.hours()}h ago`;
-                    if (dur.asMonths() < 12) return `${Math.floor(dur.asMonths())}mo ${dur.days()}d ago`;
+            return `${Math.floor(dur.asYears())}y ${dur.months()}mo ago`;
+        }
 
-                    return `${Math.floor(dur.asYears())}y ${dur.months()}mo ago`;
-                }
+        function updateTimes() {
+            const now = dayjs();
+            document.querySelectorAll('[data-time]').forEach(el => {
+                const time = dayjs(el.dataset.time);
+                el.textContent = formatPreciseDiff(time, now);
+            });
+            const lastUpdated = document.getElementById('lastUpdated');
+            if (lastUpdated) {
+                lastUpdated.textContent = "Last updated: " + now.format("MMM D, YYYY h:mm A");
+            }
+        }
 
-                function updateTimes() {
-                    const now = dayjs();
-                    document.querySelectorAll('[data-time]').forEach(el => {
-                        const time = dayjs(el.dataset.time);
-                        el.textContent = formatPreciseDiff(time, now);
-                    });
-                    const lastUpdated = document.getElementById('lastUpdated');
-                    if (lastUpdated) {
-                        lastUpdated.textContent = "Last updated: " + now.format("MMM D, YYYY h:mm A");
-                    }
-                }
+        // Simulate loading buffer
+        document.addEventListener("DOMContentLoaded", function() {
+            setTimeout(() => {
+                const loading = document.getElementById('recentActivitiesLoading');
+                const content = document.getElementById('recentActivitiesContent');
+                if (loading) loading.classList.add('d-none');
+                if (content) content.classList.remove('d-none');
+                updateTimes();
+            }, 600);
+        });
 
-                // Simulate loading buffer
-                document.addEventListener("DOMContentLoaded", function() {
-                    setTimeout(() => {
-                        document.getElementById('recentActivitiesLoading').classList.add('d-none');
-                        document.getElementById('recentActivitiesContent').classList.remove('d-none');
-                        updateTimes();
-                    }, 600); // ~0.6s buffer for effect
-                });
+        // Run immediately & refresh every 5 min
+        setInterval(updateTimes, 300000);
 
-                // Run immediately & refresh every 5 min
-                setInterval(updateTimes, 300000);
-
-                // Manual refresh button
-                document.addEventListener("click", (e) => {
-                    if (e.target.closest('#refreshLogs')) {
-                        updateTimes();
-                    }
-                });
-            </script>
-        @endsection
+        // Manual refresh button
+        document.addEventListener("click", (e) => {
+            if (e.target.closest('#refreshLogs')) {
+                updateTimes();
+            }
+        });
+    </script>
+@endsection

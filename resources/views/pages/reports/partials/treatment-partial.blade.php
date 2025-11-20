@@ -92,3 +92,36 @@
         </script>
     </div>
 </div>
+<!-- Top 3 Forecasted Treatments -->
+@if(!empty($forecastedTreatmentValue['treatments']))
+<div class="mt-4 row g-3">
+    @php
+        $treatments = collect($forecastedTreatmentValue['treatments']);
+        $totals7d = $forecastedTreatmentValue['treatment_totals_7d'];
+        $next7days = $forecastedTreatmentValue['forecast_next_7_days'];
+
+        // Sort treatments by 7-day total and take top 3
+        $topTreatments = $treatments->sortByDesc(fn($t) => $totals7d[$t] ?? 0)->take(3);
+    @endphp
+
+    @foreach($topTreatments as $treatment)
+        <div class="col-md-4">
+            <div class="card border-info shadow-sm h-100">
+                <div class="card-body">
+                    <h6 class="fw-bold mb-2">{{ ucfirst($treatment) }}</h6>
+                    <p class="mb-1"><strong>7-Day Total Forecast:</strong> {{ number_format($totals7d[$treatment] ?? 0, 2) }}</p>
+                    <p class="mb-1"><strong>Next 7 Days Forecast:</strong></p>
+                    <ul class="mb-0 ps-3">
+                        @foreach($next7days as $dayForecast)
+                            <li>
+                                {{ \Carbon\Carbon::parse($dayForecast['date'])->format('M d') }}: 
+                                {{ number_format($dayForecast['predictions'][$treatment] ?? 0, 2) }}
+                            </li>
+                        @endforeach
+                    </ul>
+                </div>
+            </div>
+        </div>
+    @endforeach
+</div>
+@endif

@@ -75,7 +75,7 @@
                     </div>
                 </div>
             </div>
-
+            <HR>
             <!-- Location Demand -->
             <div class="col-md-6">
                 <div class="card shadow-sm border-0">
