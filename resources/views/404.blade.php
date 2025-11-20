@@ -161,8 +161,12 @@
         <h1>Lost in Space</h1>
         <p>Oops! The page you're looking for has drifted into the cosmic void. It might have been moved, deleted, or
             never existed in this universe.</p>
-        <a href="{{ route('staff.dashboard') }}" class="btn-home">Return to Home</a>
-
+        @if (session('active_role') === 'staff')
+            <a href="{{ route('staff.dashboard') }}" class="btn-home">Return to Home</a>
+        @elseif(session('active_role') === 'admin')
+            <a href="{{ route('admin.dashboard') }}" class="btn-home">Return to Home</a>
+        @else
+            <a href="{{ route('dashboard') }}" class="btn-home">Return to Home</ @endif
     </div>
 
     <script>

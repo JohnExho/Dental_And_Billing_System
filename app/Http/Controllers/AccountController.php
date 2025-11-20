@@ -13,7 +13,6 @@ use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\RateLimiter;
 
-
 class AccountController extends Controller
 {
     /**
@@ -33,7 +32,7 @@ class AccountController extends Controller
      *
      * @return \Illuminate\View\View
      */
-    public function index ()
+    public function index()
     {
         return view('index');
     }
@@ -144,7 +143,6 @@ class AccountController extends Controller
 
         // Invalidate the session to prevent session fixation
         $request->session()->invalidate();
-        
 
         // Regenerate CSRF token
         $request->session()->regenerateToken();
@@ -173,6 +171,7 @@ class AccountController extends Controller
 
         $request->validate([
             'role' => 'required|in:admin,staff',
+            'clinic_id' => 'nullable|exists:clinics,clinic_id',
         ]);
 
         // Only allow switching if admin and can_act_as_staff
@@ -181,6 +180,10 @@ class AccountController extends Controller
         } else {
             // Fallback: staff or admin without permission stay in their main role
             session(['active_role' => $account->role]);
+        }
+
+        if ($request->clinic_id) {
+            session(['clinic_id' => $request->clinic_id]);
         }
 
         $activeRole = session('active_role');

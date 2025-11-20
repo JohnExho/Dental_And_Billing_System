@@ -1,36 +1,28 @@
-            @if($logs->isNotEmpty())
-                <div class="table-responsive">
-                    <table class="table table-hover align-middle">
-                        <thead class="table-light">
-                            <tr>
-                                <th class="col-md-3">Name</th>
-                                <th>Description</th>
-                                <th class="col-md-4">Date</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            @foreach($logs as $log)
-                                <tr>
-                                    <td>
-                                        <strong title="Account ID: {{ $log->account_id }}">
-                                            {{ $log->account_name_snapshot ?? 'N/A' }}
-                                        </strong>
-                                    </td>
+<div class="table-responsive">
+    <table class="table table-hover align-middle">
+        <thead class="table-light">
+            <tr>
+                <th class="col-md-3">Name</th>
+                <th>Description</th>
+                <th class="col-md-4">Date</th>
+            </tr>
+        </thead>
+        <tbody>
+            @forelse($logs as $log)
+                <tr>
+                    <td><strong title="Account ID: {{ $log->account_id }}">{{ $log->account_name_snapshot ?? 'N/A' }}</strong></td>
+                    <td>{{ $log->description }}</td>
+                    <td><span class="text-muted" data-time="{{ $log->created_at?->toIso8601String() }}"></span></td>
+                </tr>
+            @empty
+                <tr>
+                    <td colspan="3" class="text-center text-muted">No recent activities.</td>
+                </tr>
+            @endforelse
+        </tbody>
+    </table>
+</div>
 
-                                    <td>{{ $log->description }}</td>
-                                    <td>
-                                       <span class="text-muted" 
-      data-time="{{ $log->created_at ? $log->created_at->toIso8601String() : now()->toIso8601String() }}">
-                                        </span>
-                                    </td>
-                                </tr>
-                            @endforeach
-                        </tbody>
-                    </table>
-                </div>
-            @else
-                <p class="text-muted mb-0">No recent activities.</p>
-            @endif
-        </div>
-    </div>
+<div class="mt-2">
+    {{ $logs->links('vendor.pagination.bootstrap-5') }}
 </div>
