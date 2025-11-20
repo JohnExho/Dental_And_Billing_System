@@ -30,11 +30,12 @@
                                 <td>{{ ucfirst($appointment->status) ?? '-' }}</td>
                                 <td class="text-end">
                                     <button class="btn btn-sm btn-outline-warning"
-                                        onclick="openEditappointmentModal(
-                                            {{ json_encode($appointment->appointment_id) }},
-                                            {{ json_encode($appointment->status ?? '') }},
-                                            {{ json_encode($appointment->associate_id ?? '') }}
-                                        )">
+                                        onclick="openEditAppointmentModal(
+    {{ json_encode($appointment->appointment_id) }},
+    {{ json_encode($appointment->status ?? '') }},
+    {{ json_encode($appointment->associate_id ?? '') }},
+    {{ json_encode($appointment->appointment_date?->format('Y-m-d\TH:i') ?? '') }}
+)">
                                         <i class="bi bi-pencil-square"></i>
                                     </button>
 
@@ -62,38 +63,42 @@
 
 
 <script>
-document.addEventListener('DOMContentLoaded', function() {
-    document.querySelectorAll('.delete-appointment-btn').forEach(btn => {
-        btn.addEventListener('click', function(e) {
-            e.stopPropagation();
-            const appointmentId = this.dataset.id;
-            const input = document.getElementById('delete_appointment_id');
-            if (input) input.value = appointmentId;
+    document.addEventListener('DOMContentLoaded', function() {
+        document.querySelectorAll('.delete-appointment-btn').forEach(btn => {
+            btn.addEventListener('click', function(e) {
+                e.stopPropagation();
+                const appointmentId = this.dataset.id;
+                const input = document.getElementById('delete_appointment_id');
+                if (input) input.value = appointmentId;
 
-            const deleteModalEl = document.getElementById('delete-appointment-modal');
-            if (deleteModalEl) new bootstrap.Modal(deleteModalEl).show();
+                const deleteModalEl = document.getElementById('delete-appointment-modal');
+                if (deleteModalEl) new bootstrap.Modal(deleteModalEl).show();
+            });
         });
     });
-});
 
-function _setSelectValueCaseInsensitive(selectEl, value) {
-    if (!selectEl || value === null || value === undefined) return;
-    const v = String(value);
-    for (let i = 0; i < selectEl.options.length; i++) {
-        if (String(selectEl.options[i].value).toLowerCase() === v.toLowerCase()) {
-            selectEl.selectedIndex = i;
-            return;
+    function _setSelectValueCaseInsensitive(selectEl, value) {
+        if (!selectEl || value === null || value === undefined) return;
+        const v = String(value);
+        for (let i = 0; i < selectEl.options.length; i++) {
+            if (String(selectEl.options[i].value).toLowerCase() === v.toLowerCase()) {
+                selectEl.selectedIndex = i;
+                return;
+            }
         }
     }
-}
 
-function openEditappointmentModal(appointmentId, status, associateId) {
-    document.getElementById('edit_appointment_id').value = appointmentId;
-    document.getElementById('edit_associate_id').value = associateId;
+    function openEditAppointmentModal(appointmentId, status, associateId, appointmentDate) {
+        document.getElementById('edit_appointment_id').value = appointmentId;
+        document.getElementById('edit_associate_id').value = associateId;
 
-    const statusSelect = document.querySelector('#edit-appointment-modal #edit_status');
-    _setSelectValueCaseInsensitive(statusSelect, status);
+        const statusSelect = document.querySelector('#edit-appointment-modal #edit_status');
+        _setSelectValueCaseInsensitive(statusSelect, status);
 
-    new bootstrap.Modal(document.getElementById('edit-appointment-modal')).show();
-}
+        // Populate date/time input
+        const dateInput = document.getElementById('edit_appointment_date');
+        if (dateInput && appointmentDate) dateInput.value = appointmentDate;
+
+        new bootstrap.Modal(document.getElementById('edit-appointment-modal')).show();
+    }
 </script>

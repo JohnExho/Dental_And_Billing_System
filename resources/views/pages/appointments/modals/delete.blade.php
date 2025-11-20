@@ -27,3 +27,22 @@
         </div>
     </div>
 </div>
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    const deleteModalEl = document.getElementById('delete-appointment-modal');
+
+    deleteModalEl.addEventListener('hidden.bs.modal', function () {
+        // Reset the form
+        const form = deleteModalEl.querySelector('form');
+        if (form) form.reset();
+
+        // Clear hidden appointment_id
+        const hiddenInput = deleteModalEl.querySelector('#delete_appointment_id');
+        if (hiddenInput) hiddenInput.value = '';
+
+        // Remove lingering backdrop if it exists (rare, but safe)
+        document.querySelectorAll('.modal-backdrop').forEach(el => el.remove());
+    });
+});
+</script>
+
