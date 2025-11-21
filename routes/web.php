@@ -121,6 +121,9 @@ Route::middleware('web')->group(function () {
     Route::put('/process/update/appointment', [AppointmentController::class, 'update'])->name('process-update-appointment');
     Route::delete('/process/delete/appointment', [AppointmentController::class, 'destroy'])->name('process-delete-appointment');
 
+    Route::get('/process/export-patients', [ToolController::class, 'extract'])->name('process-export-patients');
+
+
     // Protected routes
     Route::middleware(['auth:account', 'patient.profile'])->group(function () {
         Route::view('/dashboard', 'dashboard')->name('dashboard');

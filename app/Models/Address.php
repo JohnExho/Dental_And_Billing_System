@@ -107,4 +107,22 @@ class Address extends Model
     {
         return $this->belongsTo(Patient::class, 'patient_id', 'patient_id');
     }
+
+    public function getBarangayNameAttribute()
+    {
+        $data = json_decode($this->barangay);
+        return $data->name ?? '';
+    }
+
+    public function getCityNameAttribute()
+    {
+        $data = json_decode($this->city);
+        return $data->name ?? '';
+    }
+
+    public function getProvinceNameAttribute()
+    {
+        $data = json_decode($this->province);
+        return $data->name ?? '';
+    }
 }

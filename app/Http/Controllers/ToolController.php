@@ -3,6 +3,8 @@
 namespace App\Http\Controllers;
 
 use App\Models\PatientQrCode;
+use App\Exports\PatientsExport;
+use Maatwebsite\Excel\Facades\Excel;
 
 class ToolController extends Controller
 {
@@ -17,5 +19,12 @@ class ToolController extends Controller
         }
 
         return view('pages.tools.index', compact('qr'));
+    }
+
+
+    public function extract()
+    {
+        $fileName = 'patients_' . now()->format('Ymd_His') . '.xlsx';
+        return Excel::download(new PatientsExport, $fileName);
     }
 }

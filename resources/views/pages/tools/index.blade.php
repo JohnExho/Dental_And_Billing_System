@@ -9,9 +9,17 @@
             <div class="col-md-12 d-flex justify-content-between align-items-center">
                 <h1 class="fw-bold">Tools</h1>
                 <div class="row">
+                @if (session('clinic_id'))
+                    <a href="{{ route('process-export-patients') }}" class="btn btn-primary" target="_blank">
+                        <i class="bi bi-file-earmark-arrow-down"></i> Export Patient Data
+                    </a>
+                @else
                     <a href="#" class="btn btn-primary disabled">
                         <i class="bi bi-file-earmark-arrow-down"></i> Export Patient Data
                     </a>
+                @endif
+
+
 
                     @if (session('clinic_id'))
                         <a href="#" class="btn btn-secondary" data-bs-toggle="modal" data-bs-target="#qrModal">

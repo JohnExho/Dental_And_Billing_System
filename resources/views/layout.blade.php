@@ -100,7 +100,7 @@
         @endif
 
     </div>
-    @unless (in_array(Route::currentRouteName(), ['login', 'forgot-password', 'confirm-otp', 'reset-password']))
+    @unless (in_array(Route::currentRouteName(), ['login', 'forgot-password', 'confirm-otp', 'reset-password', 'qr.show', 'qr.verify', 'qr.view']))
         <div class="footer text-center py-2 bg-light border-top mt-4 fixed-bottom">
             <small>
                 <span class="text-mute">Search and Sort functions temporarily disabled due to encrypted columns,

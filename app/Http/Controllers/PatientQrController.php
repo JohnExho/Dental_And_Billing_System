@@ -39,7 +39,9 @@ class PatientQrController extends Controller
         $qr_id = Str::uuid()->toString();
         $password = Str::random(8);
 
-        $url = route('qr.show', ['qr_id' => $qr_id]);
+        $baseUrl = config('qr.base_url');
+        $url = $baseUrl . route('qr.show', ['qr_id' => $qr_id], false);
+
 
         $qrCode = QrCode::create($url)
             ->setEncoding(new Encoding('UTF-8'))
@@ -50,8 +52,8 @@ class PatientQrController extends Controller
         $result = $writer->write($qrCode);
 
         // Save directly to public folder
-        $fileName = 'qr_codes/'.$qr_id.'.png';
-        $outputPath = storage_path('app/public/'.$fileName);
+        $fileName = 'qr_codes/' . $qr_id . '.png';
+        $outputPath = storage_path('app/public/' . $fileName);
 
         if (! file_exists(dirname($outputPath))) {
             mkdir(dirname($outputPath), 0755, true);
@@ -75,7 +77,7 @@ class PatientQrController extends Controller
             'create',
             'Patient QR Code',
             'User has generated a new patient QR code',
-            "QR ID: {$qr_id}".' '."Clinic ID: {$clinicId}",
+            "QR ID: {$qr_id}" . ' ' . "Clinic ID: {$clinicId}",
             $request->ip(),
             $request->userAgent()
         );
@@ -121,7 +123,7 @@ class PatientQrController extends Controller
             'access',
             'Patient QR Code',
             'User has accessed the patient QR code',
-            "QR ID: {$qr_id}".' '."Clinic ID: {$qr->clinic_id}",
+            "QR ID: {$qr_id}" . ' ' . "Clinic ID: {$qr->clinic_id}",
             $request->ip(),
             $request->userAgent()
         );

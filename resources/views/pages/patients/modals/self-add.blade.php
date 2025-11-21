@@ -115,8 +115,6 @@
                         <i class="bi bi-capsule me-2"></i>
                         <span>Add New Patient</span>
                     </h5>
-                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"
-                        aria-label="Close"></button>
                 </div>
 
                 <!-- Body -->
