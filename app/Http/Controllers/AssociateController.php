@@ -98,13 +98,15 @@ class AssociateController extends Controller
 
         $validated = $validator->validated();
 
-        // Step 2: Normalize email and prevent duplicates
+        // Step 2: Normalize email and prevent duplicates for active associates
         $normalizedEmail = $validated['email'] ?? null;
         $newEmailHash = $normalizedEmail ? hash('sha256', strtolower($normalizedEmail)) : null;
 
         if ($newEmailHash && Associate::where('email_hash', $newEmailHash)
             ->whereNull('deleted_at')
-            ->exists()) {
+            ->where('is_active', 1) // <-- only consider active associates
+            ->exists()
+        ) {
             return back()->with('error', 'The email has already been taken.');
         }
 
@@ -291,17 +293,17 @@ class AssociateController extends Controller
         $deletor = Auth::guard('account')->user();
         $associate = Associate::findOrFail($request->associate_id);
 
-        if (!Hash::check($request->password, $deletor->password)) {
+        if (! Hash::check($request->password, $deletor->password)) {
             return back()->with('error', 'The password is incorrect.');
         }
 
         return DB::transaction(function () use ($associate, $request) {
 
-            $addressId = optional($associate->address)->address_id;
-
             // Delete schedules & address
             $associate->address()->delete();
             // Delete clinic
+            $associate->is_active = 0;
+            $associate->save();
             $associate->delete();
             $deletor = Auth::guard('account')->user();
             // Logging

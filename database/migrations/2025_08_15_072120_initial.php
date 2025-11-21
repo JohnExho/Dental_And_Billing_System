@@ -16,8 +16,10 @@ return new class extends Migration
         Schema::create('accounts', function (Blueprint $table) {
             $table->uuid('account_id')->primary();
             $table->uuid('clinic_id')->nullable()->index();
-            $table->text('email')->unique();
-            $table->string('email_hash')->unique();
+
+            $table->text('email'); // removed unique
+            $table->string('email_hash'); // removed unique
+
             $table->text('last_name');
             $table->text('last_name_hash')->index();
             $table->text('middle_name')->nullable();
@@ -25,15 +27,31 @@ return new class extends Migration
             $table->text('mobile_no')->nullable();
             $table->text('contact_no')->nullable();
             $table->string('password');
+
             $table->enum('role', ['admin', 'staff', 'guest'])->default('staff')->index();
             $table->boolean('can_act_as_staff')->default(false);
             $table->boolean('is_active')->default(true)->index();
+
             $table->string('otp_hash', 255)->nullable();
             $table->timestamp('otp_expires_at')->nullable();
-            // $table->date('date_of_birth'); To be added later
+
             $table->timestamps();
             $table->softDeletes();
         });
+
+        // Add the generated column + conditional unique index
+        DB::statement('
+                ALTER TABLE accounts
+                ADD COLUMN email_hash_active VARCHAR(255) 
+                GENERATED ALWAYS AS (
+                    CASE WHEN deleted_at IS NULL AND is_active = 1 THEN email_hash ELSE NULL END
+                ) STORED
+            ');
+
+        DB::statement('
+                CREATE UNIQUE INDEX accounts_email_hash_active_unique
+                ON accounts(email_hash_active)
+            ');
 
         // Dependent Tables
         Schema::create('clinics', function (Blueprint $table) {
@@ -72,6 +90,7 @@ return new class extends Migration
             $table->uuid('associate_id')->primary();
             $table->uuid('account_id')->nullable()->index();
             $table->uuid('clinic_id')->nullable()->index();
+
             $table->text('first_name');
             $table->text('middle_name')->nullable();
             $table->text('last_name');
@@ -80,15 +99,30 @@ return new class extends Migration
             $table->text('mobile_no')->nullable();
             $table->text('contact_no')->nullable();
             $table->boolean('is_active')->default(true);
-            $table->text('email')->unique();
-            $table->string('email_hash')->unique()->index();
-            // $table->date('date_of_birth'); To be added later
+
+            $table->text('email'); // removed unique
+            $table->string('email_hash'); // removed unique
+
             $table->timestamps();
             $table->softDeletes();
 
             $table->foreign('account_id')->references('account_id')->on('accounts')->onDelete('set null');
             $table->foreign('clinic_id')->references('clinic_id')->on('clinics')->onDelete('set null');
         });
+
+        // Add generated column + conditional unique index
+        DB::statement('
+            ALTER TABLE associates
+            ADD COLUMN email_hash_active VARCHAR(255) 
+            GENERATED ALWAYS AS (
+                CASE WHEN deleted_at IS NULL AND is_active = 1 THEN email_hash ELSE NULL END
+            ) STORED
+        ');
+
+                DB::statement('
+            CREATE UNIQUE INDEX associates_email_hash_active_unique
+            ON associates(email_hash_active)
+        ');
 
         Schema::create('patient_qr_codes', function (Blueprint $table) {
             $table->uuid('qr_id')->primary();

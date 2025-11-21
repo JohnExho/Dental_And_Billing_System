@@ -11,6 +11,7 @@ use Illuminate\Support\Collection;
 
 class ReportController extends Controller
 {
+    #bypass
     public function index()
     {
         $clinicId = session('clinic_id'); // if you want clinic-specific filtering

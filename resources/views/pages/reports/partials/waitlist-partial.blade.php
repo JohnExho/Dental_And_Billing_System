@@ -1,14 +1,6 @@
 <div class="card shadow-sm border-0">
     <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
         <h6 class="mb-0 fw-bold"><i class="bi bi-people-fill me-2"></i> Waitlist Detail</h6>
-        <select id="timePeriod" class="form-select form-select-sm w-auto">
-            <option value="daily">Daily</option>
-            <option value="weekly" selected>Weekly</option>
-            <option value="monthly">Monthly</option>
-            <option value="quarterly">Quarterly</option>
-            <option value="semi-annual">Semi-Annual</option>
-            <option value="annually">Annually</option>
-        </select>
     </div>
     <div class="card-body">
         <canvas id="waitlistDetailChart" style="height:400px;"></canvas>
