@@ -41,8 +41,8 @@
                             <h6 class="text-muted mt-3">☎️ Contact</h6>
                             <div class="row">
                                 <div class="col-md-12 mb-3">
-                                        <label for="edit_specialty" class="form-label">Specialty</label>
-                                        <input type="text" class="form-control" id="edit_specialty" name="specialty">
+                                    <label for="edit_specialty" class="form-label">Specialty</label>
+                                    <input type="text" class="form-control" id="edit_specialty" name="specialty">
                                 </div>
                                 <div class="col-md-12 mb-3">
                                     <label for="edit_email" class="form-label">Email</label>
@@ -81,8 +81,7 @@
                                     <select id="edit_province_select" class="form-select form-select-sm">
                                         <option value="">-- Select Province --</option>
                                         @foreach ($provinces as $province)
-                                            <option value="{{ $province->province_id }}"
-                                                data-id="{{ $province->id }}">
+                                            <option value="{{ $province->province_id }}" data-id="{{ $province->id }}">
                                                 {{ $province->name }}
                                             </option>
                                         @endforeach
@@ -192,10 +191,15 @@
                     }
                 });
                 const data = await res.json();
+
+                // Debug: Check what the API actually returns
+                console.log('Barangay API response:', data);
+
                 barangaySelect.innerHTML = '<option value="">-- Select Barangay --</option>';
                 data.forEach(b => {
                     const opt = document.createElement('option');
-                    opt.value = b.barangay_id;
+                    // Yajra uses 'id' as primary key, not 'barangay_id'
+                    opt.value = b.id; // Changed from b.barangay_id
                     opt.dataset.id = b.id;
                     opt.textContent = b.name;
                     barangaySelect.appendChild(opt);
@@ -234,37 +238,72 @@
         });
 
         // --- Populate modal when opened ---
+        // --- Populate modal when opened ---
         modal.addEventListener('show.bs.modal', async function(event) {
             const button = event.relatedTarget;
 
-            // Fill fields
+            // Get the location IDs from data attributes
+            // These should be the PSGC codes (province_id, city_id, barangay_id from Yajra)
+            const provinceId = button.getAttribute('data-province_id') || '';
+            const cityId = button.getAttribute('data-city_id') || '';
+            const barangayId = button.getAttribute('data-barangay_id') || '';
+
+            // Debug logging - remove after testing
+            console.log('Province ID (PSGC):', provinceId);
+            console.log('City ID (PSGC):', cityId);
+            console.log('Barangay ID (PSGC):', barangayId);
+
+            // Fill basic fields
             modal.querySelector('#edit_associate_id').value = button.getAttribute('data-id') || '';
             modal.querySelector('#edit_first_name').value = button.getAttribute('data-first_name') ||
-                '';
+            '';
             modal.querySelector('#edit_middle_name').value = button.getAttribute('data-middle_name') ||
                 '';
             modal.querySelector('#edit_last_name').value = button.getAttribute('data-last_name') || '';
             modal.querySelector('#edit_email').value = button.getAttribute('data-email') || '';
             modal.querySelector('#edit_contact_no').value = button.getAttribute('data-contact_no') ||
-                '';
+            '';
             modal.querySelector('#edit_mobile_no').value = button.getAttribute('data-mobile_no') || '';
             modal.querySelector('#edit_house_no').value = button.getAttribute('data-house_no') || '';
             modal.querySelector('#edit_street').value = button.getAttribute('data-street') || '';
             modal.querySelector('#province_label').textContent = button.getAttribute(
                 'data-province_name') || '';
             modal.querySelector('#city_label').textContent = button.getAttribute('data-city_name') ||
-                '';
+            '';
             modal.querySelector('#barangay_label').textContent = button.getAttribute(
                 'data-barangay_name') || '';
             modal.querySelector('#edit_is_active').checked = button.getAttribute('data-is_active') ===
                 '1';
-            modal.querySelector('#edit_specialty').value = button.getAttribute('data-specialty');
+            modal.querySelector('#edit_specialty').value = button.getAttribute('data-specialty') || '';
 
+            // Reset selects before populating
+            resetSelects();
+
+            // Populate cascade dropdowns
             if (provinceId) {
                 provinceSelect.value = provinceId;
                 provinceHidden.value = provinceSelect.selectedOptions[0]?.dataset.id || '';
-                await loadCities(provinceId, cityId);
-                if (cityId) await loadBarangays(cityId, barangayId);
+
+                // Wait for cities to load, then set the value
+                await loadCities(provinceId);
+
+                if (cityId) {
+                    citySelect.value = cityId;
+                    cityHidden.value = citySelect.selectedOptions[0]?.dataset.id || '';
+
+                    // Wait for barangays to load, then set the value
+                    await loadBarangays(cityId);
+
+                    if (barangayId) {
+                        barangaySelect.value = barangayId;
+                        barangayHidden.value = barangaySelect.selectedOptions[0]?.dataset.id || '';
+
+                        // Debug: Check if barangay was found
+                        console.log('Barangay select value after set:', barangaySelect.value);
+                        console.log('Available barangay options:', [...barangaySelect.options].map(o =>
+                            o.value));
+                    }
+                }
             }
         });
 

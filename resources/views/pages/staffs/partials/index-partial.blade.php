@@ -65,8 +65,8 @@
                                     data-province_id="{{ optional($staff->address->province)->province_id }}"
                                     data-province_name="{{ optional($staff->address->province)->name }}"
                                     data-city_id="{{ optional($staff->address->city)->city_id }}"
-                                    data-city_name="{{ optional($staff->address->city)->name }}"
-                                    data-barangay_id="{{ optional($staff->address->barangay)->barangay_id }}"
+                                    data-city_name="{{ optional($staff->address->city)->name }}"    
+                                    data-barangay_id="{{ optional($staff->address)->barangay_id }}"
                                     data-barangay_name="{{ optional($staff->address->barangay)->name }}"
                                     data-is_active="{{ $staff->is_active }}">
                                     <i class="bi bi-pencil-square"></i>

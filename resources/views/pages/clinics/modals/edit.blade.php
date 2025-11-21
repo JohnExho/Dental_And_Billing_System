@@ -1,43 +1,48 @@
 <style>
-/* Modal Footer Buttons */
-.modal-footer .btn {
-        transition: 
-        background 0.4s ease-in-out,
-        transform 0.4s ease-in-out,
-        box-shadow 0.4s ease-in-out;
-}
+    /* Modal Footer Buttons */
+    .modal-footer .btn {
+        transition:
+            background 0.4s ease-in-out,
+            transform 0.4s ease-in-out,
+            box-shadow 0.4s ease-in-out;
+    }
 
-/* Hover: slightly darker blue */
-.modal-footer .btn-primary:hover {
+    /* Hover: slightly darker blue */
+    .modal-footer .btn-primary:hover {
         background: #1e3765;
         color: #FFFEF2;
-        transform: translateY(-2px);   /* subtle lift */
-        box-shadow: 0 6px 12px rgba(0,0,0,0.2); /* soft shadow */
-}
+        transform: translateY(-2px);
+        /* subtle lift */
+        box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);
+        /* soft shadow */
+    }
 
-/* Active/Click: lighter blue */
-.modal-footer .btn-primary:active {
+    /* Active/Click: lighter blue */
+    .modal-footer .btn-primary:active {
         color: #FFFEF2;
         background: #0f3e73;
-        transform: translateY(2px) scale(0.98); /* real press effect */
-        box-shadow: 0 1px 3px rgba(0,0,0,0.2);
-}
+        transform: translateY(2px) scale(0.98);
+        /* real press effect */
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+    }
 
 
-/* Optional: Secondary button hover */
-.modal-footer .btn-secondary:hover {
-        background: #1e3rgb(112, 112, 112)
-        color: #FFFEF2;
-        transform: translateY(-2px);   /* subtle lift */
-        box-shadow: 0 6px 12px rgba(0,0,0,0.2); /* soft shadow */
-}
+    /* Optional: Secondary button hover */
+    .modal-footer .btn-secondary:hover {
+        background: #1e3rgb(112, 112, 112) color: #FFFEF2;
+        transform: translateY(-2px);
+        /* subtle lift */
+        box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);
+        /* soft shadow */
+    }
 
-.modal-footer .btn-secondary:active {
+    .modal-footer .btn-secondary:active {
         color: #FFFEF2;
         background: #0f3e73;
-        transform: translateY(2px) scale(0.98); /* real press effect */
-        box-shadow: 0 1px 3px rgba(0,0,0,0.2);
-}
+        transform: translateY(2px) scale(0.98);
+        /* real press effect */
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+    }
 </style>
 
 <!-- Edit Clinic Modal -->
@@ -60,12 +65,14 @@
                         <div class="col-md-6">
                             <div class="mb-3">
                                 <label for="edit_clinic_name" class="form-label">Clinic Name</label>
-                                <input type="text" class="form-control" id="edit_clinic_name" name="name" required>
+                                <input type="text" class="form-control" id="edit_clinic_name" name="name"
+                                    required>
                             </div>
 
                             <div class="mb-3">
                                 <label for="edit_clinic_description" class="form-label">Short Description</label>
-                                <input type="text" class="form-control" id="edit_clinic_description" name="description">
+                                <input type="text" class="form-control" id="edit_clinic_description"
+                                    name="description">
                             </div>
 
                             <!-- Contact -->
@@ -73,7 +80,8 @@
                             <div class="column">
                                 <div class="col-md-15 mb-3">
                                     <label for="edit_specialty" class="form-label">Specialty</label>
-                                    <input type="text" class="form-control form-control-sm" id="edit_specialty" name="specialty">
+                                    <input type="text" class="form-control form-control-sm" id="edit_specialty"
+                                        name="specialty">
                                 </div>
                                 <div class="col-md-15 mb-3">
                                     <label for="edit_email" class="form-label">Email</label>
@@ -84,11 +92,13 @@
                             <div class="row">
                                 <div class="col-md-6 mb-3">
                                     <label for="edit_contact_no" class="form-label">Phone / Landline</label>
-                                    <input type="text" class="form-control form-control-sm phone-number" id="edit_contact_no" name="contact_no" maxlength="11" required>
+                                    <input type="text" class="form-control form-control-sm phone-number"
+                                        id="edit_contact_no" name="contact_no" maxlength="11" required>
                                 </div>
                                 <div class="col-md-6 mb-3">
                                     <label for="edit_mobile_no" class="form-label">Mobile No</label>
-                                    <input type="text" class="form-control phone-number" id="edit_mobile_no" name="mobile_no" maxlength="11" required>
+                                    <input type="text" class="form-control phone-number" id="edit_mobile_no"
+                                        name="mobile_no" maxlength="11" required>
                                 </div>
                             </div>
 
@@ -97,12 +107,14 @@
                             <div class="row">
                                 <div class="col-md-3 mb-3">
                                     <label for="edit_house_no" class="form-label">House No.</label>
-                                    <input type="text" class="form-control form-control-sm" id="edit_house_no" name="address[house_no]">
+                                    <input type="text" class="form-control form-control-sm" id="edit_house_no"
+                                        name="address[house_no]">
                                 </div>
 
                                 <div class="col-md-5 mb-3">
                                     <label for="edit_street" class="form-label">Street</label>
-                                    <input type="text" class="form-control form-control-sm" id="edit_street" name="address[street]">
+                                    <input type="text" class="form-control form-control-sm" id="edit_street"
+                                        name="address[street]">
                                 </div>
 
                                 <div class="col-md-4 mb-3">
@@ -116,7 +128,8 @@
                                         @endforeach
                                     </select>
                                     <input type="hidden" name="address[province_id]" id="edit_province_hidden">
-                                    <span id="province_label" class="form-text"></span> <!-- This will show the selected province name -->
+                                    <span id="province_label" class="form-text"></span>
+                                    <!-- This will show the selected province name -->
                                 </div>
 
                                 <div class="col-md-4 mb-3">
@@ -125,7 +138,8 @@
                                         <option value="">-- Select City --</option>
                                     </select>
                                     <input type="hidden" name="address[city_id]" id="edit_city_hidden">
-                                    <span id="city_label" class="form-text"></span> <!-- This will show the selected city name -->
+                                    <span id="city_label" class="form-text"></span>
+                                    <!-- This will show the selected city name -->
                                 </div>
 
                                 <div class="col-md-4 mb-3">
@@ -134,7 +148,8 @@
                                         <option value="">-- Select Barangay --</option>
                                     </select>
                                     <input type="hidden" name="address[barangay_id]" id="edit_barangay_hidden">
-                                    <span id="barangay_label" class="form-text"></span> <!-- This will show the selected barangay name -->
+                                    <span id="barangay_label" class="form-text"></span>
+                                    <!-- This will show the selected barangay name -->
                                 </div>
                             </div>
                         </div>
@@ -143,7 +158,8 @@
                         <div class="col-md-6">
                             <div class="mb-3">
                                 <label for="edit_schedule_summary" class="form-label">Schedule Summary</label>
-                                <input type="text" class="form-control" id="edit_schedule_summary" name="schedule_summary" required>
+                                <input type="text" class="form-control" id="edit_schedule_summary"
+                                    name="schedule_summary" required>
                             </div>
 
                             <div class="mb-3">
@@ -152,16 +168,22 @@
                                     @foreach (['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'] as $day)
                                         <div class="day-row col-12 mb-2">
                                             <!-- Hidden input ensures unchecked days are sent as 0 -->
-                                            <input type="hidden" name="schedule[{{ $day }}][active]" value="0">
+                                            <input type="hidden" name="schedule[{{ $day }}][active]"
+                                                value="0">
 
                                             <div class="form-check mb-1">
-                                                <input class="form-check-input day-check" type="checkbox" id="edit_{{ $day }}" name="schedule[{{ $day }}][active]" value="1">
-                                                <label class="form-check-label fw-bold" for="edit_{{ $day }}">{{ $day }}</label>
+                                                <input class="form-check-input day-check" type="checkbox"
+                                                    id="edit_{{ $day }}"
+                                                    name="schedule[{{ $day }}][active]" value="1">
+                                                <label class="form-check-label fw-bold"
+                                                    for="edit_{{ $day }}">{{ $day }}</label>
                                             </div>
 
                                             <div class="d-flex time-inputs d-none">
-                                                <input type="time" class="form-control me-2" name="schedule[{{ $day }}][start]">
-                                                <input type="time" class="form-control" name="schedule[{{ $day }}][end]">
+                                                <input type="time" class="form-control me-2"
+                                                    name="schedule[{{ $day }}][start]">
+                                                <input type="time" class="form-control"
+                                                    name="schedule[{{ $day }}][end]">
                                             </div>
                                         </div>
                                     @endforeach
@@ -235,7 +257,8 @@
             }
         }
 
-        async function loadBarangays(cityId, selectedBarangayId = null) {
+
+     async function loadBarangays(cityId, selectedBarangayId = null) {
             barangaySelect.disabled = true;
             barangaySelect.innerHTML = '<option>Loading barangays…</option>';
             try {
@@ -245,10 +268,15 @@
                     }
                 });
                 const data = await res.json();
+
+                // Debug: Check what the API actually returns
+                console.log('Barangay API response:', data);
+
                 barangaySelect.innerHTML = '<option value="">-- Select Barangay --</option>';
                 data.forEach(b => {
                     const opt = document.createElement('option');
-                    opt.value = b.barangay_id;
+                    // Yajra uses 'id' as primary key, not 'barangay_id'
+                    opt.value = b.id; // Changed from b.barangay_id
                     opt.dataset.id = b.id;
                     opt.textContent = b.name;
                     barangaySelect.appendChild(opt);
@@ -286,26 +314,43 @@
             barangayHidden.value = this.selectedOptions[0]?.dataset.id || '';
         });
 
-        // --- Populate modal when opened ---
         modal.addEventListener('show.bs.modal', async function(event) {
             const button = event.relatedTarget;
 
             // Fill basic fields
             modal.querySelector('#edit_clinic_id').value = button.getAttribute('data-id') || '';
             modal.querySelector('#edit_clinic_name').value = button.getAttribute('data-name') || '';
-            modal.querySelector('#edit_clinic_description').value = button.getAttribute('data-description') || '';
+            modal.querySelector('#edit_clinic_description').value = button.getAttribute(
+                'data-description') || '';
             modal.querySelector('#edit_specialty').value = button.getAttribute('data-specialty') || '';
             modal.querySelector('#edit_email').value = button.getAttribute('data-email') || '';
-            modal.querySelector('#edit_contact_no').value = button.getAttribute('data-contact_no') || '';
+            modal.querySelector('#edit_contact_no').value = button.getAttribute('data-contact_no') ||
+            '';
             modal.querySelector('#edit_mobile_no').value = button.getAttribute('data-mobile_no') || '';
             modal.querySelector('#edit_house_no').value = button.getAttribute('data-house_no') || '';
             modal.querySelector('#edit_street').value = button.getAttribute('data-street') || '';
-            modal.querySelector('#edit_schedule_summary').value = button.getAttribute('data-schedule_summary') || '';
-            modal.querySelector('#province_label').textContent = button.getAttribute('data-province_name') || '';
-            modal.querySelector('#city_label').textContent = button.getAttribute('data-city_name') || '';
-            modal.querySelector('#barangay_label').textContent = button.getAttribute('data-barangay_name') || '';
+            modal.querySelector('#edit_schedule_summary').value = button.getAttribute(
+                'data-schedule_summary') || '';
 
-            // --- Reset & populate schedule ---
+            const provinceId = button.getAttribute('data-province_id') || '';
+            const cityId = button.getAttribute('data-city_id') || '';
+            const barangayId = button.getAttribute('data-barangay_id') || '';
+
+            // --- Prefill cascading selects ---
+            if (provinceId) {
+                provinceSelect.value = provinceId;
+                provinceHidden.value = provinceSelect.selectedOptions[0]?.dataset.id || '';
+                await loadCities(provinceId, cityId);
+                if (cityId) {
+                    cityHidden.value = citySelect.selectedOptions[0]?.dataset.id || '';
+                    await loadBarangays(cityId, barangayId);
+                    if (barangayId) {
+                        barangayHidden.value = barangaySelect.selectedOptions[0]?.dataset.id || '';
+                    }
+                }
+            }
+
+            // Reset & populate schedule
             modal.querySelectorAll('.day-check').forEach(cb => {
                 cb.checked = false;
                 const row = cb.closest('.day-row');
@@ -321,13 +366,16 @@
                     cb.checked = true;
                     const row = cb.closest('.day-row');
                     row.querySelector('.time-inputs').classList.remove('d-none');
-                    row.querySelector(`input[name="schedule[${day}][start]"]`).value = sched.start_time || '';
-                    row.querySelector(`input[name="schedule[${day}][end]"]`).value = sched.end_time || '';
+                    row.querySelector(`input[name="schedule[${day}][start]"]`).value = sched
+                        .start_time || '';
+                    row.querySelector(`input[name="schedule[${day}][end]"]`).value = sched
+                        .end_time || '';
                 }
             });
 
             syncSchedule();
         });
+
     })();
 </script>
 <script>
@@ -359,7 +407,7 @@
     }
 
     // Run it after the modal is shown
-    document.getElementById('edit-clinic-modal').addEventListener('shown.bs.modal', function () {
+    document.getElementById('edit-clinic-modal').addEventListener('shown.bs.modal', function() {
         syncSchedule();
     });
 </script>

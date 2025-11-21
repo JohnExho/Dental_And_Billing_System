@@ -150,14 +150,12 @@
             barangayHidden.value = '';
         }
 
-        async function loadCities(provinceId, selectedCityId = null) {
+        async function loadCities(provinceId) {
             citySelect.disabled = true;
             citySelect.innerHTML = '<option>Loading cities…</option>';
             try {
                 const res = await fetch(`/locations/cities/${provinceId}`, {
-                    headers: {
-                        'Accept': 'application/json'
-                    }
+                    headers: { 'Accept': 'application/json' }
                 });
                 const data = await res.json();
                 citySelect.innerHTML = '<option value="">-- Select City --</option>';
@@ -168,10 +166,6 @@
                     opt.textContent = c.name;
                     citySelect.appendChild(opt);
                 });
-                if (selectedCityId) {
-                    citySelect.value = selectedCityId;
-                    cityHidden.value = citySelect.selectedOptions[0]?.dataset.id || '';
-                }
                 citySelect.disabled = false;
             } catch (err) {
                 console.error(err);
@@ -179,7 +173,7 @@
             }
         }
 
-        async function loadBarangays(cityId, selectedBarangayId = null) {
+  async function loadBarangays(cityId, selectedBarangayId = null) {
             barangaySelect.disabled = true;
             barangaySelect.innerHTML = '<option>Loading barangays…</option>';
             try {
@@ -189,10 +183,15 @@
                     }
                 });
                 const data = await res.json();
+
+                // Debug: Check what the API actually returns
+                console.log('Barangay API response:', data);
+
                 barangaySelect.innerHTML = '<option value="">-- Select Barangay --</option>';
                 data.forEach(b => {
                     const opt = document.createElement('option');
-                    opt.value = b.barangay_id;
+                    // Yajra uses 'id' as primary key, not 'barangay_id'
+                    opt.value = b.id; // Changed from b.barangay_id
                     opt.dataset.id = b.id;
                     opt.textContent = b.name;
                     barangaySelect.appendChild(opt);
@@ -207,7 +206,6 @@
                 barangaySelect.innerHTML = '<option value="">Error loading barangays</option>';
             }
         }
-
         // --- Event listeners ---
         provinceSelect.addEventListener('change', async function() {
             resetSelects();
@@ -219,10 +217,10 @@
         citySelect.addEventListener('change', async function() {
             barangaySelect.innerHTML = '<option value="">-- Select Barangay --</option>';
             barangaySelect.disabled = true;
-            cityHidden.value = '';
             barangayHidden.value = '';
             cityHidden.value = this.selectedOptions[0]?.dataset.id || '';
             if (!this.value) return;
+                console.log('Calling loadBarangays with cityId:', cityId);
             await loadBarangays(this.value);
         });
 
@@ -234,35 +232,49 @@
         modal.addEventListener('show.bs.modal', async function(event) {
             const button = event.relatedTarget;
 
-            // Fill fields
+            // Get location IDs from data attributes
+            const provinceId = button.getAttribute('data-province_id') || '';
+            const cityId = button.getAttribute('data-city_id') || '';
+            const barangayId = button.getAttribute('data-barangay_id') || '';
+
+            // Fill basic fields
             modal.querySelector('#edit_staff_id').value = button.getAttribute('data-id') || '';
-            modal.querySelector('#edit_first_name').value = button.getAttribute('data-first_name') ||
-                '';
-            modal.querySelector('#edit_middle_name').value = button.getAttribute('data-middle_name') ||
-                '';
+            modal.querySelector('#edit_first_name').value = button.getAttribute('data-first_name') || '';
+            modal.querySelector('#edit_middle_name').value = button.getAttribute('data-middle_name') || '';
             modal.querySelector('#edit_last_name').value = button.getAttribute('data-last_name') || '';
             modal.querySelector('#edit_email').value = button.getAttribute('data-email') || '';
-            modal.querySelector('#edit_contact_no').value = button.getAttribute('data-contact_no') ||
-                '';
+            modal.querySelector('#edit_contact_no').value = button.getAttribute('data-contact_no') || '';
             modal.querySelector('#edit_mobile_no').value = button.getAttribute('data-mobile_no') || '';
             modal.querySelector('#edit_house_no').value = button.getAttribute('data-house_no') || '';
             modal.querySelector('#edit_street').value = button.getAttribute('data-street') || '';
-            modal.querySelector('#province_label').textContent = button.getAttribute(
-                'data-province_name') || '';
-            modal.querySelector('#city_label').textContent = button.getAttribute('data-city_name') ||
-                '';
-            modal.querySelector('#barangay_label').textContent = button.getAttribute(
-                'data-barangay_name') || '';
-            modal.querySelector('#edit_is_active').checked = button.getAttribute('data-is_active') ===
-                '1';
+            modal.querySelector('#province_label').textContent = button.getAttribute('data-province_name') || '';
+            modal.querySelector('#city_label').textContent = button.getAttribute('data-city_name') || '';
+            modal.querySelector('#barangay_label').textContent = button.getAttribute('data-barangay_name') || '';
+            modal.querySelector('#edit_is_active').checked = button.getAttribute('data-is_active') === '1';
+
+            // Reset and populate cascading selects
+            resetSelects();
 
             if (provinceId) {
                 provinceSelect.value = provinceId;
                 provinceHidden.value = provinceSelect.selectedOptions[0]?.dataset.id || '';
-                await loadCities(provinceId, cityId);
-                if (cityId) await loadBarangays(cityId, barangayId);
+
+                await loadCities(provinceId);
+
+                if (cityId) {
+                    citySelect.value = cityId;
+                    cityHidden.value = citySelect.selectedOptions[0]?.dataset.id || '';
+
+                    await loadBarangays(cityId);
+
+                    if (barangayId) {
+                        barangaySelect.value = barangayId;
+                        barangayHidden.value = barangaySelect.selectedOptions[0]?.dataset.id || '';
+                    }
+                }
             }
         });
+
 
         // --- Phone formatting ---
         modal.querySelectorAll('.phone-number').forEach(input => {

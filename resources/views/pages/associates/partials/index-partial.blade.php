@@ -74,7 +74,7 @@
                                     data-province_name="{{ optional($associate->address->province)->name }}"
                                     data-city_id="{{ optional($associate->address->city)->city_id }}"
                                     data-city_name="{{ optional($associate->address->city)->name }}"
-                                    data-barangay_id="{{ optional($associate->address->barangay)->barangay_id }}"
+                                    data-barangay_id="{{ optional($associate->address)->barangay_id }}"
                                     data-barangay_name="{{ optional($associate->address->barangay)->name }}"
                                     data-is_active="{{ $associate->is_active }}"
                                     data-specialty="{{ $associate->specialty }}"
