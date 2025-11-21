@@ -30,6 +30,15 @@ class BillProvider extends ServiceProvider
                 ->where('status', 'unpaid');
 
             // If user is staff, only show bills for their current clinic
+            if ($account && $account->role === 'admin') {
+                if ($clinicId) {
+                    $unpaidBillsQuery->where('clinic_id', $clinicId);
+                } else {
+                    // Staff without a selected clinic sees nothing
+                    $unpaidBillsQuery;
+                }
+            }
+
             if ($account && $account->role === 'staff') {
                 if ($clinicId) {
                     $unpaidBillsQuery->where('clinic_id', $clinicId);

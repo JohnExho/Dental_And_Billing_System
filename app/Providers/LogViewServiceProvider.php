@@ -46,7 +46,6 @@ class LogViewServiceProvider extends ServiceProvider
                     }
                 }
             }
-
             // Replace the items of the paginator with processed ones
             $logs->setCollection($processed);
 

@@ -274,6 +274,8 @@ class ClinicController extends Controller
             // Delete clinic
             $clinic->delete();
 
+            session()->forget('clinic_id');
+
             LogService::record(
                 $account,            // who did it
                 $clinic,            // what was acted on (loggable model, here the Account itself)

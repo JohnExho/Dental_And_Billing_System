@@ -291,7 +291,7 @@ class AssociateController extends Controller
         $deletor = Auth::guard('account')->user();
         $associate = Associate::findOrFail($request->associate_id);
 
-        if (! Hash::check($request->password, $deletor->password)) {
+        if (!Hash::check($request->password, $deletor->password)) {
             return back()->with('error', 'The password is incorrect.');
         }
 
