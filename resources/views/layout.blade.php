@@ -28,7 +28,7 @@
 
         /* collapsed state: don't fully hide — shrink to compact width */
         .sidebar-wrapper {
-            transition: width .28s ease, left .28s ease;
+            transition: width .28s ease, left .28s ease; 
         }
 
         body.sidebar-collapsed .sidebar-wrapper {

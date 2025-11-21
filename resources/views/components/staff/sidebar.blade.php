@@ -15,7 +15,7 @@
 
 /* Expanded */
 .sidebar-wrapper.expanded {
-    width: 250px;
+    width: 250px !important;
 }
 
 /* Sidebar inner */
@@ -172,7 +172,34 @@
 
 </aside>
 
+<script>
+document.addEventListener("DOMContentLoaded", () => {
+    console.log("=== SIDEBAR DEBUG ===");
+    
+    const sidebar = document.querySelector(".sidebar-wrapper");
+    console.log("Sidebar element:", sidebar);
+    
+    if (!sidebar) {
+        console.error("SIDEBAR NOT FOUND!");
+        return;
+    }
+    
+    console.log("Current classes:", sidebar.classList.toString());
+    
+    sidebar.addEventListener("mouseenter", () => {
+        console.log("Mouse ENTER");
+        sidebar.classList.add("expanded");
+        console.log("Classes after add:", sidebar.classList.toString());
+    });
 
+    sidebar.addEventListener("mouseleave", () => {
+        console.log("Mouse LEAVE");
+        sidebar.classList.remove("expanded");
+    });
+    
+    console.log("Event listeners attached!");
+});
+</script>
 <!-- ======================= EXPAND ON HOVER SCRIPT ========================= -->
 
 <script>
