@@ -1,7 +1,0 @@
-/install command:
-pip install fastapi uvicorn mysql-connector-python scikit-learn numpy pandas statsmodels joblib tensorflow
-
-
-
-/run command:
-uvicorn main:app --host 127.0.0.1 --port 5000 --reload
