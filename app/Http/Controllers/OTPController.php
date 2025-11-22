@@ -147,9 +147,8 @@ class OTPController extends Controller
 
     public function showResetForm(Request $request)
     {
-        if (! session('otp_verified')) {
-            return redirect()->route('forgot-password')
-                ->withErrors(['otp' => 'You must verify your OTP first.']);
+        if (!session('otp_verified')) {
+            return redirect()->route('404');
         }
 
         $encryptedEmail = session('otp_email');
