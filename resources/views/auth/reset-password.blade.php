@@ -1,5 +1,8 @@
 @extends('layout')
-
+@section(
+    'title',
+    'Change Password | Chomply'
+)
 @section('content')
 <style>
     body {

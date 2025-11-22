@@ -1,5 +1,5 @@
 @extends('layout')
-
+@section('title', 'Chomply | Forgot Password')
 @section('content')
 
 <style>

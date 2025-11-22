@@ -51,25 +51,41 @@ class AccountController extends Controller
 
     public function login(Request $request)
     {
-        // 1️⃣ Validate request
+        // 1️⃣ Validate email only (password may be optional for guest)
         $request->validate([
             'email' => ['required', 'email'],
-            'password' => ['required'],
         ]);
 
         // 2️⃣ Find account by email hash
         $emailHash = hash('sha256', strtolower($request->email));
         $account = Account::where('email_hash', $emailHash)->first();
 
-        // 3️⃣ Check credentials
-        if (! $account || ! $account->is_active || ! Hash::check($request->password, $account->password)) {
-            $errorMessage = $account && ! $account->is_active
-                ? 'Your account is inactive. Please contact support.'
-                : 'Invalid credentials.';
-
-            return back()->with('error', $errorMessage);
+        if (! $account) {
+            return back()->with('error', 'Invalid credentials.');
         }
+
+        // 3️⃣ Require active account for all roles
+        if (! $account->is_active) {
+            return back()->with('error', 'Your account is inactive. Please contact support.');
+        }
+
         $role = strtolower(trim($account->role));
+
+        if ($role === 'guest') {
+    return back()->with('error', 'Guest accounts cannot log in.');
+}
+
+
+        // 4️⃣ If not guest, validate password and check credentials
+        if ($role !== 'guest') {
+            $request->validate([
+                'password' => ['required'],
+            ]);
+
+            if (! Hash::check($request->password, $account->password)) {
+                return back()->with('error', 'Invalid credentials.');
+            }
+        }
 
         if ($role === 'staff') {
             // Staff: check clinic assignment
@@ -82,7 +98,8 @@ class AccountController extends Controller
                 return back()->with('error', 'Assigned clinic not found. Please contact support.');
             }
         }
-        // 4️⃣ Login and regenerate session
+
+        // 5️⃣ Login and regenerate session
         $this->guard->login($account);
         $request->session()->regenerate();
         session([
@@ -92,7 +109,8 @@ class AccountController extends Controller
 
         /** @var Account $account */
         $account = $this->guard->user(); // ensures we have the guard-loaded user
-        // 5️⃣ Log the login
+
+        // 6️⃣ Log the login
         LogService::record(
             $account,
             $account,
@@ -104,10 +122,11 @@ class AccountController extends Controller
             $request->userAgent()
         );
 
-        // 6️⃣ Initialize stock message
+        // 7️⃣ Initialize stock message
         $stockErrorMessage = null;
         Log::info('Login role:', ['role' => $account->role]);
-        // 7️⃣ Role-specific logic
+
+        // 8️⃣ Role-specific logic
         if ($role === 'admin') {
             // Admin: show low-stock medicines
             $lowStockMedicines = Medicine::leftJoin('medicine_clinics', 'medicines.medicine_id', '=', 'medicine_clinics.medicine_id')
@@ -122,19 +141,16 @@ class AccountController extends Controller
             }
         }
 
-        // 8️⃣ Determine redirect based on role
+        // 9️⃣ Determine redirect based on role
         $redirectRoute = match ($role) {
             'staff' => 'staff.dashboard',
             'admin' => 'admin.dashboard',
             default => 'dashboard',
         };
 
-        // 9️⃣ Redirect with messages
-        return redirect()->route($redirectRoute)
-            ->with('success', 'Welcome back '.$account->full_name)
-            ->with('stock_error', $stockErrorMessage);
+        // 10️⃣ Redirect with messages
+        return redirect()->route($redirectRoute);
     }
-
     public function logout(Request $request)
     {
         $account = $this->guard->user();

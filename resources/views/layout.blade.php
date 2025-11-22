@@ -19,12 +19,19 @@
     @stack('styles')
     <style>
         /* main-content shifts when sidebar is present by default */
-        .main-content {
-            transition: margin-left .28s ease, transform .28s ease;
-            min-height: 100vh;
-            margin-left: 240px;
-            /* default offset for the visible sidebar */
-        }
+/* main-content: no margin by default */
+.main-content {
+    transition: margin-left .28s ease, transform .28s ease;
+    min-height: 100vh;
+    margin-left: 75px; /* default, no sidebar applied */
+}
+
+.sidebar-wrapper.expanded ~ * .main-content,
+body:has(.sidebar-wrapper.expanded) .main-content {
+    margin-left: 240px; /* matches expanded sidebar width */
+}
+
+
 
         /* collapsed state: don't fully hide — shrink to compact width */
         .sidebar-wrapper {
