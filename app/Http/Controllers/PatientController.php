@@ -514,4 +514,24 @@ class PatientController extends Controller
 
         return view('pages.patients.specific', compact('patient', 'progressNotes', 'bills', 'recalls', 'treatments', 'prescriptions'));
     }
+
+    public function getAllPatients()
+    {
+        $patients = Patient::with(['address.province', 'address.city', 'address.barangay'])
+            ->get()
+            ->map(function ($patient) {
+                return [
+                    'patient_id' => $patient->patient_id,
+                    'full_name' => $patient->full_name,
+                    'mobile_no' => $patient->mobile_no,
+                    'contact_no' => $patient->contact_no,
+                    'email' => $patient->email,
+                    'full_address' => $patient->full_address,
+                    'sex' => $patient->sex,
+                    'profile_picture' => $patient->profile_picture,
+                ];
+            });
+
+        return response()->json($patients);
+    }
 }

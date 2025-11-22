@@ -79,24 +79,9 @@
 </style>
 
 <div class="container-fluid px-4 py-4">
-    <div class="row mt-4">
-        <!-- Left Card (Patients with Balance) -->
-        <div class="col-md-5 mb-4">
-            <div class="card border-1 border-danger">
-                <div class="card-body">
-                    <div class="d-flex justify-content-between align-items-center mb-3">
-                        <h5 class="card-title text-danger mb-0">Patients with Balance</h5>
-                        <span class="badge bg-danger-subtle text-danger border border-danger">
-                            {{ $unpaidBills->count() }}
-                        </span>
-                    </div>
-                    @include('auth.partials.dashboard-bill-partial')
-                </div>
-            </div>
-        </div>
-
-        <!-- Right Card (Recent Activities) -->
-        <div class="col-md-7">
+    <div class="row">
+        <!-- Left Card (Recent Activities) -->
+        <div class="col-md-12 mb-4">
             <div class="card border-1 border-info">
                 <div class="card-body">
                     <div class="d-flex justify-content-between align-items-center mb-3">
@@ -122,6 +107,21 @@
                             @include('auth.partials.admin-dashboard-partial', ['logs' => $logs])
                         </div>
                     </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Right Card (Patients with Balance) -->
+        <div class="col-md-7 mt-4">
+            <div class="card border-1 border-danger">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <h5 class="card-title text-danger mb-0">Patients with Balance</h5>
+                        <span class="badge bg-danger-subtle text-danger border border-danger">
+                            {{ $unpaidBills->count() }}
+                        </span>
+                    </div>
+                    @include('auth.partials.dashboard-bill-partial')
                 </div>
             </div>
         </div>

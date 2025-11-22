@@ -243,4 +243,25 @@ class WaitlistController extends Controller
             return redirect()->route('waitlist')->with('success', 'Waitlist record deleted successfully.');
         });
     }
+
+    public function getAllWaitlist()
+    {
+        $waitlist = Waitlist::with(['patient', 'associate'])
+            ->get()
+            ->map(function ($wl) {
+                return [
+                    'waitlist_id' => $wl->waitlist_id,
+                    'patient_name' => $wl->patient?->full_name,
+                    'patient_email' => $wl->patient?->email,
+                    'patient_sex' => $wl->patient?->sex,
+                    'profile_picture' => $wl->patient?->profile_picture,
+                    'associate_name' => $wl->associate?->full_name,
+                    'associate_id' => $wl->associate_id,
+                    'queue_position' => $wl->queue_position,
+                    'status' => $wl->status,
+                ];
+            });
+
+        return response()->json($waitlist);
+    }
 }

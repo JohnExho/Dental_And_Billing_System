@@ -87,12 +87,12 @@ Route::middleware('web')->group(function () {
     Route::post('/process/create/patient', [PatientController::class, 'create'])->name('process-create-patient');
     Route::put('/process/update/patient', [PatientController::class, 'update'])->name('process-update-patient');
     Route::delete('/process/delete/patient', [PatientController::class, 'destroy'])->name('process-delete-patient');
-    Route::get('/patients/search', [PatientController::class, 'search'])->name('patients.search');
+    Route::get('/patients/all', [PatientController::class, 'getAllPatients'])->name('patients.all');
 
     Route::post('/process/create/waitlist', [WaitlistController::class, 'create'])->name('process-create-waitlist');
     Route::put('/process/update/waitlist', [WaitlistController::class, 'update'])->name('process-update-waitlist');
     Route::delete('/process/delete/waitlist', [WaitlistController::class, 'destroy'])->name('process-delete-waitlist');
-
+    Route::get('/waitlist/all', [WaitlistController::class, 'getAllWaitlist'])->name('waitlist.all');
     Route::post('/process/create/process-note', [ProgressNoteController::class, 'create'])->name('process-create-progress-note');
     Route::put('/process/update/process-note', [ProgressNoteController::class, 'update'])->name('process-update-progress-note');
     Route::delete('/process/delete/process-note', [ProgressNoteController::class, 'destroy'])->name('process-delete-progress-note');
@@ -122,7 +122,6 @@ Route::middleware('web')->group(function () {
     Route::delete('/process/delete/appointment', [AppointmentController::class, 'destroy'])->name('process-delete-appointment');
 
     Route::get('/process/export-patients', [ToolController::class, 'extract'])->name('process-export-patients');
-
 
     // Protected routes
     Route::middleware(['auth:account', 'patient.profile'])->group(function () {

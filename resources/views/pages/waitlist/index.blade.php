@@ -27,9 +27,6 @@
             </div>
 
         </div>
-        <div class="mt-3 px-3">
-            {{ $waitlist->links('vendor.pagination.bootstrap-5') }}
-        </div>
 
         @include('pages.waitlist.modals.add')
         <script>

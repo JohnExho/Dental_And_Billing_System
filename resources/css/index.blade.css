@@ -1,7 +1,7 @@
 /* General */
 body {
     font-family: 'Poppins', sans-serif, georgia;
-    background: linear-gradient(135deg, #1b2a49, #3a6073);
+    background-color: linear-gradient(135deg, #1b2a49, #3a6073);
     margin: 0;
     padding: 0;
 }
