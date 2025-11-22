@@ -1,3 +1,45 @@
+<style>
+.btn-primary {
+    transition:
+        background 0.4s ease-in-out,
+        transform 0.4s ease-in-out,
+        box-shadow 0.4s ease-in-out !important;
+}
+
+.btn-primary:hover {
+    background: #0D6EFD !important;
+    color: #ffffff !important;
+    transform: translateY(-3px) !important;
+    box-shadow: 0 6px 12px rgba(0,0,0,0.15) !important;
+}
+
+.btn-primary:active {
+    background: #003f9c !important;
+    transform: translateY(2px) scale(0.98) !important;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.2) !important;
+}
+
+.btn-secondary {
+    transition:
+        background 0.4s ease-in-out,
+        transform 0.4s ease-in-out,
+        box-shadow 0.4s ease-in-out !important;
+}
+
+.btn-secondary:hover {
+    background: #5a6269 !important;
+    color: #ffffff !important;
+    transform: translateY(-3px) !important;
+    box-shadow: 0 6px 12px rgba(0,0,0,0.15) !important;
+}
+
+.btn-secondary:active {
+    background: #4e5257 !important;
+    transform: translateY(2px) scale(0.98) !important;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.2) !important;
+}
+</style>
+
 @extends('layout')
 @section('title', 'Tools | Chomply')
 @section('content')
@@ -8,31 +50,32 @@
         <div class="row mb-4">
             <div class="col-md-12 d-flex justify-content-between align-items-center">
                 <h1 class="fw-bold">Tools</h1>
-                <div class="row">
-                @if (session('clinic_id'))
-                    <a href="{{ route('process-export-patients') }}" class="btn btn-primary" target="_blank">
-                        <i class="bi bi-file-earmark-arrow-down"></i> Export Patient Data
-                    </a>
-                @else
-                    <a href="#" class="btn btn-primary disabled">
-                        <i class="bi bi-file-earmark-arrow-down"></i> Export Patient Data
-                    </a>
-                @endif
 
+                {{-- 🔧 FIXED: changed <div class="row"> to <div class="d-flex gap-2">
+                     This makes the buttons appear in a ROW instead of a COLUMN --}}
+                <div class="d-flex gap-2">
 
+                    @if (session('clinic_id'))
+                        <a href="{{ route('process-export-patients') }}" class="btn btn-primary" target="_blank">
+                            <i class="bi bi-file-earmark-arrow-down"></i> Export Patient Data
+                        </a>
+                    @else
+                        <a href="#" class="btn btn-primary disabled">
+                            <i class="bi bi-file-earmark-arrow-down"></i> Export Patient Data
+                        </a>
+                    @endif
 
                     @if (session('clinic_id'))
                         <a href="#" class="btn btn-secondary" data-bs-toggle="modal" data-bs-target="#qrModal">
                             <i class="bi bi-gear-fill"></i> QR Codes
                         </a>
                     @else
-                        <a href="#" class="btn btn-secondary disabled" data-bs-toggle="modal"
-                            data-bs-target="#qrModal">
+                        <a href="#" class="btn btn-secondary disabled" data-bs-toggle="modal" data-bs-target="#qrModal">
                             <i class="bi bi-gear-fill"></i> QR Codes
                         </a>
                     @endif
 
-                </div>
+                </div> {{-- END FIXED BUTTON LAYOUT --}}
             </div>
         </div>
 
