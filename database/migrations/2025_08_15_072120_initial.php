@@ -21,7 +21,7 @@ return new class extends Migration
             $table->string('email_hash'); // removed unique
 
             $table->text('last_name');
-            $table->text('last_name_hash')->index();
+            $table->string('last_name_hash', 191)->index();
             $table->text('middle_name')->nullable();
             $table->text('first_name');
             $table->text('mobile_no')->nullable();
@@ -58,7 +58,7 @@ return new class extends Migration
             $table->uuid('clinic_id')->primary();
             $table->uuid('account_id')->nullable()->index();
             $table->text('name');
-            $table->text('name_hash')->index();
+            $table->string('name_hash', 191)->index();
             $table->text('description')->nullable();
             $table->text('schedule_summary')->nullable();
             $table->text('specialty')->nullable();
@@ -94,7 +94,7 @@ return new class extends Migration
             $table->text('first_name');
             $table->text('middle_name')->nullable();
             $table->text('last_name');
-            $table->text('last_name_hash')->index();
+            $table->string('last_name_hash', 191)->index();
             $table->text('specialty')->nullable();
             $table->text('mobile_no')->nullable();
             $table->text('contact_no')->nullable();
@@ -156,8 +156,8 @@ return new class extends Migration
             $table->text('profile_picture')->nullable();
             $table->text('sex');
             // 'Single', 'Married', 'Widowed', 'Divorced', 'Separated', 'Annulled'
-            // text cause of PII
-            $table->text('civil_status')->default('Single');
+            // store as string so we can set a default value (TEXT can't have defaults in MySQL)
+            $table->string('civil_status', 191)->default('Single');
             $table->text('date_of_birth');
             $table->text('referral')->nullable();
             $table->text('occupation')->nullable();
@@ -223,7 +223,7 @@ return new class extends Migration
             $table->uuid('account_id')->nullable()->index(); // who created
             $table->text('service_type');
             $table->text('name');
-            $table->text('name_hash')->index();
+            $table->string('name_hash', 191)->index();
             $table->text('description')->nullable();
             $table->decimal('default_price', 10, 2)->nullable();
             $table->timestamps();
@@ -250,8 +250,8 @@ return new class extends Migration
             $table->uuid('account_id')->nullable()->index(); // Account that created the medicine
             $table->text('name');
             $table->decimal('default_price', 10, 2)->nullable();
-            $table->text('description')->nullable()->index();
-            $table->text('name_hash')->index();           // search by medicine
+            $table->text('description')->nullable();
+            $table->string('name_hash', 191)->index();           // search by medicine
 
             $table->timestamps();
             $table->softDeletes();
@@ -278,7 +278,7 @@ return new class extends Migration
             $table->uuid('tooth_list_id')->primary();
             $table->unsignedTinyInteger('number')->unique()->index();  // e.g., 11, 12, 13
             $table->text('name');             // e.g., upper right central incisor
-            $table->text('name_hash')->index();
+            $table->string('name_hash', 191)->index();
             $table->decimal('default_price', 10, 2)->nullable()->index();
             $table->timestamps();
             $table->softDeletes();

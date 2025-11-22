@@ -4,7 +4,10 @@
 
 @section("content")
 
-@vite('resources/css/index.blade.css')
+
+<head>
+    <link rel="stylesheet" href="{{ 'resources/css/index.blade.css' }}">
+</head>
 
 @php
         session()->forget(['successes', 'clinic_id', 'qr_access']);

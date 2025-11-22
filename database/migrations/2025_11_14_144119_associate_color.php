@@ -12,7 +12,8 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('associates', function (Blueprint $table) {
-            $table->text(column: 'color')->nullable()->default('#6c757d');
+              // Use VARCHAR so a default value is allowed by MySQL (TEXT cannot have defaults)
+              $table->string('color', 50)->nullable()->default('#6c757d');
         });
     }
 

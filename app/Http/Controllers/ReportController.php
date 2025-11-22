@@ -104,14 +104,14 @@ class ReportController extends Controller
             ->values();
 
         $forecastedWaitlistValue = json_decode(
-            file_get_contents('http://127.0.0.1:5000/forecastwaitlist?clinic_id='.($clinicId ?? '')),
+            file_get_contents('https://python-api-lrdd.onrender.com/forecastwaitlist?clinic_id='.($clinicId ?? '')),
             true
         );
-        $forecastedRevenueValue = json_decode(file_get_contents('http://127.0.0.1:5000/forecastrevenue?clinic_id='.($clinicId ?? '')), true);
-        $forecastedLocationValue = json_decode(file_get_contents('http://127.0.0.1:5000/forecastlocation'), true);
+        $forecastedRevenueValue = json_decode(file_get_contents('https://python-api-lrdd.onrender.com/forecastrevenue?clinic_id='.($clinicId ?? '')), true);
+        $forecastedLocationValue = json_decode(file_get_contents('https://python-api-lrdd.onrender.com/forecastlocation'), true);
         // In your ReportController
         $forecastedTreatmentValue = json_decode(
-            file_get_contents('http://127.0.0.1:5000/forecasttreatment?clinic_id='.($clinicId ?? '')),
+            file_get_contents('https://python-api-lrdd.onrender.com/forecasttreatment?clinic_id='.($clinicId ?? '')),
             true
         );
         if (! empty($forecastedLocationValue['clusters'])) {
