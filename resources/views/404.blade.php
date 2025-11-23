@@ -40,12 +40,9 @@
         }
 
         @keyframes twinkle {
-
-            0%,
-            100% {
+            0%, 100% {
                 opacity: 0.3;
             }
-
             50% {
                 opacity: 1;
             }
@@ -72,12 +69,9 @@
         }
 
         @keyframes float {
-
-            0%,
-            100% {
+            0%, 100% {
                 transform: translateY(0px);
             }
-
             50% {
                 transform: translateY(-20px);
             }
@@ -115,7 +109,7 @@
             background: #f8f9fa;
         }
 
-        .rocket-container {
+        .tooth-fleet {
             display: inline-block;
             margin-bottom: 1rem;
             position: relative;
@@ -123,12 +117,13 @@
             height: 250px;
         }
 
-        .rocket-svg {
+        .tooth {
             position: absolute;
             filter: drop-shadow(0 5px 15px rgba(0, 0, 0, 0.3));
+            transform: rotate(-45deg);
         }
 
-        .rocket-main {
+        .tooth-main {
             width: 110px;
             height: 110px;
             left: 50%;
@@ -138,83 +133,75 @@
             z-index: 10;
         }
 
-        .rocket-small-1 {
+        .tooth-1 {
             width: 50px;
             height: 50px;
             left: 8%;
             top: 15%;
-            transform: rotate(-45deg);
-            animation: float-small-1 4s ease-in-out infinite;
+            animation: float-1 4s ease-in-out infinite;
             opacity: 0.75;
         }
 
-        .rocket-small-2 {
+        .tooth-2 {
             width: 50px;
             height: 50px;
             right: 8%;
             bottom: 15%;
-            transform: rotate(-45deg);
-            animation: float-small-2 3.5s ease-in-out infinite;
+            animation: float-2 3.5s ease-in-out infinite;
             opacity: 0.75;
         }
 
-        .rocket-small-3 {
+        .tooth-3 {
             width: 45px;
             height: 45px;
             left: 20%;
             top: 45%;
-            transform: rotate(-45deg);
-            animation: float-small-3 3.8s ease-in-out infinite;
+            animation: float-3 3.8s ease-in-out infinite;
             opacity: 0.7;
         }
 
-        .rocket-small-4 {
+        .tooth-4 {
             width: 45px;
             height: 45px;
             right: 20%;
             top: 35%;
-            transform: rotate(-45deg);
-            animation: float-small-4 4.2s ease-in-out infinite;
+            animation: float-4 4.2s ease-in-out infinite;
             opacity: 0.7;
         }
 
-        .rocket-small-5 {
+        .tooth-5 {
             width: 40px;
             height: 40px;
             left: 15%;
             bottom: 20%;
-            transform: rotate(-45deg);
-            animation: float-small-5 3.6s ease-in-out infinite;
+            animation: float-5 3.6s ease-in-out infinite;
             opacity: 0.65;
         }
 
-        .rocket-small-6 {
+        .tooth-6 {
             width: 40px;
             height: 40px;
             right: 15%;
             top: 10%;
-            transform: rotate(-45deg);
-            animation: float-small-6 4.4s ease-in-out infinite;
+            animation: float-6 4.4s ease-in-out infinite;
             opacity: 0.65;
         }
 
-        .rocket-tiny-1 {
+        .tooth-7 {
             width: 30px;
             height: 30px;
             left: 5%;
             bottom: 25%;
-            transform: rotate(-45deg);
-            animation: float-tiny-1 3.2s ease-in-out infinite;
+            animation: float-7 3.2s ease-in-out infinite;
             opacity: 0.5;
         }
 
-        .rocket-tiny-2 {
+        .tooth-8 {
             width: 30px;
             height: 30px;
             right: 5%;
             top: 25%;
-            transform: rotate(-45deg);
-            animation: float-tiny-2 3.9s ease-in-out infinite;
+            animation: float-8 3.9s ease-in-out infinite;
             opacity: 0.5;
         }
 
@@ -227,7 +214,7 @@
             }
         }
 
-        @keyframes float-small-1 {
+        @keyframes float-1 {
             0%, 100% {
                 transform: rotate(-45deg) translateY(0px);
             }
@@ -236,7 +223,7 @@
             }
         }
 
-        @keyframes float-small-2 {
+        @keyframes float-2 {
             0%, 100% {
                 transform: rotate(-45deg) translateY(0px);
             }
@@ -245,7 +232,7 @@
             }
         }
 
-        @keyframes float-small-3 {
+        @keyframes float-3 {
             0%, 100% {
                 transform: rotate(-45deg) translateY(0px);
             }
@@ -254,7 +241,7 @@
             }
         }
 
-        @keyframes float-small-4 {
+        @keyframes float-4 {
             0%, 100% {
                 transform: rotate(-45deg) translateY(0px);
             }
@@ -263,7 +250,7 @@
             }
         }
 
-        @keyframes float-small-5 {
+        @keyframes float-5 {
             0%, 100% {
                 transform: rotate(-45deg) translateY(0px);
             }
@@ -272,7 +259,7 @@
             }
         }
 
-        @keyframes float-small-6 {
+        @keyframes float-6 {
             0%, 100% {
                 transform: rotate(-45deg) translateY(0px);
             }
@@ -281,7 +268,7 @@
             }
         }
 
-        @keyframes float-tiny-1 {
+        @keyframes float-7 {
             0%, 100% {
                 transform: rotate(-45deg) translateY(0px);
             }
@@ -290,43 +277,12 @@
             }
         }
 
-        @keyframes float-tiny-2 {
+        @keyframes float-8 {
             0%, 100% {
                 transform: rotate(-45deg) translateY(0px);
             }
             50% {
                 transform: rotate(-45deg) translateY(-7px);
-            }
-        }
-
-        @keyframes spin {
-            from {
-                transform: rotate(0deg);
-            }
-
-            to {
-                transform: rotate(360deg);
-            }
-        }
-
-        .stars-trail {
-            position: absolute;
-            width: 3px;
-            height: 3px;
-            background: white;
-            border-radius: 50%;
-            opacity: 0;
-            animation: trail 2s ease-out infinite;
-        }
-
-        @keyframes trail {
-            0% {
-                opacity: 0.8;
-                transform: translateX(0);
-            }
-            100% {
-                opacity: 0;
-                transform: translateX(-30px);
             }
         }
 
@@ -343,25 +299,29 @@
                 font-size: 1rem;
             }
 
-            .rocket-svg {
-                width: 60px;
-                height: 60px;
+            .tooth-fleet {
+                width: 300px;
+                height: 150px;
             }
 
-            .rocket-main {
+            .tooth-main {
                 width: 70px;
                 height: 70px;
             }
 
-            .rocket-small-1,
-            .rocket-small-2 {
+            .tooth-1, .tooth-2 {
                 width: 35px;
                 height: 35px;
             }
 
-            .rocket-container {
-                width: 300px;
-                height: 150px;
+            .tooth-3, .tooth-4, .tooth-5, .tooth-6 {
+                width: 30px;
+                height: 30px;
+            }
+
+            .tooth-7, .tooth-8 {
+                width: 20px;
+                height: 20px;
             }
         }
     </style>
@@ -371,78 +331,72 @@
     <div class="stars" id="stars"></div>
 
     <div class="container">
-        <div class="rocket-container">
-            <!-- Main large rocket (center) -->
-            <svg class="rocket-svg rocket-main" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <path d="M9.5 14C8.67157 14 8 13.3284 8 12.5C8 11.6716 8.67157 11 9.5 11C10.3284 11 11 11.6716 11 12.5C11 13.3284 10.3284 14 9.5 14Z" fill="white"/>
-                <path d="M12 2C12 2 5 3.5 5 11C5 11 3.5 12.5 3 14C3 14 4 15 6 15C6 15 6 18 6 20C6 20 7 21 8 21C8 21 8.5 20.5 9 19C10.5 19 11 20.5 12 22C13 20.5 13.5 19 15 19C15.5 20.5 16 21 16 21C17 21 18 20 18 20C18 18 18 15 18 15C20 15 21 14 21 14C20.5 12.5 19 11 19 11C19 3.5 12 2 12 2Z" fill="white"/>
-                <path d="M8 17C6.5 17 5.5 16.5 5.5 16.5C5.5 16.5 6 16 6.5 15.5C7 15 7.5 15 7.5 15C7.5 15 7.5 16.5 8 17Z" fill="#FFD700"/>
-                <path d="M16 17C17.5 17 18.5 16.5 18.5 16.5C18.5 16.5 18 16 17.5 15.5C17 15 16.5 15 16.5 15C16.5 15 16.5 16.5 16 17Z" fill="#FFD700"/>
-                <circle cx="9.5" cy="12.5" r="1" fill="#667eea"/>
-                <path d="M12 5C12 5 13.5 6 13.5 8.5C13.5 11 12 12 12 12C12 12 10.5 11 10.5 8.5C10.5 6 12 5 12 5Z" fill="#FFD700" opacity="0.7"/>
+        <div class="tooth-fleet">
+            <!-- Main tooth -->
+            <svg class="tooth tooth-main" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M12 3C9 3 7 4 6 6C5 8 5 10 5 12C5 14 5 16 6 18C7 19 8 20 9 20C9.5 19.5 10 19 10.5 18.5C11 18 11.5 18 12 18C12.5 18 13 18 13.5 18.5C14 19 14.5 19.5 15 20C16 20 17 19 18 18C19 16 19 14 19 12C19 10 19 8 18 6C17 4 15 3 12 3Z" fill="white" stroke="#E0E0E0" stroke-width="0.5"/>
+                <path d="M8.5 18C7.5 19 7 19.5 6.5 20C7 20.5 7.5 21 8 21C8.5 20.5 9 20 9 19.5C9 19 8.5 18.5 8.5 18Z" fill="#FFD700"/>
+                <path d="M15.5 18C16.5 19 17 19.5 17.5 20C17 20.5 16.5 21 16 21C15.5 20.5 15 20 15 19.5C15 19 15.5 18.5 15.5 18Z" fill="#FFD700"/>
+                <circle cx="10" cy="8" r="1.5" fill="#87CEEB" opacity="0.6"/>
+                <line x1="10" y1="6.5" x2="10" y2="9.5" stroke="white" stroke-width="0.8" opacity="0.8"/>
+                <line x1="8.5" y1="8" x2="11.5" y2="8" stroke="white" stroke-width="0.8" opacity="0.8"/>
             </svg>
 
-            <!-- Medium rockets -->
-            <svg class="rocket-svg rocket-small-1" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <path d="M12 2C12 2 5 3.5 5 11C5 11 3.5 12.5 3 14C3 14 4 15 6 15C6 15 6 18 6 20C6 20 7 21 8 21C8 21 8.5 20.5 9 19C10.5 19 11 20.5 12 22C13 20.5 13.5 19 15 19C15.5 20.5 16 21 16 21C17 21 18 20 18 20C18 18 18 15 18 15C20 15 21 14 21 14C20.5 12.5 19 11 19 11C19 3.5 12 2 12 2Z" fill="rgba(255,255,255,0.9)"/>
-                <path d="M8 17C6.5 17 5.5 16.5 5.5 16.5C5.5 16.5 6 16 6.5 15.5C7 15 7.5 15 7.5 15C7.5 15 7.5 16.5 8 17Z" fill="#FFA500"/>
-                <path d="M16 17C17.5 17 18.5 16.5 18.5 16.5C18.5 16.5 18 16 17.5 15.5C17 15 16.5 15 16.5 15C16.5 15 16.5 16.5 16 17Z" fill="#FFA500"/>
-                <circle cx="9.5" cy="12.5" r="1" fill="#764ba2"/>
+            <!-- Supporting teeth -->
+            <svg class="tooth tooth-1" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M12 3C9 3 7 4 6 6C5 8 5 10 5 12C5 14 5 16 6 18C7 19 8 20 9 20C9.5 19.5 10 19 10.5 18.5C11 18 11.5 18 12 18C12.5 18 13 18 13.5 18.5C14 19 14.5 19.5 15 20C16 20 17 19 18 18C19 16 19 14 19 12C19 10 19 8 18 6C17 4 15 3 12 3Z" fill="rgba(255,255,255,0.9)" stroke="#E0E0E0" stroke-width="0.4"/>
+                <path d="M8.5 18C7.5 19 7 19.5 6.5 20C7 20.5 7.5 21 8 21C8.5 20.5 9 20 9 19.5C9 19 8.5 18.5 8.5 18Z" fill="#FFA500"/>
+                <path d="M15.5 18C16.5 19 17 19.5 17.5 20C17 20.5 16.5 21 16 21C15.5 20.5 15 20 15 19.5C15 19 15.5 18.5 15.5 18Z" fill="#FFA500"/>
+                <circle cx="10" cy="8" r="1" fill="#87CEEB" opacity="0.5"/>
             </svg>
 
-            <svg class="rocket-svg rocket-small-2" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <path d="M12 2C12 2 5 3.5 5 11C5 11 3.5 12.5 3 14C3 14 4 15 6 15C6 15 6 18 6 20C6 20 7 21 8 21C8 21 8.5 20.5 9 19C10.5 19 11 20.5 12 22C13 20.5 13.5 19 15 19C15.5 20.5 16 21 16 21C17 21 18 20 18 20C18 18 18 15 18 15C20 15 21 14 21 14C20.5 12.5 19 11 19 11C19 3.5 12 2 12 2Z" fill="rgba(255,255,255,0.9)"/>
-                <path d="M8 17C6.5 17 5.5 16.5 5.5 16.5C5.5 16.5 6 16 6.5 15.5C7 15 7.5 15 7.5 15C7.5 15 7.5 16.5 8 17Z" fill="#FFA500"/>
-                <path d="M16 17C17.5 17 18.5 16.5 18.5 16.5C18.5 16.5 18 16 17.5 15.5C17 15 16.5 15 16.5 15C16.5 15 16.5 16.5 16 17Z" fill="#FFA500"/>
-                <circle cx="9.5" cy="12.5" r="1" fill="#764ba2"/>
+            <svg class="tooth tooth-2" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M12 3C9 3 7 4 6 6C5 8 5 10 5 12C5 14 5 16 6 18C7 19 8 20 9 20C9.5 19.5 10 19 10.5 18.5C11 18 11.5 18 12 18C12.5 18 13 18 13.5 18.5C14 19 14.5 19.5 15 20C16 20 17 19 18 18C19 16 19 14 19 12C19 10 19 8 18 6C17 4 15 3 12 3Z" fill="rgba(255,255,255,0.9)" stroke="#E0E0E0" stroke-width="0.4"/>
+                <path d="M8.5 18C7.5 19 7 19.5 6.5 20C7 20.5 7.5 21 8 21C8.5 20.5 9 20 9 19.5C9 19 8.5 18.5 8.5 18Z" fill="#FFA500"/>
+                <path d="M15.5 18C16.5 19 17 19.5 17.5 20C17 20.5 16.5 21 16 21C15.5 20.5 15 20 15 19.5C15 19 15.5 18.5 15.5 18Z" fill="#FFA500"/>
+                <circle cx="10" cy="8" r="1" fill="#87CEEB" opacity="0.5"/>
             </svg>
 
-            <!-- Smaller support ships -->
-            <svg class="rocket-svg rocket-small-3" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <path d="M12 2C12 2 5 3.5 5 11C5 11 3.5 12.5 3 14C3 14 4 15 6 15C6 15 6 18 6 20C6 20 7 21 8 21C8 21 8.5 20.5 9 19C10.5 19 11 20.5 12 22C13 20.5 13.5 19 15 19C15.5 20.5 16 21 16 21C17 21 18 20 18 20C18 18 18 15 18 15C20 15 21 14 21 14C20.5 12.5 19 11 19 11C19 3.5 12 2 12 2Z" fill="rgba(255,255,255,0.85)"/>
-                <path d="M8 17C6.5 17 5.5 16.5 5.5 16.5C5.5 16.5 6 16 6.5 15.5C7 15 7.5 15 7.5 15C7.5 15 7.5 16.5 8 17Z" fill="#FF8C00"/>
-                <path d="M16 17C17.5 17 18.5 16.5 18.5 16.5C18.5 16.5 18 16 17.5 15.5C17 15 16.5 15 16.5 15C16.5 15 16.5 16.5 16 17Z" fill="#FF8C00"/>
-                <circle cx="9.5" cy="12.5" r="0.8" fill="#667eea"/>
+            <svg class="tooth tooth-3" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M12 3C9 3 7 4 6 6C5 8 5 10 5 12C5 14 5 16 6 18C7 19 8 20 9 20C9.5 19.5 10 19 10.5 18.5C11 18 11.5 18 12 18C12.5 18 13 18 13.5 18.5C14 19 14.5 19.5 15 20C16 20 17 19 18 18C19 16 19 14 19 12C19 10 19 8 18 6C17 4 15 3 12 3Z" fill="rgba(255,255,255,0.85)" stroke="#E0E0E0" stroke-width="0.3"/>
+                <path d="M8.5 18C7.5 19 7 19.5 6.5 20C7 20.5 7.5 21 8 21C8.5 20.5 9 20 9 19.5C9 19 8.5 18.5 8.5 18Z" fill="#FF8C00"/>
+                <path d="M15.5 18C16.5 19 17 19.5 17.5 20C17 20.5 16.5 21 16 21C15.5 20.5 15 20 15 19.5C15 19 15.5 18.5 15.5 18Z" fill="#FF8C00"/>
             </svg>
 
-            <svg class="rocket-svg rocket-small-4" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <path d="M12 2C12 2 5 3.5 5 11C5 11 3.5 12.5 3 14C3 14 4 15 6 15C6 15 6 18 6 20C6 20 7 21 8 21C8 21 8.5 20.5 9 19C10.5 19 11 20.5 12 22C13 20.5 13.5 19 15 19C15.5 20.5 16 21 16 21C17 21 18 20 18 20C18 18 18 15 18 15C20 15 21 14 21 14C20.5 12.5 19 11 19 11C19 3.5 12 2 12 2Z" fill="rgba(255,255,255,0.85)"/>
-                <path d="M8 17C6.5 17 5.5 16.5 5.5 16.5C5.5 16.5 6 16 6.5 15.5C7 15 7.5 15 7.5 15C7.5 15 7.5 16.5 8 17Z" fill="#FF8C00"/>
-                <path d="M16 17C17.5 17 18.5 16.5 18.5 16.5C18.5 16.5 18 16 17.5 15.5C17 15 16.5 15 16.5 15C16.5 15 16.5 16.5 16 17Z" fill="#FF8C00"/>
-                <circle cx="9.5" cy="12.5" r="0.8" fill="#667eea"/>
+            <svg class="tooth tooth-4" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M12 3C9 3 7 4 6 6C5 8 5 10 5 12C5 14 5 16 6 18C7 19 8 20 9 20C9.5 19.5 10 19 10.5 18.5C11 18 11.5 18 12 18C12.5 18 13 18 13.5 18.5C14 19 14.5 19.5 15 20C16 20 17 19 18 18C19 16 19 14 19 12C19 10 19 8 18 6C17 4 15 3 12 3Z" fill="rgba(255,255,255,0.85)" stroke="#E0E0E0" stroke-width="0.3"/>
+                <path d="M8.5 18C7.5 19 7 19.5 6.5 20C7 20.5 7.5 21 8 21C8.5 20.5 9 20 9 19.5C9 19 8.5 18.5 8.5 18Z" fill="#FF8C00"/>
+                <path d="M15.5 18C16.5 19 17 19.5 17.5 20C17 20.5 16.5 21 16 21C15.5 20.5 15 20 15 19.5C15 19 15.5 18.5 15.5 18Z" fill="#FF8C00"/>
             </svg>
 
-            <svg class="rocket-svg rocket-small-5" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <path d="M12 2C12 2 5 3.5 5 11C5 11 3.5 12.5 3 14C3 14 4 15 6 15C6 15 6 18 6 20C6 20 7 21 8 21C8 21 8.5 20.5 9 19C10.5 19 11 20.5 12 22C13 20.5 13.5 19 15 19C15.5 20.5 16 21 16 21C17 21 18 20 18 20C18 18 18 15 18 15C20 15 21 14 21 14C20.5 12.5 19 11 19 11C19 3.5 12 2 12 2Z" fill="rgba(255,255,255,0.8)"/>
-                <path d="M8 17C6.5 17 5.5 16.5 5.5 16.5C5.5 16.5 6 16 6.5 15.5C7 15 7.5 15 7.5 15C7.5 15 7.5 16.5 8 17Z" fill="#FF7F00"/>
-                <path d="M16 17C17.5 17 18.5 16.5 18.5 16.5C18.5 16.5 18 16 17.5 15.5C17 15 16.5 15 16.5 15C16.5 15 16.5 16.5 16 17Z" fill="#FF7F00"/>
-                <circle cx="9.5" cy="12.5" r="0.7" fill="#764ba2"/>
+            <svg class="tooth tooth-5" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M12 3C9 3 7 4 6 6C5 8 5 10 5 12C5 14 5 16 6 18C7 19 8 20 9 20C9.5 19.5 10 19 10.5 18.5C11 18 11.5 18 12 18C12.5 18 13 18 13.5 18.5C14 19 14.5 19.5 15 20C16 20 17 19 18 18C19 16 19 14 19 12C19 10 19 8 18 6C17 4 15 3 12 3Z" fill="rgba(255,255,255,0.8)"/>
+                <path d="M8.5 18C7.5 19 7 19.5 6.5 20C7 20.5 7.5 21 8 21C8.5 20.5 9 20 9 19.5C9 19 8.5 18.5 8.5 18Z" fill="#FF7F00"/>
+                <path d="M15.5 18C16.5 19 17 19.5 17.5 20C17 20.5 16.5 21 16 21C15.5 20.5 15 20 15 19.5C15 19 15.5 18.5 15.5 18Z" fill="#FF7F00"/>
             </svg>
 
-            <svg class="rocket-svg rocket-small-6" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <path d="M12 2C12 2 5 3.5 5 11C5 11 3.5 12.5 3 14C3 14 4 15 6 15C6 15 6 18 6 20C6 20 7 21 8 21C8 21 8.5 20.5 9 19C10.5 19 11 20.5 12 22C13 20.5 13.5 19 15 19C15.5 20.5 16 21 16 21C17 21 18 20 18 20C18 18 18 15 18 15C20 15 21 14 21 14C20.5 12.5 19 11 19 11C19 3.5 12 2 12 2Z" fill="rgba(255,255,255,0.8)"/>
-                <path d="M8 17C6.5 17 5.5 16.5 5.5 16.5C5.5 16.5 6 16 6.5 15.5C7 15 7.5 15 7.5 15C7.5 15 7.5 16.5 8 17Z" fill="#FF7F00"/>
-                <path d="M16 17C17.5 17 18.5 16.5 18.5 16.5C18.5 16.5 18 16 17.5 15.5C17 15 16.5 15 16.5 15C16.5 15 16.5 16.5 16 17Z" fill="#FF7F00"/>
-                <circle cx="9.5" cy="12.5" r="0.7" fill="#764ba2"/>
+            <svg class="tooth tooth-6" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M12 3C9 3 7 4 6 6C5 8 5 10 5 12C5 14 5 16 6 18C7 19 8 20 9 20C9.5 19.5 10 19 10.5 18.5C11 18 11.5 18 12 18C12.5 18 13 18 13.5 18.5C14 19 14.5 19.5 15 20C16 20 17 19 18 18C19 16 19 14 19 12C19 10 19 8 18 6C17 4 15 3 12 3Z" fill="rgba(255,255,255,0.8)"/>
+                <path d="M8.5 18C7.5 19 7 19.5 6.5 20C7 20.5 7.5 21 8 21C8.5 20.5 9 20 9 19.5C9 19 8.5 18.5 8.5 18Z" fill="#FF7F00"/>
+                <path d="M15.5 18C16.5 19 17 19.5 17.5 20C17 20.5 16.5 21 16 21C15.5 20.5 15 20 15 19.5C15 19 15.5 18.5 15.5 18Z" fill="#FF7F00"/>
             </svg>
 
-            <!-- Tiny escort ships -->
-            <svg class="rocket-svg rocket-tiny-1" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <path d="M12 2C12 2 5 3.5 5 11C5 11 3.5 12.5 3 14C3 14 4 15 6 15C6 15 6 18 6 20C6 20 7 21 8 21C8 21 8.5 20.5 9 19C10.5 19 11 20.5 12 22C13 20.5 13.5 19 15 19C15.5 20.5 16 21 16 21C17 21 18 20 18 20C18 18 18 15 18 15C20 15 21 14 21 14C20.5 12.5 19 11 19 11C19 3.5 12 2 12 2Z" fill="rgba(255,255,255,0.7)"/>
-                <path d="M8 17C6.5 17 5.5 16.5 5.5 16.5C5.5 16.5 6 16 6.5 15.5C7 15 7.5 15 7.5 15C7.5 15 7.5 16.5 8 17Z" fill="#FF6B00"/>
-                <path d="M16 17C17.5 17 18.5 16.5 18.5 16.5C18.5 16.5 18 16 17.5 15.5C17 15 16.5 15 16.5 15C16.5 15 16.5 16.5 16 17Z" fill="#FF6B00"/>
+            <svg class="tooth tooth-7" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M12 3C9 3 7 4 6 6C5 8 5 10 5 12C5 14 5 16 6 18C7 19 8 20 9 20C9.5 19.5 10 19 10.5 18.5C11 18 11.5 18 12 18C12.5 18 13 18 13.5 18.5C14 19 14.5 19.5 15 20C16 20 17 19 18 18C19 16 19 14 19 12C19 10 19 8 18 6C17 4 15 3 12 3Z" fill="rgba(255,255,255,0.7)"/>
+                <path d="M8.5 18C7.5 19 7 19.5 6.5 20C7 20.5 7.5 21 8 21C8.5 20.5 9 20 9 19.5C9 19 8.5 18.5 8.5 18Z" fill="#FF6B00"/>
+                <path d="M15.5 18C16.5 19 17 19.5 17.5 20C17 20.5 16.5 21 16 21C15.5 20.5 15 20 15 19.5C15 19 15.5 18.5 15.5 18Z" fill="#FF6B00"/>
             </svg>
 
-            <svg class="rocket-svg rocket-tiny-2" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <path d="M12 2C12 2 5 3.5 5 11C5 11 3.5 12.5 3 14C3 14 4 15 6 15C6 15 6 18 6 20C6 20 7 21 8 21C8 21 8.5 20.5 9 19C10.5 19 11 20.5 12 22C13 20.5 13.5 19 15 19C15.5 20.5 16 21 16 21C17 21 18 20 18 20C18 18 18 15 18 15C20 15 21 14 21 14C20.5 12.5 19 11 19 11C19 3.5 12 2 12 2Z" fill="rgba(255,255,255,0.7)"/>
-                <path d="M8 17C6.5 17 5.5 16.5 5.5 16.5C5.5 16.5 6 16 6.5 15.5C7 15 7.5 15 7.5 15C7.5 15 7.5 16.5 8 17Z" fill="#FF6B00"/>
-                <path d="M16 17C17.5 17 18.5 16.5 18.5 16.5C18.5 16.5 18 16 17.5 15.5C17 15 16.5 15 16.5 15C16.5 15 16.5 16.5 16 17Z" fill="#FF6B00"/>
+            <svg class="tooth tooth-8" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M12 3C9 3 7 4 6 6C5 8 5 10 5 12C5 14 5 16 6 18C7 19 8 20 9 20C9.5 19.5 10 19 10.5 18.5C11 18 11.5 18 12 18C12.5 18 13 18 13.5 18.5C14 19 14.5 19.5 15 20C16 20 17 19 18 18C19 16 19 14 19 12C19 10 19 8 18 6C17 4 15 3 12 3Z" fill="rgba(255,255,255,0.7)"/>
+                <path d="M8.5 18C7.5 19 7 19.5 6.5 20C7 20.5 7.5 21 8 21C8.5 20.5 9 20 9 19.5C9 19 8.5 18.5 8.5 18Z" fill="#FF6B00"/>
+                <path d="M15.5 18C16.5 19 17 19.5 17.5 20C17 20.5 16.5 21 16 21C15.5 20.5 15 20 15 19.5C15 19 15.5 18.5 15.5 18Z" fill="#FF6B00"/>
             </svg>
         </div>
+
         <div class="error-code">404</div>
-        <h1>Lost in Space</h1>
-        <p>Oops! The page you're looking for has drifted into the cosmic void. It might have been moved, deleted, or
-            never existed in this universe.</p>
+        <h1>Lost in the Dental Galaxy</h1>
+        <p>Oops! This page has drifted away like a lost tooth in space. It might have been extracted, relocated, or never existed in this dental universe.</p>
         <a href="#" class="btn-home">Return to Home</a>
     </div>
 
