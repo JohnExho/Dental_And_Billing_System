@@ -5,6 +5,8 @@ namespace App\Http\Controllers;
 use App\Models\PatientQrCode;
 use App\Exports\PatientsExport;
 use Maatwebsite\Excel\Facades\Excel;
+use Illuminate\Support\Facades\Cache;
+
 
 class ToolController extends Controller
 {
