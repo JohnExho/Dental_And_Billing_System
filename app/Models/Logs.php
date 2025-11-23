@@ -8,7 +8,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-
+use App\Traits\HasLocalTimestamps;
 /**
  * @method static Builder whereNotIn(string $column, mixed $values)
  * @method static Builder where(string $column, string $operator = null, mixed $value = null, string $boolean = 'and')
@@ -19,7 +19,8 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 class Logs extends Model
 {
     /** @use HasFactory<\Database\Factories\LogsFactory> */
-    use HasFactory, SoftDeletes, Notifiable, HasUuid;
+    use HasFactory, SoftDeletes, Notifiable, HasUuid, HasLocalTimestamps;
+
 
     protected $table = 'logs';
     protected $primaryKey = 'log_id';

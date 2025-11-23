@@ -12,6 +12,8 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\RateLimiter;
+use Illuminate\Support\Str;
+use App\Models\AccountLoginToken;
 
 class AccountController extends Controller
 {
@@ -32,11 +34,16 @@ class AccountController extends Controller
      *
      * @return \Illuminate\View\View
      */
-    public function index()
-    {
-        return view('index');
+public function index(Request $request)
+{
+    $userAgent = $request->header('User-Agent');
+
+    if (preg_match('/Mobile|Android|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i', $userAgent)) {
+        return redirect()->route('404'); // or abort(404)
     }
 
+    return view('index');
+}
     /**
      * Show the settings page for the authenticated account.
      *
@@ -49,137 +56,124 @@ class AccountController extends Controller
         return view('settings.index', compact('account'));
     }
 
-    public function login(Request $request)
-    {
-        // 1️⃣ Validate email only (password may be optional for guest)
-        $request->validate([
-            'email' => ['required', 'email'],
-        ]);
-
-        // 2️⃣ Find account by email hash
-        $emailHash = hash('sha256', strtolower($request->email));
-        $account = Account::where('email_hash', $emailHash)->first();
-
-        if (! $account) {
-            return back()->with('error', 'Invalid credentials.');
-        }
-
-        // 3️⃣ Require active account for all roles
-        if (! $account->is_active) {
-            return back()->with('error', 'Your account is inactive. Please contact support.');
-        }
-
-        $role = strtolower(trim($account->role));
-
-        if ($role === 'guest') {
-    return back()->with('error', 'Guest accounts cannot log in.');
+public function login(Request $request)
+{
+    // 1️⃣ Validate email
+    $request->validate(['email' => ['required', 'email']]);
+    $emailHash = hash('sha256', strtolower($request->email));
+    $account = Account::where('email_hash', $emailHash)->first();
+    
+    if (! $account) {
+        return back()->with('error', 'Invalid credentials.');
+    }
+    
+    if (! $account->is_active) {
+        return back()->with('error', 'Your account is inactive. Please contact support.');
+    }
+    
+    $role = strtolower(trim($account->role));
+    
+    if ($role === 'guest') {
+        return back()->with('error', 'Guest accounts cannot log in.');
+    }
+    
+    if ($role !== 'guest' && ! Hash::check($request->password, $account->password)) {
+        return back()->with('error', 'Invalid credentials.');
+    }
+    
+    if ($role === 'staff' && empty($account->clinic_id)) {
+        return back()->with('error', 'You are not assigned to any clinic.');
+    }
+    
+    // 🚨 CHECK FOR EXISTING LOGIN **BEFORE** AUTHENTICATING
+    $existingToken = AccountLoginToken::where('account_id', $account->account_id)
+        ->where('expires_at', '>', now())
+        ->first();
+    
+    if ($existingToken) {
+        return back()->with('error', 'This account is already logged in from another device.');
+    }
+    
+    // 5️⃣ NOW login after passing all checks
+    $this->guard->login($account);
+    $request->session()->regenerate();
+    
+    session([
+        'active_role' => $role,
+        'clinic_id' => $role === 'staff' ? $account->clinic_id : null,
+    ]);
+    
+    /** @var Account $account */
+    $account = $this->guard->user();
+    
+    // 6️⃣ Log login action
+    LogService::record(
+        $account,
+        $account,
+        'login',
+        'auth',
+        'User has logged in',
+        'Account: ' . $account->account_id,
+        $request->ip(),
+        $request->userAgent()
+    );
+    
+    // 7️⃣ Create a new login token
+    $rawToken = Str::uuid();
+    AccountLoginToken::create([
+        'account_id' => $account->account_id,
+        'token_id' => $rawToken,
+        'token' => hash('sha256', $rawToken),
+        'ip_address' => $request->ip(),
+        'user_agent' => $request->userAgent(),
+        'expires_at' => now()->addDays(30),
+    ]);
+    
+    // Store account_id in session (more reliable than token_id)
+    session(['account_id_for_logout' => $account->account_id]);
+    
+    // 8️⃣ Redirect based on role
+    $redirectRoute = match ($role) {
+        'staff' => 'staff.dashboard',
+        'admin' => 'admin.dashboard',
+        default => 'dashboard',
+    };
+    
+    return redirect()->route($redirectRoute);
 }
 
-
-        // 4️⃣ If not guest, validate password and check credentials
-        if ($role !== 'guest') {
-            $request->validate([
-                'password' => ['required'],
-            ]);
-
-            if (! Hash::check($request->password, $account->password)) {
-                return back()->with('error', 'Invalid credentials.');
-            }
-        }
-
-        if ($role === 'staff') {
-            // Staff: check clinic assignment
-            if (empty($account->clinic_id)) {
-                return back()->with('error', 'You are not assigned to any clinic. Please contact your administrator.');
-            }
-
-            $clinic = Clinic::find($account->clinic_id);
-            if (! $clinic) {
-                return back()->with('error', 'Assigned clinic not found. Please contact support.');
-            }
-        }
-
-        // 5️⃣ Login and regenerate session
-        $this->guard->login($account);
-        $request->session()->regenerate();
-        session([
-            'active_role' => $role,
-            'clinic_id' => $role === 'staff' ? $account->clinic_id : null,
-        ]);
-
-        /** @var Account $account */
-        $account = $this->guard->user(); // ensures we have the guard-loaded user
-
-        // 6️⃣ Log the login
+public function logout(Request $request)
+{
+    $account = $this->guard->user();
+    $accountId = $account?->account_id ?? session('account_id_for_logout');
+    
+    // 🔥 DELETE ALL TOKENS for this account (more reliable)
+    if ($accountId) {
+        AccountLoginToken::where('account_id', $accountId)->delete();
+    }
+    
+    // Log the logout
+    if ($account) {
         LogService::record(
             $account,
             $account,
-            'login',
+            'logout',
             'auth',
-            'User has logged in',
+            'User has logged out',
             'Account: '.$account->account_id,
             $request->ip(),
             $request->userAgent()
         );
-
-        // 7️⃣ Initialize stock message
-        $stockErrorMessage = null;
-        Log::info('Login role:', ['role' => $account->role]);
-
-        // 8️⃣ Role-specific logic
-        if ($role === 'admin') {
-            // Admin: show low-stock medicines
-            $lowStockMedicines = Medicine::leftJoin('medicine_clinics', 'medicines.medicine_id', '=', 'medicine_clinics.medicine_id')
-                ->select('medicines.medicine_id', 'medicines.name', DB::raw('COALESCE(SUM(medicine_clinics.stock), 0) as total_stock'))
-                ->groupBy('medicines.medicine_id', 'medicines.name')
-                ->having('total_stock', '<', 50)
-                ->get();
-
-            if ($lowStockMedicines->isNotEmpty()) {
-                $medicineNames = $lowStockMedicines->pluck('name')->join(', ');
-                $stockErrorMessage = "Low stock for: {$medicineNames}";
-            }
-        }
-
-        // 9️⃣ Determine redirect based on role
-        $redirectRoute = match ($role) {
-            'staff' => 'staff.dashboard',
-            'admin' => 'admin.dashboard',
-            default => 'dashboard',
-        };
-
-        // 10️⃣ Redirect with messages
-        return redirect()->route($redirectRoute);
     }
-    public function logout(Request $request)
-    {
-        $account = $this->guard->user();
-        // Log out the user using the 'account' guard first
-        $this->guard->logout();
+    
+    // THEN log out and invalidate session
+    $this->guard->logout();
+    $request->session()->invalidate();
+    $request->session()->regenerateToken();
+    
+    return redirect()->route('login')->with('success', 'You have been logged out.');
+}
 
-        // Invalidate the session to prevent session fixation
-        $request->session()->invalidate();
-
-        // Regenerate CSRF token
-        $request->session()->regenerateToken();
-
-        /** @var Account $account */
-        if ($account) {
-            LogService::record(
-                $account,            // who did it
-                $account,            // what was acted on (loggable model, here the Account itself)
-                'logout',             // action
-                'auth',              // log_type
-                'User has logged out',
-                'Account: '.$account->account_id,
-                $request->ip(),
-                $request->userAgent()
-            );
-        }
-
-        // Redirect to login page with a message
-        return redirect()->route('login')->with('success', 'You have been logged out.');
-    }
 
     public function switchRole(Request $request)
     {
