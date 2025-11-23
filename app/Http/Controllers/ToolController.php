@@ -22,9 +22,20 @@ class ToolController extends Controller
     }
 
 
-    public function extract()
-    {
-        $fileName = 'patients_' . now()->format('Ymd_His') . '.xlsx';
-        return Excel::download(new PatientsExport, $fileName);
+public function extract()
+{
+    $userId = auth()->id() ?? session()->getId(); 
+    $cooldownKey = 'patients_export_cooldown_' . $userId;
+
+    // If user is still cooling down:
+    if (Cache::has($cooldownKey)) {
+        return back()->with('error', 'Please wait a bit before exporting again.');
     }
-}
+
+    // Set cooldown (30 seconds)
+    Cache::put($cooldownKey, true, now()->addSeconds(30));
+
+    $fileName = 'patients_' . now()->format('Ymd_His') . '.xlsx';
+
+    return Excel::download(new PatientsExport, $fileName);
+}}
