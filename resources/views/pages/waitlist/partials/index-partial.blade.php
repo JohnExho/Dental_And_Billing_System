@@ -43,9 +43,9 @@
                         @php
                             // Decide which image to show
                             $defaultProfile = match ($wl->patient?->sex) {
-                                'male' => asset('images/defaults/male.png'),
-                                'female' => asset('images/defaults/female.png'),
-                                default => asset('images/defaults/other.png'),
+                                'male' => asset('public//defaults/male.png'),
+                                'female' => asset('public/images/defaults/female.png'),
+                                default => asset('public/images/defaults/other.png'),
                             };
 
                             $profileUrl = $wl->patient?->profile_picture

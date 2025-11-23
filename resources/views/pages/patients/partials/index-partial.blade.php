@@ -40,9 +40,9 @@
                     @foreach ($patients as $patient)
                         @php
                             $defaultProfile = match ($patient->sex) {
-                                'male' => asset('images/defaults/male.png'),
-                                'female' => asset('images/defaults/female.png'),
-                                default => asset('images/defaults/other.png'),
+                                'male' => asset('public/images/defaults/male.png'),
+                                'female' => asset('public/images/defaults/female.png'),
+                                default => asset('public/images/defaults/other.png'),
                             };
 
                             $profileUrl = $patient->profile_picture
@@ -238,10 +238,10 @@
             tr.className = 'patient-row';
             
             const defaultProfile = patient.sex === 'male' 
-                ? '{{ asset("images/defaults/male.png") }}'
+                ? '{{ asset("public/images/defaults/male.png") }}'
                 : patient.sex === 'female'
-                ? '{{ asset("images/defaults/female.png") }}'
-                : '{{ asset("images/defaults/other.png") }}';
+                ? '{{ asset("public/images/defaults/female.png") }}'
+                : '{{ asset("public/images/defaults/other.png") }}';
             
             const profileUrl = patient.profile_picture 
                 ? `/storage/${patient.profile_picture}`
