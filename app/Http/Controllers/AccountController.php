@@ -94,7 +94,7 @@ public function login(Request $request)
     if ($existingActiveTokens->isNotEmpty()) {
         foreach ($existingActiveTokens as $token) {
             if ($token->ip_address !== $request->ip() || $token->user_agent !== $request->userAgent()) {
-                return back()->with('error', 'This account is already logged in from another device. Please wait for that session to expire or logout from the other device.');
+                return back()->with('error', 'This account is already logged in from another device. Please logout from the other device.');
             }
         }
     }
