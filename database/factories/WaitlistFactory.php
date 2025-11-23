@@ -23,7 +23,7 @@ class WaitlistFactory extends Factory
             'account_id' => Account::inRandomOrder()->where('role', 'admin')->first()->account_id ?? null,
             'patient_id' => Patient::inRandomOrder()->first()->patient_id ?? null,
             'clinic_id' => Clinic::inRandomOrder()->first()->clinic_id ?? null,
-            'associate_id' => Associate::inRandomOrder()->first()->account_id ?? null,
+            'associate_id' => Associate::inRandomOrder()->first()->associate_id ?? null,
             'requested_at_date' => $this->faker->dateTimeBetween('-1 years', 'now'),
             'requested_at_time' => $this->faker->time(),
             'queue_position' => $queuePosition,
