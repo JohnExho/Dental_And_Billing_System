@@ -119,8 +119,8 @@
             display: inline-block;
             margin-bottom: 1rem;
             position: relative;
-            width: 400px;
-            height: 180px;
+            width: 500px;
+            height: 250px;
         }
 
         .rocket-svg {
@@ -129,32 +129,93 @@
         }
 
         .rocket-main {
-            width: 100px;
-            height: 100px;
+            width: 110px;
+            height: 110px;
             left: 50%;
             top: 50%;
             transform: translate(-50%, -50%) rotate(-45deg);
             animation: float-main 3s ease-in-out infinite;
+            z-index: 10;
         }
 
         .rocket-small-1 {
             width: 50px;
             height: 50px;
-            left: 5%;
-            top: 10%;
+            left: 8%;
+            top: 15%;
             transform: rotate(-45deg);
             animation: float-small-1 4s ease-in-out infinite;
-            opacity: 0.8;
+            opacity: 0.75;
         }
 
         .rocket-small-2 {
             width: 50px;
             height: 50px;
-            right: 5%;
-            bottom: 10%;
+            right: 8%;
+            bottom: 15%;
             transform: rotate(-45deg);
             animation: float-small-2 3.5s ease-in-out infinite;
-            opacity: 0.8;
+            opacity: 0.75;
+        }
+
+        .rocket-small-3 {
+            width: 45px;
+            height: 45px;
+            left: 20%;
+            top: 45%;
+            transform: rotate(-45deg);
+            animation: float-small-3 3.8s ease-in-out infinite;
+            opacity: 0.7;
+        }
+
+        .rocket-small-4 {
+            width: 45px;
+            height: 45px;
+            right: 20%;
+            top: 35%;
+            transform: rotate(-45deg);
+            animation: float-small-4 4.2s ease-in-out infinite;
+            opacity: 0.7;
+        }
+
+        .rocket-small-5 {
+            width: 40px;
+            height: 40px;
+            left: 15%;
+            bottom: 20%;
+            transform: rotate(-45deg);
+            animation: float-small-5 3.6s ease-in-out infinite;
+            opacity: 0.65;
+        }
+
+        .rocket-small-6 {
+            width: 40px;
+            height: 40px;
+            right: 15%;
+            top: 10%;
+            transform: rotate(-45deg);
+            animation: float-small-6 4.4s ease-in-out infinite;
+            opacity: 0.65;
+        }
+
+        .rocket-tiny-1 {
+            width: 30px;
+            height: 30px;
+            left: 5%;
+            bottom: 25%;
+            transform: rotate(-45deg);
+            animation: float-tiny-1 3.2s ease-in-out infinite;
+            opacity: 0.5;
+        }
+
+        .rocket-tiny-2 {
+            width: 30px;
+            height: 30px;
+            right: 5%;
+            top: 25%;
+            transform: rotate(-45deg);
+            animation: float-tiny-2 3.9s ease-in-out infinite;
+            opacity: 0.5;
         }
 
         @keyframes float-main {
@@ -181,6 +242,60 @@
             }
             50% {
                 transform: rotate(-45deg) translateY(-12px);
+            }
+        }
+
+        @keyframes float-small-3 {
+            0%, 100% {
+                transform: rotate(-45deg) translateY(0px);
+            }
+            50% {
+                transform: rotate(-45deg) translateY(-11px);
+            }
+        }
+
+        @keyframes float-small-4 {
+            0%, 100% {
+                transform: rotate(-45deg) translateY(0px);
+            }
+            50% {
+                transform: rotate(-45deg) translateY(-13px);
+            }
+        }
+
+        @keyframes float-small-5 {
+            0%, 100% {
+                transform: rotate(-45deg) translateY(0px);
+            }
+            50% {
+                transform: rotate(-45deg) translateY(-9px);
+            }
+        }
+
+        @keyframes float-small-6 {
+            0%, 100% {
+                transform: rotate(-45deg) translateY(0px);
+            }
+            50% {
+                transform: rotate(-45deg) translateY(-14px);
+            }
+        }
+
+        @keyframes float-tiny-1 {
+            0%, 100% {
+                transform: rotate(-45deg) translateY(0px);
+            }
+            50% {
+                transform: rotate(-45deg) translateY(-8px);
+            }
+        }
+
+        @keyframes float-tiny-2 {
+            0%, 100% {
+                transform: rotate(-45deg) translateY(0px);
+            }
+            50% {
+                transform: rotate(-45deg) translateY(-7px);
             }
         }
 
@@ -257,7 +372,7 @@
 
     <div class="container">
         <div class="rocket-container">
-            <!-- Main large rocket -->
+            <!-- Main large rocket (center) -->
             <svg class="rocket-svg rocket-main" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                 <path d="M9.5 14C8.67157 14 8 13.3284 8 12.5C8 11.6716 8.67157 11 9.5 11C10.3284 11 11 11.6716 11 12.5C11 13.3284 10.3284 14 9.5 14Z" fill="white"/>
                 <path d="M12 2C12 2 5 3.5 5 11C5 11 3.5 12.5 3 14C3 14 4 15 6 15C6 15 6 18 6 20C6 20 7 21 8 21C8 21 8.5 20.5 9 19C10.5 19 11 20.5 12 22C13 20.5 13.5 19 15 19C15.5 20.5 16 21 16 21C17 21 18 20 18 20C18 18 18 15 18 15C20 15 21 14 21 14C20.5 12.5 19 11 19 11C19 3.5 12 2 12 2Z" fill="white"/>
@@ -267,22 +382,61 @@
                 <path d="M12 5C12 5 13.5 6 13.5 8.5C13.5 11 12 12 12 12C12 12 10.5 11 10.5 8.5C10.5 6 12 5 12 5Z" fill="#FFD700" opacity="0.7"/>
             </svg>
 
-            <!-- Small rocket 1 (left) -->
+            <!-- Medium rockets -->
             <svg class="rocket-svg rocket-small-1" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <path d="M9.5 14C8.67157 14 8 13.3284 8 12.5C8 11.6716 8.67157 11 9.5 11C10.3284 11 11 11.6716 11 12.5C11 13.3284 10.3284 14 9.5 14Z" fill="rgba(255,255,255,0.9)"/>
                 <path d="M12 2C12 2 5 3.5 5 11C5 11 3.5 12.5 3 14C3 14 4 15 6 15C6 15 6 18 6 20C6 20 7 21 8 21C8 21 8.5 20.5 9 19C10.5 19 11 20.5 12 22C13 20.5 13.5 19 15 19C15.5 20.5 16 21 16 21C17 21 18 20 18 20C18 18 18 15 18 15C20 15 21 14 21 14C20.5 12.5 19 11 19 11C19 3.5 12 2 12 2Z" fill="rgba(255,255,255,0.9)"/>
                 <path d="M8 17C6.5 17 5.5 16.5 5.5 16.5C5.5 16.5 6 16 6.5 15.5C7 15 7.5 15 7.5 15C7.5 15 7.5 16.5 8 17Z" fill="#FFA500"/>
                 <path d="M16 17C17.5 17 18.5 16.5 18.5 16.5C18.5 16.5 18 16 17.5 15.5C17 15 16.5 15 16.5 15C16.5 15 16.5 16.5 16 17Z" fill="#FFA500"/>
                 <circle cx="9.5" cy="12.5" r="1" fill="#764ba2"/>
             </svg>
 
-            <!-- Small rocket 2 (right) -->
             <svg class="rocket-svg rocket-small-2" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <path d="M9.5 14C8.67157 14 8 13.3284 8 12.5C8 11.6716 8.67157 11 9.5 11C10.3284 11 11 11.6716 11 12.5C11 13.3284 10.3284 14 9.5 14Z" fill="rgba(255,255,255,0.9)"/>
                 <path d="M12 2C12 2 5 3.5 5 11C5 11 3.5 12.5 3 14C3 14 4 15 6 15C6 15 6 18 6 20C6 20 7 21 8 21C8 21 8.5 20.5 9 19C10.5 19 11 20.5 12 22C13 20.5 13.5 19 15 19C15.5 20.5 16 21 16 21C17 21 18 20 18 20C18 18 18 15 18 15C20 15 21 14 21 14C20.5 12.5 19 11 19 11C19 3.5 12 2 12 2Z" fill="rgba(255,255,255,0.9)"/>
                 <path d="M8 17C6.5 17 5.5 16.5 5.5 16.5C5.5 16.5 6 16 6.5 15.5C7 15 7.5 15 7.5 15C7.5 15 7.5 16.5 8 17Z" fill="#FFA500"/>
                 <path d="M16 17C17.5 17 18.5 16.5 18.5 16.5C18.5 16.5 18 16 17.5 15.5C17 15 16.5 15 16.5 15C16.5 15 16.5 16.5 16 17Z" fill="#FFA500"/>
                 <circle cx="9.5" cy="12.5" r="1" fill="#764ba2"/>
+            </svg>
+
+            <!-- Smaller support ships -->
+            <svg class="rocket-svg rocket-small-3" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M12 2C12 2 5 3.5 5 11C5 11 3.5 12.5 3 14C3 14 4 15 6 15C6 15 6 18 6 20C6 20 7 21 8 21C8 21 8.5 20.5 9 19C10.5 19 11 20.5 12 22C13 20.5 13.5 19 15 19C15.5 20.5 16 21 16 21C17 21 18 20 18 20C18 18 18 15 18 15C20 15 21 14 21 14C20.5 12.5 19 11 19 11C19 3.5 12 2 12 2Z" fill="rgba(255,255,255,0.85)"/>
+                <path d="M8 17C6.5 17 5.5 16.5 5.5 16.5C5.5 16.5 6 16 6.5 15.5C7 15 7.5 15 7.5 15C7.5 15 7.5 16.5 8 17Z" fill="#FF8C00"/>
+                <path d="M16 17C17.5 17 18.5 16.5 18.5 16.5C18.5 16.5 18 16 17.5 15.5C17 15 16.5 15 16.5 15C16.5 15 16.5 16.5 16 17Z" fill="#FF8C00"/>
+                <circle cx="9.5" cy="12.5" r="0.8" fill="#667eea"/>
+            </svg>
+
+            <svg class="rocket-svg rocket-small-4" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M12 2C12 2 5 3.5 5 11C5 11 3.5 12.5 3 14C3 14 4 15 6 15C6 15 6 18 6 20C6 20 7 21 8 21C8 21 8.5 20.5 9 19C10.5 19 11 20.5 12 22C13 20.5 13.5 19 15 19C15.5 20.5 16 21 16 21C17 21 18 20 18 20C18 18 18 15 18 15C20 15 21 14 21 14C20.5 12.5 19 11 19 11C19 3.5 12 2 12 2Z" fill="rgba(255,255,255,0.85)"/>
+                <path d="M8 17C6.5 17 5.5 16.5 5.5 16.5C5.5 16.5 6 16 6.5 15.5C7 15 7.5 15 7.5 15C7.5 15 7.5 16.5 8 17Z" fill="#FF8C00"/>
+                <path d="M16 17C17.5 17 18.5 16.5 18.5 16.5C18.5 16.5 18 16 17.5 15.5C17 15 16.5 15 16.5 15C16.5 15 16.5 16.5 16 17Z" fill="#FF8C00"/>
+                <circle cx="9.5" cy="12.5" r="0.8" fill="#667eea"/>
+            </svg>
+
+            <svg class="rocket-svg rocket-small-5" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M12 2C12 2 5 3.5 5 11C5 11 3.5 12.5 3 14C3 14 4 15 6 15C6 15 6 18 6 20C6 20 7 21 8 21C8 21 8.5 20.5 9 19C10.5 19 11 20.5 12 22C13 20.5 13.5 19 15 19C15.5 20.5 16 21 16 21C17 21 18 20 18 20C18 18 18 15 18 15C20 15 21 14 21 14C20.5 12.5 19 11 19 11C19 3.5 12 2 12 2Z" fill="rgba(255,255,255,0.8)"/>
+                <path d="M8 17C6.5 17 5.5 16.5 5.5 16.5C5.5 16.5 6 16 6.5 15.5C7 15 7.5 15 7.5 15C7.5 15 7.5 16.5 8 17Z" fill="#FF7F00"/>
+                <path d="M16 17C17.5 17 18.5 16.5 18.5 16.5C18.5 16.5 18 16 17.5 15.5C17 15 16.5 15 16.5 15C16.5 15 16.5 16.5 16 17Z" fill="#FF7F00"/>
+                <circle cx="9.5" cy="12.5" r="0.7" fill="#764ba2"/>
+            </svg>
+
+            <svg class="rocket-svg rocket-small-6" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M12 2C12 2 5 3.5 5 11C5 11 3.5 12.5 3 14C3 14 4 15 6 15C6 15 6 18 6 20C6 20 7 21 8 21C8 21 8.5 20.5 9 19C10.5 19 11 20.5 12 22C13 20.5 13.5 19 15 19C15.5 20.5 16 21 16 21C17 21 18 20 18 20C18 18 18 15 18 15C20 15 21 14 21 14C20.5 12.5 19 11 19 11C19 3.5 12 2 12 2Z" fill="rgba(255,255,255,0.8)"/>
+                <path d="M8 17C6.5 17 5.5 16.5 5.5 16.5C5.5 16.5 6 16 6.5 15.5C7 15 7.5 15 7.5 15C7.5 15 7.5 16.5 8 17Z" fill="#FF7F00"/>
+                <path d="M16 17C17.5 17 18.5 16.5 18.5 16.5C18.5 16.5 18 16 17.5 15.5C17 15 16.5 15 16.5 15C16.5 15 16.5 16.5 16 17Z" fill="#FF7F00"/>
+                <circle cx="9.5" cy="12.5" r="0.7" fill="#764ba2"/>
+            </svg>
+
+            <!-- Tiny escort ships -->
+            <svg class="rocket-svg rocket-tiny-1" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M12 2C12 2 5 3.5 5 11C5 11 3.5 12.5 3 14C3 14 4 15 6 15C6 15 6 18 6 20C6 20 7 21 8 21C8 21 8.5 20.5 9 19C10.5 19 11 20.5 12 22C13 20.5 13.5 19 15 19C15.5 20.5 16 21 16 21C17 21 18 20 18 20C18 18 18 15 18 15C20 15 21 14 21 14C20.5 12.5 19 11 19 11C19 3.5 12 2 12 2Z" fill="rgba(255,255,255,0.7)"/>
+                <path d="M8 17C6.5 17 5.5 16.5 5.5 16.5C5.5 16.5 6 16 6.5 15.5C7 15 7.5 15 7.5 15C7.5 15 7.5 16.5 8 17Z" fill="#FF6B00"/>
+                <path d="M16 17C17.5 17 18.5 16.5 18.5 16.5C18.5 16.5 18 16 17.5 15.5C17 15 16.5 15 16.5 15C16.5 15 16.5 16.5 16 17Z" fill="#FF6B00"/>
+            </svg>
+
+            <svg class="rocket-svg rocket-tiny-2" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M12 2C12 2 5 3.5 5 11C5 11 3.5 12.5 3 14C3 14 4 15 6 15C6 15 6 18 6 20C6 20 7 21 8 21C8 21 8.5 20.5 9 19C10.5 19 11 20.5 12 22C13 20.5 13.5 19 15 19C15.5 20.5 16 21 16 21C17 21 18 20 18 20C18 18 18 15 18 15C20 15 21 14 21 14C20.5 12.5 19 11 19 11C19 3.5 12 2 12 2Z" fill="rgba(255,255,255,0.7)"/>
+                <path d="M8 17C6.5 17 5.5 16.5 5.5 16.5C5.5 16.5 6 16 6.5 15.5C7 15 7.5 15 7.5 15C7.5 15 7.5 16.5 8 17Z" fill="#FF6B00"/>
+                <path d="M16 17C17.5 17 18.5 16.5 18.5 16.5C18.5 16.5 18 16 17.5 15.5C17 15 16.5 15 16.5 15C16.5 15 16.5 16.5 16 17Z" fill="#FF6B00"/>
             </svg>
         </div>
         <div class="error-code">404</div>
