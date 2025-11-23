@@ -12,9 +12,9 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/sweetalert/1.1.3/sweetalert.min.css">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flag-icons/css/flag-icons.min.css"/>
-
+    <meta name="csrf-token" content="{{ csrf_token() }}">
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-    <link rel="icon" href="{{ asset('favicon.ico') }}">
+    <link rel="icon" href="{{ asset('/public/favicon.ico') }}">
     @stack('styles')
     <style>
         /* main-content shifts when sidebar is present by default */
@@ -171,24 +171,106 @@ body:has(.sidebar-wrapper.expanded) .main-content {
     {{-- <script src="{{ asset('js/app.js') }}"></script> --}}
     @stack('scripts')
     <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            const body = document.body;
-            const toggleBtn = document.getElementById('sidebarToggle');
+document.addEventListener('DOMContentLoaded', function() {
+    const body = document.body;
+    const toggleBtn = document.getElementById('sidebarToggle');
 
-            // Check for saved preference, default is collapsed
-            const saved = localStorage.getItem('sidebarCollapsed');
-            if (saved === 'false') {
-                body.classList.remove('sidebar-collapsed');
-            } else {
-                body.classList.add('sidebar-collapsed');
+    // Sidebar toggle logic
+    const saved = localStorage.getItem('sidebarCollapsed');
+    if (saved === 'false') body.classList.remove('sidebar-collapsed');
+    else body.classList.add('sidebar-collapsed');
+
+    toggleBtn?.addEventListener('click', function() {
+        body.classList.toggle('sidebar-collapsed');
+        localStorage.setItem('sidebarCollapsed', body.classList.contains('sidebar-collapsed'));
+    });
+
+    // Configuration
+    const IDLE_TIMEOUT = 60000; // 1 minute
+    const PING_INTERVAL = 30000; // 30 seconds
+    const CHECK_INTERVAL = 5000; // Check every 5 seconds
+    
+    // Disable idle timeout on login/public pages
+    const loginPages = ['login', 'forgot-password', 'confirm-otp', 'reset-password', '404', 'success'];
+    const currentPath = window.location.pathname;
+    const isLoginPage = loginPages.some(page => currentPath.includes('/' + page) || (page === 'login' && currentPath === '/'));
+    
+    let lastActivityTime = Date.now();
+    let pingInterval;
+    let checkInterval;
+
+    // Update last activity time on user interaction
+    function resetActivityTimer() {
+        lastActivityTime = Date.now();
+    }
+
+    // Events that count as user activity
+    const activityEvents = ['mousedown', 'keydown', 'scroll', 'touchstart', 'click', 'mousemove'];
+    
+    activityEvents.forEach(event => {
+        document.addEventListener(event, resetActivityTimer, true);
+    });
+
+    // Ping server to keep session alive
+    function pingServer() {
+        fetch('/ping', {
+            method: 'POST',
+            headers: {
+                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
+                'Accept': 'application/json',
+                'Content-Type': 'application/json'
             }
-
-            toggleBtn?.addEventListener('click', function() {
-                body.classList.toggle('sidebar-collapsed');
-                localStorage.setItem('sidebarCollapsed', body.classList.contains('sidebar-collapsed'));
-            });
+        }).catch(error => {
+            console.error('Ping failed:', error);
         });
+    }
+
+    // Check if user has been idle too long
+    function checkIdleTimeout() {
+        const idleTime = Date.now() - lastActivityTime;
+        
+        if (idleTime >= IDLE_TIMEOUT) {
+            clearInterval(pingInterval);
+            clearInterval(checkInterval);
+            
+            // Force logout
+            fetch('/force-logout', {
+                method: 'POST',
+                headers: {
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
+                    'Accept': 'application/json',
+                    'Content-Type': 'application/json'
+                }
+            }).then(response => response.json())
+            .then(data => {
+                // Show error message with SweetAlert
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Session Expired',
+                    text: data.error || 'You have been logged out.',
+                    position: 'center',
+                    allowOutsideClick: false,
+                    allowEscapeKey: false
+                }).then(() => {
+                    // Redirect to login after alert
+                    window.location.href = data.redirect || '/login';
+                });
+            }).catch(() => {
+                // Even if fetch fails, redirect to login
+                window.location.href = '/login';
+            });
+        }
+    }
+
+    // Only start intervals if NOT on login pages
+    if (!isLoginPage) {
+        pingInterval = setInterval(pingServer, PING_INTERVAL);
+        checkInterval = setInterval(checkIdleTimeout, CHECK_INTERVAL);
+    }
+});
+
     </script>
+    
 
 
 </body>

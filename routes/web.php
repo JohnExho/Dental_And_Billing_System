@@ -1,26 +1,28 @@
 <?php
 
-use App\Http\Controllers\AccountController;
-use App\Http\Controllers\AddressController;
-use App\Http\Controllers\AppointmentController;
-use App\Http\Controllers\AssociateController;
-use App\Http\Controllers\BillController;
-use App\Http\Controllers\ClinicController;
-use App\Http\Controllers\MedicineController;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Route;
+use Illuminate\Support\Facades\Auth;
 use App\Http\Controllers\OTPController;
-use App\Http\Controllers\PatientController;
-use App\Http\Controllers\PatientQrController;
-use App\Http\Controllers\PrescriptionController;
-use App\Http\Controllers\ProgressNoteController;
+use App\Http\Controllers\BillController;
+use App\Http\Controllers\ToolController;
+use App\Http\Controllers\StaffController;
+use App\Http\Controllers\ClinicController;
 use App\Http\Controllers\RecallController;
 use App\Http\Controllers\ReportController;
+use App\Http\Controllers\AccountController;
+use App\Http\Controllers\AddressController;
+use App\Http\Controllers\PatientController;
 use App\Http\Controllers\ServiceController;
-use App\Http\Controllers\StaffController;
-use App\Http\Controllers\ToolController;
+use App\Http\Controllers\MedicineController;
+use App\Http\Controllers\WaitlistController;
+use App\Http\Controllers\AssociateController;
+use App\Http\Controllers\PatientQrController;
 use App\Http\Controllers\ToothListController;
 use App\Http\Controllers\TreatmentController;
-use App\Http\Controllers\WaitlistController;
-use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\AppointmentController;
+use App\Http\Controllers\PrescriptionController;
+use App\Http\Controllers\ProgressNoteController;
 
 Route::middleware('web')->group(function () {
     Route::view('/404', '404')->name('404');
@@ -44,11 +46,41 @@ Route::middleware('web')->group(function () {
             }
         })->name('success');
     });
+Route::post('/ping', function (Request $request) {
+    // Update last activity timestamp
+    $request->session()->put('last_activity_at', now());
+    
+    return response()->json([
+        'status' => 'ok',
+        'timestamp' => now()->toIso8601String()
+    ]);
+})->middleware('auth:account');
+
+Route::post('/force-logout', function (Request $request) {
+    if (Auth::check()) {
+        $accountId = Auth::user()->account_id;
+        
+        // Delete login token
+        if ($accountId) {
+            \App\Models\AccountLoginToken::where('account_id', $accountId)->delete();
+        }
+        
+        Auth::logout();
+        $request->session()->invalidate();
+        $request->session()->regenerateToken();
+    }
+    
+    return response()->json([
+        'error' => 'You have been logged out due to inactivity.',
+        'redirect' => route('login')
+    ]);
+})->middleware('auth:account');
 
         Route::get('/locations/cities/{province}', [AddressController::class, 'cities']);
     Route::get('/locations/barangays/{city}', [AddressController::class, 'barangays']);
     Route::post('/process/login', [AccountController::class, 'login'])->name('process-login');
-    Route::middleware('validate_login_token')->group(function () {
+
+    Route::middleware('validate.login.token')->group(function () {
     Route::post('/process/logout', [AccountController::class, 'logout'])->name('process-logout');
     Route::post('/process/change/role', [AccountController::class, 'switchRole'])->name('process-switch-role');
     Route::put('/process/change/name', [AccountController::class, 'changeName'])->name('process-change-name');
@@ -126,7 +158,7 @@ Route::middleware('web')->group(function () {
     });
 
     // Protected routes
-    Route::middleware(['auth:account', 'patient.profile', 'validate_login_token'])->group(function () {
+    Route::middleware(['auth:account', 'patient.profile', 'validate.login.token'])->group(function () {
         Route::view('/dashboard', 'dashboard')->name('dashboard');
         Route::get('/settings', [AccountController::class, 'settings'])->name('settings');
 
@@ -151,6 +183,7 @@ Route::middleware('web')->group(function () {
 
         });
     });
+    
     Route::fallback(function () {
         return redirect()->route('404');
     });

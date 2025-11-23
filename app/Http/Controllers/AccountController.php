@@ -85,15 +85,20 @@ public function login(Request $request)
         return back()->with('error', 'You are not assigned to any clinic.');
     }
     
-    // 🚨 CHECK FOR EXISTING LOGIN **BEFORE** AUTHENTICATING
-    $existingToken = AccountLoginToken::where('account_id', $account->account_id)
-        ->where('expires_at', '>', now())
-        ->first();
-    
-    if ($existingToken) {
-        return back()->with('error', 'This account is already logged in from another device.');
-    }
-    
+// Before creating a new token
+$existingToken = AccountLoginToken::where('account_id', $account->account_id)
+    ->where('expires_at', '>', now()) // only consider still valid tokens
+    ->first();
+
+// Expire old tokens automatically
+AccountLoginToken::where('account_id', $account->account_id)
+    ->where('expires_at', '<=', now()) // expired tokens
+    ->delete();
+
+if ($existingToken) {
+    return back()->with('error', 'This account is already logged in from another device.');
+}
+
     // 5️⃣ NOW login after passing all checks
     $this->guard->login($account);
     $request->session()->regenerate();
@@ -117,7 +122,8 @@ public function login(Request $request)
         $request->ip(),
         $request->userAgent()
     );
-    
+    $expiresAt = now()->addMinutes(30);
+
     // 7️⃣ Create a new login token
     $rawToken = Str::uuid();
     AccountLoginToken::create([
@@ -126,7 +132,7 @@ public function login(Request $request)
         'token' => hash('sha256', $rawToken),
         'ip_address' => $request->ip(),
         'user_agent' => $request->userAgent(),
-        'expires_at' => now()->addDays(30),
+        'expires_at' => $expiresAt,
     ]);
     
     // Store account_id in session (more reliable than token_id)
