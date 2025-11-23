@@ -225,10 +225,10 @@
             tr.className = 'waitlist-row';
             
             const defaultProfile = wl.patient_sex === 'male' 
-                ? '{{ asset("images/defaults/male.png") }}'
+                ? '{{ asset("public/images/defaults/male.png") }}'
                 : wl.patient_sex === 'female'
-                ? '{{ asset("images/defaults/female.png") }}'
-                : '{{ asset("images/defaults/other.png") }}';
+                ? '{{ asset("public/images/defaults/female.png") }}'
+                : '{{ asset("public/images/defaults/other.png") }}';
             
             const profileUrl = wl.profile_picture 
                 ? `/storage/${wl.profile_picture}`
