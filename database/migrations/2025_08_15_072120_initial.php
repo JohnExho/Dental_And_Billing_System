@@ -157,7 +157,7 @@ return new class extends Migration
             $table->text('sex');
             // 'Single', 'Married', 'Widowed', 'Divorced', 'Separated', 'Annulled'
             // store as string so we can set a default value (TEXT can't have defaults in MySQL)
-            $table->string('civil_status', 191)->default('Single');
+            $table->text('civil_status')->default('Single');
             $table->text('date_of_birth');
             $table->text('referral')->nullable();
             $table->text('occupation')->nullable();
