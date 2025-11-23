@@ -186,9 +186,9 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 
     // Configuration
-    const IDLE_TIMEOUT = 60000; // 1 minute
-    const PING_INTERVAL = 30000; // 30 seconds
-    const CHECK_INTERVAL = 5000; // Check every 5 seconds
+    const IDLE_TIMEOUT = 1800000; // 30 minutes
+    const PING_INTERVAL = 600000; // 10 minutes
+    const CHECK_INTERVAL = 60000; // Check every 1 minute
     
     // Disable idle timeout on login/public pages
     const loginPages = ['login', 'forgot-password', 'confirm-otp', 'reset-password', '404', 'success'];

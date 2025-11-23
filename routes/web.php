@@ -60,9 +60,12 @@ Route::post('/force-logout', function (Request $request) {
     if (Auth::check()) {
         $accountId = Auth::user()->account_id;
         
-        // Delete login token
+        // Delete only the current device's token
         if ($accountId) {
-            \App\Models\AccountLoginToken::where('account_id', $accountId)->delete();
+            \App\Models\AccountLoginToken::where('account_id', $accountId)
+                ->where('ip_address', $request->ip())
+                ->where('user_agent', $request->userAgent())
+                ->delete();
         }
         
         Auth::logout();

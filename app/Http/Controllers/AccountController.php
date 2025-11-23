@@ -85,19 +85,24 @@ public function login(Request $request)
         return back()->with('error', 'You are not assigned to any clinic.');
     }
     
-// Before creating a new token
-$existingToken = AccountLoginToken::where('account_id', $account->account_id)
-    ->where('expires_at', '>', now()) // only consider still valid tokens
-    ->first();
+    // Check for active sessions from other devices
+    $existingActiveTokens = AccountLoginToken::where('account_id', $account->account_id)
+        ->where('expires_at', '>', now()) // only consider still valid tokens
+        ->get();
 
-// Expire old tokens automatically
-AccountLoginToken::where('account_id', $account->account_id)
-    ->where('expires_at', '<=', now()) // expired tokens
-    ->delete();
+    // If there's an active token from a different device, reject login
+    if ($existingActiveTokens->isNotEmpty()) {
+        foreach ($existingActiveTokens as $token) {
+            if ($token->ip_address !== $request->ip() || $token->user_agent !== $request->userAgent()) {
+                return back()->with('error', 'This account is already logged in from another device. Please wait for that session to expire or logout from the other device.');
+            }
+        }
+    }
 
-if ($existingToken) {
-    return back()->with('error', 'This account is already logged in from another device.');
-}
+    // Expire old/invalid tokens automatically
+    AccountLoginToken::where('account_id', $account->account_id)
+        ->where('expires_at', '<=', now()) // expired tokens
+        ->delete();
 
     // 5️⃣ NOW login after passing all checks
     $this->guard->login($account);
@@ -151,11 +156,14 @@ if ($existingToken) {
 public function logout(Request $request)
 {
     $account = $this->guard->user();
-    $accountId = $account?->account_id ?? session('account_id_for_logout');
+    $accountId = $account?->account_id;
     
-    // 🔥 DELETE ALL TOKENS for this account (more reliable)
+    // Delete only the current device's token
     if ($accountId) {
-        AccountLoginToken::where('account_id', $accountId)->delete();
+        AccountLoginToken::where('account_id', $accountId)
+            ->where('ip_address', $request->ip())
+            ->where('user_agent', $request->userAgent())
+            ->delete();
     }
     
     // Log the logout

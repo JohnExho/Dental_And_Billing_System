@@ -11,14 +11,14 @@ use Carbon\Carbon;
 class ValidateLoginToken
 {
     // Idle timeout in seconds (must match JavaScript IDLE_TIMEOUT)
-    // 60 seconds = 1 minute
-    protected $idleTimeoutSeconds = 60;
+    // 1800 seconds = 30 minutes
+    protected $idleTimeoutSeconds = 1800;
 
     public function handle(Request $request, Closure $next)
     {
         if (Auth::check()) {
             $account = Auth::user();
-            $accountId = session('account_id_for_logout') ?? $account->account_id;
+            $accountId = $account->account_id;
 
             // Check if login token is still valid
             $token = AccountLoginToken::where('account_id', $accountId)
@@ -29,35 +29,12 @@ class ValidateLoginToken
                 return $this->logoutUser($request, 'Your session has expired. Please login again.');
             }
 
-            // Initialize last activity if not set
-            if (!session()->has('last_activity_at')) {
-                session(['last_activity_at' => now()]);
-                return $next($request);
-            }
-
-            // Get last activity timestamp
-            $lastActivity = session('last_activity_at');
-            
-            // Ensure we have a Carbon instance
-            if (!($lastActivity instanceof Carbon)) {
-                try {
-                    $lastActivity = Carbon::parse($lastActivity);
-                } catch (\Exception $e) {
-                    session(['last_activity_at' => now()]);
-                    return $next($request);
-                }
-            }
-
-            $secondsSinceLastActivity = now()->diffInSeconds($lastActivity);
-
-            // Check if user has been inactive too long
-            if ($secondsSinceLastActivity >= $this->idleTimeoutSeconds) {
-                return $this->logoutUser($request, 'You have been inactive for too long. Please login again.');
-            }
-
-            // Update last activity timestamp on all requests except logout
-            if (!$request->is('force-logout')) {
-                session(['last_activity_at' => now()]);
+            // Extend token expiration on each request (sliding window)
+            // Token stays valid for 30 more minutes from now (production: 30 min)
+            if (!$request->is('ping', 'force-logout')) {
+                $token->update([
+                    'expires_at' => now()->addMinutes(30)
+                ]);
             }
         }
 
