@@ -119,8 +119,8 @@
             display: inline-block;
             margin-bottom: 1rem;
             position: relative;
-            width: 200px;
-            height: 120px;
+            width: 400px;
+            height: 180px;
         }
 
         .rocket-svg {
@@ -133,15 +133,16 @@
             height: 100px;
             left: 50%;
             top: 50%;
-            transform: translate(-50%, -50%);
+            transform: translate(-50%, -50%) rotate(-45deg);
             animation: float-main 3s ease-in-out infinite;
         }
 
         .rocket-small-1 {
             width: 50px;
             height: 50px;
-            left: 10%;
-            top: 20%;
+            left: 5%;
+            top: 10%;
+            transform: rotate(-45deg);
             animation: float-small-1 4s ease-in-out infinite;
             opacity: 0.8;
         }
@@ -149,36 +150,37 @@
         .rocket-small-2 {
             width: 50px;
             height: 50px;
-            right: 10%;
-            top: 30%;
+            right: 5%;
+            bottom: 10%;
+            transform: rotate(-45deg);
             animation: float-small-2 3.5s ease-in-out infinite;
             opacity: 0.8;
         }
 
         @keyframes float-main {
             0%, 100% {
-                transform: translate(-50%, -50%) translateY(0px) rotate(0deg);
+                transform: translate(-50%, -50%) rotate(-45deg) translateY(0px);
             }
             50% {
-                transform: translate(-50%, -50%) translateY(-15px) rotate(5deg);
+                transform: translate(-50%, -50%) rotate(-45deg) translateY(-15px);
             }
         }
 
         @keyframes float-small-1 {
             0%, 100% {
-                transform: translateY(0px) rotate(-10deg);
+                transform: rotate(-45deg) translateY(0px);
             }
             50% {
-                transform: translateY(-10px) rotate(5deg);
+                transform: rotate(-45deg) translateY(-10px);
             }
         }
 
         @keyframes float-small-2 {
             0%, 100% {
-                transform: translateY(0px) rotate(10deg);
+                transform: rotate(-45deg) translateY(0px);
             }
             50% {
-                transform: translateY(-12px) rotate(-5deg);
+                transform: rotate(-45deg) translateY(-12px);
             }
         }
 
@@ -243,7 +245,8 @@
             }
 
             .rocket-container {
-                height: 100px;
+                width: 300px;
+                height: 150px;
             }
         }
     </style>
