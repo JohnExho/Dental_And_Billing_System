@@ -7,6 +7,7 @@ use Illuminate\Foundation\Application;
 // use App\Http\Middleware\Action;
 use App\Http\Middleware\Unauthenticated;
 // use App\Http\Middleware\AuthenticatedAdmin;
+use App\Http\Middleware\ValidateLoginToken;
 use App\Http\Middleware\ClearPatientSession;
 use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
@@ -22,6 +23,7 @@ return Application::configure(basePath: dirname(__DIR__))
             'admin.only' => AdminOnly::class,
             'patient.profile' => ClearPatientSession::class,
             'staff.only' => StaffOnly::class,
+            'validate.login.token' => ValidateLoginToken::class,
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {

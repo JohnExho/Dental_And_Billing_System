@@ -45,9 +45,10 @@ Route::middleware('web')->group(function () {
         })->name('success');
     });
 
-    Route::get('/locations/cities/{province}', [AddressController::class, 'cities']);
+        Route::get('/locations/cities/{province}', [AddressController::class, 'cities']);
     Route::get('/locations/barangays/{city}', [AddressController::class, 'barangays']);
     Route::post('/process/login', [AccountController::class, 'login'])->name('process-login');
+    Route::middleware('validate_login_token')->group(function () {
     Route::post('/process/logout', [AccountController::class, 'logout'])->name('process-logout');
     Route::post('/process/change/role', [AccountController::class, 'switchRole'])->name('process-switch-role');
     Route::put('/process/change/name', [AccountController::class, 'changeName'])->name('process-change-name');
@@ -122,9 +123,10 @@ Route::middleware('web')->group(function () {
     Route::delete('/process/delete/appointment', [AppointmentController::class, 'destroy'])->name('process-delete-appointment');
 
     Route::get('/process/export-patients', [ToolController::class, 'extract'])->name('process-export-patients');
+    });
 
     // Protected routes
-    Route::middleware(['auth:account', 'patient.profile'])->group(function () {
+    Route::middleware(['auth:account', 'patient.profile', 'validate_login_token'])->group(function () {
         Route::view('/dashboard', 'dashboard')->name('dashboard');
         Route::get('/settings', [AccountController::class, 'settings'])->name('settings');
 
