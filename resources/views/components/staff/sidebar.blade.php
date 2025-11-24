@@ -33,10 +33,9 @@
 }
 
 .sidebar-brand img {
-    width: 45px;
-    height: 45px;
-    border-radius: 10px;
-    transition: all 0.3s ease;
+      width: 60px;
+        border-radius: 50%;
+        margin-bottom: 10px;
 }
 
 .sidebar-wrapper.expanded .sidebar-brand img {
