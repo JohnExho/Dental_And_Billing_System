@@ -54,7 +54,7 @@
                             data-search-email="{{ strtolower($patient->email ?? '') }}"
                             data-search-address="{{ strtolower($patient->full_address) }}">
                             <td>
-<img src="{{ asset('storage/' . $profileUrl) }}"
+<img src="{{ asset( $profileUrl) }}"
      alt="{{ $patient->full_name ?? 'Profile' }}"
      class="rounded-circle object-fit-cover border-primary border border-2"
      style="width: 60px; height: 60px;">
