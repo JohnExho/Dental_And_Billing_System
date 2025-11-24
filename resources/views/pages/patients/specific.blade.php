@@ -68,7 +68,7 @@
 
     .btn.btn-secondary:hover {
         background: #606568 !important;
-        color: #000 !important;
+        color: #fff !important;
         transform: translateY(-1px) !important;
         box-shadow: 0 6px 12px rgba(0,0,0,0.15) !important;
     }
