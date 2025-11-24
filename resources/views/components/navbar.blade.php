@@ -17,23 +17,23 @@
         pointer-events: none;
     }
 
+    /* ⭐ NEW: Navbar content moves with sidebar */
     .echo-movebar {
-        transition: margin-left .28s ease;
+        transition: margin-left 0.3s ease;
+        margin-left: 80px; /* Default collapsed sidebar width */
     }
 
-    body.sidebar-collapsed .echo-movebar {
-        margin-left: -65px;
+    /* When sidebar is expanded (hover) */
+    .sidebar-wrapper.expanded ~ * .echo-movebar,
+    body:has(.sidebar-wrapper.expanded) .echo-movebar {
+        margin-left: 250px; /* Expanded sidebar width */
     }
-
-    body:not(.sidebar-collapsed) .echo-movebar {
-    margin-left: 165px; /* sidebar expanded width (240px) minus collapsed (75px) */
-}
 
     body {
         padding-top: 56px;
     }
 
-    /* ⭐ Compact Add Patient button */
+    /* Compact Add Patient button */
     .btn-add-patient {
         font-size: 0.8rem !important;
         padding: 6px 12px !important;
@@ -44,7 +44,7 @@
         border-radius: 6px;
     }
 
-    /* ⭐ Compact Admin dropdown (same height as Add Patient) */
+    /* Compact Admin dropdown */
     .nav-user-compact {
         font-size: 1rem !important;
         padding: 6px 12px !important;
@@ -53,7 +53,6 @@
         align-items: center;
     }
 
-    /* Remove hover effect + keep admin dropdown text black */
     .nav-user-compact,
     .nav-user-compact:focus,
     .nav-user-compact:hover,
@@ -64,7 +63,7 @@
         box-shadow: none !important;
     }
 
-    /* ⭐ NEW: Make Clinic dropdown same size as Add Patient */
+    /* Clinic dropdown same size as Add Patient */
     .clinic-badge-compact {
         font-size: 0.8rem !important;
         padding: 6px 12px !important;
@@ -75,19 +74,19 @@
         border-radius: 6px !important;
     }
 
-    /* ⭐ Smooth dropdown animation (User + Clinic) */
+    /* Smooth dropdown animation */
     .dropdown-animated {
         display: block !important;
         opacity: 0;
         transform: translateY(-6px) scale(0.95);
         transition: opacity 0.18s ease, transform 0.18s ease;
-        pointer-events: none; /* disable clicks when closed */
+        pointer-events: none;
     }
 
     .dropdown-animated.show {
         opacity: 1;
         transform: translateY(0) scale(1);
-        pointer-events: auto; /* enable clicks when open */
+        pointer-events: auto;
     }
 </style>
 
