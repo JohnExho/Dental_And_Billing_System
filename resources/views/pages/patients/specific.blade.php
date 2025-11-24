@@ -3,7 +3,9 @@
 @section('content')
     <div class="container-fluid mt-4">
         <div class="card shadow-sm border-0">
-            <div class="card-header bg-dark text-white position-relative">
+
+            <!-- UPDATED HEADER COLOR -->
+            <div class="card-header text-white position-relative" style="background-color: #0D6EFD;">
                 @php
                     $defaultProfile = match ($patient->sex) {
                         'male' => asset('public/images/defaults/male.png'),
@@ -20,7 +22,7 @@
                         <i class="bi bi-arrow-left-circle me-1"></i> Return
                     </button>
 
-                    <!-- Centered profile + name as a flex anchor -->
+                    <!-- Centered profile + name -->
                     <a href="#info" class="d-flex align-items-center gap-2 text-decoration-none" data-bs-toggle="tab"
                         role="tab" aria-controls="info" aria-selected="true">
                         <img src="{{ $profileUrl }}" alt="Profile Picture"
@@ -29,70 +31,77 @@
                         <h6 class="mb-0 text-white">{{ $patient->full_name }}</h6>
                     </a>
 
-
                     <!-- Right button -->
                     <a href="#" class="btn btn-light btn-sm d-flex align-items-center" data-bs-toggle="modal"
                         data-bs-target="#add-patient-modal">
                         <i class="bi bi-plus-circle"></i> Add Patient
                     </a>
                 </div>
-
-
             </div>
 
-
             <div id="patient-container" class="position-relative">
-                <ul class="nav nav-tabs flex-nowrap gap-5" id="patientTabs" role="tablist">
+
+                <!-- UPDATED FULL-WIDTH TABS -->
+                <ul class="nav nav-tabs w-100 gap-3 justify-content-between flex-wrap"
+                    id="patientTabs"
+                    role="tablist"
+                    style="overflow-x: auto; white-space: nowrap;">
+
                     <li role="presentation">
                         <button class="nav-link active" id="info-tab" data-bs-toggle="tab" data-bs-target="#info"
                             type="button" role="tab" aria-controls="info" aria-selected="true">
-                            <i class="bi bi-person-circle me-2" aria-hidden="true"></i> Patient Info
+                            <i class="bi bi-person-circle me-2"></i> Patient Info
                         </button>
                     </li>
+
                     <li role="presentation">
                         <button class="nav-link" id="progress-tab" data-bs-toggle="tab" data-bs-target="#progress"
                             type="button" role="tab" aria-controls="progress" aria-selected="false">
-                            <i class="bi bi-journal-text me-2" aria-hidden="true"></i> Progress Notes
+                            <i class="bi bi-journal-text me-2"></i> Progress Notes
                         </button>
                     </li>
+
                     <li role="presentation">
                         <button class="nav-link" id="prescriptions-tab" data-bs-toggle="tab" data-bs-target="#prescriptions"
                             type="button" role="tab" aria-controls="prescriptions" aria-selected="false">
-                            <i class="bi bi-prescription me-2" aria-hidden="true"></i> Prescriptions
+                            <i class="bi bi-prescription me-2"></i> Prescriptions
                         </button>
                     </li>
+
                     <li role="presentation">
                         <button class="nav-link" id="recalls-tab" data-bs-toggle="tab" data-bs-target="#recalls"
                             type="button" role="tab" aria-controls="recalls" aria-selected="false">
-                            <i class="bi bi-calendar-check me-2" aria-hidden="true"></i> Recalls
+                            <i class="bi bi-calendar-check me-2"></i> Recalls
                         </button>
                     </li>
+
                     <li role="presentation">
                         <button class="nav-link" id="treatment-tab" data-bs-toggle="tab" data-bs-target="#treatment"
                             type="button" role="tab" aria-controls="treatment" aria-selected="false">
-                            <i class="bi bi-clipboard-check me-2" aria-hidden="true"></i> Treatment Plans
+                            <i class="bi bi-clipboard-check me-2"></i> Treatment Plans
                         </button>
                     </li>
+
                     <li role="presentation">
                         <button class="nav-link" id="billing-tab" data-bs-toggle="tab" data-bs-target="#billing"
                             type="button" role="tab" aria-controls="billing" aria-selected="false">
-                            <i class="bi bi-receipt me-2" aria-hidden="true"></i> Billing
+                            <i class="bi bi-receipt me-2"></i> Billing
                         </button>
                     </li>
                 </ul>
+
                 <div id="patients-loading" class="text-center py-5">
                     <div class="spinner-border text-primary" role="status"></div>
                     <p class="mt-2">Loading Patients...</p>
                 </div>
 
-                <div class="tab-content mt-3" id="patientTabsContent">
+                <div class="tab-content mt-3 w-100" id="patientTabsContent">
                     <div class="tab-pane fade show active" id="info" role="tabpanel" aria-labelledby="info-tab">
-                        {{-- Patient Info Partial --}}
                         @include('pages.patients.partials.specific-partial')
                     </div>
 
                     <div class="tab-pane fade" id="progress" role="tabpanel" aria-labelledby="progress-tab">
-                        @include('pages.patients.partials.progress-notes' )
+                        @include('pages.patients.partials.progress-notes')
                     </div>
 
                     <div class="tab-pane fade" id="prescriptions" role="tabpanel" aria-labelledby="prescriptions-tab">
@@ -106,21 +115,21 @@
                     <div class="tab-pane fade" id="treatment" role="tabpanel" aria-labelledby="treatment-tab">
                         @include('pages.patients.partials.treatment-plans')
                     </div>
+
                     <div class="tab-pane fade" id="billing" role="tabpanel" aria-labelledby="billing-tab">
                         @include('pages.patients.partials.billing')
                     </div>
                 </div>
-
             </div>
-
         </div>
-        {{-- Modal lives outside the container but still inside content --}}
+
         @include('pages.patients.modals.add')
+
+        <!-- DO NOT REMOVE JS -->
         <script>
             document.addEventListener("DOMContentLoaded", function() {
                 document.getElementById('patients-loading').classList.add('d-none');
                 const patientTabs = document.querySelectorAll('#patientTabs button');
-                const tabContent = document.querySelectorAll('#patientTabsContent .tab-pane');
 
                 // Restore last active tab
                 const activeTabId = localStorage.getItem('activePatientTab');
@@ -138,6 +147,8 @@
                         localStorage.setItem('activePatientTab', event.target.id);
                     });
                 });
+
+                // Clicking name returns to info tab
                 document.querySelectorAll('a[href="#info"]').forEach(el => {
                     el.addEventListener('click', function(e) {
                         e.preventDefault();
@@ -145,8 +156,7 @@
                         tabTrigger.show();
                     });
                 });
-
             });
         </script>
 
-    @endsection
+@endsection
