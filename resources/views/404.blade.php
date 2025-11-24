@@ -397,7 +397,19 @@
         <div class="error-code">404</div>
         <h1>Lost in the Dental Galaxy</h1>
         <p>Oops! This page has drifted away like a lost tooth in space. It might have been extracted, relocated, or never existed in this dental universe.</p>
-        <a href="#" class="btn-home">Return to Home</a>
+        @auth
+            @php $role = auth()->user()->role ?? null; @endphp
+
+            @if($role === 'admin')
+                <a href="{{ route('admin-dashboard') }}" class="btn-home">Go to Admin Dashboard</a>
+            @elseif($role === 'staff')
+                <a href="{{ route('sstaff') }}" class="btn-home">Go to Staff Dashboard</a>
+            @else
+                <a href="{{ url('/') }}" class="btn-home">Return to Home</a>
+            @endif
+        @else
+            <a href="{{ route('login') }}" class="btn-home">Return to Login</a>
+        @endauth
     </div>
 
     <script>
