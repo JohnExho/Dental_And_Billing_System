@@ -39,28 +39,45 @@
         background-color: white;
     }
 
-    /* Smooth transitions */
     .btn.btn-light {
         transition:
             background 0.4s ease-in-out,
             transform 0.4s ease-in-out,
             box-shadow 0.4s ease-in-out !important;
-}
+    }
 
-    /* Hover */
     .btn.btn-light:hover {
         background: #e2e6ea !important;
         color: #000 !important;
         transform: translateY(-1px) !important;
         box-shadow: 0 6px 12px rgba(0,0,0,0.15) !important;
-}
+    }
 
-    /* Active */
     .btn.btn-light:active {
         background: #d0d4d8 !important;
         transform: translateY(2px) scale(0.98) !important;
         box-shadow: 0 1px 3px rgba(0,0,0,0.2) !important;
-}
+    }
+
+    .btn.btn-secondary {
+        transition:
+            background 0.4s ease-in-out,
+            transform 0.4s ease-in-out,
+            box-shadow 0.4s ease-in-out !important;
+    }
+
+    .btn.btn-secondary:hover {
+        background: #606568 !important;
+        color: #fff !important;
+        transform: translateY(-1px) !important;
+        box-shadow: 0 6px 12px rgba(0,0,0,0.15) !important;
+    }
+
+    .btn.btn-secondary:active {
+        background: #393b3d !important;
+        transform: translateY(2px) scale(0.98) !important;
+        box-shadow: 0 1px 3px rgba(0,0,0,0.2) !important;
+    }
 </style>
 
 @extends('layout')
