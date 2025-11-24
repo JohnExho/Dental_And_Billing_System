@@ -1,3 +1,45 @@
+<style>
+    /* General hover effect for all patient tabs */
+    #patientTabs .nav-link {
+        position: relative;
+        transition: all 0.25s ease-in-out;
+    }
+
+    #patientTabs .nav-link:hover {
+        background-color: #e7f1ff !important;
+        color: #0d6efd !important;
+        transform: translateY(-2px);
+    }
+
+    /* Underline animation */
+    #patientTabs .nav-link::after {
+        content: "";
+        position: absolute;
+        left: 0;
+        bottom: -3px;
+        width: 0%;
+        height: 2px;
+        background-color: #0d6efd;
+        transition: width 0.25s ease-in-out;
+    }
+
+    #patientTabs .nav-link:hover::after {
+        width: 100%;
+    }
+
+    /* Active tab more noticeable */
+    #patientTabs .nav-link.active {
+        background-color: #0d6efd !important;
+        color: white !important;
+        font-weight: bold;
+    }
+
+    #patientTabs .nav-link.active::after {
+        width: 100%;
+        background-color: white;
+    }
+</style>
+
 @extends('layout')
 @section('title', 'Patient Profile | Chomply')
 @section('content')
