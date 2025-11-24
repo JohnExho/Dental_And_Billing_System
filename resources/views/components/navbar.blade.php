@@ -18,6 +18,7 @@
     }
 
     .echo-movebar {
+         margin-left: 0;
         transition: margin-left .28s ease;
     }
 
