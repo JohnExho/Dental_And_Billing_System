@@ -6,7 +6,7 @@
     </div>
 
     <div class="card-body p-0 d-flex flex-column">
-        @if (isset($appointments) && $appointments->count() > 0)
+        @if ($appointment->isEmpty())
             <div class="table-responsive flex-grow-1" style="overflow-y: auto;">
                 <table class="table table-hover mb-0 align-middle">
                     <thead class="table-light">
