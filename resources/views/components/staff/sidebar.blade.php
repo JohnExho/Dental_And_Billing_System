@@ -125,7 +125,7 @@
     <nav class="sidebar">
 
         <div class="sidebar-brand">
-            <img src="https://placehold.co/400x400?text=placeholder" alt="Logo">
+            <img src="{{ asset('public/images/dayao.jpg') }}" alt="Logo" width="50" height="50">
             <h3>Dayao</h3>
             <p>Dental Home</p>
         </div>
