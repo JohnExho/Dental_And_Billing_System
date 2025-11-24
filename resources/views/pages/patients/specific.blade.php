@@ -13,8 +13,10 @@
                         default => asset('public/images/defaults/other.png'),
                     };
 
-                    $profileUrl = $patient->profile_picture ? Storage::url($patient->profile_picture) : $defaultProfile;
-                @endphp
+            $profileUrl = $patient->profile_picture
+                ? asset('public/storage/' . $patient->profile_picture)
+                : $defaultProfile;
+                                @endphp
 
                 <div class="d-flex justify-content-between align-items-center">
                     <!-- Left button -->

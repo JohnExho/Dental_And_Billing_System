@@ -22,7 +22,7 @@
     }
 
     body.sidebar-collapsed .echo-movebar {
-        margin-left: -100px;
+        margin-left: -80px;
     }
 
     body {
@@ -102,6 +102,7 @@
         'specific-patient' => 'Patient Details',
         'appointments' => 'Calendar',
         'reports' => 'Reports',
+        'tools' => 'Tools',
     ];
 
     $currentClinic = null;

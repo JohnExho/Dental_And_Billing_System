@@ -317,26 +317,31 @@
             }
         }
 
-        async function loadBarangays(cityValue, selectedBarangayValue = null) {
+  async function loadBarangays(cityId, selectedBarangayId = null) {
             barangaySelect.disabled = true;
             barangaySelect.innerHTML = '<option>Loading barangays…</option>';
             try {
-                const res = await fetch(`/locations/barangays/${cityValue}`, {
+                const res = await fetch(`/locations/barangays/${cityId}`, {
                     headers: {
                         'Accept': 'application/json'
                     }
                 });
                 const data = await res.json();
+
+                // Debug: Check what the API actually returns
+                console.log('Barangay API response:', data);
+
                 barangaySelect.innerHTML = '<option value="">-- Select Barangay --</option>';
                 data.forEach(b => {
                     const opt = document.createElement('option');
-                    opt.value = b.barangay_id;
+                    // Yajra uses 'id' as primary key, not 'barangay_id'
+                    opt.value = b.id; // Changed from b.barangay_id
                     opt.dataset.id = b.id;
                     opt.textContent = b.name;
                     barangaySelect.appendChild(opt);
                 });
-                if (selectedBarangayValue) {
-                    barangaySelect.value = selectedBarangayValue;
+                if (selectedBarangayId) {
+                    barangaySelect.value = selectedBarangayId;
                     barangayHidden.value = barangaySelect.selectedOptions[0]?.dataset.id || '';
                 }
                 barangaySelect.disabled = false;
