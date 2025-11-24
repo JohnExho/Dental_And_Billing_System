@@ -111,7 +111,10 @@ class AppointmentController extends Controller
                 $events[$day][] = [
                     'text' => $appointment->patient->full_name.' - Appointment',
                     'type' => 'appointment',
-                    'url' => 'https://chomply.online/appointments&tab=appointments&year='.$currentYear.'&month='.$currentMonth.'&view=month',
+                    'url' => route('appointments', [
+                        'patient_id' => $appointment->patient_id,
+                        'tab' => 'appointments',
+                    ]),
                     'color' => $color,
                     'associate_id' => $appointment->associate_id,
                 ];
@@ -125,7 +128,6 @@ class AppointmentController extends Controller
             ->whereMonth('appointment_date', $currentMonth)
             ->when(! empty($associatesFilter), fn ($q) => $q->whereIn('associate_id', $associatesFilter))
             ->orderBy('appointment_date', 'asc');
-
 
         // Example: return paginated list for the side/list partial:
         $appointments = $appointmentsListQuery->paginate(12)->withQueryString();
