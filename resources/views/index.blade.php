@@ -20,7 +20,7 @@
         <!-- Left Panel -->
         <div class="login-left">
             <div class="login-header">
-                <img src="{{ asset('images/dayao.jpg') }}" alt="Logo" class="logo">
+                <img src="{{ asset('public/images/dayao.jpg') }}" alt="Logo" class="logo">
                 <h3>Dayao</h3>
                 <p class="subtitle">Dental Home</p>
                 <small class="tagline">A Happy Patient is our Ultimate Goal</small>
