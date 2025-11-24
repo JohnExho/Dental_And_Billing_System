@@ -40,17 +40,18 @@ class LogViewServiceProvider extends ServiceProvider
                         $synthetic = $log->replicate();
                         $synthetic->log_id = (string) Str::uuid();
                         $synthetic->description = 'Unexpected logout';
-                        $synthetic->created_at = $next->created_at;
+                        // Set to 1 second before the next login (more logical)
+                        $synthetic->created_at = $next->created_at->copy()->subSecond();
 
                         $processed->push($synthetic);
                     }
                 }
             }
+            
             // Replace the items of the paginator with processed ones
             $logs->setCollection($processed);
 
             $view->with('logs', $logs);
         });
-
     }
 }
