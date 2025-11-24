@@ -33,9 +33,9 @@
 }
 
 .sidebar-brand img {
-      width: 60px;
-        border-radius: 50%;
-        margin-bottom: 10px;
+    width: 60px;
+    border-radius: 50%;
+    margin-bottom: 10px;
 }
 
 .sidebar-wrapper.expanded .sidebar-brand img {
@@ -66,6 +66,10 @@
 .nav-item a {
     display: flex;
     align-items: center;
+
+    /* === ADDED: centers icon when collapsed === */
+    justify-content: center;
+    
     width: 100%;
     padding: 12px 20px;
     color: #d3d3d3;
@@ -74,15 +78,16 @@
     transition: all 0.3s ease;
 }
 
+/* When expanded → align text/icons normally */
+.sidebar-wrapper.expanded .nav-item a {
+    justify-content: flex-start; /* ADDED */
+}
+
 /* Icons */
 .nav-item a i {
     font-size: 22px;
-
-    /* ==== UPDATED TO CENTER ICONS ==== */
-    min-width: 50px; /* UPDATED: match collapsed width */
-    text-align: center; /* keeps icon centered */
-    display: flex;      /* ADDED */
-    justify-content: center; /* ADDED */
+    min-width: 50px; /* ORIGINAL VALUE (keeps icons normal) */
+    text-align: center;
 }
 
 /* Text hidden by default */
@@ -143,7 +148,6 @@
                 </a>
             </li>
 
-            <!-- If clinic exists -->
             @if(session('clinic_id'))
 
             <li class="nav-item {{ request()->routeIs('patients') ? 'active' : '' }}">
@@ -175,6 +179,7 @@
 
 </aside>
 
+<!-- ======================= DEBUG SCRIPT ========================= -->
 <script>
 document.addEventListener("DOMContentLoaded", () => {
     console.log("=== SIDEBAR DEBUG ===");
@@ -203,8 +208,8 @@ document.addEventListener("DOMContentLoaded", () => {
     console.log("Event listeners attached!");
 });
 </script>
-<!-- ======================= EXPAND ON HOVER SCRIPT ========================= -->
 
+<!-- ======================= EXPAND ON HOVER SCRIPT ========================= -->
 <script>
 document.addEventListener("DOMContentLoaded", () => {
     const sidebar = document.querySelector(".sidebar-wrapper");
