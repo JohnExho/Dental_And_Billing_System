@@ -72,6 +72,8 @@
                                     <span class="badge bg-warning">In Consultation</span>
                                 @elseif ($wl->status === 'completed')
                                     <span class="badge bg-success">Completed</span>
+                                @elseif ($wl->status === 'cancelled')
+                                    <span class="badge bg-warning">Cancelled</span>
                                 @endif
                             </td>
 

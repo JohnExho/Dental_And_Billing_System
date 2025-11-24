@@ -43,7 +43,7 @@
                                 default => asset('public/images/defaults/other.png'),
                             };
 $profileUrl = $patient->profile_picture
-    ? asset('storage/' . $patient->profile_picture)
+    ? asset('public/storage/' . $patient->profile_picture)
     : $defaultProfile;
 
                         @endphp
