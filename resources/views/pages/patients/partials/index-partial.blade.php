@@ -54,9 +54,11 @@
                             data-search-email="{{ strtolower($patient->email ?? '') }}"
                             data-search-address="{{ strtolower($patient->full_address) }}">
                             <td>
-                                <img src="{{ 'public/' . $profileUrl }}" alt="{{ $patient->full_name ?? 'Profile' }}"
-                                    class="rounded-circle object-fit-cover border-primary border border-2"
-                                    style="width: 60px; height: 60px;">
+<img src="{{ asset('storage/' . $profileUrl) }}"
+     alt="{{ $patient->full_name ?? 'Profile' }}"
+     class="rounded-circle object-fit-cover border-primary border border-2"
+     style="width: 60px; height: 60px;">
+
                             </td>
                             <td>{{ $patient->full_name }}</td>
                             <td>{{ $patient->mobile_no ?? 'N/A' }}/<br>{{ $patient->contact_no ?? 'N/A' }}</td>
