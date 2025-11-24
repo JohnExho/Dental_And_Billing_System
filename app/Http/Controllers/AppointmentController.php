@@ -111,10 +111,7 @@ class AppointmentController extends Controller
                 $events[$day][] = [
                     'text' => $appointment->patient->full_name.' - Appointment',
                     'type' => 'appointment',
-                    'url' => route('appointments', [
-                        'patient_id' => $appointment->patient_id,
-                        'tab' => 'appointments',
-                    ]),
+                    'url' => 'https://chomply.online/appointments?patient_id='.$appointment->patient_id.'&tab=appointments&year='.$currentYear.'&month='.$currentMonth.'&view=month',
                     'color' => $color,
                     'associate_id' => $appointment->associate_id,
                 ];
@@ -123,12 +120,11 @@ class AppointmentController extends Controller
 
         $events = collect($events);
 
-$appointmentsListQuery = Appointment::with(['patient', 'associate', 'account'])
-    ->whereYear('appointment_date', $currentYear)
-    ->whereMonth('appointment_date', $currentMonth)
-    ->when(! empty($associatesFilter), fn ($q) => $q->whereIn('associate_id', $associatesFilter))
-    ->orderBy('appointment_date', 'asc');
-
+        $appointmentsListQuery = Appointment::with(['patient', 'associate', 'account'])
+            ->whereYear('appointment_date', $currentYear)
+            ->whereMonth('appointment_date', $currentMonth)
+            ->when(! empty($associatesFilter), fn ($q) => $q->whereIn('associate_id', $associatesFilter))
+            ->orderBy('appointment_date', 'asc');
 
 
         // Example: return paginated list for the side/list partial:
