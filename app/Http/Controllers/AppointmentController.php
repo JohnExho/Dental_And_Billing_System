@@ -124,8 +124,11 @@ class AppointmentController extends Controller
         $events = collect($events);
 
 $appointmentsListQuery = Appointment::with(['patient', 'associate', 'account'])
+    ->whereYear('appointment_date', $currentYear)
+    ->whereMonth('appointment_date', $currentMonth)
     ->when(! empty($associatesFilter), fn ($q) => $q->whereIn('associate_id', $associatesFilter))
     ->orderBy('appointment_date', 'asc');
+
 
 
         // Example: return paginated list for the side/list partial:
