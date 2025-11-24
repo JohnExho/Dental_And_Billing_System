@@ -111,7 +111,7 @@ class AppointmentController extends Controller
                 $events[$day][] = [
                     'text' => $appointment->patient->full_name.' - Appointment',
                     'type' => 'appointment',
-                    'url' => 'https://chomply.online/appointments?patient_id='.$appointment->patient_id.'&tab=appointments&year='.$currentYear.'&month='.$currentMonth.'&view=month',
+                    'url' => 'https://chomply.online/appointments?patient_id='.'&tab=appointments&year='.$currentYear.'&month='.$currentMonth.'&view=month',
                     'color' => $color,
                     'associate_id' => $appointment->associate_id,
                 ];
