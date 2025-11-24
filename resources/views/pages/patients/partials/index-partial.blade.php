@@ -66,10 +66,13 @@ $profileUrl = $patient->profile_picture
                             <td>{{ $patient->full_address }}</td>
 
                             <td class="text-end">
-                                <a href="#" class="btn btn-outline-dark btn-sm" data-bs-toggle="modal"
-                                    data-bs-target="#add-waitlist-modal">
+<button type="button" 
+        class="btn btn-outline-dark btn-sm" 
+        data-bs-toggle="modal"
+        data-bs-target="#add-waitlist-modal"
+        data-patient-id="{{ $patient->patient_id }}">
                                     <i class="fa-solid fa-hourglass-start"></i>
-                                </a>
+                            </button>
 
                                 <form action="{{ route('specific-patient') }}" method="GET" class="d-inline">
                                     <input type="hidden" name="patient_id" value="{{ $patient->patient_id }}">

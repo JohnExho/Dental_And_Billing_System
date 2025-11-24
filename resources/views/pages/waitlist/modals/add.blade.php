@@ -15,36 +15,55 @@
                 <div class="modal-body p-0">
                     <div class="row g-0" style="min-height: 60vh;">
                         <!-- Left: Patient List -->
-                        <div class="col-md-5 border-end p-3" style="max-height: 60vh; overflow: hidden;">
-                            <h6 class="fw-semibold mb-2"><i class="bi bi-person me-1"></i> Patients</h6>
-                            
-                            <!-- Search Input -->
-                            <div class="mb-3">
-                                <div class="input-group">
+                        <div class="col-md-5 border-end" style="max-height: 60vh; overflow: hidden;">
+                            <div class="p-3">
+                                <h6 class="fw-semibold mb-2"><i class="bi bi-person me-1"></i> Patients</h6>
+                                
+                                <!-- Search Input -->
+                                <div class="input-group mb-2">
                                     <span class="input-group-text bg-white">
                                         <i class="bi bi-search"></i>
                                     </span>
-                                    <input type="text" id="patient_search" class="form-control" placeholder="Search patients...">
+                                    <input type="text" 
+                                           id="patient_search" 
+                                           class="form-control" 
+                                           placeholder="Search by name (e.g., Doe, John)">
+                                    <button class="btn btn-outline-secondary" type="button" id="clear-patient-search">
+                                        <i class="bi bi-x-lg"></i>
+                                    </button>
                                 </div>
+                                
+                                <small class="text-muted d-block mb-2">
+                                    <span id="patient-search-status">
+                                        Total: <span id="patient-result-count">{{ $patients->count() }}</span> patient(s)
+                                    </span>
+                                </small>
                             </div>
 
                             <!-- Patient List Container -->
-                            <div id="patient_list_container" style="max-height: calc(60vh - 100px); overflow-y: auto;">
+                            <div id="patient_list_container" style="max-height: calc(60vh - 130px); overflow-y: auto;" class="px-3">
                                 <ul class="list-group" id="waitlist_patient_list">
                                     @foreach ($patients as $patient)
-                                        <li class="list-group-item list-group-item-action" data-id="{{ $patient->patient_id }}">
+                                        <li class="list-group-item list-group-item-action patient-item" 
+                                            data-id="{{ $patient->patient_id }}"
+                                            data-search-name="{{ strtolower($patient->full_name) }}">
                                             {{ $patient->full_name }}
                                         </li>
                                     @endforeach
                                 </ul>
+                                
+                                <!-- Loading Spinner -->
                                 <div id="patient_loading" class="text-center py-3 d-none">
                                     <div class="spinner-border spinner-border-sm text-primary" role="status">
                                         <span class="visually-hidden">Loading...</span>
                                     </div>
+                                    <p class="mt-2 mb-0 text-muted small">Searching all patients...</p>
                                 </div>
+                                
+                                <!-- No Results Message -->
                                 <div id="patient_no_results" class="text-center text-muted py-3 d-none">
-                                    <i class="bi bi-search"></i>
-                                    <p class="mb-0">No patients found</p>
+                                    <i class="bi bi-search fs-3 d-block mb-2"></i>
+                                    <p class="mb-0">No patients found matching your search.</p>
                                 </div>
                             </div>
                         </div>
@@ -111,14 +130,22 @@ document.addEventListener('DOMContentLoaded', function() {
     const patientListContainer = document.getElementById('waitlist_patient_list');
     const hiddenInput = document.getElementById('waitlist_patient_id');
     const searchInput = document.getElementById('patient_search');
+    const clearBtn = document.getElementById('clear-patient-search');
     const loadingIndicator = document.getElementById('patient_loading');
     const noResultsIndicator = document.getElementById('patient_no_results');
+    const resultCount = document.getElementById('patient-result-count');
+    const searchStatus = document.getElementById('patient-search-status');
 
-    let searchTimeout;
+    let allPatients = [];
+    let searchTimeout = null;
+    let isSearching = false;
+
+    // Store initial patient items
+    const initialPatientItems = Array.from(document.querySelectorAll('.patient-item'));
 
     // --- Patient list selection ---
     function attachPatientClickEvents() {
-        const patientItems = modal.querySelectorAll('#waitlist_patient_list .list-group-item');
+        const patientItems = modal.querySelectorAll('.patient-item');
         
         patientItems.forEach(item => {
             item.addEventListener('click', () => {
@@ -135,62 +162,160 @@ document.addEventListener('DOMContentLoaded', function() {
     // Initial attachment
     attachPatientClickEvents();
 
-    // --- Search functionality ---
-    if (searchInput) {
-        searchInput.addEventListener('input', function() {
-            clearTimeout(searchTimeout);
-            const searchTerm = this.value.trim();
+    // --- Debounced search function ---
+    function performSearch() {
+        const searchTerm = searchInput.value.toLowerCase().trim();
 
-            searchTimeout = setTimeout(() => {
-                if (searchTerm.length === 0) {
-                    // Reset to original list if search is cleared
-                    location.reload();
-                    return;
-                }
+        // Clear previous timeout
+        clearTimeout(searchTimeout);
 
-                // Show loading
-                loadingIndicator.classList.remove('d-none');
-                noResultsIndicator.classList.add('d-none');
-                patientListContainer.innerHTML = '';
+        // If empty, restore initial view
+        if (searchTerm === '') {
+            restoreInitialView();
+            return;
+        }
 
-                // Fetch patients
-                fetch(`{{ route('patients.all') }}?search=${encodeURIComponent(searchTerm)}`)
-                    .then(response => response.json())
-                    .then(data => {
-                        loadingIndicator.classList.add('d-none');
-                        
-                        if (data.length === 0) {
-                            noResultsIndicator.classList.remove('d-none');
-                            return;
-                        }
-
-                        // Populate list
-                        patientListContainer.innerHTML = data.map(patient => `
-                            <li class="list-group-item list-group-item-action" data-id="${patient.patient_id}">
-                                ${patient.full_name}
-                            </li>
-                        `).join('');
-
-                        // Re-attach click events
-                        attachPatientClickEvents();
-                    })
-                    .catch(error => {
-                        loadingIndicator.classList.add('d-none');
-                        console.error('Error fetching patients:', error);
-                        Swal.fire({
-                            icon: 'error',
-                            title: 'Error',
-                            text: 'Failed to search patients. Please try again.',
-                            toast: true,
-                            position: 'top-end',
-                            timer: 3000,
-                            showConfirmButton: false,
-                            timerProgressBar: true
-                        });
-                    });
-            }, 300); // Debounce 300ms
-        });
+        // Debounce: wait 300ms after user stops typing
+        searchTimeout = setTimeout(() => {
+            fetchAndSearch(searchTerm);
+        }, 300);
     }
+
+    // --- Fetch all patients and search ---
+    async function fetchAndSearch(searchTerm) {
+        try {
+            isSearching = true;
+            showLoading();
+
+            // Fetch all patients
+            const response = await fetch('{{ route("patients.all") }}', {
+                headers: {
+                    'X-Requested-With': 'XMLHttpRequest',
+                    'Accept': 'application/json'
+                }
+            });
+
+            if (!response.ok) throw new Error('Failed to fetch patients');
+
+            allPatients = await response.json();
+            
+            // Filter patients based on search term (searches in full_name)
+            const filtered = allPatients.filter(patient => {
+                const name = (patient.full_name || '').toLowerCase();
+                return name.includes(searchTerm);
+            });
+
+            displaySearchResults(filtered);
+            
+        } catch (error) {
+            console.error('Search error:', error);
+            // Fallback to current page search if AJAX fails
+            searchCurrentPage(searchTerm);
+        }
+    }
+
+    // --- Display search results ---
+    function displaySearchResults(patientsData) {
+        hideLoading();
+
+        if (patientsData.length === 0) {
+            patientListContainer.style.display = 'none';
+            noResultsIndicator.classList.remove('d-none');
+            searchStatus.innerHTML = 'Found: <span class="text-danger">0</span> patient(s)';
+            return;
+        }
+
+        // Clear and populate list
+        patientListContainer.innerHTML = '';
+        noResultsIndicator.classList.add('d-none');
+        patientListContainer.style.display = '';
+
+        patientsData.forEach(patient => {
+            const li = createPatientListItem(patient);
+            patientListContainer.appendChild(li);
+        });
+
+        searchStatus.innerHTML = `Found: <span class="text-success">${patientsData.length}</span> patient(s)`;
+
+        // Re-attach click events
+        attachPatientClickEvents();
+    }
+
+    // --- Create patient list item ---
+    function createPatientListItem(patient) {
+        const li = document.createElement('li');
+        li.className = 'list-group-item list-group-item-action patient-item';
+        li.dataset.id = patient.patient_id;
+        li.dataset.searchName = (patient.full_name || '').toLowerCase();
+        li.textContent = patient.full_name;
+        return li;
+    }
+
+    // --- Fallback: Search only current page ---
+    function searchCurrentPage(searchTerm) {
+        hideLoading();
+        let visibleCount = 0;
+
+        initialPatientItems.forEach(item => {
+            const name = item.dataset.searchName || '';
+            const matches = name.includes(searchTerm);
+
+            if (matches) {
+                item.style.display = '';
+                visibleCount++;
+            } else {
+                item.style.display = 'none';
+            }
+        });
+
+        if (visibleCount === 0) {
+            noResultsIndicator.classList.remove('d-none');
+            patientListContainer.style.display = 'none';
+        } else {
+            noResultsIndicator.classList.add('d-none');
+            patientListContainer.style.display = '';
+        }
+
+        searchStatus.innerHTML = `Found: ${visibleCount} patient(s) <span class="text-warning">(current page only)</span>`;
+    }
+
+    // --- Restore initial view ---
+    function restoreInitialView() {
+        isSearching = false;
+        hideLoading();
+        noResultsIndicator.classList.add('d-none');
+        patientListContainer.style.display = '';
+        searchStatus.innerHTML = 'Total: <span id="patient-result-count">{{ $patients->count() }}</span> patient(s)';
+
+        // Restore original items
+        patientListContainer.innerHTML = '';
+        initialPatientItems.forEach(item => {
+            item.style.display = '';
+            patientListContainer.appendChild(item.cloneNode(true));
+        });
+
+        attachPatientClickEvents();
+    }
+
+    // --- Show/Hide loading ---
+    function showLoading() {
+        patientListContainer.style.display = 'none';
+        noResultsIndicator.classList.add('d-none');
+        loadingIndicator.classList.remove('d-none');
+    }
+
+    function hideLoading() {
+        loadingIndicator.classList.add('d-none');
+    }
+
+    // --- Event listeners ---
+    searchInput.addEventListener('input', performSearch);
+
+    clearBtn.addEventListener('click', function() {
+        searchInput.value = '';
+        restoreInitialView();
+        searchInput.focus();
+    });
 
     // --- Add patient via select (if exists) ---
     const patientSelect = document.getElementById('provider-patient');
