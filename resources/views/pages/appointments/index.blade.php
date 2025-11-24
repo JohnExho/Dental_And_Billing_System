@@ -100,13 +100,19 @@
     </div>
 @push('scripts')
 <script>
-document.addEventListener('DOMContentLoaded', () => {
-    // Elements
+ddocument.addEventListener('DOMContentLoaded', () => {
     const toggleBtn = document.getElementById('toggle-partial');
     const calendarPartial = document.getElementById('calendar-partial');
     const appointmentsPartial = document.getElementById('appointments-partial');
 
-    // If URL contains ?tab=appointments → show the list immediately
+    // Utility: update URL without reloading
+    const updateURLTab = (tab) => {
+        const url = new URL(window.location);
+        url.searchParams.set('tab', tab);
+        window.history.replaceState({}, '', url);
+    }
+
+    // Show appointments if URL contains ?tab=appointments
     const params = new URLSearchParams(window.location.search);
     if (params.get('tab') === 'appointments') {
         calendarPartial.classList.add('d-none');
@@ -122,10 +128,12 @@ document.addEventListener('DOMContentLoaded', () => {
             calendarPartial.classList.add('d-none');
             appointmentsPartial.classList.remove('d-none');
             toggleBtn.innerHTML = '<i class="bi bi-arrow-repeat me-2"></i> Show Calendar';
+            updateURLTab('appointments'); // Update URL
         } else {
             calendarPartial.classList.remove('d-none');
             appointmentsPartial.classList.add('d-none');
             toggleBtn.innerHTML = '<i class="bi bi-arrow-repeat me-2"></i> Show Appointments';
+            updateURLTab('calendar'); // Update URL
         }
     });
 
@@ -133,7 +141,6 @@ document.addEventListener('DOMContentLoaded', () => {
     document.querySelectorAll('.delete-appointment-btn').forEach(btn => {
         btn.addEventListener('click', (e) => {
             e.stopPropagation();
-
             const appointmentId = btn.dataset.id;
             const input = document.getElementById('delete_appointment_id');
             if (input) input.value = appointmentId;
@@ -143,6 +150,7 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     });
 });
+
 </script>
 @endpush
 
