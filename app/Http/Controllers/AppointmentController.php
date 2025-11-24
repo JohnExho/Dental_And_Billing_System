@@ -112,7 +112,6 @@ class AppointmentController extends Controller
                     'text' => $appointment->patient->full_name.' - Appointment',
                     'type' => 'appointment',
                     'url' => route('appointments', [
-                        'patient_id' => $appointment->patient_id,
                         'tab' => 'appointments',
                     ]),
                     'color' => $color,
