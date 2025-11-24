@@ -22,7 +22,7 @@
     }
 
     body.sidebar-collapsed .echo-movebar {
-        margin-left: -200px;
+        margin-left: -100px;
     }
 
     body {
