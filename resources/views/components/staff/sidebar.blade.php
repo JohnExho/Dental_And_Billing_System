@@ -33,10 +33,9 @@
 }
 
 .sidebar-brand img {
-    width: 45px;
-    height: 45px;
-    border-radius: 10px;
-    transition: all 0.3s ease;
+      width: 60px;
+        border-radius: 50%;
+        margin-bottom: 10px;
 }
 
 .sidebar-wrapper.expanded .sidebar-brand img {
@@ -125,7 +124,7 @@
     <nav class="sidebar">
 
         <div class="sidebar-brand">
-            <img src="https://placehold.co/400x400?text=placeholder" alt="Logo">
+            <img src="{{ asset('public/images/dayao.jpg') }}" alt="Logo" width="50" height="50">
             <h3>Dayao</h3>
             <p>Dental Home</p>
         </div>
