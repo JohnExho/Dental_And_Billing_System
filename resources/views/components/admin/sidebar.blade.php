@@ -129,7 +129,7 @@
 <aside class="sidebar-wrapper" id="sidebar">
     <nav class="sidebar">
         <div class="sidebar-brand">
-            <img src="{{ asset('images/dayao.jpg') }}" alt="Logo" width="50" height="50">
+            <img src="{{ asset('public/images/dayao.jpg') }}" alt="Logo" width="50" height="50">
             <h3 class="fw-bold">Dayao Dental</h3>
             <p class="text-light">Home</p>
         </div>
