@@ -79,7 +79,7 @@
     font-size: 22px;
 
     /* ==== UPDATED TO CENTER ICONS ==== */
-    min-width: 80px; /* UPDATED: match collapsed width */
+    min-width: 50px; /* UPDATED: match collapsed width */
     text-align: center; /* keeps icon centered */
     display: flex;      /* ADDED */
     justify-content: center; /* ADDED */
