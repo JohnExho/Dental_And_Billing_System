@@ -18,13 +18,16 @@
     }
 
     .echo-movebar {
-         margin-left: 0;
         transition: margin-left .28s ease;
     }
 
     body.sidebar-collapsed .echo-movebar {
         margin-left: -65px;
     }
+
+    body:not(.sidebar-collapsed) .echo-movebar {
+    margin-left: 165px; /* sidebar expanded width (240px) minus collapsed (75px) */
+}
 
     body {
         padding-top: 56px;
