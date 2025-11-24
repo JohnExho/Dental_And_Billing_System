@@ -42,10 +42,10 @@
                                 'female' => asset('public/images/defaults/female.png'),
                                 default => asset('public/images/defaults/other.png'),
                             };
+$profileUrl = $patient->profile_picture
+    ? asset('storage/' . $patient->profile_picture)
+    : $defaultProfile;
 
-                            $profileUrl = $patient->profile_picture
-                                ? Storage::url($patient->profile_picture)
-                                : $defaultProfile;
                         @endphp
 
                         <tr class="patient-row" data-patient-id="{{ $patient->patient_id }}"
