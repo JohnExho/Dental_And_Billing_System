@@ -100,7 +100,7 @@
     </div>
 @push('scripts')
 <script>
-ddocument.addEventListener('DOMContentLoaded', () => {
+document.addEventListener('DOMContentLoaded', () => {
     const toggleBtn = document.getElementById('toggle-partial');
     const calendarPartial = document.getElementById('calendar-partial');
     const appointmentsPartial = document.getElementById('appointments-partial');
