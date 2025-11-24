@@ -77,8 +77,12 @@
 /* Icons */
 .nav-item a i {
     font-size: 22px;
-    min-width: 50px;
-    text-align: center;
+
+    /* ==== UPDATED TO CENTER ICONS ==== */
+    min-width: 50px; /* UPDATED: match collapsed width */
+    text-align: center; /* keeps icon centered */
+    display: flex;      /* ADDED */
+    justify-content: center; /* ADDED */
 }
 
 /* Text hidden by default */
