@@ -139,9 +139,59 @@ document.addEventListener('DOMContentLoaded', function() {
     let allPatients = [];
     let searchTimeout = null;
     let isSearching = false;
+    let preselectedPatientId = null;
 
     // Store initial patient items
     const initialPatientItems = Array.from(document.querySelectorAll('.patient-item'));
+
+    // --- Handle preselection when modal opens from patient table ---
+    modal.addEventListener('show.bs.modal', function(event) {
+        const button = event.relatedTarget;
+        
+        if (button && button.dataset.patientId) {
+            preselectedPatientId = button.dataset.patientId;
+            
+            // Auto-select the patient in the list after modal is shown
+            setTimeout(() => {
+                selectPatientById(preselectedPatientId);
+            }, 100);
+        }
+    });
+
+    // --- Function to select patient by ID ---
+    function selectPatientById(patientId) {
+        const patientItems = modal.querySelectorAll('.patient-item');
+        
+        patientItems.forEach(item => {
+            if (item.dataset.id === patientId) {
+                // Highlight selected patient
+                patientItems.forEach(i => i.classList.remove('active'));
+                item.classList.add('active');
+                
+                // Store selected patient id
+                hiddenInput.value = patientId;
+                
+                // Scroll into view
+                item.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            }
+        });
+    }
+
+    // --- Reset when modal closes ---
+    modal.addEventListener('hidden.bs.modal', function() {
+        preselectedPatientId = null;
+        
+        // Clear selection
+        const patientItems = modal.querySelectorAll('.patient-item');
+        patientItems.forEach(i => i.classList.remove('active'));
+        hiddenInput.value = '';
+        
+        // Clear search if active
+        if (searchInput.value !== '') {
+            searchInput.value = '';
+            restoreInitialView();
+        }
+    });
 
     // --- Patient list selection ---
     function attachPatientClickEvents() {
@@ -199,7 +249,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
             allPatients = await response.json();
             
-            // Filter patients based on search term (searches in full_name)
+            // Filter patients based on search term
             const filtered = allPatients.filter(patient => {
                 const name = (patient.full_name || '').toLowerCase();
                 return name.includes(searchTerm);
@@ -209,7 +259,6 @@ document.addEventListener('DOMContentLoaded', function() {
             
         } catch (error) {
             console.error('Search error:', error);
-            // Fallback to current page search if AJAX fails
             searchCurrentPage(searchTerm);
         }
     }
@@ -239,6 +288,11 @@ document.addEventListener('DOMContentLoaded', function() {
 
         // Re-attach click events
         attachPatientClickEvents();
+        
+        // Re-select patient if there was a preselection
+        if (preselectedPatientId) {
+            selectPatientById(preselectedPatientId);
+        }
     }
 
     // --- Create patient list item ---
@@ -295,6 +349,11 @@ document.addEventListener('DOMContentLoaded', function() {
         });
 
         attachPatientClickEvents();
+        
+        // Re-select patient if there was a preselection
+        if (preselectedPatientId) {
+            selectPatientById(preselectedPatientId);
+        }
     }
 
     // --- Show/Hide loading ---
