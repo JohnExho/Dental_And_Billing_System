@@ -235,53 +235,59 @@ $profileUrl = $patient->profile_picture
         }
 
         // Create patient row HTML
-        function createPatientRow(patient) {
-            const tr = document.createElement('tr');
-            tr.className = 'patient-row';
+       function createPatientRow(patient) {
+    const tr = document.createElement('tr');
+    tr.className = 'patient-row';
+    tr.dataset.patientId = patient.patient_id;
+    tr.dataset.searchName = (patient.full_name || '').toLowerCase();
 
-            const defaultProfile = patient.sex === 'male' ?
-                '{{ asset('public/images/defaults/male.png') }}' :
-                patient.sex === 'female' ?
-                '{{ asset('public/images/defaults/female.png') }}' :
-                '{{ asset('public/images/defaults/other.png') }}';
+    const defaultProfile = patient.sex === 'male' ?
+        '{{ asset('public/images/defaults/male.png') }}' :
+        patient.sex === 'female' ?
+        '{{ asset('public/images/defaults/female.png') }}' :
+        '{{ asset('public/images/defaults/other.png') }}';
 
-            const profileUrl = patient.profile_picture ?
-                `/storage/${patient.profile_picture}` :
-                defaultProfile;
+    const profileUrl = patient.profile_picture ?
+        `/storage/${patient.profile_picture}` :
+        defaultProfile;
 
-            tr.innerHTML = `
-                <td>
-                    <img src="${profileUrl}" alt="${patient.full_name || 'Profile'}"
-                        class="rounded-circle object-fit-cover border-primary border border-2"
-                        style="width: 60px; height: 60px;">
-                </td>
-                <td>${patient.full_name || 'N/A'}</td>
-                <td>${patient.mobile_no || 'N/A'}/<br>${patient.contact_no || 'N/A'}</td>
-                <td>${patient.email || 'N/A'}</td>
-                <td>${patient.full_address || 'N/A'}</td>
-                <td class="text-end">
-                    <a href="#" class="btn btn-outline-dark btn-sm" data-bs-toggle="modal" data-bs-target="#add-waitlist-modal">
-                        <i class="fa-solid fa-hourglass-start"></i>
-                    </a>
-                    <form action="{{ route('specific-patient') }}" method="GET" class="d-inline">
-                        <input type="hidden" name="patient_id" value="${patient.patient_id}">
-                        <button type="submit" class="btn btn-sm btn-outline-primary">
-                            <i class="bi bi-eye"></i>
-                        </button>
-                    </form>
-                    <button type="button" class="btn btn-sm btn-outline-secondary" data-bs-toggle="modal"
-                        data-bs-target="#edit-patient-modal" data-id="${patient.patient_id}">
-                        <i class="bi bi-pencil-square"></i>
-                    </button>
-                    <button type="button" class="btn btn-outline-danger btn-sm delete-patient-btn"
-                        data-id="${patient.patient_id}">
-                        <i class="bi bi-trash"></i>
-                    </button>
-                </td>
-            `;
+    tr.innerHTML = `
+        <td>
+            <img src="${profileUrl}" alt="${patient.full_name || 'Profile'}"
+                class="rounded-circle object-fit-cover border-primary border border-2"
+                style="width: 60px; height: 60px;">
+        </td>
+        <td>${patient.full_name || 'N/A'}</td>
+        <td>${patient.mobile_no || 'N/A'}/<br>${patient.contact_no || 'N/A'}</td>
+        <td>${patient.email || 'N/A'}</td>
+        <td>${patient.full_address || 'N/A'}</td>
+        <td class="text-end">
+            <button type="button" 
+                    class="btn btn-outline-dark btn-sm" 
+                    data-bs-toggle="modal"
+                    data-bs-target="#add-waitlist-modal"
+                    data-patient-id="${patient.patient_id}">
+                <i class="fa-solid fa-hourglass-start"></i>
+            </button>
+            <form action="{{ route('specific-patient') }}" method="GET" class="d-inline">
+                <input type="hidden" name="patient_id" value="${patient.patient_id}">
+                <button type="submit" class="btn btn-sm btn-outline-primary">
+                    <i class="bi bi-eye"></i>
+                </button>
+            </form>
+            <button type="button" class="btn btn-sm btn-outline-secondary" data-bs-toggle="modal"
+                data-bs-target="#edit-patient-modal" data-id="${patient.patient_id}">
+                <i class="bi bi-pencil-square"></i>
+            </button>
+            <button type="button" class="btn btn-outline-danger btn-sm delete-patient-btn"
+                data-id="${patient.patient_id}">
+                <i class="bi bi-trash"></i>
+            </button>
+        </td>
+    `;
 
-            return tr;
-        }
+    return tr;
+}
 
         // Fallback: Search only current page
         function searchCurrentPage(searchTerm) {
