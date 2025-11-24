@@ -5,10 +5,8 @@
             <span class="input-group-text bg-white">
                 <i class="bi bi-search"></i>
             </span>
-            <input type="text" 
-                   id="patient-search" 
-                   class="form-control" 
-                   placeholder="Search by patient name (e.g., Bins, Ignatius)">
+            <input type="text" id="patient-search" class="form-control"
+                placeholder="Search by patient name (e.g., Bins, Ignatius)">
             <button class="btn btn-outline-secondary" type="button" id="clear-search">
                 <i class="bi bi-x-lg"></i>
             </button>
@@ -50,14 +48,13 @@
                                 : $defaultProfile;
                         @endphp
 
-                        <tr class="patient-row" 
-                            data-patient-id="{{ $patient->patient_id }}"
+                        <tr class="patient-row" data-patient-id="{{ $patient->patient_id }}"
                             data-search-name="{{ strtolower($patient->full_name) }}"
                             data-search-contact="{{ strtolower($patient->mobile_no ?? '') }} {{ strtolower($patient->contact_no ?? '') }}"
                             data-search-email="{{ strtolower($patient->email ?? '') }}"
                             data-search-address="{{ strtolower($patient->full_address) }}">
                             <td>
-                                <img src="{{ $profileUrl }}" alt="{{ $patient->full_name ?? 'Profile' }}"
+                                <img src="{{ 'public/' . $profileUrl }}" alt="{{ $patient->full_name ?? 'Profile' }}"
                                     class="rounded-circle object-fit-cover border-primary border border-2"
                                     style="width: 60px; height: 60px;">
                             </td>
@@ -67,9 +64,9 @@
                             <td>{{ $patient->full_address }}</td>
 
                             <td class="text-end">
-                                <a href="#" class="btn btn-outline-dark btn-sm"
-                                    data-bs-toggle="modal" data-bs-target="#add-waitlist-modal">
-                                  <i class="fa-solid fa-hourglass-start"></i>
+                                <a href="#" class="btn btn-outline-dark btn-sm" data-bs-toggle="modal"
+                                    data-bs-target="#add-waitlist-modal">
+                                    <i class="fa-solid fa-hourglass-start"></i>
                                 </a>
 
                                 <form action="{{ route('specific-patient') }}" method="GET" class="d-inline">
@@ -111,7 +108,7 @@
                     @endforeach
                 </tbody>
             </table>
-            
+
             <!-- No Results Message -->
             <div id="no-results" class="p-4 text-center text-muted d-none">
                 <i class="bi bi-search fs-1 d-block mb-2"></i>
@@ -144,7 +141,7 @@
         const noResults = document.getElementById('no-results');
         const searchLoading = document.getElementById('search-loading');
         const paginationContainer = document.getElementById('pagination-container');
-        
+
         let allPatients = []; // Store all patients when searching
         let searchTimeout = null;
         let isSearching = false;
@@ -178,7 +175,7 @@
                 showLoading();
 
                 // Fetch all patients (you need to create this route)
-                const response = await fetch('{{ route("patients.all") }}', {
+                const response = await fetch('{{ route('patients.all') }}', {
                     headers: {
                         'X-Requested-With': 'XMLHttpRequest',
                         'Accept': 'application/json'
@@ -188,7 +185,7 @@
                 if (!response.ok) throw new Error('Failed to fetch patients');
 
                 allPatients = await response.json();
-                
+
                 // Filter patients based on search term (name only)
                 const filtered = allPatients.filter(patient => {
                     const name = (patient.full_name || '').toLowerCase();
@@ -196,7 +193,7 @@
                 });
 
                 displaySearchResults(filtered);
-                
+
             } catch (error) {
                 console.error('Search error:', error);
                 // Fallback to current page search if AJAX fails
@@ -236,16 +233,16 @@
         function createPatientRow(patient) {
             const tr = document.createElement('tr');
             tr.className = 'patient-row';
-            
-            const defaultProfile = patient.sex === 'male' 
-                ? '{{ asset("public/images/defaults/male.png") }}'
-                : patient.sex === 'female'
-                ? '{{ asset("public/images/defaults/female.png") }}'
-                : '{{ asset("public/images/defaults/other.png") }}';
-            
-            const profileUrl = patient.profile_picture 
-                ? `/storage/${patient.profile_picture}`
-                : defaultProfile;
+
+            const defaultProfile = patient.sex === 'male' ?
+                '{{ asset('public/images/defaults/male.png') }}' :
+                patient.sex === 'female' ?
+                '{{ asset('public/images/defaults/female.png') }}' :
+                '{{ asset('public/images/defaults/other.png') }}';
+
+            const profileUrl = patient.profile_picture ?
+                `/storage/${patient.profile_picture}` :
+                defaultProfile;
 
             tr.innerHTML = `
                 <td>
@@ -310,7 +307,8 @@
                 tableBody.style.display = '';
             }
 
-            searchStatus.innerHTML = `Found: ${visibleCount} patient(s) <span class="text-warning">(current page only)</span>`;
+            searchStatus.innerHTML =
+                `Found: ${visibleCount} patient(s) <span class="text-warning">(current page only)</span>`;
         }
 
         // Restore pagination view
@@ -320,7 +318,8 @@
             noResults.classList.add('d-none');
             tableBody.style.display = '';
             paginationContainer.style.display = '';
-            searchStatus.innerHTML = 'Total: <span id="result-count">{{ $patients->total() }}</span> patient(s)';
+            searchStatus.innerHTML =
+                'Total: <span id="result-count">{{ $patients->total() }}</span> patient(s)';
 
             // Restore original rows
             tableBody.innerHTML = '';

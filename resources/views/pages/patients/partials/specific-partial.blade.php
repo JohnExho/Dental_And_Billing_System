@@ -11,12 +11,11 @@
 
             $profileUrl = $patient->profile_picture ? Storage::url($patient->profile_picture) : $defaultProfile;
         @endphp
-
         {{-- 🔹 Profile Header --}}
         <div
             class="d-flex align-items-center justify-content-between p-3 bg-primary bg-opacity-25 rounded-3 mb-4 shadow-sm">
             <div class="d-flex align-items-center gap-3">
-                <img src="{{ $profileUrl }}" alt="Profile Picture" class="rounded-circle border border-2 border-primary"
+                <img src="{{'public/' .  $profileUrl }}" alt="Profile Picture" class="rounded-circle border border-2 border-primary"
                     style="width: 90px; height: 90px; object-fit: cover;">
                 <div>
                     <h4 class="mb-1 fw-semibold text-dark">{{ $patient->full_name }}</h4>
