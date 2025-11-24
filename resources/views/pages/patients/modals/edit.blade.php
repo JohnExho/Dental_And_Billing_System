@@ -1,3 +1,50 @@
+<style>
+    /* Modal Footer Buttons */
+    .modal-footer .btn {
+        transition:
+            background 0.4s ease-in-out,
+            transform 0.4s ease-in-out,
+            box-shadow 0.4s ease-in-out;
+    }
+
+    /* Hover: slightly darker blue */
+    .modal-footer .btn-primary:hover {
+        background: #1e3765;
+        color: #FFFEF2;
+        transform: translateY(-2px);
+        /* subtle lift */
+        box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);
+        /* soft shadow */
+    }
+
+    /* Active/Click: lighter blue */
+    .modal-footer .btn-primary:active {
+        color: #FFFEF2;
+        background: #0f3e73;
+        transform: translateY(2px) scale(0.98);
+        /* real press effect */
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+    }
+
+
+    /* Optional: Secondary button hover */
+    .modal-footer .btn-secondary:hover {
+        background: #1e3rgb(112, 112, 112) color: #FFFEF2;
+        transform: translateY(-2px);
+        /* subtle lift */
+        box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);
+        /* soft shadow */
+    }
+
+    .modal-footer .btn-secondary:active {
+        color: #FFFEF2;
+        background: #0f3e73;
+        transform: translateY(2px) scale(0.98);
+        /* real press effect */
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+    }
+</style>
+
 <!-- Edit Patient Modal (3-step wizard, compact) -->
 
 <div class="modal fade" id="edit-patient-modal" tabindex="-1" aria-hidden="true">
