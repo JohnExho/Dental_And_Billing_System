@@ -1,10 +1,3 @@
-<div class="card border-0 shadow-sm">
-    <div class="card-header bg-info d-flex justify-content-between align-items-center">
-        <h6 class="mb-0 fw-bold text-primary">
-            <i class="bi bi-calendar-check me-2"></i> Appointments
-        </h6>
-    </div>
-
                         @php
                         $queryParams = array_merge(request()->except(['month', 'year', 'view']), [
                             'year' => $currentYear,
@@ -12,9 +5,12 @@
                             'view' => $viewMode,
                         ]);
                     @endphp
-
-                    <div class="d-flex gap-2">
-
+<div class="card border-0 shadow-sm">
+    <div class="card-header bg-info d-flex justify-content-between align-items-center">
+        <h6 class="mb-0 fw-bold text-primary">
+            <i class="bi bi-calendar-check me-2"></i> Appointments
+        </h6>
+        
                         <a href="{{ route('appointments', array_merge($queryParams, ['month' => $prevMonth->month, 'year' => $prevMonth->year])) }}"
                             class="btn btn-outline-primary btn-sm">Previous</a>
 
@@ -23,7 +19,9 @@
 
                         <a href="{{ route('appointments', array_merge($queryParams, ['month' => $nextMonth->month, 'year' => $nextMonth->year])) }}"
                             class="btn btn-outline-primary btn-sm">Next</a>
-                    </div>
+    </div>
+
+
 
 
     <div class="card-body p-0 d-flex flex-column">
