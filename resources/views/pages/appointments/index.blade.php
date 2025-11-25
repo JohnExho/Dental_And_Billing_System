@@ -2,102 +2,45 @@
 @section('title', 'Appointment | Chomply')
 @section('styles')
     <style>
-       /* Calendar layout */
-    table { table-layout: fixed; width: 100%; }
-    td { height: 100px; vertical-align: top; padding: 8px; position: relative; }
-    td div.badge { font-size: 0.75rem; white-space: normal; line-height: 1.1rem; }
-
-    /* Strong button specificity to override Bootstrap */
-    button.btn.action-btn-primary,
-    .btn.action-btn-primary {
-        background-color: #0d6efd !important;
-        border: 0 !important;
-        color: #fff !important;
-        padding: 0.45rem 0.9rem !important;
-        border-radius: 0.45rem !important;
-        box-shadow: 0 4px 10px rgba(13,110,253,0.12) !important;
-        transition: transform 0.18s ease, box-shadow 0.18s ease, background-color 0.18s ease !important;
-    }
-    button.btn.action-btn-primary:hover,
-    .btn.action-btn-primary:hover,
-    .btn.action-btn-primary:focus {
-        background-color: #0b5ed7 !important;
-        transform: translateY(-2px) !important;
-        outline: none !important;
-        box-shadow: 0 8px 18px rgba(13,110,253,0.16) !important;
-    }
-    button.btn.action-btn-primary:active,
-    .btn.action-btn-primary:active,
-    .btn.action-btn-primary.active {
-        background-color: #0a58ca !important;
-        transform: translateY(1px) scale(0.99) !important;
-        box-shadow: 0 3px 8px rgba(10,88,202,0.18) !important;
+       table {
+        table-layout: fixed;
+        width: 100%;
     }
 
-    /* SHOW APPOINTMENTS (outline but visible) - high specificity */
-    /* Use both .action-btn-outline and element selector to beat Bootstrap */
-    button.btn.action-btn-outline,
-    .btn.action-btn-outline {
-        /* visible background for contrast on white header */
-        background: linear-gradient(180deg, #ffffff 0%, #f3f6fb 100%) !important;
-        border: 1.5px solid rgba(13,110,253,0.95) !important;
-        color: #0d6efd !important;
-        padding: 0.42rem 0.85rem !important;
-        border-radius: 0.45rem !important;
-        box-shadow: 0 3px 8px rgba(13,110,253,0.06) !important;
-        transition: background-color 0.18s ease, transform 0.18s ease, box-shadow 0.18s ease, color 0.18s ease !important;
-        backdrop-filter: none !important;
+    td {
+        height: 100px;
+        vertical-align: top;
+        padding: 8px;
+        position: relative;
     }
 
-    /* ensure focus (keyboard) is visible */
-    button.btn.action-btn-outline:focus,
-    .btn.action-btn-outline:focus {
-        outline: 3px solid rgba(13,110,253,0.12) !important;
-        box-shadow: 0 6px 14px rgba(13,110,253,0.12) !important;
+    td div.badge {
+        font-size: 0.75rem;
+        white-space: normal;
+        line-height: 1.1rem;
     }
 
-    /* hover/active states */
-    button.btn.action-btn-outline:hover,
-    .btn.action-btn-outline:hover {
-        background: #e9f2ff !important; /* light blue tint */
-        color: #03396c !important;
-        transform: translateY(-2px) !important;
-        box-shadow: 0 10px 20px rgba(13,110,253,0.08) !important;
+    /* Smooth transitions */
+    .btn.btn-primary {
+        transition:
+            background 0.4s ease-in-out,
+            transform 0.4s ease-in-out,
+            box-shadow 0.4s ease-in-out !important;
     }
 
-    button.btn.action-btn-outline:active,
-    .btn.action-btn-outline:active,
-    .btn.action-btn-outline.active {
-        background: #d7eaff !important;
-        color: #022a53 !important;
-        transform: translateY(1px) scale(0.995) !important;
-        box-shadow: 0 3px 8px rgba(2,42,83,0.12) !important;
+    /* Hover */
+    .btn.btn-primary:hover {
+        background: #e2e6ea !important;
+        color: #000 !important;
+        transform: translateY(-1px) !important;
+        box-shadow: 0 6px 12px rgba(0,0,0,0.15) !important;
     }
 
-    /* If bootstrap applies btn-outline-* classes, neutralize them */
-    .btn.action-btn-outline.btn-outline-primary,
-    button.btn.action-btn-outline.btn-outline-primary {
-        background: inherit !important;
-        border-color: rgba(13,110,253,0.95) !important;
-        color: #0d6efd !important;
-    }
-
-    /* Make sure icons inside buttons keep correct color */
-    button.btn.action-btn-outline i,
-    .btn.action-btn-outline i,
-    button.btn.action-btn-primary i,
-    .btn.action-btn-primary i {
-        color: inherit !important;
-        opacity: 0.95 !important;
-    }
-
-    /* utility: prevent pointer-events issues from overlays */
-    button.btn.action-btn-outline[disabled],
-    button.btn.action-btn-primary[disabled],
-    .btn.action-btn-outline[disabled],
-    .btn.action-btn-primary[disabled] {
-        opacity: 0.6 !important;
-        pointer-events: none !important;
+    /* Active */
+    .btn.btn-primary:active {
+        background: #d0d4d8 !important;
+        transform: translateY(2px) scale(0.98) !important;
+        box-shadow: 0 1px 3px rgba(0,0,0,0.2) !important;
     }
 
     </style>
