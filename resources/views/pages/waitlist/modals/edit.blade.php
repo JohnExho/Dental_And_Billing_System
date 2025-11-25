@@ -27,14 +27,14 @@
 }
 
 /* Optional: Secondary button hover */
-.btn-secondary:hover {
+.btn-outline-secondary:hover {
         background: #1e3rgb(112, 112, 112)
         color: #FFFEF2;
         transform: translateY(-2px);   /* subtle lift */
         box-shadow: 0 6px 12px rgba(0,0,0,0.2); /* soft shadow */
 }
 
-.btn-secondary:active {
+.btn-outline-secondary:active {
         color: #FFFEF2;
         background: #535a61;
         transform: translateY(2px) scale(0.98); /* real press effect */
