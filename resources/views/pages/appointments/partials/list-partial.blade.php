@@ -1,5 +1,5 @@
-                        <style>
-                            <style>
+<style>
+                           
     /* Style only the three navigation buttons */
     .d-flex.gap-2 .btn.btn-outline-primary.btn-sm {
         border: 1px solid #007bff !important;
@@ -7,7 +7,12 @@
         background-color: transparent !important;
         font-weight: 500 !important;
         border-radius: 6px !important;
-        transition: all 0.2s ease-in-out !important;
+        transition: 
+            transform 0.25s ease, 
+            background-color 0.25s ease,
+            color 0.25s ease,
+            box-shadow 0.25s ease !important;
+
         padding: 6px 14px !important;
     }
 
