@@ -17,7 +17,7 @@
                     <thead class="table-light">
                         <tr>
                             <th>Date</th>
-                            <th>Provider</th>
+                            <th>Author</th>
                             <th>Procedure</th>
                             <th>Tooth</th>
                             <th>Notes</th>
