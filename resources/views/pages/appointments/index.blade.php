@@ -20,28 +20,33 @@
         line-height: 1.1rem;
     }
 
-    /* ============================
-       UNIVERSAL BUTTON ANIMATION
-       ============================ */
-    .action-btn {
-        transition: background 0.3s ease,
-                    transform 0.3s ease,
-                    box-shadow 0.3s ease !important;
+        /* FORCE OVERRIDE Bootstrap for BOTH buttons */
+    button.btn.action-btn,
+    button.btn-outline-primary.action-btn,
+    button.btn-primary.action-btn {
+        transition: all 0.25s ease-in-out !important;
     }
 
-    .action-btn:hover {
+    /* Hover */
+    button.btn.action-btn:hover,
+    button.btn-outline-primary.action-btn:hover,
+    button.btn-primary.action-btn:hover {
         background-color: #e2e6ea !important;
         color: #000 !important;
         transform: translateY(-2px) !important;
-        box-shadow: 0 6px 12px rgba(0,0,0,0.15) !important;
+        box-shadow: 0 6px 12px rgba(0,0,0,0.18) !important;
     }
 
-    .action-btn:active {
-        background-color: #d0d4d8 !important;
-        color: #000 !important;
-        transform: translateY(2px) scale(0.97) !important;
-        box-shadow: 0 2px 4px rgba(0,0,0,0.20) !important;
-    }
+        /* Active / Click */
+        button.btn.action-btn:active,
+        button.btn-outline-primary.action-btn:active,
+        button.btn-primary.action-btn:active {
+            background-color: #d0d4d8 !important;
+            color: #000 !important;
+            transform: translateY(2px) scale(0.97) !important;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.25) !important;
+        }
+
     </style>
     
 @endsection
