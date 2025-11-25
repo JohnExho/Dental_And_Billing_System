@@ -272,10 +272,11 @@
 }
     </style>
 
- <div class="container-fluid px-4 mt-3">
-    <!-- First Row: Recent Activities (Full Width) -->
-    <div class="row g-4 mb-4">
-        <div class="col-12">
+<div class="container-fluid px-4 mt-3">
+    <!-- Single Row with Both Cards Side-by-Side -->
+    <div class="row g-4">
+        <!-- Left Card: Recent Activities (takes 8 columns on large screens) -->
+        <div class="col-12 col-lg-8">
             <div class="card border-1 border-info">
                 <div class="card-body">
                     <div class="d-flex justify-content-between align-items-center mb-3">
@@ -303,11 +304,9 @@
                 </div>
             </div>
         </div>
-    </div>
 
-    <!-- Second Row: Patients with Balance -->
-    <div class="row g-4">
-        <div class="col-12 col-lg-7">
+        <!-- Right Card: Patients with Balance (takes 4 columns on large screens) -->
+        <div class="col-12 col-lg-4">
             <div class="card dashboard-card shadow-sm border border-danger">
                 <div class="card-body">
                     <div class="d-flex justify-content-between align-items-center mb-3">
