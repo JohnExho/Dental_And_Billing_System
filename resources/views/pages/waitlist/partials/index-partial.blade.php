@@ -1,3 +1,10 @@
+<style>
+    #pagination-container nav {
+        display: flex !important;
+        justify-content: center !important;
+    }
+</style>
+
 <div class="card-body p-0">
     <!-- Search Input -->
     <div class="p-3 bg-light border-bottom">
