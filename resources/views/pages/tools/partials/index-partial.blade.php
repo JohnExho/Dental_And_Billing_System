@@ -12,7 +12,11 @@
                 <tr>
                     <td><strong title="Account ID: {{ $log->account_id }}">{{ $log->account_name_snapshot ?? 'N/A' }}</strong></td>
                     <td>{{ $log->description }}</td>
-                    <td><span class="text-muted" data-time="{{ $log->created_at }}">{{ $log->created_at ? $log->created_at->diffForHumans() : now()->diffForHumans() }}</span></td>
+                    <td>
+                        <span class="text-muted">
+                            {{ $log->created_at ? $log->created_at->diffForHumans() : now()->diffForHumans() }}
+                        </span>
+                    </td>
                 </tr>
             @empty
                 <tr>

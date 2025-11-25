@@ -121,43 +121,16 @@
     <script>
         dayjs.extend(window.dayjs_plugin_duration);
 
-        function formatPreciseDiff(start, end) {
-            const diffMs = end.diff(start);
-            const dur = dayjs.duration(diffMs);
-
-            if (dur.asSeconds() < 60) return `${Math.floor(dur.asSeconds())}s ago`;
-            if (dur.asMinutes() < 60) return `${Math.floor(dur.asMinutes())}m ${dur.seconds()}s ago`;
-            if (dur.asHours() < 24) return `${Math.floor(dur.asHours())}h ${dur.minutes()}m ago`;
-            if (dur.asDays() < 30) return `${Math.floor(dur.asDays())}d ${dur.hours()}h ago`;
-            if (dur.asMonths() < 12) return `${Math.floor(dur.asMonths())}mo ${dur.days()}d ago`;
-            return `${Math.floor(dur.asYears())}y ${dur.months()}mo ago`;
-        }
-
-        function updateTimes() {
-            const now = dayjs();
-            document.querySelectorAll('[data-time]').forEach(el => {
-                const time = dayjs(el.dataset.time);
-                el.textContent = formatPreciseDiff(time, now);
-            });
-            const lastUpdated = document.getElementById('lastUpdated');
-            if (lastUpdated) {
-                lastUpdated.textContent = "Last updated: " + now.format("MMM D, YYYY h:mm A");
-            }
-        }
-
         document.addEventListener("DOMContentLoaded", () => {
             setTimeout(() => {
                 document.getElementById('recentActivitiesLoading').classList.add('d-none');
                 document.getElementById('recentActivitiesContent').classList.remove('d-none');
-                updateTimes();
             }, 600);
         });
 
-        setInterval(updateTimes, 300000);
-
         document.addEventListener("click", (e) => {
             if (e.target.closest('#refreshLogs')) {
-                updateTimes();
+                location.reload();
             }
         });
     </script>
