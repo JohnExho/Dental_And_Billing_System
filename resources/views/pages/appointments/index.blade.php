@@ -99,11 +99,11 @@
                 <!-- Action Button -->
                 <div class="d-flex justify-content-between align-items-center mb-3">
                     <!-- Toggle Button -->
-                    <button id="toggle-partial" class="btn btn-outline-primary">
+                    <button id="toggle-partial" class="btn btn-outline-primary action-btn">
                         <i class="bi bi-arrow-repeat me-2"></i> Show Appointments
                     </button>
 
-                    <button type="button" class="btn btn-primary" data-bs-toggle="modal"
+                    <button type="button" class="btn btn-primary action-btn" data-bs-toggle="modal"
                         data-bs-target="#add-appointment-modal">
                         <i class="bi bi-plus-circle"></i> New Appointment
                     </button>
