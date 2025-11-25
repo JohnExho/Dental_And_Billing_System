@@ -19,10 +19,10 @@
 
                                     <td>{{ $log->description }}</td>
                                     <td>
-                                       <span class="text-muted" 
-      data-time="{{ $log->created_at ? $log->created_at->toIso8601String() : now()->toIso8601String() }}">
+                                        <span class="text-muted">
+                                            {{ $log->created_at ? $log->created_at->diffForHumans() : now()->diffForHumans() }}
                                         </span>
-                                    </td>
+                                    </td>            </td>
                                 </tr>
                             @endforeach
                         </tbody>
