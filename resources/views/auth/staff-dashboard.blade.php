@@ -28,6 +28,188 @@
         a.text-decoration-none:hover {
             text-decoration: none;
         }
+
+        /* Responsive breakpoints */
+
+/* Large devices (desktops, 1200px and up) */
+@media (max-width: 1399px) {
+    .container-fluid {
+        padding-left: 2rem;
+        padding-right: 2rem;
+    }
+}
+
+/* Medium-Large devices (laptops, 992px to 1199px) */
+@media (max-width: 1199px) {
+    .col-md-7, .col-md-5 {
+        flex: 0 0 100%;
+        max-width: 100%;
+    }
+    
+    .card-title {
+        font-size: 1.1rem;
+    }
+    
+    .badge {
+        font-size: 0.85rem;
+    }
+}
+
+/* Medium devices (tablets, laptops, 768px to 991px) */
+@media (max-width: 991px) {
+    .container-fluid {
+        padding-left: 1rem;
+        padding-right: 1rem;
+    }
+    
+    .col-md-12, .col-md-7, .col-md-5 {
+        flex: 0 0 100%;
+        max-width: 100%;
+        margin-bottom: 1rem;
+    }
+    
+    .card {
+        margin-bottom: 1rem;
+    }
+    
+    .card-body {
+        padding: 1rem;
+    }
+    
+    .d-flex.justify-content-between {
+        flex-direction: column;
+        align-items: flex-start !important;
+        gap: 0.5rem;
+    }
+    
+    .d-flex.justify-content-between .d-flex {
+        width: 100%;
+        justify-content: space-between;
+    }
+    
+    #lastUpdated {
+        font-size: 0.75rem;
+    }
+    
+    .btn-sm {
+        font-size: 0.8rem;
+        padding: 0.25rem 0.5rem;
+    }
+}
+
+/* Small devices (landscape phones, 576px to 767px) */
+@media (max-width: 767px) {
+    .card-title {
+        font-size: 1rem;
+    }
+    
+    .list-group-item {
+        flex-direction: column;
+        align-items: flex-start !important;
+        gap: 0.5rem;
+    }
+    
+    .list-group-item .badge {
+        align-self: flex-start;
+    }
+    
+    .card:hover,
+    .dashboard-card:hover {
+        transform: translateY(-2px);
+    }
+    
+    #recentActivitiesLoading {
+        padding: 1rem 0;
+    }
+    
+    .spinner-border {
+        width: 1.25rem;
+        height: 1.25rem;
+    }
+}
+
+/* Extra small devices (portrait phones, less than 576px) */
+@media (max-width: 575px) {
+    .container-fluid {
+        padding-left: 0.5rem;
+        padding-right: 0.5rem;
+    }
+    
+    .card {
+        border-radius: 10px;
+    }
+    
+    .card-body {
+        padding: 0.75rem;
+    }
+    
+    .card-title {
+        font-size: 0.95rem;
+    }
+    
+    .badge {
+        font-size: 0.75rem;
+        padding: 0.3em 0.6em;
+    }
+    
+    .btn-outline-primary {
+        font-size: 0.75rem;
+        padding: 0.25rem 0.5rem;
+    }
+    
+    .btn-outline-primary i {
+        font-size: 0.8rem;
+    }
+    
+    #lastUpdated {
+        display: none; /* Hide on very small screens */
+    }
+    
+    .list-group-item {
+        padding: 0.75rem;
+        font-size: 0.9rem;
+    }
+    
+    .list-group-item strong {
+        font-size: 0.9rem;
+    }
+    
+    .list-group-item small {
+        font-size: 0.8rem;
+    }
+    
+    hr {
+        margin: 0.5rem 0;
+    }
+}
+
+/* Landscape orientation adjustments */
+@media (max-width: 991px) and (orientation: landscape) {
+    .col-md-7, .col-md-5 {
+        flex: 0 0 50%;
+        max-width: 50%;
+    }
+    
+    .row.g-4 {
+        --bs-gutter-x: 1rem;
+    }
+}
+
+/* Print styles */
+@media print {
+    .btn, .bi-arrow-clockwise {
+        display: none;
+    }
+    
+    .card {
+        box-shadow: none;
+        border: 1px solid #ddd;
+    }
+    
+    .card:hover {
+        transform: none;
+    }
+}
     </style>
 
     <div class="container-fluid mt-3">
