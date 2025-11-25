@@ -54,6 +54,7 @@
             z-index: 10;
             padding: 2rem;
             max-width: 600px;
+            width: 100%;
         }
 
         .error-code {
@@ -286,6 +287,7 @@
             }
         }
 
+        /* Mobile styles */
         @media (max-width: 768px) {
             .error-code {
                 font-size: 100px;
@@ -297,6 +299,7 @@
 
             p {
                 font-size: 1rem;
+                padding: 0 1rem;
             }
 
             .tooth-fleet {
@@ -322,6 +325,35 @@
             .tooth-7, .tooth-8 {
                 width: 20px;
                 height: 20px;
+            }
+
+            /* Hide button on mobile */
+            .btn-home {
+                display: none;
+            }
+        }
+
+        /* Extra small devices */
+        @media (max-width: 480px) {
+            .container {
+                padding: 1rem;
+            }
+
+            .error-code {
+                font-size: 80px;
+            }
+
+            h1 {
+                font-size: 1.5rem;
+            }
+
+            p {
+                font-size: 0.9rem;
+            }
+
+            .tooth-fleet {
+                width: 250px;
+                height: 125px;
             }
         }
     </style>
@@ -397,30 +429,8 @@
         <div class="error-code">404</div>
         <h1>Lost in the Dental Galaxy</h1>
         <p>Oops! This page has drifted away like a lost tooth in space. It might have been extracted, relocated, or never existed in this dental universe.</p>
-        @if(Auth::guard('account')->check())
-            @php $role = Auth::guard('account')->user()->role ?? null; @endphp
-
-            @if($role === 'admin')
-                <a id="btn-home" href="{{ route('admin.dashboard') }}" class="btn-home">Go to Admin Dashboard</a>
-            @elseif($role === 'staff')
-                <a id="btn-home" href="{{ route('staff.dashboard') }}" class="btn-home">Go to Staff Dashboard</a>
-            @else
-                <a id="btn-home" href="{{ url('/') }}" class="btn-home">Return to Home</a>
-            @endif
-        @else
-            <a id="btn-home" href="{{ route('login') }}" class="btn-home">Return to Login</a>
-        @endif
-
-        <script>
-            // Remove the return button on mobile devices (<=768px)
-            (function() {
-                var btn = document.getElementById('btn-home');
-                if (!btn) return;
-                if (window.innerWidth <= 768) {
-                    btn.remove();
-                }
-            })();
-        </script>
+        
+        <a href="#" class="btn-home">Return Home</a>
     </div>
 
     <script>
