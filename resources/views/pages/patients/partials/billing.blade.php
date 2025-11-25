@@ -31,49 +31,51 @@
                                 <td>{{ isset($bill->amount) ? number_format($bill->amount, 2) : '-' }}</td>
                                 <td>{{ $bill->status ?? '-' }}</td>
                                 <td class="text-end">
-                                    @if ($bill->status === 'unpaid')
-                                        <button class="btn btn-sm btn-outline-secondary"
-                                            onclick="openProcessBillModal(
+                                   @if ($bill->status === 'unpaid')
+    <button class="btn btn-sm btn-outline-secondary"
+        onclick="openProcessBillModal(
             {{ json_encode($bill->bill_id) }},
             {{ json_encode($bill->bill_id) }},
             {{ json_encode($bill->account?->full_name ?? 'Unknown') }},
-                {{ json_encode(
-                    $bill->billItems->map(
-                        fn($item) => [
-                            'item_type' => $item->item_type,
-                            'name' => $item->service?->name ?? 'Unknown Item',
-                            'amount' => $item->amount,
-                            'service_id' => $item->service?->service_id ?? null,
-                            'teeth' => $item->teeth->map(
-                                    fn($tooth) => [
-                                        'tooth_id' => $tooth->tooth_list_id,
-                                        'name' => $tooth->name,
-                                        'amount' => $tooth->pivot->amount ?? null,
-                                    ],
-                                )->toArray(),
-                        ],
-                    ),
-                ) }},
-                []  // empty array for billTeeth parameter
+            {{ json_encode(
+                $bill->billItems->map(
+                    fn($item) => [
+                        'item_type' => $item->item_type,
+                        'name' => $item->service?->name ?? 'Unknown Item',
+                        'amount' => $item->amount,
+                        'service_id' => $item->service?->service_id ?? null,
+                        'teeth' => $item->teeth->map(
+                                fn($tooth) => [
+                                    'tooth_id' => $tooth->tooth_list_id,
+                                    'name' => $tooth->name,
+                                    'amount' => $tooth->pivot->amount ?? null,
+                                ],
+                            )->toArray(),
+                    ],
+                ),
+            ) }},
+            []
         )">
-                                            <i class="bi bi-arrow-bar-right"></i>
-                                        </button>
-                                    @elseif ($bill->status === 'cancelled')
-                                        <button type="button" class="btn btn-outline-danger btn-sm delete-bill-btn"
-                                            data-id="{{ $bill->bill_id }}">
-                                            <i class="bi bi-trash"></i>
-                                        </button>
-                                    @else
-                                        <button class="btn btn-outline-primary btn-sm" data-bs-toggle="modal"
-                                            data-bs-target="#receipt-modal" data-bill_id="{{ $bill->bill_id }}"
-                                            data-discount="{{ $bill->discount ?? '' }}"
-                                            data-payment_id="{{ $bill->payment->payment_id ?? '' }}"
-                                            data-amount="{{ $bill->payment->amount ?? '' }}"
-                                            data-paid_at="{{ $bill->payment->paid_at ?? '' }}"
-                                            data-method="{{ $bill->payment->payment_method ?? '' }}">
-                                            <i class="bi bi-receipt"></i>
-                                        </button>
-                                    @endif
+        <i class="bi bi-arrow-bar-right"></i>
+    </button>
+@elseif ($bill->status === 'cancelled')
+    <button type="button" class="btn btn-outline-danger btn-sm delete-bill-btn"
+        data-id="{{ $bill->bill_id }}">
+        <i class="bi bi-trash"></i>
+    </button>
+@else
+    <button class="btn btn-outline-primary btn-sm" 
+        data-bs-toggle="modal"
+        data-bs-target="#receipt-modal" 
+        data-bill_id="{{ $bill->bill_id }}"
+        data-discount="{{ $bill->discount ?? 0 }}"
+        data-payment_id="{{ $bill->payment->payment_id ?? '' }}"
+        data-amount="{{ $bill->payment->amount ?? $bill->total_amount ?? 0 }}"
+        data-paid_at="{{ $bill->payment ? ($bill->payment->paid_at_date . ' ' . $bill->payment->paid_at_time) : ($bill->payment?->created_at ?? '') }}"
+        data-method="{{ $bill->payment->payment_method ?? '' }}">
+        <i class="bi bi-receipt"></i>
+    </button>
+@endif
 
                                 </td>
                             </tr>

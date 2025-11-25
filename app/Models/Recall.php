@@ -58,6 +58,11 @@ class Recall extends Model
         return $this->belongsTo(PatientVisit::class, 'patient_visit_id', 'patient_visit_id');
     }
 
+    public function associate()
+    {
+        return $this->belongsTo(Account::class, 'associate_id', 'associate_id');
+    }
+
     public function logs()
     {
         return $this->morphMany(Logs::class, 'loggable');

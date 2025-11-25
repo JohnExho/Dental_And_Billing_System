@@ -45,7 +45,7 @@
                     <!-- Discount -->
                     <div class="d-flex justify-content-between align-items-center py-2 border-bottom">
                         <span class="text-muted small">Discount</span>
-                        <span class="fw-medium text-success" id="receipt_discount">%0.00</span>
+                        <span class="fw-medium text-success" id="receipt_discount">0.00%</span>
                     </div>
 
                     <!-- Total Amount -->
@@ -88,6 +88,7 @@
         cash: "Cash",
         gcash: "GCash",
         paymaya: "PayMaya",
+        online: "Online Payment"
     };
 
     function prettify(text) {
@@ -103,6 +104,40 @@
             .replace(/\b\w/g, c => c.toUpperCase());
     }
 
+    function formatDateTime(dateTimeString) {
+        if (!dateTimeString || dateTimeString === '—') return '—';
+        
+        try {
+            // Parse the datetime string
+            const date = new Date(dateTimeString);
+            
+            // Check if date is valid
+            if (isNaN(date.getTime())) {
+                return dateTimeString; // Return original if invalid
+            }
+            
+            // Format: "Jan 15, 2024 | 2:30 PM"
+            const dateOptions = { 
+                year: 'numeric', 
+                month: 'short', 
+                day: 'numeric' 
+            };
+            const timeOptions = { 
+                hour: 'numeric', 
+                minute: '2-digit', 
+                hour12: true 
+            };
+            
+            const datePart = date.toLocaleDateString('en-US', dateOptions);
+            const timePart = date.toLocaleTimeString('en-US', timeOptions);
+            
+            return `${datePart} | ${timePart}`;
+        } catch (error) {
+            console.error('Date formatting error:', error);
+            return dateTimeString;
+        }
+    }
+
     const receiptModal = document.getElementById('receipt-modal');
 
     receiptModal.addEventListener('show.bs.modal', function(event) {
@@ -116,22 +151,23 @@
             discount: button.getAttribute('data-discount'),
         };
 
+        // Set reference number
         receiptModal.querySelector('#receipt_bill_id').textContent = data.bill_id || '—';
+        
+        // Set amount
         receiptModal.querySelector('#receipt_amount').textContent = '₱' + Number(data.amount || 0).toFixed(2);
         
-        // Format date and time with separator
-        let formattedDateTime = data.paid_at || '—';
-        if (data.paid_at && data.paid_at.includes(' ')) {
-            formattedDateTime = data.paid_at.replace(' ', ' | ');
-        }
-        receiptModal.querySelector('#receipt_paid_at').textContent = formattedDateTime;
+        // Format and set date/time
+        receiptModal.querySelector('#receipt_paid_at').textContent = formatDateTime(data.paid_at);
         
+        // Set payment method
         receiptModal.querySelector('#receipt_method').textContent = prettify(data.method);
         
+        // Set discount
         const discountAmount = Number(data.discount || 0);
         const discountEl = receiptModal.querySelector('#receipt_discount');
-        discountEl.textContent = '%' + discountAmount.toFixed(2);
+        discountEl.textContent = discountAmount.toFixed(2) + '%';
         discountEl.classList.toggle('text-success', discountAmount > 0);
-        discountEl.classList.toggle('fw-medium', discountAmount === 0);
+        discountEl.classList.toggle('text-muted', discountAmount === 0);
     });
 </script>

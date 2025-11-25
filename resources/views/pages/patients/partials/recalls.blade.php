@@ -17,7 +17,7 @@
                     <thead class="table-light">
                         <tr>
                             <th>Date</th>
-                            <th>Author</th>
+                            <th>Associate</th>
                             <th>Patient</th>
                             <th>Next Recall</th>
                             <th>Notes</th>
@@ -31,7 +31,7 @@
                             <tr></tr>
                             <td>{{ $recall->created_at ? $recall->created_at->format('M d, Y') : '-' }}</td>
 
-                            <td>{{ $recall->account?->full_name ?? 'Unknown' }}</td>
+                            <td>{{ $recall->associate?->full_name ?? 'Unknown' }}</td>
                             <td>{{ $recall->patient?->full_name ?? 'Unknown' }}</td>
                             <td>{{ $recall->recall_date ? \Carbon\Carbon::parse($recall->recall_date)->format('M d, Y') : '-' }}
                             </td>
