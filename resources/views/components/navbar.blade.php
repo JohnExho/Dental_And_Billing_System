@@ -26,7 +26,7 @@
     /* When sidebar is expanded (hover) */
     .sidebar-wrapper.expanded ~ * .echo-movebar,
     body:has(.sidebar-wrapper.expanded) .echo-movebar {
-        margin-left: -100px; /* Expanded sidebar width */
+        margin-left: -70px; /* Expanded sidebar width */
     }
 
     body {
