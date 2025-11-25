@@ -297,8 +297,7 @@
                         </div>
 
                         <div id="recentActivitiesContent" class="d-none">
-                            <p>TEST CONTENT - Recent Activities</p>
-                            {{-- @include('auth.partials.admin-dashboard-partial', ['logs' => $logs]) --}}
+                            @include('auth.partials.admin-dashboard-partial', ['logs' => $logs])
                         </div>
                     </div>
                 </div>
@@ -312,8 +311,7 @@
                     <div class="d-flex justify-content-between align-items-center mb-3">
                         <h5 class="card-title text-danger mb-0">Patients with Balance</h5>
                     </div>
-                    <p>TEST CONTENT - Patients with Balance</p>
-                    {{-- @include('auth.partials.dashboard-bill-partial') --}}
+                    @include('auth.partials.dashboard-bill-partial')
                 </div>
             </div>
         </div>
