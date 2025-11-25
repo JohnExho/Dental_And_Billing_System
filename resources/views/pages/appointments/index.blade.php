@@ -2,44 +2,46 @@
 @section('title', 'Appointment | Chomply')
 @section('styles')
     <style>
-        table {
-            table-layout: fixed;
-            width: 100%;
-        }
+       table {
+        table-layout: fixed;
+        width: 100%;
+    }
 
-        td {
-            height: 100px;
-            vertical-align: top;
-            padding: 8px;
-            position: relative;
-        }
+    td {
+        height: 100px;
+        vertical-align: top;
+        padding: 8px;
+        position: relative;
+    }
 
-        td div.badge {
-            font-size: 0.75rem;
-            white-space: normal;
-            line-height: 1.1rem;
-        }
+    td div.badge {
+        font-size: 0.75rem;
+        white-space: normal;
+        line-height: 1.1rem;
+    }
 
-        /* FORCE Hover to override Bootstrap */
-        #toggle-partial.btn.btn-outline-primary {
-            transition: background 0.3s ease, transform 0.3s ease, box-shadow 0.3s ease !important;
-        }
+    /* ============================
+       UNIVERSAL BUTTON ANIMATION
+       ============================ */
+    .action-btn {
+        transition: background 0.3s ease,
+                    transform 0.3s ease,
+                    box-shadow 0.3s ease !important;
+    }
 
-        /* Hover Effect */
-        #toggle-partial.btn.btn-outline-primary:hover {
-            background-color: #e2e6ea !important;
-            color: #000 !important;
-            transform: translateY(-2px) !important;
-            box-shadow: 0 6px 12px rgba(0,0,0,0.15) !important;
-        }
+    .action-btn:hover {
+        background-color: #e2e6ea !important;
+        color: #000 !important;
+        transform: translateY(-2px) !important;
+        box-shadow: 0 6px 12px rgba(0,0,0,0.15) !important;
+    }
 
-        /* Active Click */
-        #toggle-partial.btn.btn-outline-primary:active {
-            background-color: #d0d4d8 !important;
-            color: #000 !important;
-            transform: translateY(2px) scale(0.97) !important;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.2) !important;
-        }
+    .action-btn:active {
+        background-color: #d0d4d8 !important;
+        color: #000 !important;
+        transform: translateY(2px) scale(0.97) !important;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.20) !important;
+    }
     </style>
     
 @endsection
