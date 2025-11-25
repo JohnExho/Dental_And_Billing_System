@@ -19,70 +19,77 @@ class BillController extends Controller
         $this->guard = Auth::guard('account');
     }
 
-    public function create(Request $request)
-    {
-        $request->validate([
-            'bill_id' => 'required|exists:bills,bill_id',
-            'payment_method' => 'required|in:cash,online,credit_card',
-            'clinic_id' => 'required|exists:clinics,clinic_id',
-            'amount_paid' => 'required|numeric|min:0',
-            'discount' => 'required|numeric|min:0|max:100',
-            'online_payment_type' => 'required_if:payment_method,online',
-            'other_payment_details' => 'required_if:online_payment_type,other',
-            'credit_card_type' => 'required_if:payment_method,credit_card',
-        ]);
+public function create(Request $request)
+{
+    $request->validate([
+        'bill_id' => 'required|exists:bills,bill_id',
+        'payment_method' => 'required|in:cash,online,credit_card',
+        'clinic_id' => 'required|exists:clinics,clinic_id',
+        'amount_paid' => 'required|numeric|min:0',
+        'discount' => 'required|numeric|min:0|max:100',
+        'online_payment_type' => 'required_if:payment_method,online',
+        'other_payment_details' => 'required_if:online_payment_type,other',
+        'credit_card_type' => 'required_if:payment_method,credit_card',
+    ]);
 
-        $bill = Bill::findOrFail($request->bill_id);
+    $bill = Bill::findOrFail($request->bill_id);
 
+    // **FIX: Calculate subtotal from bill_items instead of using $bill->amount**
+    // This ensures consistency with the JavaScript calculation
+    $subtotal = $bill->billItems()
+        ->whereNull('deleted_at')
+        ->sum('amount');
 
-        // Calculate final amount after discount
-        $discountAmount = bcmul($bill->amount, bcdiv($request->discount, 100, 2), 2);
-        $finalAmount = bcsub($bill->amount, $discountAmount, 2);
+    // Calculate discount and final amount
+    $discountAmount = bcmul($subtotal, bcdiv($request->discount, 100, 4), 2);
+    $finalAmount = bcsub($subtotal, $discountAmount, 2);
 
-        // Verify payment amount matches calculated total
-        if (bccomp($request->amount_paid, $finalAmount, 2) !== 0) {
-            return back()->with('error', 'Payment amount does not match the calculated total.');
-        }
-
-        return DB::transaction(function () use ($request, $bill, $finalAmount,) {
-            // Create payment record
-
-
-            $payment = new Payment([
-                'bill_id' => $bill->bill_id,
-                'account_id' => $this->guard->user()->account_id,
-                'payment_method' => $request->payment_method,
-                'amount' => $finalAmount,
-                'paid_at_date' => now(),
-                'paid_at_time' => now(),
-                'payment_details' => $this->getPaymentDetails($request),
-                'clinic_id' => $request->clinic_id,
-            ]);
-            $payment->save();
-
-            // Update bill status and amounts
-            $bill->status = 'paid';
-            $bill->discount = $request->discount;
-            $bill->total_amount = $finalAmount;
-            $bill->save();
-
-            // Log the payment
-            LogService::record(
-                Auth::guard('account')->user(),
-                $bill,
-                'process',
-                'bill',
-                'User processed a bill payment',
-                "Bill ID: {$bill->bill_id}, Amount: {$finalAmount}, Method: {$request->payment_method}",
-                $request->ip(),
-                $request->userAgent()
-            );
-
-            return redirect()
-                ->route('specific-patient')
-                ->with('success', 'Payment processed successfully.');
-        });
+    // Verify payment amount matches calculated total (with small tolerance for rounding)
+    $amountPaid = $request->amount_paid;
+    $difference = abs(bcsub($amountPaid, $finalAmount, 2));
+    
+    if (bccomp($difference, '0.01', 2) > 0) {
+        return back()->with('error', "Payment amount ({$amountPaid}) does not match the calculated total ({$finalAmount}).");
     }
+
+    return DB::transaction(function () use ($request, $bill, $finalAmount, $subtotal) {
+        // Create payment record
+        $payment = new Payment([
+            'bill_id' => $bill->bill_id,
+            'account_id' => $this->guard->user()->account_id,
+            'payment_method' => $request->payment_method,
+            'amount' => $finalAmount,
+            'paid_at_date' => now(),
+            'paid_at_time' => now(),
+            'payment_details' => $this->getPaymentDetails($request),
+            'clinic_id' => $request->clinic_id,
+        ]);
+        $payment->save();
+
+        // Update bill status and amounts
+        $bill->status = 'paid';
+        $bill->discount = $request->discount;
+        $bill->amount = $subtotal; // Update with recalculated subtotal
+        $bill->total_amount = $finalAmount;
+        $bill->save();
+
+        // Log the payment
+        LogService::record(
+            Auth::guard('account')->user(),
+            $bill,
+            'process',
+            'bill',
+            'User processed a bill payment',
+            "Bill ID: {$bill->bill_id}, Amount: {$finalAmount}, Method: {$request->payment_method}",
+            $request->ip(),
+            $request->userAgent()
+        );
+
+        return redirect()
+            ->route('specific-patient')
+            ->with('success', 'Payment processed successfully.');
+    });
+}
 
     private function getPaymentDetails(Request $request): array
     {
