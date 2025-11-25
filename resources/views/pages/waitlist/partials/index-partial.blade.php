@@ -1,27 +1,20 @@
 <style>
-    /* Center pagination container */
-    .pagination-container,
-    #pagination-container {
-        display: flex !important;
-        justify-content: center !important;
-        align-items: center;
-    }
-    
-    /* Center the navigation element inside */
-    .pagination-container nav,
     #pagination-container nav {
         display: flex !important;
         align-items: center;
         justify-content: center !important;
-        width: 100%;
     }
     
-    /* Center the ul.pagination element */
-    .pagination-container .pagination,
-    #pagination-container .pagination {
-        margin: 0 auto;
-        justify-content: center !important;
+    #pagination-container {
+        text-align: center;
     }
+    
+    #pagination-container .pagination {
+        display: inline-flex !important;
+        justify-content: center !important;
+        margin: 0 auto;
+    }
+
 </style>
 
 <div class="card-body p-0">
