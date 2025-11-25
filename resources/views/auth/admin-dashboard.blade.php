@@ -260,9 +260,9 @@
 </style>
 
 <div class="container-fluid px-4 mt-3">
-    <div class="row g-4">
-        <!-- Left Card (Recent Activities) -->
-        <div class="col-md-12 mb-4">
+    <!-- Top Row: Recent Activities (Full Width) -->
+    <div class="row g-4 mb-4">
+        <div class="col-md-12">
             <div class="card border-1 border-info">
                 <div class="card-body">
                     <div class="d-flex justify-content-between align-items-center mb-3">
@@ -291,18 +291,20 @@
                 </div>
             </div>
         </div>
+    </div>
 
-        <!-- Right Card (Patients with Balance) -->
-            <div class="col-md-7 mt-3">
-                <div class="card dashboard-card shadow-sm border border-danger">
-                    <div class="card-body">
-                        <div class="d-flex justify-content-between align-items-center mb-3">
-                            <h5 class="card-title text-danger mb-0">Patients with Balance</h5>
-                        </div>
-                        @include('auth.partials.dashboard-bill-partial')
+    <!-- Bottom Row: Patients with Balance -->
+    <div class="row g-4">
+        <div class="col-md-12">
+            <div class="card dashboard-card shadow-sm border border-danger">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <h5 class="card-title text-danger mb-0">Patients with Balance</h5>
                     </div>
+                    @include('auth.partials.dashboard-bill-partial')
                 </div>
             </div>
+        </div>
     </div>
 </div>
 
