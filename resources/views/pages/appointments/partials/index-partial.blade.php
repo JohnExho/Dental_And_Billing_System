@@ -19,13 +19,13 @@
                     <h4 class="mb-0 fw-bold">{{ $monthName }}</h4>
 
                     <div class="d-flex gap-2">
-                                    <a href="{{ route('appointments', array_merge($queryParams, ['month' => $prevMonth->month, 'year' => $prevMonth->year, 'tab' => 'appointments'])) }}"
+                                    <a href="{{ route('appointments', array_merge($queryParams, ['month' => $prevMonth->month, 'year' => $prevMonth->year, 'tab' => 'calender'])) }}"
                                         class="btn btn-outline-primary btn-sm">Previous</a>
 
-                                    <a href="{{ route('appointments', array_merge($queryParams, ['month' => $today->month, 'year' => $today->year, 'tab' => 'appointments'])) }}"
+                                    <a href="{{ route('appointments', array_merge($queryParams, ['month' => $today->month, 'year' => $today->year, 'tab' => 'calender'])) }}"
                                         class="btn btn-outline-primary btn-sm">Today</a>
 
-                                    <a href="{{ route('appointments', array_merge($queryParams, ['month' => $nextMonth->month, 'year' => $nextMonth->year, 'tab' => 'appointments'])) }}"
+                                    <a href="{{ route('appointments', array_merge($queryParams, ['month' => $nextMonth->month, 'year' => $nextMonth->year, 'tab' => 'calender'])) }}"
                                         class="btn btn-outline-primary btn-sm">Next</a>
                     </div>
 
