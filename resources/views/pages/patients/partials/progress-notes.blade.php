@@ -1,6 +1,6 @@
 <style>
 /* Smooth transitions */
-.btn.btn-primary {
+.btn-primary {
     transition:
         background-color 0.4s ease-in-out,
         transform 0.4s ease-in-out,
@@ -8,7 +8,7 @@
 }
 
 /* Hover */
-.btn.btn-primary:hover {
+.btn-primary:hover {
     background-color: #e2e6ea !important;
     color: #000 !important;
     transform: translateY(-1px) !important;
@@ -16,7 +16,7 @@
 }
 
 /* Active */
-.btn.btn-primary:active {
+.btn-primary:active {
     background-color: #d0d4d8 !important;
     transform: translateY(2px) scale(0.98) !important;
     box-shadow: 0 1px 3px rgba(0,0,0,0.2) !important;
