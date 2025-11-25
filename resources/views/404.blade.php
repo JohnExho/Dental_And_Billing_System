@@ -401,15 +401,26 @@
             @php $role = Auth::guard('account')->user()->role ?? null; @endphp
 
             @if($role === 'admin')
-                <a href="{{ route('admin.dashboard') }}" class="btn-home">Go to Admin Dashboard</a>
+                <a id="btn-home" href="{{ route('admin.dashboard') }}" class="btn-home">Go to Admin Dashboard</a>
             @elseif($role === 'staff')
-                <a href="{{ route('staff.dashboard') }}" class="btn-home">Go to Staff Dashboard</a>
+                <a id="btn-home" href="{{ route('staff.dashboard') }}" class="btn-home">Go to Staff Dashboard</a>
             @else
-                <a href="{{ url('/') }}" class="btn-home">Return to Home</a>
+                <a id="btn-home" href="{{ url('/') }}" class="btn-home">Return to Home</a>
             @endif
         @else
-            <a href="{{ route('login') }}" class="btn-home">Return to Login</a>
+            <a id="btn-home" href="{{ route('login') }}" class="btn-home">Return to Login</a>
         @endif
+
+        <script>
+            // Remove the return button on mobile devices (<=768px)
+            (function() {
+                var btn = document.getElementById('btn-home');
+                if (!btn) return;
+                if (window.innerWidth <= 768) {
+                    btn.remove();
+                }
+            })();
+        </script>
     </div>
 
     <script>
