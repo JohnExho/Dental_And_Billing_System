@@ -15,18 +15,12 @@
                 @endforeach
             </select>
 
-            <select id="cityFilter" class="form-select" style="width: 200px;">
+            <select id="cityFilter" class="form-select" style="width: 200px;" disabled>
                 <option value="">-- Select City --</option>
-                @foreach ($cities as $city)
-                    <option value="{{ $city['id'] }}">{{ $city['name'] }}</option>
-                @endforeach
             </select>
 
-            <select id="barangayFilter" class="form-select" style="width: 200px;">
+            <select id="barangayFilter" class="form-select" style="width: 200px;" disabled>
                 <option value="">-- Select Barangay --</option>
-                @foreach ($barangays as $barangay)
-                    <option value="{{ $barangay['id'] }}">{{ $barangay['name'] }}</option>
-                @endforeach
             </select>
         </div>
 
@@ -40,7 +34,70 @@
         <script>
             document.addEventListener('DOMContentLoaded', function() {
                 const allLocations = @json($locations);
+                const allCities = @json($cities);
+                const allBarangays = @json($barangays);
                 let locationChart = null;
+
+                const provinceSelect = document.getElementById('provinceFilter');
+                const citySelect = document.getElementById('cityFilter');
+                const barangaySelect = document.getElementById('barangayFilter');
+
+                // Cascade: Province -> City
+                provinceSelect.addEventListener('change', function() {
+                    const provinceId = this.value;
+                    
+                    // Reset and disable dependent dropdowns
+                    citySelect.innerHTML = '<option value="">-- Select City --</option>';
+                    barangaySelect.innerHTML = '<option value="">-- Select Barangay --</option>';
+                    barangaySelect.disabled = true;
+                    
+                    if (provinceId) {
+                        // Filter cities by province
+                        const filteredCities = allCities.filter(city => city.province_id == provinceId);
+                        
+                        filteredCities.forEach(city => {
+                            const option = document.createElement('option');
+                            option.value = city.id;
+                            option.textContent = city.name;
+                            citySelect.appendChild(option);
+                        });
+                        
+                        citySelect.disabled = false;
+                    } else {
+                        citySelect.disabled = true;
+                    }
+                    
+                    updateLocationChart();
+                });
+
+                // Cascade: City -> Barangay
+                citySelect.addEventListener('change', function() {
+                    const cityId = this.value;
+                    
+                    // Reset barangay dropdown
+                    barangaySelect.innerHTML = '<option value="">-- Select Barangay --</option>';
+                    
+                    if (cityId) {
+                        // Filter barangays by city
+                        const filteredBarangays = allBarangays.filter(barangay => barangay.city_id == cityId);
+                        
+                        filteredBarangays.forEach(barangay => {
+                            const option = document.createElement('option');
+                            option.value = barangay.id;
+                            option.textContent = barangay.name;
+                            barangaySelect.appendChild(option);
+                        });
+                        
+                        barangaySelect.disabled = false;
+                    } else {
+                        barangaySelect.disabled = true;
+                    }
+                    
+                    updateLocationChart();
+                });
+
+                // Update chart when barangay changes
+                barangaySelect.addEventListener('change', updateLocationChart);
 
                 function initLocationChart() {
                     const ctx = document.getElementById('locationDetailChart');
@@ -97,9 +154,9 @@
                 }
 
                 function filterLocations() {
-                    const provinceId = document.getElementById('provinceFilter').value;
-                    const cityId = document.getElementById('cityFilter').value;
-                    const barangayId = document.getElementById('barangayFilter').value;
+                    const provinceId = provinceSelect.value;
+                    const cityId = citySelect.value;
+                    const barangayId = barangaySelect.value;
 
                     return allLocations.filter(loc => {
                         let matches = true;
@@ -113,9 +170,9 @@
                 function updateLocationChart() {
                     if (!locationChart) return;
 
-                    const provinceId = document.getElementById('provinceFilter').value;
-                    const cityId = document.getElementById('cityFilter').value;
-                    const barangayId = document.getElementById('barangayFilter').value;
+                    const provinceId = provinceSelect.value;
+                    const cityId = citySelect.value;
+                    const barangayId = barangaySelect.value;
 
                     const filtered = filterLocations();
                     const counts = {};
@@ -147,14 +204,6 @@
                     locationChart.data.datasets[0].data = Object.values(counts);
                     locationChart.update();
                 }
-
-                // Attach filter change events
-                ['provinceFilter', 'cityFilter', 'barangayFilter'].forEach(id => {
-                    const element = document.getElementById(id);
-                    if (element) {
-                        element.addEventListener('change', updateLocationChart);
-                    }
-                });
 
                 // Initialize chart when location tab is shown
                 const locationTab = document.querySelector('#location-detail-tab');
