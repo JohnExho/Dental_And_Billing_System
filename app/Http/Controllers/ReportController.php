@@ -8,13 +8,17 @@ use App\Models\Treatment;
 use App\Models\Waitlist;
 use Carbon\Carbon;
 use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\View;
+use Illuminate\Support\Facades\Session;
+use Illuminate\Support\Facades\App;
 
 class ReportController extends Controller
 {
     #bypass
     public function index()
     {
-        $clinicId = session('clinic_id'); // if you want clinic-specific filtering
+        $clinicId = Session::get('clinic_id'); // if you want clinic-specific filtering
 
         $waitlist = Waitlist::whereHas('patient', function ($q) use ($clinicId) {
             if ($clinicId) {
@@ -103,17 +107,42 @@ class ReportController extends Controller
             ->unique('id')
             ->values();
 
-        $forecastedWaitlistValue = json_decode(
-            file_get_contents('http://api.chomply.online/forecastwaitlist?clinic_id='.($clinicId ?? '')),
-            true
-        );
-        $forecastedRevenueValue = json_decode(file_get_contents('http://api.chomply.online/forecastrevenue?clinic_id='.($clinicId ?? '')), true);
-        $forecastedLocationValue = json_decode(file_get_contents('http://api.chomply.online/forecastlocation'), true);
-        // In your ReportController
-        $forecastedTreatmentValue = json_decode(
-            file_get_contents('http://api.chomply.online/forecasttreatment?clinic_id='.($clinicId ?? '')),
-            true
-        );
+        $apiKey = App::environment('API_KEY') ?? env('API_KEY'); // Read from .env
+        $opts = [
+            "http" => [
+                "header" => "X-API-Key: {$apiKey}\r\n"
+            ]
+        ];
+        $context = stream_context_create($opts);
+
+        $forecastedWaitlistValue = Cache::remember('forecasted_waitlist_' . ($clinicId ?? 'all'), 600, function () use ($clinicId, $context) {
+            return json_decode(
+                file_get_contents('http://api.chomply.online/forecastwaitlist?clinic_id='.($clinicId ?? ''), false, $context),
+                true
+            );
+        });
+
+        $forecastedRevenueValue = Cache::remember('forecasted_revenue_' . ($clinicId ?? 'all'), 600, function () use ($clinicId, $context) {
+            return json_decode(
+                file_get_contents('http://api.chomply.online/forecastrevenue?clinic_id='.($clinicId ?? ''), false, $context),
+                true
+            );
+        });
+
+        $forecastedLocationValue = Cache::remember('forecasted_location', 600, function () use ($context) {
+            return json_decode(
+                file_get_contents('http://api.chomply.online/forecastlocation', false, $context),
+                true
+            );
+        });
+
+        $forecastedTreatmentValue = Cache::remember('forecasted_treatment_' . ($clinicId ?? 'all'), 600, function () use ($clinicId, $context) {
+            return json_decode(
+                file_get_contents('http://api.chomply.online/forecasttreatment?clinic_id='.($clinicId ?? ''), false, $context),
+                true
+            );
+        });
+
         if (! empty($forecastedLocationValue['clusters'])) {
             $provinceMap = $provinces->pluck('name', 'id');
             $cityMap = $cities->pluck('name', 'id');
@@ -126,7 +155,7 @@ class ReportController extends Controller
             }
         }
 
-        return view('pages.reports.index', compact(
+        return View::make('pages.reports.index', compact(
             'waitlist',
             'revenueData',
             'locations',
