@@ -73,9 +73,6 @@
                         <div class="card-body text-muted" style="cursor: default;">
                             <div class="d-flex justify-content-between align-items-center mb-3">
                                 <h5 class="card-title text-info mb-0">Today's Appointments</h5>
-                                <span class="badge bg-info-subtle text-info border border-info">
-                                    {{ $todayAppointments->count() }}
-                                </span>
                             </div>
                             <div class="list-group list-group-flush">
                                 @forelse($todayAppointments as $appointment)
