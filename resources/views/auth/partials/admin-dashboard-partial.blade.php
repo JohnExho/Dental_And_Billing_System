@@ -31,6 +31,4 @@
             @else
                 <p class="text-muted mb-0">No recent activities.</p>
             @endif
-        </div>
-    </div>
-</div>
+

@@ -272,51 +272,53 @@
 }
     </style>
 
-<div class="container-fluid px-4 mt-3">
-    <!-- Single Row with Both Cards Side-by-Side -->
-    <div class="row g-4">
-        <!-- Left Card: Recent Activities (takes 8 columns on large screens) -->
-        <div class="col-12 col-lg-8">
-            <div class="card border-1 border-info">
-                <div class="card-body">
-                    <div class="d-flex justify-content-between align-items-center mb-3">
-                        <h5 class="card-title mb-0 text-info">Recent Activities</h5>
-                        <div class="d-flex align-items-center">
-                            <small class="text-muted me-3" id="lastUpdated"></small>
-                            <button id="refreshLogs" class="btn btn-sm btn-outline-primary">
-                                <i class="bi bi-arrow-clockwise"></i> Refresh
-                            </button>
+    <div class="container-fluid px-4 mt-3">
+        <div class="row g-4">
+            <!-- Left Card (Recent Activities) -->
+            <div class="col-md-12 mb-4">
+                <div class="card border-1 border-info">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between align-items-center mb-3">
+                            <h5 class="card-title mb-0 text-info">Recent Activities</h5>
+                            <div class="d-flex align-items-center">
+                                <small class="text-muted me-3" id="lastUpdated"></small>
+                                <button id="refreshLogs" class="btn btn-sm btn-outline-primary">
+                                    <i class="bi bi-arrow-clockwise"></i> Refresh
+                                </button>
+                            </div>
                         </div>
-                    </div>
+        
 
-                    <div id="recentActivitiesWrapper" class="position-relative"
-                        onclick="window.location='{{ route('tools') }}'">
-                        <div id="recentActivitiesLoading" class="d-flex justify-content-center align-items-center py-5">
-                            <div class="spinner-border text-primary" role="status"></div>
-                            <span class="ms-2 text-muted">Loading activities...</span>
-                        </div>
+                        <div id="recentActivitiesWrapper" class="position-relative"
+                            onclick="window.location='{{ route('tools') }}'">
+                            <!-- Loader -->
+                            <div id="recentActivitiesLoading" class="d-flex justify-content-center align-items-center py-5">
+                                <div class="spinner-border text-primary" role="status"></div>
+                                <span class="ms-2 text-muted">Loading activities...</span>
+                            </div>
 
-                        <div id="recentActivitiesContent" class="d-none">
-                            @include('auth.partials.admin-dashboard-partial', ['logs' => $logs])
+                            <!-- Content (hidden until ready) -->
+                            <div id="recentActivitiesContent" class="d-none">
+                                @include('auth.partials.admin-dashboard-partial', ['logs' => $logs])
+                            </div>
                         </div>
                     </div>
                 </div>
             </div>
-        </div>
 
-        <!-- Right Card: Patients with Balance (takes 4 columns on large screens) -->
-        <div class="col-12 col-lg-4">
-            <div class="card dashboard-card shadow-sm border border-danger">
-                <div class="card-body">
-                    <div class="d-flex justify-content-between align-items-center mb-3">
-                        <h5 class="card-title text-danger mb-0">Patients with Balance</h5>
+            <!-- Right Card (Patients with Balance) -->
+            <div class="col-md-7 mt-3">
+                <div class="card dashboard-card shadow-sm border border-danger">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between align-items-center mb-3">
+                            <h5 class="card-title text-danger mb-0">Patients with Balance</h5>
+                        </div>
+                        @include('auth.partials.dashboard-bill-partial')
                     </div>
-                    @include('auth.partials.dashboard-bill-partial')
                 </div>
             </div>
         </div>
     </div>
-</div>
 
     <!-- Scripts -->
     <script src="https://cdn.jsdelivr.net/npm/dayjs/dayjs.min.js"></script>
