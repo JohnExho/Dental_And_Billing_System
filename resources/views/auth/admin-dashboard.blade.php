@@ -269,7 +269,7 @@
         }
     </style>
 
-    {{-- <div class="container-fluid px-4 mt-3"> --}}
+    <div class="container-fluid px-4 mt-3">
         <div class="row g-4">
             <!-- Left Card (Recent Activities) -->
             <div class="col-md-12 mb-4">
@@ -315,7 +315,7 @@
                 </div>
             </div>
         </div>
-    {{-- </div> --}}
+    </div>
 
     <!-- Scripts -->
     <script src="https://cdn.jsdelivr.net/npm/dayjs/dayjs.min.js"></script>
