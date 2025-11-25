@@ -1,21 +1,3 @@
-<style>
-/* Add spacing under the Service dropdown */
-#service {
-    margin-bottom: 22px !important;
-}
-
-/* Add spacing under the Net Cost input field */
-#net_cost {
-    margin-bottom: 26px !important;
-}
-
-/* Add extra spacing around the Remarks / Notes textarea */
-#remarks {
-    margin-top: 15px !important;
-    margin-bottom: 30px !important;
-}
-</style>
-
 <!-- Add progress-note Modal -->
 <div class="modal fade" id="add-progress-note-modal" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog modal-lg modal-dialog-centered">
