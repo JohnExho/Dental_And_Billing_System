@@ -40,7 +40,7 @@
                             <input type="text" class="form-control" id="followup_reason" name="followup_reason">
                         </div>
 
-                        <!-- Service (reduced spacing) -->
+                        <!-- Service -->
                         <div class="col-md-6 !mb-1">
                             <label for="service" class="form-label">Service</label>
                             <select class="form-select" id="service" name="service">
@@ -53,18 +53,28 @@
                             </select>
                         </div>
 
+                        <!-- FIXED SPACING — TOOTH SECTION -->
                         <div class="col-md-6 !mb-2">
                             <label for="tooth_id" class="form-label">Tooth (select one or more)</label>
-                            <div id="tooth_list" class="border rounded p-2 max-h-40 overflow-auto">
+
+                            <div id="tooth_list" class="border rounded"
+                                style="max-height: 220px; overflow-y: auto; padding: 6px !important;">
+
                                 @foreach ($teeth as $tooth)
-                                    <div class="form-check">
-                                        <input class="form-check-input" type="checkbox" name="tooth_id[]" value="{{ $tooth->tooth_list_id }}" id="tooth_{{ $loop->index }}" data-price="{{ $tooth->final_price }}">
-                                        <label class="form-check-label" for="tooth_{{ $loop->index }}">
+                                    <div class="form-check mb-1" style="margin-bottom: 4px;">
+                                        <input class="form-check-input" type="checkbox"
+                                            name="tooth_id[]" value="{{ $tooth->tooth_list_id }}"
+                                            id="tooth_{{ $loop->index }}"
+                                            data-price="{{ $tooth->final_price }}">
+                                        <label class="form-check-label" for="tooth_{{ $loop->index }}"
+                                            style="font-size: 0.85rem;">
                                             {{ $tooth->name }} - ₱{{ number_format($tooth->final_price, 2) }}
                                         </label>
                                     </div>
                                 @endforeach
+
                             </div>
+
                             <div class="form-text">Check one or more teeth.</div>
                         </div>
 
