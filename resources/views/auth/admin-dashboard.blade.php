@@ -272,7 +272,7 @@
     <div class="container-fluid px-4 mt-3">
         <div class="row g-4">
             <!-- Left Card (Recent Activities) -->
-            <div class="col-md-5 mb-4">
+            <div class="col-md-5 mb-4 mt-3">
                 <div class="card border-1 border-info">
                     <div class="card-body">
                         <div class="d-flex justify-content-between align-items-center mb-3">
