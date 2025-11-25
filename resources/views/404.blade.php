@@ -19,7 +19,8 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            overflow: hidden;
+            overflow-x: hidden;
+            overflow-y: auto;
             position: relative;
         }
 
@@ -55,6 +56,7 @@
             padding: 2rem;
             max-width: 600px;
             width: 100%;
+            margin: auto;
         }
 
         .error-code {
@@ -114,7 +116,8 @@
             display: inline-block;
             margin-bottom: 1rem;
             position: relative;
-            width: 500px;
+            width: 100%;
+            max-width: 500px;
             height: 250px;
         }
 
