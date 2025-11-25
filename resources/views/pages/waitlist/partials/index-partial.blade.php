@@ -1,20 +1,14 @@
 <style>
-    #pagination-container nav {
+    .pagination-container nav{
         display: flex !important;
         align-items: center;
         justify-content: center !important;
     }
     
-    #pagination-container {
-        text-align: center;
-    }
-    
-    #pagination-container .pagination {
-        display: inline-flex !important;
+    /* Force center the pagination ul */
+    .pagination {
         justify-content: center !important;
-        margin: 0 auto;
     }
-
 </style>
 
 <div class="card-body p-0">
@@ -136,7 +130,7 @@
         </div>
 
         <!-- Pagination (hidden during search) -->
-        <div id="pagination-container" class="p-3">
+        <div id="pagination-container" class="p-3 d-flex justify-content-center">
             {{ $waitlist->links('vendor.pagination.bootstrap-5') }}
         </div>
     @endif
