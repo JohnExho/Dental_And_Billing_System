@@ -1,3 +1,36 @@
+                        <style>
+                            <style>
+    /* Style only the three navigation buttons */
+    .d-flex.gap-2 .btn.btn-outline-primary.btn-sm {
+        border: 1px solid #007bff !important;
+        color: #007bff !important;
+        background-color: transparent !important;
+        font-weight: 500 !important;
+        border-radius: 6px !important;
+        transition: all 0.2s ease-in-out !important;
+        padding: 6px 14px !important;
+    }
+
+    /* Hover effect */
+    .d-flex.gap-2 .btn.btn-outline-primary.btn-sm:hover {
+        background-color: #007bff !important;
+        color: white !important;
+        transform: translateY(-2px) !important;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15) !important;
+    }
+
+    /* Active (pressed) effect */
+    .d-flex.gap-2 .btn.btn-outline-primary.btn-sm:active {
+        background-color: #0056b3 !important;
+        color: white !important;
+        transform: translateY(0px) !important;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.15) !important;
+    }
+</style>
+
+                        </style>
+                        
+                        
                         @php
                             $queryParams = array_merge(request()->except(['month', 'year', 'view']), [
                                 'year' => $currentYear,
