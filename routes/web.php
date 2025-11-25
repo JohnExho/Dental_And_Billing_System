@@ -182,6 +182,12 @@ Route::post('/force-logout', function (Request $request) {
             Route::get('/services', [ServiceController::class, 'index'])->name('services');
             Route::get('/tools', [ToolController::class, 'index'])->name('tools');
             Route::get('/reports', [ReportController::class, 'index'])->name('reports');
+  Route::get('/reports/dashboard', [ReportController::class, 'getDashboard'])->name('reports.dashboard');
+    Route::get('/reports/waitlist-detail', [ReportController::class, 'getWaitlistDetail'])->name('reports.waitlist-detail');
+    Route::get('/reports/revenue-detail', [ReportController::class, 'getRevenueDetail'])->name('reports.revenue-detail');
+    Route::get('/reports/location-detail', [ReportController::class, 'getLocationDetail'])->name('reports.location-detail');
+    Route::get('/reports/treatment-detail', [ReportController::class, 'getTreatmentDetail'])->name('reports.treatment-detail');
+    
             Route::view('/dump', 'dd')->name('dump');
 
         });
