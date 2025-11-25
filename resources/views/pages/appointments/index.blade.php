@@ -20,32 +20,28 @@
         line-height: 1.1rem;
     }
 
-        /* FORCE OVERRIDE Bootstrap for BOTH buttons */
-    button.btn.action-btn,
-    button.btn-outline-primary.action-btn,
-    button.btn-primary.action-btn {
-        transition: all 0.25s ease-in-out !important;
+    /* Smooth transitions */
+    .btn.btn-primary {
+        transition:
+            background 0.4s ease-in-out,
+            transform 0.4s ease-in-out,
+            box-shadow 0.4s ease-in-out !important;
     }
 
     /* Hover */
-    button.btn.action-btn:hover,
-    button.btn-outline-primary.action-btn:hover,
-    button.btn-primary.action-btn:hover {
-        background-color: #e2e6ea !important;
+    .btn.btn-primary:hover {
+        background: #e2e6ea !important;
         color: #000 !important;
-        transform: translateY(-2px) !important;
-        box-shadow: 0 6px 12px rgba(0,0,0,0.18) !important;
+        transform: translateY(-1px) !important;
+        box-shadow: 0 6px 12px rgba(0,0,0,0.15) !important;
     }
 
-        /* Active / Click */
-        button.btn.action-btn:active,
-        button.btn-outline-primary.action-btn:active,
-        button.btn-primary.action-btn:active {
-            background-color: #d0d4d8 !important;
-            color: #000 !important;
-            transform: translateY(2px) scale(0.97) !important;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.25) !important;
-        }
+    /* Active */
+    .btn.btn-primary:active {
+        background: #d0d4d8 !important;
+        transform: translateY(2px) scale(0.98) !important;
+        box-shadow: 0 1px 3px rgba(0,0,0,0.2) !important;
+    }
 
     </style>
     
