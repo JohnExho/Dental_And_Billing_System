@@ -267,6 +267,9 @@
                 transform: none;
             }
         }
+        .col-md-12, .col-md-7 {
+    border: 3px solid green !important;
+}
     </style>
 
     <div class="container-fluid px-4 mt-3">

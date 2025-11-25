@@ -25,21 +25,12 @@
     margin-left: 75px; /* default, no sidebar applied */
 }
 
-.main-content {
-    transition: margin-left .28s ease, transform .28s ease;
-    min-height: 100vh;
-    margin-left: 75px; /* default collapsed width */
+.sidebar-wrapper.expanded ~ * .main-content,
+body:has(.sidebar-wrapper.expanded) .main-content {
+    margin-left: 240px; /* matches expanded sidebar width */
 }
 
-/* When sidebar is NOT collapsed (expanded state) */
-body:not(.sidebar-collapsed) .main-content {
-    margin-left: 240px; /* expanded sidebar width */
-}
 
-/* When sidebar is collapsed */
-body.sidebar-collapsed .main-content {
-    margin-left: 64px; /* compact width */
-}
 
         /* collapsed state: don't fully hide — shrink to compact width */
         .sidebar-wrapper {
