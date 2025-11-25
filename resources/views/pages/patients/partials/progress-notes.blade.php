@@ -9,15 +9,15 @@
 
 /* Hover */
 .btn-primary:hover {
-    background-color: #e2e6ea !important;
-    color: #000 !important;
+    background-color: #0D6EFD !important;
+    color: #fff !important;
     transform: translateY(-1px) !important;
     box-shadow: 0 6px 12px rgba(0,0,0,0.15) !important;
 }
 
 /* Active */
 .btn-primary:active {
-    background-color: #d0d4d8 !important;
+    background-color: #083b86 !important;
     transform: translateY(2px) scale(0.98) !important;
     box-shadow: 0 1px 3px rgba(0,0,0,0.2) !important;
 }
