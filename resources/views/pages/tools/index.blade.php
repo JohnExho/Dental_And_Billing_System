@@ -118,5 +118,21 @@
     <script src="https://cdn.jsdelivr.net/npm/dayjs/dayjs.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/dayjs/plugin/duration.js"></script>
 
+    <script>
+        dayjs.extend(window.dayjs_plugin_duration);
+
+        document.addEventListener("DOMContentLoaded", () => {
+            setTimeout(() => {
+                document.getElementById('recentActivitiesLoading').classList.add('d-none');
+                document.getElementById('recentActivitiesContent').classList.remove('d-none');
+            }, 600);
+        });
+
+        document.addEventListener("click", (e) => {
+            if (e.target.closest('#refreshLogs')) {
+                location.reload();
+            }
+        });
+    </script>
 
 @endsection
