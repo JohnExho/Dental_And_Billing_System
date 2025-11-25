@@ -26,25 +26,23 @@
 
     /* OUTLINE BUTTON (Show Appointments) */
     .action-btn-outline {
-        border: 2px solid #0d6efd !important;
-        color: #0d6efd !important;
-        background-color: transparent !important;
-        transition: all 0.3s ease-in-out !important;
-    }
+    background-color: #0d6efd !important;
+    color: white !important;
+    border: none !important;
+    transition: all 0.3s ease-in-out !important;
+}
 
     .action-btn-outline:hover {
-        background-color: #e2e6ea !important;
-        color: #000 !important;
+        background-color: #0b5ed7 !important;
         transform: translateY(-2px) !important;
         box-shadow: 0 6px 12px rgba(0,0,0,0.15) !important;
     }
 
     .action-btn-outline:active {
+        background-color: #0a58ca !important;
         transform: translateY(2px) scale(0.97) !important;
-        background-color: #d0d4d8 !important;
-        color: #000 !important;
-        box-shadow: 0 2px 6px rgba(0,0,0,0.2) !important;
     }
+
 
     /* PRIMARY BUTTON (New Appointment) */
     .action-btn-primary {
