@@ -62,7 +62,7 @@
 
         <!-- Right Panel -->
         <div class="login-right">
-            <img src="https://placehold.co/600x800?text=Dentist" alt="Dentist">
+            <img src="{{ asset('public/images/teethpicture.jpg') }}" alt="Dentist">
         </div>
     </div>
 </div>
