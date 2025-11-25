@@ -48,7 +48,7 @@ class BillProvider extends ServiceProvider
                 }
             }
 
-            $unpaidBills = $unpaidBillsQuery->limit(12)->get();
+            $unpaidBills = $unpaidBillsQuery->limit(15)->get();
 
             $view->with('unpaidBills', $unpaidBills);
         });
