@@ -7,11 +7,11 @@
         box-shadow 0.4s ease-in-out;
 }
 
-.modal-footer .btn-warning {
+.btn-warning {
         background: #F2D57C;
 }
 /* Hover: slightly darker blue */
-.modal-footer .btn-warning:hover {
+.btn-warning:hover {
         background: #bea24b;
         color: #FFFEF2;
         transform: translateY(-2px);   /* subtle lift */
@@ -19,7 +19,7 @@
 }
 
 /* Active/Click: lighter blue */
-.modal-footer .btn-warning:active {
+.btn-warning:active {
         color: #FFFEF2;
         background: #927b36;
         transform: translateY(2px) scale(0.98); /* real press effect */
@@ -27,14 +27,14 @@
 }
 
 /* Optional: Secondary button hover */
-.modal-footer .btn-secondary:hover {
+.btn-secondary:hover {
         background: #1e3rgb(112, 112, 112)
         color: #FFFEF2;
         transform: translateY(-2px);   /* subtle lift */
         box-shadow: 0 6px 12px rgba(0,0,0,0.2); /* soft shadow */
 }
 
-.modal-footer .btn-secondary:active {
+.btn-secondary:active {
         color: #FFFEF2;
         background: #535a61;
         transform: translateY(2px) scale(0.98); /* real press effect */
