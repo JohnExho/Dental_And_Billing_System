@@ -21,6 +21,10 @@
     transform: translateY(2px) scale(0.98) !important;
     box-shadow: 0 1px 3px rgba(0,0,0,0.2) !important;
 }
+
+.pagination {
+    justify-content: center !important;
+}
 </style>
 
 @extends('layout')
@@ -72,7 +76,7 @@
             </div>
 
         </div>
-        <div class="mt-3 px-3">
+        <div class="mt-3 px-3 d-flex justify-content-center">
             {{ $medicines->links('vendor.pagination.bootstrap-5') }}
         </div>
         {{-- Modal lives outside the container but still inside content --}}
