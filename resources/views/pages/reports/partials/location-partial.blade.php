@@ -11,9 +11,7 @@
             <select id="provinceFilter" class="form-select" style="width: 200px;">
                 <option value="">-- Select Province --</option>
                 @foreach ($provinces as $province)
-                    <option value="{{ $province->province_id }}" data-id="{{ $province->id }}">
-                        {{ $province->name }}
-                    </option>
+                    <option value="{{ $province['id'] }}">{{ $province['name'] }}</option>
                 @endforeach
             </select>
 
@@ -43,76 +41,72 @@
                 const barangaySelect = document.getElementById('barangayFilter');
 
                 // Cascade: Province -> City
-                provinceSelect.addEventListener('change', async function() {
+                provinceSelect.addEventListener('change', function() {
                     // Reset dependent dropdowns
                     citySelect.innerHTML = '<option value="">-- Select City --</option>';
                     citySelect.disabled = true;
                     barangaySelect.innerHTML = '<option value="">-- Select Barangay --</option>';
                     barangaySelect.disabled = true;
 
-                    const provinceCode = this.value;
-                    if (!provinceCode) {
+                    const provinceId = this.value;
+                    if (!provinceId) {
                         updateLocationChart();
                         return;
                     }
 
-                    citySelect.innerHTML = '<option>Loading cities…</option>';
-                    try {
-                        const res = await fetch(`/locations/cities/${provinceCode}`, {
-                            headers: {
-                                'Accept': 'application/json'
-                            }
-                        });
-                        const data = await res.json();
-                        citySelect.innerHTML = '<option value="">-- Select City --</option>';
-                        data.forEach(c => {
-                            const opt = document.createElement('option');
-                            opt.value = c.city_id;
-                            opt.dataset.id = c.id;
-                            opt.textContent = c.name;
-                            citySelect.appendChild(opt);
-                        });
+                    // Filter cities from allLocations that belong to selected province
+                    const citiesInProvince = allLocations
+                        .filter(loc => loc.province_id == provinceId)
+                        .map(loc => ({ id: loc.city_id, name: loc.city_name }))
+                        .filter((city, index, self) => 
+                            index === self.findIndex(c => c.id === city.id)
+                        );
+
+                    citySelect.innerHTML = '<option value="">-- Select City --</option>';
+                    citiesInProvince.forEach(city => {
+                        const opt = document.createElement('option');
+                        opt.value = city.id;
+                        opt.textContent = city.name;
+                        citySelect.appendChild(opt);
+                    });
+                    
+                    if (citiesInProvince.length > 0) {
                         citySelect.disabled = false;
-                    } catch (err) {
-                        console.error(err);
-                        citySelect.innerHTML = '<option value="">Error loading cities</option>';
                     }
                     
                     updateLocationChart();
                 });
 
                 // Cascade: City -> Barangay
-                citySelect.addEventListener('change', async function() {
+                citySelect.addEventListener('change', function() {
                     // Reset barangay dropdown
                     barangaySelect.innerHTML = '<option value="">-- Select Barangay --</option>';
                     barangaySelect.disabled = true;
                     
-                    const cityCode = this.value;
-                    if (!cityCode) {
+                    const cityId = this.value;
+                    if (!cityId) {
                         updateLocationChart();
                         return;
                     }
 
-                    barangaySelect.innerHTML = '<option>Loading barangays…</option>';
-                    try {
-                        const res = await fetch(`/locations/barangays/${cityCode}`, {
-                            headers: {
-                                'Accept': 'application/json'
-                            }
-                        });
-                        const data = await res.json();
-                        barangaySelect.innerHTML = '<option value="">-- Select Barangay --</option>';
-                        data.forEach(b => {
-                            const opt = document.createElement('option');
-                            opt.value = b.barangay_id;
-                            opt.dataset.id = b.id;
-                            opt.textContent = b.name;
-                            barangaySelect.appendChild(opt);
-                        });
+                    // Filter barangays from allLocations that belong to selected city
+                    const barangaysInCity = allLocations
+                        .filter(loc => loc.city_id == cityId)
+                        .map(loc => ({ id: loc.barangay_id, name: loc.barangay_name }))
+                        .filter((barangay, index, self) => 
+                            index === self.findIndex(b => b.id === barangay.id)
+                        );
+
+                    barangaySelect.innerHTML = '<option value="">-- Select Barangay --</option>';
+                    barangaysInCity.forEach(barangay => {
+                        const opt = document.createElement('option');
+                        opt.value = barangay.id;
+                        opt.textContent = barangay.name;
+                        barangaySelect.appendChild(opt);
+                    });
+                    
+                    if (barangaysInCity.length > 0) {
                         barangaySelect.disabled = false;
-                    } catch (err) {
-                        console.error(err);
-                        barangaySelect.innerHTML = '<option value="">Error loading barangays</option>';
                     }
                     
                     updateLocationChart();
@@ -176,15 +170,15 @@
                 }
 
                 function filterLocations() {
-                    const provinceCode = provinceSelect.value;
-                    const cityCode = citySelect.value;
-                    const barangayCode = barangaySelect.value;
+                    const provinceId = provinceSelect.value;
+                    const cityId = citySelect.value;
+                    const barangayId = barangaySelect.value;
 
                     return allLocations.filter(loc => {
                         let matches = true;
-                        if (provinceCode) matches = matches && loc.province_id == provinceCode;
-                        if (cityCode) matches = matches && loc.city_id == cityCode;
-                        if (barangayCode) matches = matches && loc.barangay_id == barangayCode;
+                        if (provinceId) matches = matches && loc.province_id == provinceId;
+                        if (cityId) matches = matches && loc.city_id == cityId;
+                        if (barangayId) matches = matches && loc.barangay_id == barangayId;
                         return matches;
                     });
                 }
@@ -192,9 +186,9 @@
                 function updateLocationChart() {
                     if (!locationChart) return;
 
-                    const provinceCode = provinceSelect.value;
-                    const cityCode = citySelect.value;
-                    const barangayCode = barangaySelect.value;
+                    const provinceId = provinceSelect.value;
+                    const cityId = citySelect.value;
+                    const barangayId = barangaySelect.value;
 
                     const filtered = filterLocations();
                     const counts = {};
@@ -203,15 +197,15 @@
                         let label;
 
                         // If barangay is selected, show individual barangays
-                        if (barangayCode) {
+                        if (barangayId) {
                             label = loc.barangay_name;
                         }
                         // If city is selected (but not barangay), break down by barangays
-                        else if (cityCode) {
+                        else if (cityId) {
                             label = loc.barangay_name;
                         }
                         // If province is selected (but not city), break down by cities
-                        else if (provinceCode) {
+                        else if (provinceId) {
                             label = loc.city_name;
                         }
                         // If nothing selected, show provinces
