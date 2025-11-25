@@ -30,7 +30,7 @@
         }
     </style>
 
-    <div class="container-fluid mt-5">
+    <div class="container-fluid mt-3">
 
         <div class="row g-4">
             <!-- Left Card (Patients with Balance) -->
