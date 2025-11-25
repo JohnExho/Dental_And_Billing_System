@@ -20,7 +20,7 @@
     /* ⭐ NEW: Navbar content moves with sidebar */
     .echo-movebar {
         transition: margin-left 0.3s ease;
-        margin-left: -80px; /* Default collapsed sidebar width */
+        margin-left: -240px; /* Default collapsed sidebar width */
     }
 
     /* When sidebar is expanded (hover) */
