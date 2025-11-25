@@ -77,7 +77,7 @@
     .sidebar .nav a {
         display: flex;
         align-items: center;
-        gap: 1rem;
+        gap: 0.75rem;
         color: #dcdcdc;
         text-decoration: none;
         font-weight: 600;
@@ -85,6 +85,7 @@
         transition: background-color 0.3s, color 0.3s;
         position: relative;
         white-space: nowrap;
+        justify-content: flex-start;
     }
 
     .sidebar .nav a:hover {
@@ -127,14 +128,18 @@
     /* ✅ Smooth label fade animation */
     .nav-text {
         transition: opacity 0.3s ease;
+        width: 0;
+        overflow: hidden;
     }
 
     .sidebar-wrapper:not(.expanded) .nav-text {
         opacity: 0;
+        width: 0;
     }
 
     .sidebar-wrapper.expanded .nav-text {
         opacity: 1;
+        width: auto;
     }
 
     /* Mobile toggle button */
@@ -261,6 +266,8 @@
 
         .sidebar .nav i {
             font-size: 1.2rem;
+            min-width: 34px;
+            width: 34px;
         }
     }
 
