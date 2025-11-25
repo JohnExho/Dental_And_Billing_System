@@ -104,14 +104,14 @@ class ReportController extends Controller
             ->values();
 
         $forecastedWaitlistValue = json_decode(
-            file_get_contents('http://72.61.209.93:8000/forecastwaitlist?clinic_id='.($clinicId ?? '')),
+            file_get_contents('http://api.chomply.online/forecastwaitlist?clinic_id='.($clinicId ?? '')),
             true
         );
-        $forecastedRevenueValue = json_decode(file_get_contents('http://72.61.209.93:8000/forecastrevenue?clinic_id='.($clinicId ?? '')), true);
-        $forecastedLocationValue = json_decode(file_get_contents('http://72.61.209.93:8000/forecastlocation'), true);
+        $forecastedRevenueValue = json_decode(file_get_contents('http://api.chomply.online/forecastrevenue?clinic_id='.($clinicId ?? '')), true);
+        $forecastedLocationValue = json_decode(file_get_contents('http://api.chomply.online/forecastlocation'), true);
         // In your ReportController
         $forecastedTreatmentValue = json_decode(
-            file_get_contents('http://72.61.209.93:8000/forecasttreatment?clinic_id='.($clinicId ?? '')),
+            file_get_contents('http://api.chomply.online/forecasttreatment?clinic_id='.($clinicId ?? '')),
             true
         );
         if (! empty($forecastedLocationValue['clusters'])) {
