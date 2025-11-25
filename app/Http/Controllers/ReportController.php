@@ -107,7 +107,7 @@ class ReportController extends Controller
             ->unique('id')
             ->values();
 
-        $apiKey = App::environment('API_KEY') ?? env('API_KEY'); // Read from .env
+        $apiKey = env('API_KEY'); // Read from .env
         $opts = [
             "http" => [
                 "header" => "X-API-Key: {$apiKey}\r\n"
