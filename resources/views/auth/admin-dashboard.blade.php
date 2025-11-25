@@ -304,7 +304,7 @@
             </div>
 
             <!-- Right Card (Patients with Balance) -->
-            <div class="col-md-7">
+            <div class="col-md-7 mt-3">
                 <div class="card dashboard-card shadow-sm border border-danger">
                     <div class="card-body">
                         <div class="d-flex justify-content-between align-items-center mb-3">
