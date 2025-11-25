@@ -20,40 +20,28 @@
             line-height: 1.1rem;
         }
 
-        /* Base styling override for the button */
-        button#toggle-partial.btn.btn-outline-primary {
-            background-color: #ffc107; /* yellow background like your "Update Waitlist" */
-            border: none;
-            color: #000;
-            font-weight: 500;
-            padding: 8px 18px;
-            border-radius: 6px;
-            transition: all .2s ease-in-out;
+        /* FORCE Hover to override Bootstrap */
+        #toggle-partial.btn.btn-outline-primary {
+            transition: background 0.3s ease, transform 0.3s ease, box-shadow 0.3s ease !important;
         }
 
-        /* Hover effect */
-        button#toggle-partial.btn.btn-outline-primary:hover {
-            background-color: #e2e6ea !important; /* gray hover */
+        /* Hover Effect */
+        #toggle-partial.btn.btn-outline-primary:hover {
+            background-color: #e2e6ea !important;
             color: #000 !important;
-            transform: translateY(-1px);
-            box-shadow: 0 6px 12px rgba(0,0,0,0.15);
+            transform: translateY(-2px) !important;
+            box-shadow: 0 6px 12px rgba(0,0,0,0.15) !important;
         }
 
-        /* Active (when clicked) */
-        button#toggle-partial.btn.btn-outline-primary:active {
-            background-color: #d1d5d9 !important;
-            transform: translateY(1px) scale(0.98);
-            box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+        /* Active Click */
+        #toggle-partial.btn.btn-outline-primary:active {
+            background-color: #d0d4d8 !important;
+            color: #000 !important;
+            transform: translateY(2px) scale(0.97) !important;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.2) !important;
         }
-
-        /* Focus outline removal */
-        button#toggle-partial.btn.btn-outline-primary:focus {
-            box-shadow: none !important;
-            outline: none !important;
-        }
-
-
     </style>
+    
 @endsection
 @section('content')
 
