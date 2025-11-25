@@ -19,6 +19,47 @@
             white-space: normal;
             line-height: 1.1rem;
         }
+
+        .btn-outline-primary {
+            transition:
+            background 0.4s ease-in-out,
+            transform 0.4s ease-in-out,
+            box-shadow 0.4s ease-in-out !important;
+        }
+
+        .btn-outline-primary:hover {
+            background: #e2e6ea !important;
+            color: #000 !important;
+            transform: translateY(-1px) !important;
+            box-shadow: 0 6px 12px rgba(0,0,0,0.15) !important;
+        }
+
+        .btn-outline-primary:active {
+            background: #d0d4d8 !important;
+            transform: translateY(2px) scale(0.98) !important;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.2) !important;
+        }
+
+        .btn-primary {
+            transition:
+            background 0.4s ease-in-out,
+            transform 0.4s ease-in-out,
+            box-shadow 0.4s ease-in-out !important;
+        }
+
+        .btn-primary:hover {
+            background: #e2e6ea !important;
+            color: #000 !important;
+            transform: translateY(-1px) !important;
+            box-shadow: 0 6px 12px rgba(0,0,0,0.15) !important;
+        }
+
+        .btn-primary:active {
+            background: #d0d4d8 !important;
+            transform: translateY(2px) scale(0.98) !important;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.2) !important;
+        }
+
     </style>
 @endsection
 @section('content')
