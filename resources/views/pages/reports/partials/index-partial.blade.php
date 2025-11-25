@@ -1,25 +1,25 @@
 <style>
-.back-to-dashboard-btn {
+.btn-secondary {
     transition: all 0.3s ease;
     position: relative;
     overflow: hidden;
 }
 
-.back-to-dashboard-btn:hover {
+.btn-secondary:hover {
     transform: translateX(-5px);
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
 }
 
-.back-to-dashboard-btn:active {
+.btn-secondary:active {
     transform: translateX(-3px) scale(0.98);
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
 }
 
-.back-to-dashboard-btn i {
+.btn-secondary i {
     transition: transform 0.3s ease;
 }
 
-.back-to-dashboard-btn:hover i {
+.btn-secondary:hover i {
     transform: translateX(-3px);
 }
 </style>
