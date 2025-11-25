@@ -290,15 +290,14 @@
 
                     <div id="recentActivitiesWrapper" class="position-relative"
                         onclick="window.location='{{ route('tools') }}'">
-                        <!-- Loader -->
                         <div id="recentActivitiesLoading" class="d-flex justify-content-center align-items-center py-5">
                             <div class="spinner-border text-primary" role="status"></div>
                             <span class="ms-2 text-muted">Loading activities...</span>
                         </div>
 
-                        <!-- Content (hidden until ready) -->
                         <div id="recentActivitiesContent" class="d-none">
-                            @include('auth.partials.admin-dashboard-partial', ['logs' => $logs])
+                            <p>TEST CONTENT - Recent Activities</p>
+                            {{-- @include('auth.partials.admin-dashboard-partial', ['logs' => $logs]) --}}
                         </div>
                     </div>
                 </div>
@@ -314,7 +313,8 @@
                     <div class="d-flex justify-content-between align-items-center mb-3">
                         <h5 class="card-title text-danger mb-0">Patients with Balance</h5>
                     </div>
-                    @include('auth.partials.dashboard-bill-partial')
+                    <p>TEST CONTENT - Patients with Balance</p>
+                    {{-- @include('auth.partials.dashboard-bill-partial') --}}
                 </div>
             </div>
         </div>
