@@ -25,7 +25,7 @@ class AddressProvider extends ServiceProvider
             'pages.associates.modals.add', 'pages.associates.modals.edit',
             'pages.staffs.modals.add', 'pages.staffs.modals.edit',
             'pages.laboratories.modals.add', 'pages.laboratories.modals.edit',
-            'pages.patients.modals.self-add','pages.reports.partials.location-partial'
+            'pages.patients.modals.self-add',
         ], function ($view) {
             $view->with('provinces', Province::orderBy('name')->get());
         });
