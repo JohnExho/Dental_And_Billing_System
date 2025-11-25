@@ -401,9 +401,9 @@
             @php $role = Auth::guard('account')->user()->role ?? null; @endphp
 
             @if($role === 'admin')
-                <a href="{{ route('admin-dashboard') }}" class="btn-home">Go to Admin Dashboard</a>
+                <a href="{{ route('admin.dashboard') }}" class="btn-home">Go to Admin Dashboard</a>
             @elseif($role === 'staff')
-                <a href="{{ route('staff-dashboard') }}" class="btn-home">Go to Staff Dashboard</a>
+                <a href="{{ route('staff.dashboard') }}" class="btn-home">Go to Staff Dashboard</a>
             @else
                 <a href="{{ url('/') }}" class="btn-home">Return to Home</a>
             @endif
