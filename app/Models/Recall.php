@@ -60,7 +60,7 @@ class Recall extends Model
 
     public function associate()
     {
-        return $this->belongsTo(Account::class, 'associate_id', 'associate_id');
+        return $this->belongsTo(Associate::class, 'associate_id', 'associate_id');
     }
 
     public function logs()
