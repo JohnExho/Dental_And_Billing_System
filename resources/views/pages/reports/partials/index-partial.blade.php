@@ -1,3 +1,29 @@
+<style>
+.btn-secondary {
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+}
+
+.btn-secondary:hover {
+    transform: translateX(-5px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+}
+
+.btn-secondary:active {
+    transform: translateX(-3px) scale(0.98);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+.btn-secondary i {
+    transition: transform 0.3s ease;
+}
+
+.btn-secondary:hover i {
+    transform: translateX(-3px);
+}
+</style>
+
 <!-- Index Partial -->
 <ul class="nav nav-tabs d-none" id="reportTabs" role="tablist">
     <li role="presentation">
@@ -146,7 +172,7 @@
         </button>
         @include('pages.reports.partials.treatment-partial')
     </div>
-</div>
+</div>  
 
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/moment@2.29.4/moment.min.js"></script>

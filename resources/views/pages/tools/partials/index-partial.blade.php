@@ -1,3 +1,9 @@
+<style>
+    .pagination {
+    justify-content: center !important;
+}
+</style>
+
 <div class="table-responsive">
     <table class="table table-hover align-middle">
         <thead class="table-light">
@@ -27,6 +33,6 @@
     </table>
 </div>
 
-<div class="mt-2">
+<div class="mt-2 d-flex justify-content-center">
     {{ $logs->links('vendor.pagination.bootstrap-5') }}
 </div>

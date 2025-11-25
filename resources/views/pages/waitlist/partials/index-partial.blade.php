@@ -1,3 +1,16 @@
+<style>
+    .pagination-container nav{
+        display: flex !important;
+        align-items: center;
+        justify-content: center !important;
+    }
+    
+    /* Force center the pagination ul */
+    .pagination {
+        justify-content: center !important;
+    }
+</style>
+
 <div class="card-body p-0">
     <!-- Search Input -->
     <div class="p-3 bg-light border-bottom">
@@ -117,7 +130,7 @@
         </div>
 
         <!-- Pagination (hidden during search) -->
-        <div id="pagination-container" class="p-3">
+        <div id="pagination-container" class="p-3 d-flex justify-content-center">
             {{ $waitlist->links('vendor.pagination.bootstrap-5') }}
         </div>
     @endif
