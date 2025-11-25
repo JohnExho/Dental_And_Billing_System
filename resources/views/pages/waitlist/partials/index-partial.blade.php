@@ -1,5 +1,5 @@
 <style>
-    #pagination-container nav {
+    .pagination-container nav{
         display: flex !important;
         align-items: center;
         justify-content: center !important;
