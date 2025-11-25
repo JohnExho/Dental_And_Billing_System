@@ -2,6 +2,69 @@
 @section('title', 'Settings | Chomply')
 @section('content')
 
+<style>
+/* Save Button Styles - Blue */
+.btn-dark {
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+    background-color: #0d6efd !important;
+    border-color: #0d6efd !important;
+}
+
+.btn-dark:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 12px rgba(13, 110, 253, 0.4);
+    background-color: #0b5ed7 !important;
+    border-color: #0a58ca !important;
+}
+
+.btn-dark:active {
+    transform: translateY(0);
+    box-shadow: 0 2px 4px rgba(13, 110, 253, 0.3);
+    background-color: #0a58ca !important;
+}
+
+/* Delete Button Styles */
+.btn-danger {
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+}
+
+.btn-danger:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 12px rgba(220, 53, 69, 0.4);
+    background-color: #c82333 !important;
+}
+
+.btn-danger:active {
+    transform: translateY(0);
+    box-shadow: 0 2px 4px rgba(220, 53, 69, 0.3);
+}
+
+/* Button ripple effect */
+.btn-dark::before,
+.btn-danger::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 0;
+    height: 0;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.2);
+    transform: translate(-50%, -50%);
+    transition: width 0.6s, height 0.6s;
+}
+
+.btn-dark:active::before,
+.btn-danger:active::before {
+    width: 300px;
+    height: 300px;
+}
+</style>
+
 <div class="container-fluid mt-4">
 
     {{-- TOP ROW: CARD 1 + CARD 2 --}}
