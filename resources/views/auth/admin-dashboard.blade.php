@@ -303,7 +303,7 @@
                         </div>
                     </div>
                 </div>
-            </div>
+
 
             <!-- Right Card (Patients with Balance) -->
             <div class="col-md-7 mt-3">
@@ -317,6 +317,7 @@
                 </div>
             </div>
         </div>
+                    </div>
     </div>
 
     <!-- Scripts -->
