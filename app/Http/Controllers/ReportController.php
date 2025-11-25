@@ -103,17 +103,35 @@ class ReportController extends Controller
             ->unique('id')
             ->values();
 
-        $forecastedWaitlistValue = json_decode(
-            file_get_contents('http://api.chomply.online/forecastwaitlist?clinic_id='.($clinicId ?? '')),
-            true
-        );
-        $forecastedRevenueValue = json_decode(file_get_contents('http://api.chomply.online/forecastrevenue?clinic_id='.($clinicId ?? '')), true);
-        $forecastedLocationValue = json_decode(file_get_contents('http://api.chomply.online/forecastlocation'), true);
-        // In your ReportController
-        $forecastedTreatmentValue = json_decode(
-            file_get_contents('http://api.chomply.online/forecasttreatment?clinic_id='.($clinicId ?? '')),
-            true
-        );
+$apiKey = env('API_KEY'); // Read from .env
+
+$opts = [
+    "http" => [
+        "header" => "X-API-Key: {$apiKey}\r\n"
+    ]
+];
+$context = stream_context_create($opts);
+
+$forecastedWaitlistValue = json_decode(
+    file_get_contents('http://api.chomply.online/forecastwaitlist?clinic_id='.($clinicId ?? ''), false, $context),
+    true
+);
+
+$forecastedRevenueValue = json_decode(
+    file_get_contents('http://api.chomply.online/forecastrevenue?clinic_id='.($clinicId ?? ''), false, $context),
+    true
+);
+
+$forecastedLocationValue = json_decode(
+    file_get_contents('http://api.chomply.online/forecastlocation', false, $context),
+    true
+);
+
+$forecastedTreatmentValue = json_decode(
+    file_get_contents('http://api.chomply.online/forecasttreatment?clinic_id='.($clinicId ?? ''), false, $context),
+    true
+);
+
         if (! empty($forecastedLocationValue['clusters'])) {
             $provinceMap = $provinces->pluck('name', 'id');
             $cityMap = $cities->pluck('name', 'id');
