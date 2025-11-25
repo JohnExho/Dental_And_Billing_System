@@ -17,16 +17,16 @@
         pointer-events: none;
     }
 
-    /* ⭐ NEW: Navbar content moves with sidebar */
+    /* ⭐ Navbar content moves with sidebar */
     .echo-movebar {
         transition: margin-left 0.3s ease;
-        margin-left: -230px; /* Default collapsed sidebar width */
+        margin-left: 80px; /* Default collapsed sidebar width */
     }
 
     /* When sidebar is expanded (hover) */
     .sidebar-wrapper.expanded ~ * .echo-movebar,
     body:has(.sidebar-wrapper.expanded) .echo-movebar {
-        margin-left: -40px; /* Expanded sidebar width */
+        margin-left: 240px; /* Expanded sidebar width */
     }
 
     body {
@@ -42,6 +42,7 @@
         display: flex;
         align-items: center;
         border-radius: 6px;
+        white-space: nowrap;
     }
 
     /* Compact Admin dropdown */
@@ -72,6 +73,7 @@
         display: flex;
         align-items: center;
         border-radius: 6px !important;
+        white-space: nowrap;
     }
 
     /* Smooth dropdown animation */
@@ -87,6 +89,287 @@
         opacity: 1;
         transform: translateY(0) scale(1);
         pointer-events: auto;
+    }
+
+    /* Navbar nav items spacing */
+    .navbar-nav {
+        margin-right: 0;
+        margin-left: auto;
+    }
+
+    /* ========== RESPONSIVE BREAKPOINTS ========== */
+
+    /* Large laptops (1200px - 1399px) */
+    @media (max-width: 1399px) {
+        .echo-movebar {
+            margin-left: 70px;
+        }
+
+        .sidebar-wrapper.expanded ~ * .echo-movebar,
+        body:has(.sidebar-wrapper.expanded) .echo-movebar {
+            margin-left: 220px;
+        }
+
+        .btn-add-patient,
+        .clinic-badge-compact {
+            font-size: 0.75rem !important;
+            padding: 5px 10px !important;
+            height: 32px !important;
+        }
+
+        .nav-user-compact {
+            font-size: 0.95rem !important;
+            padding: 5px 10px !important;
+            height: 42px;
+        }
+
+        .echo-movebar .nav-link {
+            font-size: 1.1rem !important;
+        }
+    }
+
+    /* Medium laptops and tablets (992px - 1199px) */
+    @media (max-width: 1199px) {
+        .echo-movebar {
+            margin-left: 70px;
+        }
+
+        .sidebar-wrapper.expanded ~ * .echo-movebar,
+        body:has(.sidebar-wrapper.expanded) .echo-movebar {
+            margin-left: 200px;
+        }
+
+        .btn-add-patient,
+        .clinic-badge-compact {
+            font-size: 0.7rem !important;
+            padding: 5px 8px !important;
+            height: 30px !important;
+        }
+
+        .btn-add-patient i,
+        .clinic-badge-compact i {
+            font-size: 0.8rem;
+        }
+
+        .nav-user-compact {
+            font-size: 0.9rem !important;
+            padding: 5px 8px !important;
+            height: 40px;
+        }
+
+        .echo-movebar .nav-link {
+            font-size: 1rem !important;
+        }
+
+        .clinic-badge-compact span {
+            display: none;
+        }
+
+        .clinic-badge-compact::after {
+            content: none !important;
+        }
+    }
+
+    /* Small laptops and tablets (768px - 991px) */
+    @media (max-width: 991px) {
+        .echo-movebar {
+            margin-left: 65px;
+        }
+
+        .sidebar-wrapper.expanded ~ * .echo-movebar,
+        body:has(.sidebar-wrapper.expanded) .echo-movebar {
+            margin-left: 190px;
+        }
+
+        .navbar-nav {
+            margin-left: 0;
+            padding-top: 1rem;
+        }
+
+        .navbar-collapse {
+            background-color: #fff;
+            padding: 1rem;
+            border-radius: 8px;
+            margin-top: 0.5rem;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .nav-item {
+            margin-bottom: 0.5rem;
+        }
+
+        .btn-add-patient,
+        .clinic-badge-compact {
+            width: 100%;
+            justify-content: center;
+        }
+
+        .clinic-badge-compact span {
+            display: inline;
+        }
+
+        .echo-movebar .nav-link {
+            font-size: 1.2rem !important;
+        }
+    }
+
+    /* Mobile devices (less than 768px) */
+    @media (max-width: 767px) {
+        /* On mobile, sidebar is hidden by default */
+        .echo-movebar {
+            margin-left: 0 !important;
+        }
+
+        /* When sidebar is open on mobile */
+        .sidebar-wrapper.mobile-open ~ * .echo-movebar,
+        body:has(.sidebar-wrapper.mobile-open) .echo-movebar {
+            margin-left: 0 !important;
+        }
+
+        body {
+            padding-top: 60px;
+        }
+
+        .navbar-fixed {
+            padding-left: 60px; /* Space for hamburger menu */
+        }
+
+        .echo-movebar .nav-link {
+            font-size: 1.1rem !important;
+        }
+
+        .btn-add-patient {
+            font-size: 0.8rem !important;
+            height: 36px !important;
+        }
+
+        .clinic-badge-compact {
+            font-size: 0.75rem !important;
+            height: 34px !important;
+        }
+
+        .nav-user-compact {
+            font-size: 0.9rem !important;
+            height: 38px;
+            justify-content: flex-start;
+        }
+
+        .dropdown-menu {
+            width: 100%;
+            margin-top: 0.5rem !important;
+        }
+
+        /* Stack clinic and user info vertically */
+        .navbar-nav .nav-item {
+            width: 100%;
+        }
+
+        .navbar-nav .nav-item.dropdown {
+            margin-bottom: 0.5rem;
+        }
+
+        .navbar-collapse {
+            max-height: 80vh;
+            overflow-y: auto;
+        }
+    }
+
+    /* Extra small devices (less than 576px) */
+    @media (max-width: 575px) {
+        .navbar-fixed {
+            padding-left: 50px;
+        }
+
+        .echo-movebar .nav-link {
+            font-size: 1rem !important;
+        }
+
+        .btn-add-patient {
+            font-size: 0.75rem !important;
+            padding: 5px 8px !important;
+            height: 34px !important;
+        }
+
+        .btn-add-patient i {
+            display: none; /* Hide icon on very small screens */
+        }
+
+        .clinic-badge-compact {
+            font-size: 0.7rem !important;
+            padding: 5px 8px !important;
+            height: 32px !important;
+        }
+
+        .clinic-badge-compact i {
+            font-size: 0.75rem;
+            margin-right: 4px !important;
+        }
+
+        .nav-user-compact {
+            font-size: 0.85rem !important;
+            padding: 5px 8px !important;
+        }
+
+        .dropdown-item {
+            font-size: 0.85rem;
+            padding: 0.5rem 0.75rem;
+        }
+
+        .dropdown-item i {
+            font-size: 0.9rem;
+        }
+    }
+
+    /* Landscape mode on mobile/tablet */
+    @media (max-width: 991px) and (orientation: landscape) {
+        .echo-movebar {
+            margin-left: 60px;
+        }
+
+        .sidebar-wrapper.expanded ~ * .echo-movebar,
+        body:has(.sidebar-wrapper.expanded) .echo-movebar {
+            margin-left: 180px;
+        }
+
+        .navbar-collapse {
+            max-height: 60vh;
+        }
+
+        .echo-movebar .nav-link {
+            font-size: 0.95rem !important;
+        }
+    }
+
+    /* Hide echo-movebar text on very small screens if needed */
+    @media (max-width: 480px) {
+        .echo-movebar .nav-link {
+            font-size: 0.9rem !important;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+            max-width: 180px;
+        }
+    }
+
+    /* Tablet portrait specific adjustments */
+    @media (min-width: 768px) and (max-width: 991px) and (orientation: portrait) {
+        .echo-movebar {
+            margin-left: 65px;
+        }
+
+        .sidebar-wrapper.expanded ~ * .echo-movebar {
+            margin-left: 190px;
+        }
+
+        .navbar-nav {
+            flex-direction: row;
+            flex-wrap: wrap;
+        }
+
+        .nav-item {
+            margin-bottom: 0;
+            margin-right: 1rem;
+        }
     }
 </style>
 
@@ -117,7 +400,7 @@
 @endphp
 
 <nav class="navbar navbar-left navbar-expand-lg navbar-light border-3 border-primary text-black navbar-fixed">
-    <div class="container d-flex align-items-center">
+    <div class="container-fluid d-flex align-items-center">
         <div class="d-flex align-items-center echo-movebar">
             @foreach ($navItems as $route => $label)
                 @if (Route::is($route))
@@ -132,7 +415,7 @@
         </button>
 
         <div class="collapse navbar-collapse justify-content-end" id="navbarNav">
-            <ul class="navbar-nav ms-auto" style="margin-right: 0; margin-left: 250px;">
+            <ul class="navbar-nav">
 
                 {{-- IF ADMIN --}}
                 @if ($activeRole === 'admin')
@@ -143,7 +426,7 @@
                             <span class="fw-semibold">Clinic:</span>&nbsp;{{ $currentClinic->name ?? 'No Selected' }}
                         </a>
 
-                        <ul class="dropdown-menu shadow-sm" aria-labelledby="clinicDropdown">
+                        <ul class="dropdown-menu dropdown-animated shadow-sm" aria-labelledby="clinicDropdown">
                             @foreach ($clinics as $clinic)
                                 <li>
                                     <form action="{{ route('process-select-clinic') }}" method="POST">
@@ -185,7 +468,7 @@
                         {{ auth()->user()->last_name }}, {{ auth()->user()->first_name }}
                     </a>
 
-                    <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
+                    <ul class="dropdown-menu dropdown-menu-end dropdown-animated" aria-labelledby="userDropdown">
                         <li><a class="dropdown-item" href="{{ route('settings') }}">
                             <i class="bi bi-person-circle"></i>
                                 Profile</a></li>
@@ -237,7 +520,10 @@
 <script>
     document.addEventListener("DOMContentLoaded", function() {
         const navbar = document.querySelector('.navbar-fixed');
+        const echoMovebar = document.querySelector('.echo-movebar');
+        const sidebar = document.querySelector('.sidebar-wrapper');
 
+        // Navbar shrink on scroll
         window.addEventListener('scroll', function() {
             if (window.scrollY > 50) {
                 navbar.classList.add('shrink');
@@ -246,6 +532,49 @@
             }
         });
 
+        // Check if mobile view
+        function isMobile() {
+            return window.innerWidth <= 767;
+        }
+
+        // Update echo-movebar margin based on sidebar state
+        function updateEchoMovebarMargin() {
+            if (!echoMovebar || !sidebar) return;
+
+            if (isMobile()) {
+                // On mobile, no margin adjustment needed
+                echoMovebar.style.marginLeft = '0';
+            } else {
+                // Desktop: let CSS handle it via classes
+                echoMovebar.style.marginLeft = '';
+            }
+        }
+
+        // Listen for sidebar expansion (desktop hover)
+        if (sidebar && !isMobile()) {
+            const observer = new MutationObserver(function(mutations) {
+                mutations.forEach(function(mutation) {
+                    if (mutation.attributeName === 'class') {
+                        updateEchoMovebarMargin();
+                    }
+                });
+            });
+
+            observer.observe(sidebar, { attributes: true });
+        }
+
+        // Handle window resize
+        let resizeTimer;
+        window.addEventListener('resize', function() {
+            clearTimeout(resizeTimer);
+            resizeTimer = setTimeout(() => {
+                updateEchoMovebarMargin();
+            }, 250);
+        });
+
+        // Initial setup
+        updateEchoMovebarMargin();
+
         /* ⭐ Smooth dropdown open/close for User + Clinic */
         const dropdowns = document.querySelectorAll('.dropdown');
 
@@ -253,15 +582,31 @@
             const menu = dropdown.querySelector('.dropdown-menu');
             if (!menu) return;
 
-            menu.classList.add('dropdown-animated');
-
             dropdown.addEventListener('hide.bs.dropdown', function (e) {
                 e.preventDefault();
                 menu.classList.remove('show');
                 setTimeout(() => {
-                    bootstrap.Dropdown.getOrCreateInstance(dropdown).hide();
+                    const instance = bootstrap.Dropdown.getInstance(dropdown.querySelector('[data-bs-toggle="dropdown"]'));
+                    if (instance) {
+                        instance.hide();
+                    }
                 }, 180); // matches CSS transition
             });
         });
+
+        // Close mobile navbar when clicking on nav items
+        if (isMobile()) {
+            document.querySelectorAll('.navbar-collapse .nav-link, .navbar-collapse .dropdown-item').forEach(item => {
+                item.addEventListener('click', function() {
+                    const navbarCollapse = document.querySelector('.navbar-collapse');
+                    if (navbarCollapse && navbarCollapse.classList.contains('show')) {
+                        const bsCollapse = bootstrap.Collapse.getInstance(navbarCollapse);
+                        if (bsCollapse) {
+                            bsCollapse.hide();
+                        }
+                    }
+                });
+            });
+        }
     });
 </script>
