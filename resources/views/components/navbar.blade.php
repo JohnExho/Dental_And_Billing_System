@@ -20,13 +20,13 @@
     /* ⭐ NEW: Navbar content moves with sidebar */
     .echo-movebar {
         transition: margin-left 0.3s ease;
-        margin-left: -240px; /* Default collapsed sidebar width */
+        margin-left: -235px; /* Default collapsed sidebar width */
     }
 
     /* When sidebar is expanded (hover) */
     .sidebar-wrapper.expanded ~ * .echo-movebar,
     body:has(.sidebar-wrapper.expanded) .echo-movebar {
-        margin-left: 250px; /* Expanded sidebar width */
+        margin-left: -200px; /* Expanded sidebar width */
     }
 
     body {
