@@ -29,3 +29,9 @@
         </div>
     @endforelse
 </div>
+
+@if ($unpaidBills->hasPages())
+    <div class="mt-3">
+        {{ $unpaidBills->links('vendor.pagination.bootstrap-5') }}
+    </div>
+@endif
