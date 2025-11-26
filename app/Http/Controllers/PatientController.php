@@ -506,8 +506,10 @@ class PatientController extends Controller
             'account',
             'clinic',
             'visit',
-            'bill.billItemTooths' => fn ($q) => $q->whereNull('deleted_at'), // 🚀 ignore deleted pivot rows
-            'bill.billItemTooths.tooth',
+            'billItem.service',
+            'billItem.billItemTooths' => fn ($q) => $q->whereNull('deleted_at'),
+            'billItem.billItemTooths.tooth',
+            'notes',
         ])
             ->where('patient_id', $patientId)
             ->where('clinic_id', $clinicId)

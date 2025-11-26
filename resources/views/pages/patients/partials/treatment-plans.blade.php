@@ -37,68 +37,30 @@
 
                                 <td data-procedure-id="{{ $treatment->billItem?->service?->service_id }}">
                                     @php
-                                        $teeth = $treatment->billItem?->teeth ?? collect();
-                                        $count = $teeth->count();
-                                        $chunkSize = ceil($count / 2); // Divide into 2 rows (or adjust as needed)
-                                        $chunkedTeeth = $teeth->chunk($chunkSize);
-
-                                        // Initialize the total price
-                                        $totalPrice = 0;
-
-                                        // Get the clinic ID from the session (assuming session contains 'clinic_id')
-                                        $clinicId = session('clinic_id'); // Make sure this is how the clinic ID is stored in your session
-
-                                        // Fetch the service price for the current treatment
-                                        $servicePrice = 0;
-                                        if ($treatment->billItem?->service) {
-                                            // Assuming 'clinicPrices' are related to the service too, filtered by clinic_id
-                                            $servicePrices = $treatment->billItem->service
-                                                ->clinicService()
-                                                ->where('clinic_id', $clinicId)
-                                                ->get();
-                                            if ($servicePrices->count() > 0) {
-                                                $servicePrice = $servicePrices->first()->price; // Take the first service price for the clinic
-                                            }
-                                        }
+                                        $clinicId = session('clinic_id');
                                     @endphp
-                                    <!-- Display the service price -->
-                                    @if ($servicePrice > 0)
+                                    <!-- Display the service name and amount -->
+                                    @if ($treatment->billItem?->service)
                                         <div>
-                                            <strong>{{ $treatment->billItem?->service?->name ?? 'Unknown Service' }}</strong>
-                                            ${{ number_format($servicePrice, 2) }}
+                                            <strong>{{ $treatment->billItem->service->name }}</strong>
+                                            <br/>
+                                            ${{ number_format($treatment->billItem->amount ?? 0, 2) }}
                                         </div>
-                                        @php
-                                            $totalPrice += $servicePrice; // Add service price to the total price
-                                        @endphp
                                     @else
-                                        <div>No Service Price Available</div>
+                                        <div>-</div>
                                     @endif
-
-
                                 </td>
                                 <td>
+                                    @if ($treatment->billItem?->billItemTooths && $treatment->billItem->billItemTooths->count() > 0)
+                                        @foreach ($treatment->billItem->billItemTooths as $billItemTooth)
+                                            @if ($billItemTooth->deleted_at)
+                                                @continue
+                                            @endif
 
-                                    @if ($teeth && $teeth->count() > 0)
-                                        @foreach ($chunkedTeeth as $chunk)
-                                            @foreach ($chunk as $tooth)
-                                                @if ($tooth->pivot && $tooth->pivot->deleted_at)
-                                                    @continue
-                                                @endif
-
-                                                @php
-                                                    $clinicPrices = $tooth
-                                                        ->clinicPrices()
-                                                        ->where('clinic_id', $clinicId)
-                                                        ->get();
-                                                    $price = $clinicPrices->first()->price ?? 0;
-                                                    $totalPrice += $price;
-                                                @endphp
-
-                                                <div>
-                                                    <strong data-tooth-id="{{ $tooth->tooth_list_id }}">{{ $tooth->name }}:</strong>
-                                                    ${{ number_format($price, 2) }}
-                                                </div>
-                                            @endforeach
+                                            <div>
+                                                <strong data-tooth-id="{{ $billItemTooth->tooth?->tooth_list_id }}">{{ $billItemTooth->tooth?->name }}:</strong>
+                                                ${{ number_format(0, 2) }}
+                                            </div>
                                         @endforeach
                                     @else
                                         No Tooth Assigned
