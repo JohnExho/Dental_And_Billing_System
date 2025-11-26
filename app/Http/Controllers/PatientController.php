@@ -528,7 +528,7 @@ class PatientController extends Controller
             'visit',
             'billItem.service',
             'billItem.billItemTooths' => fn ($q) => $q->whereNull('deleted_at'),
-            'billItem.billItemTooths.tooth',
+            'billItem.billItemTooths.tooth.clinicPrices' => fn ($q) => $q->where('clinic_id', $clinicId),
             'notes',
         ])
             ->where('patient_id', $patientId)

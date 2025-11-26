@@ -64,6 +64,9 @@
 
                                             <div>
                                                 <strong data-tooth-id="{{ $billItemTooth->tooth?->tooth_list_id }}">{{ $billItemTooth->tooth?->name }}</strong>
+                                                @if ($billItemTooth->tooth)
+                                                    <br/><small class="text-muted">${{ number_format($billItemTooth->tooth->final_price ?? 0, 2) }}</small>
+                                                @endif
                                             </div>
                                         @endforeach
                                     @else
