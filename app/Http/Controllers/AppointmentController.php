@@ -51,7 +51,8 @@ class AppointmentController extends Controller
             $recallsQuery = Recall::with('patient')
                 ->whereYear('recall_date', $currentYear)
                 ->whereMonth('recall_date', $currentMonth)
-                ->where('status', 'pending');
+                ->where('status', 'pending')
+                ->where('clinic_id', session('clinic_id'));
 
             // Only filter by selected associates if any are chosen
             if (! empty($associatesFilter)) {
@@ -87,7 +88,8 @@ class AppointmentController extends Controller
             $appointmentsQuery = Appointment::with(['patient', 'associate'])
                 ->whereYear('appointment_date', $currentYear)
                 ->whereMonth('appointment_date', $currentMonth)
-                ->where('status', 'scheduled');
+                ->where('status', 'scheduled')
+                ->where('clinic_id', session('clinic_id'));
 
             // Filter by selected associates if user checked any
             if (! empty($associatesFilter)) {
@@ -125,6 +127,7 @@ class AppointmentController extends Controller
         $appointmentsListQuery = Appointment::with(['patient', 'associate', 'account'])
             ->whereYear('appointment_date', $currentYear)
             ->whereMonth('appointment_date', $currentMonth)
+            ->where('clinic_id', session('clinic_id'))
             ->when(! empty($associatesFilter), fn ($q) => $q->whereIn('associate_id', $associatesFilter))
             ->orderBy('appointment_date', 'asc');
 
