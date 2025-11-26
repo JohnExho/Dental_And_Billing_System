@@ -37,7 +37,7 @@ class PatientController extends Controller
         $this->guard = Auth::guard('account');
     }
 
-    public function index()
+    public function index(Request $request)
     {
         $clinicId = session('clinic_id');
 
@@ -49,6 +49,14 @@ class PatientController extends Controller
 
         if ($clinicId) {
             $query->where('clinic_id', $clinicId);
+        }
+
+        // Filter by account_id if requested
+        $filterByAccount = $request->get('filter_by_account', false);
+        $authAccount = $this->guard->user();
+        
+        if ($filterByAccount && $authAccount) {
+            $query->where('account_id', $authAccount->account_id);
         }
 
         $patientCount = $query->count(); // ✅ Count after filter

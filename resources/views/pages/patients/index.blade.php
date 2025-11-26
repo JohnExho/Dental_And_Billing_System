@@ -32,6 +32,9 @@
                 <div class="d-flex justify-content-between align-items-center">
                     <div class="d-flex align-items-center gap-2">
                         No of Patient # {{ $patientCount }}
+                        <button id="filter-account-btn" class="btn btn-sm btn-outline-light" title="Toggle: Show only my patients">
+                            <i class="bi bi-funnel"></i> My Patients
+                        </button>
                     </div>
 
                     <a href="#" class="btn btn-light btn-sm d-flex align-items-center gap-1 float-end"
@@ -62,6 +65,39 @@
             document.addEventListener("DOMContentLoaded", function() {
                 document.getElementById('patients-loading').classList.add('d-none');
                 document.getElementById('patients-content').classList.remove('d-none');
+
+                // Filter by account toggle
+                const filterBtn = document.getElementById('filter-account-btn');
+                const url = new URL(window.location);
+                
+                // Check if filter is already active
+                const isFilterActive = url.searchParams.get('filter_by_account') === '1';
+                
+                // Update button appearance based on filter state
+                if (isFilterActive) {
+                    filterBtn.classList.remove('btn-outline-light');
+                    filterBtn.classList.add('btn-light');
+                }
+                
+                filterBtn.addEventListener('click', function() {
+                    const url = new URL(window.location);
+                    const isActive = url.searchParams.get('filter_by_account') === '1';
+                    
+                    if (isActive) {
+                        // Remove filter
+                        url.searchParams.delete('filter_by_account');
+                        filterBtn.classList.remove('btn-light');
+                        filterBtn.classList.add('btn-outline-light');
+                    } else {
+                        // Add filter
+                        url.searchParams.set('filter_by_account', '1');
+                        filterBtn.classList.remove('btn-outline-light');
+                        filterBtn.classList.add('btn-light');
+                    }
+                    
+                    // Redirect with new filter parameter
+                    window.location.href = url.toString();
+                });
             });
         </script>
     @endsection
