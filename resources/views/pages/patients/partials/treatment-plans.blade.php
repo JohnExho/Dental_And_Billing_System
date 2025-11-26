@@ -62,19 +62,8 @@
                                                 @continue
                                             @endif
 
-                                            @php
-                                                $clinicId = session('clinic_id');
-                                                $toothPrice = 0;
-                                                
-                                                // Get the price from BillItemTooth if available
-                                                if ($billItemTooth->amount) {
-                                                    $toothPrice = $billItemTooth->amount;
-                                                }
-                                            @endphp
-
                                             <div>
-                                                <strong data-tooth-id="{{ $billItemTooth->tooth?->tooth_list_id }}">{{ $billItemTooth->tooth?->name }}:</strong>
-                                                ${{ number_format($toothPrice, 2) }}
+                                                <strong data-tooth-id="{{ $billItemTooth->tooth?->tooth_list_id }}">{{ $billItemTooth->tooth?->name }}</strong>
                                             </div>
                                         @endforeach
                                     @else
