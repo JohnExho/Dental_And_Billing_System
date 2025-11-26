@@ -143,53 +143,33 @@
 
     <!-- Waitlist Detail -->
     <div class="tab-pane fade" id="waitlist-detail" role="tabpanel" aria-labelledby="waitlist-detail-tab">
-        <div class="d-flex gap-2 mb-3">
-            <button class="btn btn-secondary btn-sm" onclick="backToDashboard()">
-                <i class="bi bi-arrow-left me-1"></i> Back to Dashboard
-            </button>
-            <button class="btn btn-outline-primary btn-sm" onclick="printWaitlistDetail()" title="Print Waitlist Detail">
-                <i class="bi bi-printer me-1"></i> Print
-            </button>
-        </div>
+        <button class="btn btn-secondary btn-sm mb-3" onclick="backToDashboard()">
+            <i class="bi bi-arrow-left me-1"></i> Back to Dashboard
+        </button>
         @include('pages.reports.partials.waitlist-partial')
     </div>
 
     <!-- Revenue Detail -->
     <div class="tab-pane fade" id="revenue-detail" role="tabpanel" aria-labelledby="revenue-detail-tab">
-        <div class="d-flex gap-2 mb-3">
-            <button class="btn btn-secondary btn-sm" onclick="backToDashboard()">
-                <i class="bi bi-arrow-left me-1"></i> Back to Dashboard
-            </button>
-            <button class="btn btn-outline-primary btn-sm" onclick="printRevenueDetail()" title="Print Revenue Detail">
-                <i class="bi bi-printer me-1"></i> Print
-            </button>
-        </div>
+        <button class="btn btn-secondary btn-sm mb-3" onclick="backToDashboard()">
+            <i class="bi bi-arrow-left me-1"></i> Back to Dashboard
+        </button>
         @include('pages.reports.partials.payment-partial')
     </div>
 
     <!-- Location Detail -->
     <div class="tab-pane fade" id="location-detail" role="tabpanel" aria-labelledby="location-detail-tab">
-        <div class="d-flex gap-2 mb-3">
-            <button class="btn btn-secondary btn-sm" onclick="backToDashboard()">
-                <i class="bi bi-arrow-left me-1"></i> Back to Dashboard
-            </button>
-            <button class="btn btn-outline-primary btn-sm" onclick="printLocationDetail()" title="Print Location Detail">
-                <i class="bi bi-printer me-1"></i> Print
-            </button>
-        </div>
+        <button class="btn btn-secondary btn-sm mb-3" onclick="backToDashboard()">
+            <i class="bi bi-arrow-left me-1"></i> Back to Dashboard
+        </button>
         @include('pages.reports.partials.location-partial')
     </div>
 
     <!-- Treatment Detail -->
     <div class="tab-pane fade" id="treatment-detail" role="tabpanel" aria-labelledby="treatment-detail-tab">
-        <div class="d-flex gap-2 mb-3">
-            <button class="btn btn-secondary btn-sm" onclick="backToDashboard()">
-                <i class="bi bi-arrow-left me-1"></i> Back to Dashboard
-            </button>
-            <button class="btn btn-outline-primary btn-sm" onclick="printTreatmentDetail()" title="Print Treatment Detail">
-                <i class="bi bi-printer me-1"></i> Print
-            </button>
-        </div>
+        <button class="btn btn-secondary btn-sm mb-3" onclick="backToDashboard()">
+            <i class="bi bi-arrow-left me-1"></i> Back to Dashboard
+        </button>
         @include('pages.reports.partials.treatment-partial')
     </div>
 </div>  
