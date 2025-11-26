@@ -143,33 +143,53 @@
 
     <!-- Waitlist Detail -->
     <div class="tab-pane fade" id="waitlist-detail" role="tabpanel" aria-labelledby="waitlist-detail-tab">
-        <button class="btn btn-secondary btn-sm mb-3" onclick="backToDashboard()">
-            <i class="bi bi-arrow-left me-1"></i> Back to Dashboard
-        </button>
+        <div class="d-flex gap-2 mb-3">
+            <button class="btn btn-secondary btn-sm" onclick="backToDashboard()">
+                <i class="bi bi-arrow-left me-1"></i> Back to Dashboard
+            </button>
+            <button class="btn btn-outline-primary btn-sm" onclick="printWaitlistDetail()" title="Print Waitlist Detail">
+                <i class="bi bi-printer me-1"></i> Print
+            </button>
+        </div>
         @include('pages.reports.partials.waitlist-partial')
     </div>
 
     <!-- Revenue Detail -->
     <div class="tab-pane fade" id="revenue-detail" role="tabpanel" aria-labelledby="revenue-detail-tab">
-        <button class="btn btn-secondary btn-sm mb-3" onclick="backToDashboard()">
-            <i class="bi bi-arrow-left me-1"></i> Back to Dashboard
-        </button>
+        <div class="d-flex gap-2 mb-3">
+            <button class="btn btn-secondary btn-sm" onclick="backToDashboard()">
+                <i class="bi bi-arrow-left me-1"></i> Back to Dashboard
+            </button>
+            <button class="btn btn-outline-primary btn-sm" onclick="printRevenueDetail()" title="Print Revenue Detail">
+                <i class="bi bi-printer me-1"></i> Print
+            </button>
+        </div>
         @include('pages.reports.partials.payment-partial')
     </div>
 
     <!-- Location Detail -->
     <div class="tab-pane fade" id="location-detail" role="tabpanel" aria-labelledby="location-detail-tab">
-        <button class="btn btn-secondary btn-sm mb-3" onclick="backToDashboard()">
-            <i class="bi bi-arrow-left me-1"></i> Back to Dashboard
-        </button>
+        <div class="d-flex gap-2 mb-3">
+            <button class="btn btn-secondary btn-sm" onclick="backToDashboard()">
+                <i class="bi bi-arrow-left me-1"></i> Back to Dashboard
+            </button>
+            <button class="btn btn-outline-primary btn-sm" onclick="printLocationDetail()" title="Print Location Detail">
+                <i class="bi bi-printer me-1"></i> Print
+            </button>
+        </div>
         @include('pages.reports.partials.location-partial')
     </div>
 
     <!-- Treatment Detail -->
     <div class="tab-pane fade" id="treatment-detail" role="tabpanel" aria-labelledby="treatment-detail-tab">
-        <button class="btn btn-secondary btn-sm mb-3" onclick="backToDashboard()">
-            <i class="bi bi-arrow-left me-1"></i> Back to Dashboard
-        </button>
+        <div class="d-flex gap-2 mb-3">
+            <button class="btn btn-secondary btn-sm" onclick="backToDashboard()">
+                <i class="bi bi-arrow-left me-1"></i> Back to Dashboard
+            </button>
+            <button class="btn btn-outline-primary btn-sm" onclick="printTreatmentDetail()" title="Print Treatment Detail">
+                <i class="bi bi-printer me-1"></i> Print
+            </button>
+        </div>
         @include('pages.reports.partials.treatment-partial')
     </div>
 </div>  
@@ -177,6 +197,150 @@
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/moment@2.29.4/moment.min.js"></script>
 <script>
+    // Print functions for individual partials
+    function printWaitlistDetail() {
+        const printWindow = window.open('', '_blank');
+        const element = document.getElementById('waitlist-detail');
+        const content = element.cloneNode(true);
+        
+        // Remove buttons from clone
+        content.querySelectorAll('.btn').forEach(btn => btn.remove());
+        
+        printWindow.document.write(`
+            <!DOCTYPE html>
+            <html>
+            <head>
+                <title>Waitlist Detail Report</title>
+                <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+                <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
+                <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+                <script src="https://cdn.jsdelivr.net/npm/moment@2.29.4/moment.min.js"></script>
+                <style>
+                    body { margin: 20px; font-size: 12px; }
+                    canvas { max-height: 500px !important; }
+                    .d-flex.gap-2 { display: none; }
+                </style>
+            </head>
+            <body>
+                <h2 class="mb-3">Waitlist Detail Report</h2>
+                <p class="text-muted">Generated on: ${new Date().toLocaleString()}</p>
+                ${content.innerHTML}
+                <script>
+                    setTimeout(() => window.print(), 500);
+                </script>
+            </body>
+            </html>
+        `);
+        printWindow.document.close();
+    }
+    
+    function printRevenueDetail() {
+        const printWindow = window.open('', '_blank');
+        const element = document.getElementById('revenue-detail');
+        const content = element.cloneNode(true);
+        
+        // Remove buttons from clone
+        content.querySelectorAll('.btn').forEach(btn => btn.remove());
+        
+        printWindow.document.write(`
+            <!DOCTYPE html>
+            <html>
+            <head>
+                <title>Revenue Detail Report</title>
+                <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+                <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
+                <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+                <script src="https://cdn.jsdelivr.net/npm/moment@2.29.4/moment.min.js"></script>
+                <style>
+                    body { margin: 20px; font-size: 12px; }
+                    canvas { max-height: 500px !important; }
+                    .d-flex.gap-2 { display: none; }
+                </style>
+            </head>
+            <body>
+                <h2 class="mb-3">Revenue Detail Report</h2>
+                <p class="text-muted">Generated on: ${new Date().toLocaleString()}</p>
+                ${content.innerHTML}
+                <script>
+                    setTimeout(() => window.print(), 500);
+                </script>
+            </body>
+            </html>
+        `);
+        printWindow.document.close();
+    }
+    
+    function printLocationDetail() {
+        const printWindow = window.open('', '_blank');
+        const element = document.getElementById('location-detail');
+        const content = element.cloneNode(true);
+        
+        // Remove buttons and filters from clone
+        content.querySelectorAll('.btn, .form-select').forEach(el => el.remove());
+        
+        printWindow.document.write(`
+            <!DOCTYPE html>
+            <html>
+            <head>
+                <title>Location Detail Report</title>
+                <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+                <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
+                <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+                <style>
+                    body { margin: 20px; font-size: 12px; }
+                    canvas { max-height: 500px !important; }
+                    .d-flex.gap-2 { display: none; }
+                    .form-select { display: none; }
+                </style>
+            </head>
+            <body>
+                <h2 class="mb-3">Location Detail Report</h2>
+                <p class="text-muted">Generated on: ${new Date().toLocaleString()}</p>
+                ${content.innerHTML}
+                <script>
+                    setTimeout(() => window.print(), 500);
+                </script>
+            </body>
+            </html>
+        `);
+        printWindow.document.close();
+    }
+    
+    function printTreatmentDetail() {
+        const printWindow = window.open('', '_blank');
+        const element = document.getElementById('treatment-detail');
+        const content = element.cloneNode(true);
+        
+        // Remove buttons from clone
+        content.querySelectorAll('.btn').forEach(btn => btn.remove());
+        
+        printWindow.document.write(`
+            <!DOCTYPE html>
+            <html>
+            <head>
+                <title>Treatment Detail Report</title>
+                <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+                <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
+                <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+                <style>
+                    body { margin: 20px; font-size: 12px; }
+                    canvas { max-height: 500px !important; }
+                    .d-flex.gap-2 { display: none; }
+                </style>
+            </head>
+            <body>
+                <h2 class="mb-3">Treatment Detail Report</h2>
+                <p class="text-muted">Generated on: ${new Date().toLocaleString()}</p>
+                ${content.innerHTML}
+                <script>
+                    setTimeout(() => window.print(), 500);
+                </script>
+            </body>
+            </html>
+        `);
+        printWindow.document.close();
+    }
+
     function backToDashboard() {
         const dashboardTabButton = document.querySelector('#dashboard-tab');
         if (!dashboardTabButton) return console.warn('Dashboard tab button not found!');
