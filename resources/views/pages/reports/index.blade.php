@@ -8,9 +8,17 @@
             .no-print {
                 display: none !important;
             }
+            navbar,
+            .navbar,
+            .sidebar-wrapper {
+                display: none !important;
+            }
             body {
                 margin: 0;
                 padding: 0;
+            }
+            .main-content {
+                margin-left: 0 !important;
             }
             .container {
                 max-width: 100% !important;
