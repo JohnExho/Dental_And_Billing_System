@@ -42,7 +42,10 @@ class AppointmentController extends Controller
         $showAppointments = $request->has('show_appointments') || ! $request->hasAny(['show_appointments', 'show_followups']);
         $showFollowups = $request->has('show_followups') || ! $request->hasAny(['show_appointments', 'show_followups']);
 
-        $associates = \App\Models\Associate::all(); // Or however you fetch them
+        // Get associates for the active clinic only
+        $activeClinicId = session('clinic_id');
+        $associates = \App\Models\Associate::where('clinic_id', $activeClinicId)->get();
+        $associateIds = $associates->pluck('associate_id')->toArray();
         $associateColors = $associates->pluck('color', 'associate_id')->toArray();
 
         $events = [];
@@ -52,7 +55,7 @@ class AppointmentController extends Controller
                 ->whereYear('recall_date', $currentYear)
                 ->whereMonth('recall_date', $currentMonth)
                 ->where('status', 'pending')
-                ->where('clinic_id', session('clinic_id'));
+                ->whereIn('associate_id', $associateIds);
 
             // Only filter by selected associates if any are chosen
             if (! empty($associatesFilter)) {
@@ -89,7 +92,7 @@ class AppointmentController extends Controller
                 ->whereYear('appointment_date', $currentYear)
                 ->whereMonth('appointment_date', $currentMonth)
                 ->where('status', 'scheduled')
-                ->where('clinic_id', session('clinic_id'));
+                ->whereIn('associate_id', $associateIds);
 
             // Filter by selected associates if user checked any
             if (! empty($associatesFilter)) {
@@ -127,7 +130,7 @@ class AppointmentController extends Controller
         $appointmentsListQuery = Appointment::with(['patient', 'associate', 'account'])
             ->whereYear('appointment_date', $currentYear)
             ->whereMonth('appointment_date', $currentMonth)
-            ->where('clinic_id', session('clinic_id'))
+            ->whereIn('associate_id', $associateIds)
             ->when(! empty($associatesFilter), fn ($q) => $q->whereIn('associate_id', $associatesFilter))
             ->orderBy('appointment_date', 'asc');
 
