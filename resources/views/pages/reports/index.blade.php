@@ -3,6 +3,12 @@
 @section('content')
 <style>
 @media print {
+    /* Force landscape orientation */
+    @page {
+        size: landscape;
+        margin: 0.5in;
+    }
+    
     /* Hide everything except the partial content */
     body * {
         visibility: hidden;
@@ -20,11 +26,22 @@
         left: 0;
         top: 0;
         width: 100%;
+        height: 100vh;
+        overflow: hidden;
     }
     
-    /* Add 10% blank space at the top */
+    /* Scale content to fit on one page */
     #printableArea {
-        margin-top: 10%;
+        transform: scale(0.85);
+        transform-origin: top left;
+    }
+    
+    /* Prevent page breaks */
+    #printableArea,
+    #printableArea * {
+        page-break-inside: avoid;
+        page-break-after: avoid;
+        page-break-before: avoid;
     }
     
     /* Hide buttons and controls when printing */
@@ -33,6 +50,11 @@
     .d-flex.justify-content-between,
     #generateReportBtn {
         display: none !important;
+    }
+    
+    /* Adjust chart sizes for better fit */
+    canvas {
+        max-height: 200px !important;
     }
 }
 </style>
