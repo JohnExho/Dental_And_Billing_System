@@ -14,12 +14,6 @@
         visibility: visible;
     }
     
-        #printableArea,
-    #printableArea * {
-        page-break-inside: avoid;
-        page-break-after: avoid;
-        page-break-before: avoid;
-    }
     /* Position the printable area at the top left */
     #printableArea {
         position: absolute;
@@ -30,7 +24,7 @@
     
     /* Add 10% blank space at the top */
     #printableArea {
-        margin-top: 10%;
+        margin-top: 5%;
     }
     
     /* Hide buttons and controls when printing */
