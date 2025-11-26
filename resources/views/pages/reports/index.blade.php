@@ -1,24 +1,7 @@
 @extends('layout')
 @section('title', 'Reports | Chomply')
 @section('content')
-<style>
-@media print {
-    /* Add 10% blank space at the top */
-    body {
-        margin-top: 10%;
-    }
 
-    /* Ensure the printable area stays at 90% height */
-    html, body {
-        height: 90%;
-    }
-
-    /* Optional: remove button when printing */
-    #generateReportBtn {
-        display: none !important;
-    }
-}
-</style>
 
     <div class="container py-4">
         <div class="d-flex justify-content-between al</div>ign-items-center mb-4">
