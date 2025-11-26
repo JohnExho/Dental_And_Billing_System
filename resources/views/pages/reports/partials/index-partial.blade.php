@@ -22,6 +22,28 @@
 .btn-secondary:hover i {
     transform: translateX(-3px);
 }
+
+@media print {
+    .no-print {
+        display: none !important;
+    }
+    .nav-tabs {
+        display: none !important;
+    }
+    .card {
+        page-break-inside: avoid;
+        break-inside: avoid;
+        box-shadow: none !important;
+        border: 1px solid #dee2e6 !important;
+    }
+    canvas {
+        max-height: 500px !important;
+        max-width: 100% !important;
+    }
+    .btn-secondary {
+        display: none !important;
+    }
+}
 </style>
 
 <!-- Index Partial -->
