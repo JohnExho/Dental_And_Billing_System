@@ -520,11 +520,9 @@
             never existed in this dental universe.</p>
 
         @if (Auth::guard('account')->check())
-            @php $role = Auth::guard('account')->user()->role ?? null; @endphp
-
-            @if ($role === 'admin')
+            @if(session('active_role') === 'admin')
                 <a id="btn-home" href="{{ route('admin.dashboard') }}" class="btn-home">Go to Admin Dashboard</a>
-            @elseif($role === 'staff')
+            @elseif(session('active_role') === 'staff')
                 <a id="btn-home" href="{{ route('staff.dashboard') }}" class="btn-home">Go to Staff Dashboard</a>
             @else
                 <a id="btn-home" href="{{ url('/') }}" class="btn-home">Return to Home</a>
