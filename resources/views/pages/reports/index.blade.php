@@ -22,10 +22,6 @@
         width: 100%;
     }
     
-    /* Add 10% blank space at the top */
-    #printableArea {
-        margin-top: 5%;
-    }
     
     /* Hide buttons and controls when printing */
     .btn,
