@@ -4,10 +4,10 @@
 <style>
 @media print {
     /* Force landscape orientation */
-    /* @page {
+    @page {
         size: landscape;
-        margin: 0.5in;
-    } */
+        /* margin: 0.5in; */
+    }
     
     /* Hide everything except the partial content */
     body * {
