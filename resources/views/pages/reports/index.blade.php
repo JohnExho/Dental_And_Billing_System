@@ -1,8 +1,27 @@
 @extends('layout')
 @section('title', 'Reports | Chomply')
 @section('content')
+<style>
+@media print {
+    /* Add 10% blank space at the top */
+    body {
+        margin-top: 10%;
+    }
+
+    /* Ensure the printable area stays at 90% height */
+    html, body {
+        height: 90%;
+    }
+
+    /* Optional: remove button when printing */
+    #generateReportBtn {
+        display: none !important;
+    }
+}
+</style>
+
     <div class="container py-4">
-        <div class="d-flex justify-content-between align-items-center mb-4">
+        <div class="d-flex justify-content-between al</div>ign-items-center mb-4">
             <h3 class="mb-0">Reports Dashboard</h3>
 
             <!-- Time Period Selector -->
@@ -16,6 +35,17 @@
                     <option value="annually">Annually (12 months)</option>
                 </select>
             </div>
+
+<div>
+    <button class="btn btn-primary" id="generateReportBtn">Generate Report</button>
+</div>
+
+<script>
+    document.getElementById('generateReportBtn').addEventListener('click', function () {
+        window.print();
+    });
+</script>
+
         </div>
         @include('pages.reports.partials.index-partial')
     @endsection
