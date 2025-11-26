@@ -3,11 +3,6 @@
 @section('content')
 <style>
 @media print {
-    /* Force landscape orientation */
-    @page {
-        size: landscape;
-        /* margin: 0.5in; */
-    }
     
     /* Hide everything except the partial content */
     body * {
@@ -76,7 +71,7 @@
         </div>
 
         <div>
-            <button class="btn btn-primary" id="generateReportBtn">Generate Report</button>
+            <button class="btn btn-primary" id="generateReportBtn">Print Report</button>
         </div>
     </div>
 
