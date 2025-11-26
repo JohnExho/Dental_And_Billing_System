@@ -483,26 +483,46 @@ class PatientController extends Controller
         if (! $patient->clinic_id || $patient->clinic_id != $clinicId) {
             return redirect()->route('patients')->with('error', 'Patient does not belong to your clinic.');
         }
-        // Fetch progress notes for this patient
-        $progressNotes = Note::with(['account', 'clinic'])
-            ->where('patient_id', $patientId)
-            ->where('note_type', 'progress')
-            ->latest()
-            ->paginate(8);
 
-        $bills = Bill::with([
+        $authAccount = $this->guard->user();
+
+        // Fetch progress notes for this patient
+        $progressNotesQuery = Note::with(['account', 'clinic'])
+            ->where('patient_id', $patientId)
+            ->where('note_type', 'progress');
+        
+        if ($request->get('filter_progress') === '1' && $authAccount) {
+            $progressNotesQuery->where('account_id', $authAccount->account_id);
+        }
+        
+        $progressNotes = $progressNotesQuery->latest()->paginate(8);
+
+        // Fetch bills
+        $billsQuery = Bill::with([
             'billItems.service',
-            'billItems.teeth', // Load the many-to-many teeth relationship
+            'billItems.teeth',
             'account',
             'patient',
-        ])->where('patient_id', $patientId)->paginate(8);
+        ])->where('patient_id', $patientId);
+        
+        if ($request->get('filter_bill') === '1' && $authAccount) {
+            $billsQuery->where('account_id', $authAccount->account_id);
+        }
+        
+        $bills = $billsQuery->paginate(8);
 
-        $recalls = Recall::with(['account'])
-            ->where('patient_id', $patientId)
-            ->latest()
-            ->paginate(8);
+        // Fetch recalls
+        $recallsQuery = Recall::with(['account'])
+            ->where('patient_id', $patientId);
+        
+        if ($request->get('filter_recall') === '1' && $authAccount) {
+            $recallsQuery->where('account_id', $authAccount->account_id);
+        }
+        
+        $recalls = $recallsQuery->latest()->paginate(8);
 
-        $treatments = Treatment::with([
+        // Fetch treatments
+        $treatmentsQuery = Treatment::with([
             'account',
             'clinic',
             'visit',
@@ -512,15 +532,24 @@ class PatientController extends Controller
             'notes',
         ])
             ->where('patient_id', $patientId)
-            ->where('clinic_id', $clinicId)
-            ->latest()
-            ->paginate(8);
+            ->where('clinic_id', $clinicId);
+        
+        if ($request->get('filter_treatment') === '1' && $authAccount) {
+            $treatmentsQuery->where('account_id', $authAccount->account_id);
+        }
+        
+        $treatments = $treatmentsQuery->latest()->paginate(8);
 
-        $prescriptions = Prescription::with(['account', 'clinic', 'visit'])
+        // Fetch prescriptions
+        $prescriptionsQuery = Prescription::with(['account', 'clinic', 'visit'])
             ->where('patient_id', $patientId)
-            ->where('clinic_id', $clinicId)
-            ->latest()
-            ->paginate(8);
+            ->where('clinic_id', $clinicId);
+        
+        if ($request->get('filter_prescription') === '1' && $authAccount) {
+            $prescriptionsQuery->where('account_id', $authAccount->account_id);
+        }
+        
+        $prescriptions = $prescriptionsQuery->latest()->paginate(8);
 
         return view('pages.patients.specific', compact('patient', 'progressNotes', 'bills', 'recalls', 'treatments', 'prescriptions'));
     }

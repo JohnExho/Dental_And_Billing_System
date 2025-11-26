@@ -1,8 +1,13 @@
 <div class="card border-0 shadow-sm">
     <div class="card-header bg-info d-flex justify-content-between align-items-center">
-        <h6 class="mb-0 fw-bold text-primary">
-            <i class="bi bi-calendar-check me-2"></i> Recalls
-        </h6>
+        <div class="d-flex align-items-center gap-2">
+            <h6 class="mb-0 fw-bold text-primary">
+                <i class="bi bi-calendar-check me-2"></i> Recalls
+            </h6>
+            <button id="filter-recall-btn" class="btn btn-sm btn-outline-light" title="Toggle: Show only my recalls">
+                <i class="bi bi-funnel"></i> My Recalls
+            </button>
+        </div>
 
         <!-- Add Recall Button -->
         <button class="btn btn-sm btn-primary" data-bs-toggle="modal" data-bs-target="#add-recall-modal">
@@ -80,6 +85,33 @@
 
 <script>
     document.addEventListener('DOMContentLoaded', function() {
+        // Filter by account toggle for recalls
+        const filterBtn = document.getElementById('filter-recall-btn');
+        const url = new URL(window.location);
+        const isFilterActive = url.searchParams.get('filter_recall') === '1';
+        
+        if (isFilterActive) {
+            filterBtn.classList.remove('btn-outline-light');
+            filterBtn.classList.add('btn-light');
+        }
+        
+        filterBtn.addEventListener('click', function() {
+            const url = new URL(window.location);
+            const isActive = url.searchParams.get('filter_recall') === '1';
+            
+            if (isActive) {
+                url.searchParams.delete('filter_recall');
+                filterBtn.classList.remove('btn-light');
+                filterBtn.classList.add('btn-outline-light');
+            } else {
+                url.searchParams.set('filter_recall', '1');
+                filterBtn.classList.remove('btn-outline-light');
+                filterBtn.classList.add('btn-light');
+            }
+            
+            window.location.href = url.toString();
+        });
+
         document.querySelectorAll('.delete-recall-btn').forEach(btn => {
             btn.addEventListener('click', function(e) {
                 e.stopPropagation();

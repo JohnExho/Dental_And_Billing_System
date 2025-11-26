@@ -1,8 +1,13 @@
 <div class="card border-0 shadow-sm">
     <div class="card-header bg-info d-flex justify-content-between align-items-center">
-        <h6 class="mb-0 fw-bold text-primary">
-            <i class="bi bi-journal-medical me-2"></i> Treatments
-        </h6>
+        <div class="d-flex align-items-center gap-2">
+            <h6 class="mb-0 fw-bold text-primary">
+                <i class="bi bi-journal-medical me-2"></i> Treatments
+            </h6>
+            <button id="filter-treatment-btn" class="btn btn-sm btn-outline-light" title="Toggle: Show only my treatments">
+                <i class="bi bi-funnel"></i> My Treatments
+            </button>
+        </div>
 
         <!-- Add Treatment Button -->
         <button class="btn btn-sm btn-primary" data-bs-toggle="modal" data-bs-target="#add-treatment-modal">
@@ -116,6 +121,33 @@
 
 <script>
     document.addEventListener('DOMContentLoaded', function() {
+        // Filter by account toggle for treatments
+        const filterBtn = document.getElementById('filter-treatment-btn');
+        const url = new URL(window.location);
+        const isFilterActive = url.searchParams.get('filter_treatment') === '1';
+        
+        if (isFilterActive) {
+            filterBtn.classList.remove('btn-outline-light');
+            filterBtn.classList.add('btn-light');
+        }
+        
+        filterBtn.addEventListener('click', function() {
+            const url = new URL(window.location);
+            const isActive = url.searchParams.get('filter_treatment') === '1';
+            
+            if (isActive) {
+                url.searchParams.delete('filter_treatment');
+                filterBtn.classList.remove('btn-light');
+                filterBtn.classList.add('btn-outline-light');
+            } else {
+                url.searchParams.set('filter_treatment', '1');
+                filterBtn.classList.remove('btn-outline-light');
+                filterBtn.classList.add('btn-light');
+            }
+            
+            window.location.href = url.toString();
+        });
+
         document.querySelectorAll('.delete-treatment-btn').forEach(btn => {
             btn.addEventListener('click', function(e) {
                 e.stopPropagation();
