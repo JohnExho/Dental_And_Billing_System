@@ -62,10 +62,23 @@
                                                 @continue
                                             @endif
 
+                                            @php
+                                                $tooth = $billItemTooth->tooth;
+                                                // Compute final_price: clinic price if exists, otherwise default price
+                                                $toothPrice = 0;
+                                                if ($tooth && $tooth->clinicPrices && $tooth->clinicPrices->count() > 0) {
+                                                    $toothPrice = $tooth->clinicPrices->first()->price ?? $tooth->default_price ?? 0;
+                                                } else {
+                                                    $toothPrice = $tooth?->default_price ?? 0;
+                                                }
+                                            @endphp
+
                                             <div>
-                                                <strong data-tooth-id="{{ $billItemTooth->tooth?->tooth_list_id }}">{{ $billItemTooth->tooth?->name }}</strong>
-                                                @if ($billItemTooth->tooth)
-                                                    <br/><small class="text-muted">${{ number_format($billItemTooth->tooth->final_price ?? 0, 2) }}</small>
+                                                <strong data-tooth-id="{{ $tooth?->tooth_list_id }}">{{ $tooth?->name }}</strong>
+                                                @if ($toothPrice > 0)
+                                                    <br/><small class="text-muted">${{ number_format($toothPrice, 2) }}</small>
+                                                @else
+                                                    <br/><small class="text-muted">$0.00</small>
                                                 @endif
                                             </div>
                                         @endforeach
