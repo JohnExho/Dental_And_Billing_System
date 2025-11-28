@@ -574,18 +574,18 @@ class PatientController extends Controller
         return response()->json($patients);
     }
 
-    public function archive(Request $request, $patientId)
+    public function archive(Request $request)
     {
-        $patient = Patient::findOrFail($patientId);
+        $patient = Patient::findOrFail($request->patient_id);
         $patient->is_archived = true;
         $patient->save();
 
         return redirect()->back()->with('success', 'Patient archived successfully.');
     }
 
-    public function unarchive(Request $request, $patientId)
+    public function unarchive(Request $request)
     {
-        $patient = Patient::findOrFail($patientId);
+        $patient = Patient::findOrFail($request->patient_id);
         $patient->is_archived = false;
         $patient->save();
 
