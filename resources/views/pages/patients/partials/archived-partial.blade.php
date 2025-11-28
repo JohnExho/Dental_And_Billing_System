@@ -1,16 +1,6 @@
 <div class="card-body p-0">
     <!-- Search Input -->
     <div class="p-3 bg-light border-bottom">
-        <div class="input-group">
-            <span class="input-group-text bg-white">
-                <i class="bi bi-search"></i>
-            </span>
-            <input type="text" id="patient-search" class="form-control"
-                placeholder="Search by patient name (e.g., Bins, Ignatius)">
-            <button class="btn btn-outline-secondary" type="button" id="clear-search">
-                <i class="bi bi-x-lg"></i>
-            </button>
-        </div>
         <small class="text-muted d-block mt-2">
             <span id="search-status">
                 Total: <span id="result-count">{{ $patients->total() }}</span> archived patient(s)
@@ -55,10 +45,9 @@
                             data-search-email="{{ strtolower($patient->email ?? '') }}"
                             data-search-address="{{ strtolower($patient->full_address) }}">
                             <td>
-                                <img src="{{ asset($profileUrl) }}"
-                                     alt="{{ $patient->full_name ?? 'Profile' }}"
-                                     class="rounded-circle object-fit-cover border-warning border border-2"
-                                     style="width: 60px; height: 60px; opacity: 0.8;">
+                                <img src="{{ asset($profileUrl) }}" alt="{{ $patient->full_name ?? 'Profile' }}"
+                                    class="rounded-circle object-fit-cover border-warning border border-2"
+                                    style="width: 60px; height: 60px; opacity: 0.8;">
                             </td>
                             <td>{{ $patient->full_name }}</td>
                             <td>{{ $patient->mobile_no ?? 'N/A' }}/<br>{{ $patient->contact_no ?? 'N/A' }}</td>
@@ -67,17 +56,14 @@
 
                             <td class="text-end">
                                 <!-- Restore Button -->
-                                <button type="button" 
-                                        class="btn btn-outline-success btn-sm unarchive-patient-btn"
-                                        data-id="{{ $patient->patient_id }}"
-                                        data-name="{{ $patient->full_name }}"
-                                        title="Restore Patient"
-                                        onclick="event.stopPropagation();">
+                                <button type="button" class="btn btn-outline-success btn-sm unarchive-patient-btn"
+                                    data-id="{{ $patient->patient_id }}" data-name="{{ $patient->full_name }}"
+                                    title="Restore Patient" onclick="event.stopPropagation();">
                                     <i class="bi bi-arrow-clockwise"></i> Restore
                                 </button>
 
                                 <!-- Delete Button -->
-                                <button type="button" class="btn btn-outline-danger btn-sm patient-service-btn"
+                                <button type="button" class="btn btn-outline-danger btn-sm delete-patient-btn"
                                     data-id="{{ $patient->patient_id }}" onclick="event.stopPropagation();">
                                     <i class="bi bi-trash"></i>
                                 </button>
@@ -111,18 +97,32 @@
 
 <script>
     document.addEventListener('DOMContentLoaded', function() {
-        document.querySelectorAll('.patient-service-btn').forEach(btn => {
-            btn.addEventListener('click', function(e) {
-                e.stopPropagation();
-                const patientId = this.dataset.id;
-                document.getElementById('delete_patient_id').value = patientId;
+                document.querySelectorAll('.delete-patient-btn').forEach(btn => {
+                    btn.addEventListener('click', function(e) {
+                        e.stopPropagation();
+                        const patientId = this.dataset.id;
+                        document.getElementById('delete_patient_id').value = patientId;
 
-                const deleteModalEl = document.getElementById('delete-patient-modal');
-                const deleteModal = new bootstrap.Modal(deleteModalEl);
-                deleteModal.show();
-            });
-        });
-    });
+                        const deleteModalEl = document.getElementById('delete-patient-modal');
+                        const deleteModal = new bootstrap.Modal(deleteModalEl);
+                        deleteModal.show();
+                    });
+                });
+
+                document.querySelectorAll('.restore-patient-btn').forEach(btn => {
+                    btn.addEventListener('click', function(e) {
+                        btn.addEventListener('click', function(e) {
+                            e.stopPropagation();
+                            const patientId = this.dataset.id;
+                            document.getElementById('restore_patient_id').value = patientId;
+
+                            const deleteModalEl = document.getElementById(
+                                'restore-patient-modal');
+                            const deleteModal = new bootstrap.Modal(deleteModalEl);
+                            deleteModal.show();
+                        });
+                    });
+                });
 </script>
 @include('pages.patients.modals.archive')
 @include('pages.patients.modals.delete')

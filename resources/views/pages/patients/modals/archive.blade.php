@@ -63,7 +63,7 @@
                 <input type="hidden" name="patient_id" id="archive_patient_id" value="">
 
                 <div class="modal-header">
-                    <h5 class="modal-title text-danger">Confirm patient Deletion</h5>
+                    <h5 class="modal-title text-danger">Confirm patient archive</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                 </div>
 
