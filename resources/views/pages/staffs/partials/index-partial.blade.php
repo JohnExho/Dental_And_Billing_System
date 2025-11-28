@@ -25,8 +25,8 @@
                         <th class="sortable" data-column="email" data-order="asc">
                             Email <span class="sort-icon bi bi-arrow-down-up"></span>
                         </th>
-                        <th class="sortable" data-column="mobile" data-order="asc">
-                            Mobile <span class="sort-icon bi bi-arrow-down-up"></span>
+                        <th>
+                            Mobile
                         </th>
                         <th>Contact</th>
                         <th class="sortable" data-column="address" data-order="asc">
