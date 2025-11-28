@@ -1,3 +1,12 @@
+<style>
+    .sortable {
+        cursor: pointer;
+        user-select: none;
+    }
+    .sort-icon {
+        margin-left: 5px;
+    }
+</style>
 <div class="card-body p-0">
     @if ($staffs->isEmpty())
         <p class="p-3 mb-0 text-danger text-center">
