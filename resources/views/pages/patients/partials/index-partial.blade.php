@@ -104,10 +104,10 @@ $profileUrl = $patient->profile_picture
                                     <i class="bi bi-pencil-square"></i>
                                 </button>
 
-                                <button type="button" class="btn btn-outline-danger btn-sm delete-patient-btn"
-                                    data-id="{{ $patient->patient_id }}" onclick="event.stopPropagation();">
-                                    <i class="bi bi-trash"></i>
-                                </button>
+                            <button type="button" class="btn btn-outline-warning btn-sm archive-patient-btn"
+                                data-id="{{ $patient->patient_id }}" onclick="event.stopPropagation();">
+                                <i class="bi bi-archive"></i>
+                            </button>
                             </td>
                         </tr>
                     @endforeach
@@ -231,7 +231,7 @@ $profileUrl = $patient->profile_picture
             searchStatus.innerHTML = `Found: <span class="text-success">${patients.length}</span> patient(s)`;
 
             // Reinitialize delete buttons
-            initializeDeleteButtons();
+            initializeArchiveButtons();
         }
 
         // Create patient row HTML
@@ -279,10 +279,10 @@ $profileUrl = $patient->profile_picture
                 data-bs-target="#edit-patient-modal" data-id="${patient.patient_id}">
                 <i class="bi bi-pencil-square"></i>
             </button>
-            <button type="button" class="btn btn-outline-danger btn-sm delete-patient-btn"
-                data-id="${patient.patient_id}">
-                <i class="bi bi-trash"></i>
-            </button>
+                            <button type="button" class="btn btn-outline-warning btn-sm archive-patient-btn"
+                                data-id="{{ $patient->patient_id }}" onclick="event.stopPropagation();">
+                                <i class="bi bi-archive"></i>
+                            </button>
         </td>
     `;
 
@@ -339,7 +339,7 @@ $profileUrl = $patient->profile_picture
                 tableBody.appendChild(row.cloneNode(true));
             });
 
-            initializeDeleteButtons();
+            initializeArchiveButtons();
         }
 
         function showLoading() {
@@ -352,19 +352,20 @@ $profileUrl = $patient->profile_picture
             searchLoading.classList.add('d-none');
         }
 
-        function initializeDeleteButtons() {
-            document.querySelectorAll('.delete-patient-btn').forEach(btn => {
+        function initializeArchiveButtons() {
+            document.querySelectorAll('.archive-patient-btn').forEach(btn => {
                 btn.addEventListener('click', function(e) {
                     e.stopPropagation();
                     const patientId = this.dataset.id;
-                    document.getElementById('delete_patient_id').value = patientId;
+                    document.getElementById('archive_patient_id').value = patientId;
 
-                    const deleteModalEl = document.getElementById('delete-patient-modal');
-                    const deleteModal = new bootstrap.Modal(deleteModalEl);
-                    deleteModal.show();
+                    const archiveModalEl = document.getElementById('archive-patient-modal');
+                    const archiveModal = new bootstrap.Modal(archiveModalEl);
+                    archiveModal.show();
                 });
             });
         }
+
 
         // Event listeners
         searchInput.addEventListener('input', performSearch);
@@ -376,12 +377,12 @@ $profileUrl = $patient->profile_picture
         });
 
         // Initialize delete buttons for initial page
-        initializeDeleteButtons();
+        initializeArchiveButtons();
     });
 </script>
 
 @if (!empty($patient))
     @include('pages.waitlist.modals.add')
     @include('pages.patients.modals.edit')
-    @include('pages.patients.modals.delete')
+  
 @endif
