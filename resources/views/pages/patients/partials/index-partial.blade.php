@@ -1,3 +1,16 @@
+<style>
+        .pagination-container nav{
+        display: flex !important;
+        align-items: center;
+        justify-content: center !important;
+    }
+    
+    /* Force center the pagination ul */
+    .pagination {
+        justify-content: center !important;
+    }
+
+</style>
 <div class="card-body p-0">
     <!-- Search Input -->
     <div class="p-3 bg-light border-bottom">
@@ -129,10 +142,10 @@ $profileUrl = $patient->profile_picture
             </div>
         </div>
 
-        {{-- <!-- Pagination (hidden during search) -->
-        <div id="pagination-container" class="p-3">
-            {{ $patients->links() }}
-        </div> --}}
+        <!-- Pagination (hidden during search) -->
+            <div id="pagination-container" class="p-3 d-flex justify-content-center">
+            {{ $patients->links('vendor.pagination.bootstrap-5')}}
+        </div>
     @endif
 </div>
 
