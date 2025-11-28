@@ -61,6 +61,14 @@ public function index(Request $request)
         $query->where('account_id', $authAccount->account_id);
     }
 
+    $isArchived = $request->get('archived') == 1;
+
+    if ($isArchived) {
+        $query->where('is_archived', 1);
+    } else {
+        $query->where('is_archived', 0);
+    }
+
     // Count results after all filters
     $patientCount = $query->count();
 
