@@ -67,14 +67,6 @@
                     <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                 </div>
 
-                <div class="modal-body">
-                    <p>Are you sure you want to archive this patient? This action cannot be undone.</p>
-                    <div class="mb-3">
-                        <label for="archive_password" class="form-label">Enter your password to confirm</label>
-                        <input type="password" class="form-control" name="password" id="archive_password" required>
-                    </div>
-                </div>
-
                 <div class="modal-footer">
                     <button type="submit" class="btn btn-danger">archive patient</button>
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
