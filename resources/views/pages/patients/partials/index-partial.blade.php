@@ -129,10 +129,10 @@ $profileUrl = $patient->profile_picture
             </div>
         </div>
 
-        <!-- Pagination (hidden during search) -->
+        {{-- <!-- Pagination (hidden during search) -->
         <div id="pagination-container" class="p-3">
             {{ $patients->links() }}
-        </div>
+        </div> --}}
     @endif
 </div>
 
