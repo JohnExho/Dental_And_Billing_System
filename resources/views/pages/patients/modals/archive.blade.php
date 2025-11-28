@@ -57,7 +57,7 @@
 <div class="modal fade" id="archive-patient-modal" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog">
         <div class="modal-content">
-            <form action="{{--  --}}" method="POST">
+            <form action="{{ route('process-archive-patient') }}" method="POST">
                 @csrf
                 @method('PUT')
                 <input type="hidden" name="patient_id" id="archive_patient_id" value="">
