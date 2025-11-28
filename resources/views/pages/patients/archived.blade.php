@@ -1,145 +1,103 @@
 <style>
-    /* Modal button transitions */
-    .modal-footer .btn {
-        transition: 
+    /* Smooth transitions */
+    .btn.btn-light {
+        transition:
             background 0.4s ease-in-out,
             transform 0.4s ease-in-out,
-            box-shadow 0.4s ease-in-out;
+            box-shadow 0.4s ease-in-out !important;
     }
 
-    /* Success button (Restore) */
-    .modal-footer .btn-success {
-        background: #28a745;
-        color: #fff;
-        border: none;
-        border-radius: 8px;
+    /* Hover */
+    .btn.btn-light:hover {
+        background: #e2e6ea !important;
+        color: #000 !important;
+        transform: translateY(-1px) !important;
+        box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15) !important;
     }
 
-    .modal-footer .btn-success:hover {
-        background: #218838;
-        transform: translateY(-2px);
-        box-shadow: 0 6px 12px rgba(0,0,0,0.2);
-    }
-
-    .modal-footer .btn-success:active {
-        background: #1e7e34;
-        transform: translateY(2px) scale(0.98);
-        box-shadow: 0 1px 3px rgba(0,0,0,0.2);
-    }
-
-    /* Warning button (Archive) */
-    .modal-footer .btn-warning {
-        background: #ffc107;
-        color: #000;
-        border: none;
-        border-radius: 8px;
-    }
-
-    .modal-footer .btn-warning:hover {
-        background: #e0a800;
-        transform: translateY(-2px);
-        box-shadow: 0 6px 12px rgba(0,0,0,0.2);
-    }
-
-    .modal-footer .btn-warning:active {
-        background: #d39e00;
-        transform: translateY(2px) scale(0.98);
-        box-shadow: 0 1px 3px rgba(0,0,0,0.2);
-    }
-
-    /* Cancel button */
-    .modal-footer .btn-secondary {
-        background: #e0e0e0;
-        color: #333;
-        border: none;
-        border-radius: 8px;
-    }
-
-    .modal-footer .btn-secondary:hover {
-        background: #c2c2c2;
-        color: #000000;
-        transform: translateY(-2px);
-        box-shadow: 0 6px 12px rgba(0,0,0,0.2);
-    }
-
-    .modal-footer .btn-secondary:active {
-        background: #a0a0a0;
-        color: #FFFEF2;
-        transform: translateY(2px) scale(0.98);
-        box-shadow: 0 1px 3px rgba(0,0,0,0.2);
+    /* Active */
+    .btn.btn-light:active {
+        background: #d0d4d8 !important;
+        transform: translateY(2px) scale(0.98) !important;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2) !important;
     }
 </style>
 
 @extends('layout')
-@section('title', 'Archived Patient| Chomply')
+@section('title', 'Archived Patients | Chomply')
 @section('content')
-{{-- Archive Patient Modal (for active patients) --}}
-<div class="modal fade" id="archive-patient-modal" tabindex="-1" aria-hidden="true">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <form action="{{ route('process-archive-patient') }}" method="POST">
-                @csrf
-                @method('PUT')
-                <input type="hidden" name="patient_id" id="archive_patient_id" value="">
+    <div class="container-fluid mt-4">
+        <div class="card shadow-sm border-0">
+            <div class="card-header bg-warning text-dark">
+                <div class="d-flex justify-content-between align-items-center">
 
-                <div class="modal-header">
-                    <h5 class="modal-title text-warning">
-                        <i class="bi bi-archive"></i> Archive Patient
-                    </h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                    <div class="d-flex align-items-center gap-3">
+
+                        <span><i class="bi bi-archive"></i> Archived Patients # {{ $patientCount }}</span>
+
+                        <!-- My Patients Filter Button -->
+                        <button id="filter-account-btn" class="btn btn-sm btn-outline-dark"
+                            title="Toggle: Show only my patients">
+                            <i class="bi bi-funnel"></i> My Patients
+                        </button>
+
+                        <!-- Back to Active Patients Button -->
+                        <a href="{{ route('patients') }}" class="btn btn-light btn-sm d-flex align-items-center gap-1">
+                            <i class="bi bi-arrow-left"></i>
+                            <span>Back to Active Patients</span>
+                        </a>
+
+                    </div>
+                </div>
+            </div>
+
+            <div id="patient-container" class="position-relative">
+                <div id="patients-loading" class="text-center py-5">
+                    <div class="spinner-border text-warning" role="status"></div>
+                    <p class="mt-2">Loading Archived Patients...</p>
                 </div>
 
-                <div class="modal-body">
-                    <p>Are you sure you want to archive <strong id="archive_patient_name"></strong>?</p>
-                    <p class="text-muted small">
-                        <i class="bi bi-info-circle"></i> 
-                        Archived patients will be hidden from the main list but can be restored later.
-                    </p>
+                <div id="patients-content" class="d-none">
+                    @include('pages.patients.partials.archived-partial')
                 </div>
+            </div>
 
-                <div class="modal-footer">
-                    <button type="submit" class="btn btn-warning">
-                        <i class="bi bi-archive"></i> Archive Patient
-                    </button>
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                </div>
-            </form>
         </div>
-    </div>
-</div>
+        
+        @include('pages.patients.modals.unarchive')
+        @include('pages.patients.modals.delete')
+        
+        <script>
+            document.addEventListener("DOMContentLoaded", function() {
+                // Hide loading and show content
+                document.getElementById('patients-loading').classList.add('d-none');
+                document.getElementById('patients-content').classList.remove('d-none');
 
-{{-- Unarchive Patient Modal (for archived patients) --}}
-<div class="modal fade" id="unarchive-patient-modal" tabindex="-1" aria-hidden="true">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <form action="{{ route('process-unarchive-patient') }}" method="POST">
-                @csrf
-                @method('PUT')
-                <input type="hidden" name="patient_id" id="unarchive_patient_id" value="">
+                // Filter by account toggle
+                const filterBtn = document.getElementById('filter-account-btn');
+                const url = new URL(window.location);
 
-                <div class="modal-header">
-                    <h5 class="modal-title text-success">
-                        <i class="bi bi-arrow-clockwise"></i> Restore Patient
-                    </h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-                </div>
+                // Check if filter is already active
+                const isFilterActive = url.searchParams.get('filter_by_account') === '1';
 
-                <div class="modal-body">
-                    <p>Restore <strong id="unarchive_patient_name"></strong> to active patients?</p>
-                    <p class="text-muted small">
-                        <i class="bi bi-info-circle"></i> 
-                        This patient will be visible in the main patients list again.
-                    </p>
-                </div>
+                // Update button appearance based on filter state
+                if (isFilterActive) {
+                    filterBtn.classList.remove('btn-outline-dark');
+                    filterBtn.classList.add('btn-dark');
+                }
 
-                <div class="modal-footer">
-                    <button type="submit" class="btn btn-success">
-                        <i class="bi bi-arrow-clockwise"></i> Restore Patient
-                    </button>
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                </div>
-            </form>
-        </div>
-    </div>
-</div>
-@endsection
+                filterBtn.addEventListener('click', function() {
+                    const url = new URL(window.location);
+                    const isActive = url.searchParams.get('filter_by_account') === '1';
+
+                    if (isActive) {
+                        url.searchParams.delete('filter_by_account');
+                    } else {
+                        url.searchParams.set('filter_by_account', '1');
+                    }
+
+                    window.location.href = url.toString();
+                });
+            });
+        </script>
+    @endsection
