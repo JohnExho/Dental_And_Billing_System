@@ -171,6 +171,7 @@ Route::post('/force-logout', function (Request $request) {
             Route::view('/staff/dashboard', 'auth.staff-dashboard')->name('staff.dashboard');
             Route::get('/waitlist', [WaitlistController::class, 'index'])->name('waitlist');
             Route::get('/patients', [PatientController::class, 'index'])->name('patients');
+            Route::get('/patients/archived', [PatientController::class, 'archived'])->name('patients-archived');
             Route::get('/appointments', [AppointmentController::class, 'index'])->name('appointments');
             Route::get('/patient/profile', [PatientController::class, 'specific'])->name('specific-patient');
         });
