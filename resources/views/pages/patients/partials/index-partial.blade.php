@@ -101,7 +101,7 @@
                                     data-city_id="{{ optional($patient->address->city)->city_id }}"
                                     data-city_name="{{ optional($patient->address->city)->name }}"
                                     data-barangay_id="{{ optional($patient->address)->barangay_id }}"
-                                    data-barangay_name="{{ optional($patient->address)->barangay)->name ?? '' }}"
+                                    data-barangay_name="{{ optional($patient->address->barangay)->name}}"
                                     data-profile_picture="{{ $patient->profile_picture ? asset('storage/' . $patient->profile_picture) : '' }}"
                                     data-weight="{{ $patient->weight }}" data-height="{{ $patient->height }}"
                                     data-school="{{ $patient->school }}">
