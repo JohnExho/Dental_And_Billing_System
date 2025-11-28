@@ -64,7 +64,7 @@
 
         </div>
         
-        @include('pages.patients.modals.unarchive')
+        @include('pages.patients.modals.restore')
         @include('pages.patients.modals.delete')
         
         <script>
