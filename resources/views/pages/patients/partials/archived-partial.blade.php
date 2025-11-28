@@ -77,13 +77,9 @@
                                 </button>
 
                                 <!-- Delete Button -->
-                                <button type="button" 
-                                        class="btn btn-outline-danger btn-sm delete-patient-btn"
-                                        data-id="{{ $patient->patient_id }}"
-                                        data-name="{{ $patient->full_name }}"
-                                        title="Permanently Delete"
-                                        onclick="event.stopPropagation();">
-                                    <i class="bi bi-trash"></i> Delete
+                                <button type="button" class="btn btn-outline-danger btn-sm patient-service-btn"
+                                    data-id="{{ $patient->patient_id }}" onclick="event.stopPropagation();">
+                                    <i class="bi bi-trash"></i>
                                 </button>
                             </td>
                         </tr>
@@ -114,8 +110,19 @@
 </div>
 
 <script>
+    document.addEventListener('DOMContentLoaded', function() {
+        document.querySelectorAll('.patient-service-btn').forEach(btn => {
+            btn.addEventListener('click', function(e) {
+                e.stopPropagation();
+                const patientId = this.dataset.id;
+                document.getElementById('delete_patient_id').value = patientId;
 
+                const deleteModalEl = document.getElementById('delete-patient-modal');
+                const deleteModal = new bootstrap.Modal(deleteModalEl);
+                deleteModal.show();
+            });
+        });
+    });
 </script>
-
 @include('pages.patients.modals.archive')
 @include('pages.patients.modals.delete')
