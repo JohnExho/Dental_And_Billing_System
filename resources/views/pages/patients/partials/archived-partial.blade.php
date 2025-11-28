@@ -124,5 +124,5 @@
         });
     });
 </script>
-@include('pages.patients.modals.archive')
+@include('pages.patients.modals.restore')
 @include('pages.patients.modals.delete')
