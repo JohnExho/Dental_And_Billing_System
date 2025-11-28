@@ -70,6 +70,9 @@
     }
 </style>
 
+@extends('layout')
+@section('title', 'Archived Patient| Chomply')
+@section('content')
 {{-- Archive Patient Modal (for active patients) --}}
 <div class="modal fade" id="archive-patient-modal" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog">
@@ -139,3 +142,4 @@
         </div>
     </div>
 </div>
+@endsection
