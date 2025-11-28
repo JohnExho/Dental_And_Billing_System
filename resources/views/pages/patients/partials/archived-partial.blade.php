@@ -56,10 +56,9 @@
 
                             <td class="text-end">
                                 <!-- Restore Button -->
-                                <button type="button" class="btn btn-outline-success btn-sm unarchive-patient-btn"
-                                    data-id="{{ $patient->patient_id }}" data-name="{{ $patient->full_name }}"
-                                    title="Restore Patient" onclick="event.stopPropagation();">
-                                    <i class="bi bi-arrow-clockwise"></i> Restore
+                                <button type="button" class="btn btn-outline-success btn-sm restore-patient-btn"
+                                    data-id="{{ $patient->patient_id }}" onclick="event.stopPropagation();">
+                                    <i class="bi bi-trash"></i>
                                 </button>
 
                                 <!-- Delete Button -->
