@@ -28,14 +28,14 @@
                     <tr>
                         <th>Profile Pic</th>
                         <th class="sortable" data-sort="full_name" data-order="asc" style="cursor:pointer;">
-                            Name <span class="sort-indicator"></span>
+                            Name <span class="sort-icon bi bi-arrow-down-up"></span>
                         </th>
                         <th>Contact</th>
                         <th class="sortable" data-sort="email" data-order="asc" style="cursor:pointer;">
-                            Email <span class="sort-indicator"></span>
+                            Email <span class="sort-icon bi bi-arrow-down-up"></span>
                         </th>
                         <th class="sortable" data-sort="full_address" data-order="asc" style="cursor:pointer;">
-                            Address <span class="sort-indicator"></span>
+                            Address <span class="sort-icon bi bi-arrow-down-up"></span>
                         </th>
                         <th class="text-end">Actions</th>
                     </tr>
