@@ -43,12 +43,10 @@
                         </button>
 
                         <!-- Archived Toggle Button -->
-                        <button id="toggle-archive-btn" class="btn btn-light btn-sm d-flex align-items-center gap-1">
+                        <a href="{{ route('patients.archived') }}" class="btn btn-light btn-sm d-flex align-items-center gap-1">
                             <i class="bi bi-archive"></i>
-                            <span id="archive-btn-label">
-                                {{ request('archived') == 1 ? 'Show Active Patients' : 'Show Archived' }}
-                            </span>
-                        </button>
+                            <span>Show Archived</span>
+                        </a>
 
                     </div>
 
