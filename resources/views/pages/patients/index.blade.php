@@ -21,6 +21,19 @@
     transform: translateY(2px) scale(0.98) !important;
     box-shadow: 0 1px 3px rgba(0,0,0,0.2) !important;
 }
+
+
+    .pagination-container nav{
+        display: flex !important;
+        align-items: center;
+        justify-content: center !important;
+    }
+    
+    /* Force center the pagination ul */
+    .pagination {
+        justify-content: center !important;
+    }
+
 </style>
 
 @extends('layout')
@@ -56,8 +69,8 @@
             </div>
 
         </div>
-        <div class="mt-3 px-3">
-            {{ $patients->links('vendor.pagination.bootstrap-5') }}
+            <div id="pagination-container" class="p-3 d-flex justify-content-center">
+            {{ $patients->links('vendor.pagination.bootstrap-5')}}
         </div>
         {{-- Modal lives outside the container but still inside content --}}
         @include('pages.patients.modals.add')

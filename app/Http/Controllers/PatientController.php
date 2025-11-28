@@ -37,40 +37,44 @@ class PatientController extends Controller
         $this->guard = Auth::guard('account');
     }
 
-    public function index(Request $request)
-    {
-        $clinicId = session('clinic_id');
+public function index(Request $request)
+{
+    $clinicId = session('clinic_id');
 
-        if (! $clinicId) {
-            return redirect(route('staff.dashboard'))->with('error', 'Select a clinic first.');
-        }
-
-        $query = Patient::query();
-
-        if ($clinicId) {
-            $query->where('clinic_id', $clinicId);
-        }
-
-        // Filter by account_id if requested
-        $filterByAccount = $request->get('filter_by_account', false);
-        $authAccount = $this->guard->user();
-        
-        if ($filterByAccount && $authAccount) {
-            $query->where('account_id', $authAccount->account_id);
-        }
-
-        $patientCount = $query->count(); // ✅ Count after filter
-
-        $patients = $query->with([
-            'clinic',
-            'account',
-            'address.barangay',
-            'address.city',
-            'address.province',
-        ])->latest()->paginate(8);
-
-        return view('pages.patients.index', compact('patients', 'clinicId', 'patientCount'));
+    if (! $clinicId) {
+        return redirect(route('staff.dashboard'))->with('error', 'Select a clinic first.');
     }
+
+    $query = Patient::query();
+
+    // Filter by clinic
+    $query->where('clinic_id', $clinicId);
+
+    // Exclude archived patients
+    $query->where('is_archived', 0);
+
+    // Filter by account if requested
+    $filterByAccount = $request->get('filter_by_account', false);
+    $authAccount = $this->guard->user();
+    
+    if ($filterByAccount && $authAccount) {
+        $query->where('account_id', $authAccount->account_id);
+    }
+
+    // Count results after all filters
+    $patientCount = $query->count();
+
+    // Fetch data with relationships
+    $patients = $query->with([
+        'clinic',
+        'account',
+        'address.barangay',
+        'address.city',
+        'address.province',
+    ])->latest()->paginate(8);
+
+    return view('pages.patients.index', compact('patients', 'clinicId', 'patientCount'));
+}
 
     public function create(Request $request)
     {
