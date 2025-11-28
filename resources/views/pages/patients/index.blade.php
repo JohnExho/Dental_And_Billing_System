@@ -75,6 +75,7 @@
         </div>
         {{-- Modal lives outside the container but still inside content --}}
         @include('pages.patients.modals.add')
+        @include('pages.patients.modals.archive')
         <script>
             document.addEventListener("DOMContentLoaded", function() {
                 // Hide loading and show content
