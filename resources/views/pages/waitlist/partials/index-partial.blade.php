@@ -148,7 +148,7 @@
         function sortTable(column, order) {
             const rows = Array.from(tableBody.querySelectorAll('tr'));
             rows.sort((a, b) => {
-                const valA = (a.dataset[column] || '').toLowerCase();
+                const valA = (a.dataset[column] || '').toLowerCase(); // column should be camelCase
                 const valB = (b.dataset[column] || '').toLowerCase();
                 if (valA < valB) return order === 'asc' ? -1 : 1;
                 if (valA > valB) return order === 'asc' ? 1 : -1;
@@ -159,13 +159,14 @@
 
         document.querySelectorAll('.sortable').forEach(header => {
             header.addEventListener('click', () => {
-                const column = header.dataset.column;
+                // Convert column to camelCase
+                const column = header.dataset.column.replace(/_([a-z])/g, (_, l) => l.toUpperCase());
                 const order = header.dataset.order === 'asc' ? 'desc' : 'asc';
                 header.dataset.order = order;
-                currentSort = { column, order };
                 sortTable(column, order);
             });
         });
+
 
         clearBtn.addEventListener('click', () => {
             searchInput.value = '';
