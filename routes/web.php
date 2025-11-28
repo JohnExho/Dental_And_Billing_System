@@ -124,6 +124,8 @@ Route::post('/force-logout', function (Request $request) {
     Route::put('/process/update/patient', [PatientController::class, 'update'])->name('process-update-patient');
     Route::delete('/process/delete/patient', [PatientController::class, 'destroy'])->name('process-delete-patient');
     Route::get('/patients/all', [PatientController::class, 'getAllPatients'])->name('patients.all');
+    Route::put('/process/archive/patient', [PatientController::class, 'archive'])->name('process-archive-patient');
+    Route::put('/process/unarchive/patient', [PatientController::class, 'unarchive'])->name('process-unarchive-patient');
 
     Route::post('/process/create/waitlist', [WaitlistController::class, 'create'])->name('process-create-waitlist');
     Route::put('/process/update/waitlist', [WaitlistController::class, 'update'])->name('process-update-waitlist');
