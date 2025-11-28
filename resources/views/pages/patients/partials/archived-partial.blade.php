@@ -97,32 +97,33 @@
 
 <script>
     document.addEventListener('DOMContentLoaded', function() {
-                document.querySelectorAll('.delete-patient-btn').forEach(btn => {
-                    btn.addEventListener('click', function(e) {
-                        e.stopPropagation();
-                        const patientId = this.dataset.id;
-                        document.getElementById('delete_patient_id').value = patientId;
+        document.querySelectorAll('.delete-patient-btn').forEach(btn => {
+            btn.addEventListener('click', function(e) {
+                e.stopPropagation();
+                const patientId = this.dataset.id;
+                document.getElementById('delete_patient_id').value = patientId;
 
-                        const deleteModalEl = document.getElementById('delete-patient-modal');
-                        const deleteModal = new bootstrap.Modal(deleteModalEl);
-                        deleteModal.show();
-                    });
+                const deleteModalEl = document.getElementById('delete-patient-modal');
+                const deleteModal = new bootstrap.Modal(deleteModalEl);
+                deleteModal.show();
+            });
+        });
+
+        document.querySelectorAll('.restore-patient-btn').forEach(btn => {
+            btn.addEventListener('click', function(e) {
+                btn.addEventListener('click', function(e) {
+                    e.stopPropagation();
+                    const patientId = this.dataset.id;
+                    document.getElementById('restore_patient_id').value = patientId;
+
+                    const deleteModalEl = document.getElementById(
+                        'restore-patient-modal');
+                    const deleteModal = new bootstrap.Modal(deleteModalEl);
+                    deleteModal.show();
                 });
-
-                document.querySelectorAll('.restore-patient-btn').forEach(btn => {
-                    btn.addEventListener('click', function(e) {
-                        btn.addEventListener('click', function(e) {
-                            e.stopPropagation();
-                            const patientId = this.dataset.id;
-                            document.getElementById('restore_patient_id').value = patientId;
-
-                            const deleteModalEl = document.getElementById(
-                                'restore-patient-modal');
-                            const deleteModal = new bootstrap.Modal(deleteModalEl);
-                            deleteModal.show();
-                        });
-                    });
-                });
+            });
+        });
+    });
 </script>
 @include('pages.patients.modals.archive')
 @include('pages.patients.modals.delete')
