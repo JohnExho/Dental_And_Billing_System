@@ -384,5 +384,5 @@ $profileUrl = $patient->profile_picture
 @if (!empty($patient))
     @include('pages.waitlist.modals.add')
     @include('pages.patients.modals.edit')
-  
+    @include('pages.patients.modals.archive')
 @endif
