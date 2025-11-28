@@ -369,6 +369,37 @@
 
         initializeActionButtons();
     });
+    // Add this RIGHT AFTER DOMContentLoaded to check if modals are loaded
+document.addEventListener('DOMContentLoaded', function() {
+    console.log('=== MODAL DEBUG INFO ===');
+    
+    // Check Delete Modal
+    const deleteModal = document.getElementById('delete-patient-modal');
+    const deleteIdInput = document.getElementById('delete_patient_id');
+    const deleteNameSpan = document.getElementById('delete_patient_name');
+    
+    console.log('Delete Modal Element:', deleteModal ? '✓ Found' : '✗ NOT FOUND');
+    console.log('Delete ID Input:', deleteIdInput ? '✓ Found' : '✗ NOT FOUND');
+    console.log('Delete Name Span:', deleteNameSpan ? '✓ Found' : '✗ NOT FOUND');
+    
+    // Check Unarchive Modal
+    const unarchiveModal = document.getElementById('unarchive-patient-modal');
+    const unarchiveIdInput = document.getElementById('unarchive_patient_id');
+    const unarchiveNameSpan = document.getElementById('unarchive_patient_name');
+    
+    console.log('Unarchive Modal Element:', unarchiveModal ? '✓ Found' : '✗ NOT FOUND');
+    console.log('Unarchive ID Input:', unarchiveIdInput ? '✓ Found' : '✗ NOT FOUND');
+    console.log('Unarchive Name Span:', unarchiveNameSpan ? '✓ Found' : '✗ NOT FOUND');
+    
+    console.log('======================');
+    
+    // List all elements with IDs for debugging
+    console.log('All IDs in document:', 
+        Array.from(document.querySelectorAll('[id]')).map(el => el.id)
+    );
+    
+    // Rest of your code here...
+});
 </script>
 
 @include('pages.patients.modals.archive')
