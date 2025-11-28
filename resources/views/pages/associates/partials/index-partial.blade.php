@@ -23,18 +23,30 @@
                             Clinic <span class="sort-icon bi bi-arrow-down-up"></span>
                         </th>
                         <th>Contact</th>
-                        <th>Address</th>
+                        <th class="sortable" data-column="address" data-order="asc">
+                            Address <span class="sort-icon bi bi-arrow-down-up"></span>
+                        </th>
                         <th>Status</th>
                         <th class="text-end">Actions</th>
                     </tr>
                 </thead>
                 <tbody id="associates-tbody">
                     @foreach ($associates as $associate)
+                        @php
+                            $fullAddress = trim(
+                                ($associate->address->house_no ?? '') . ' ' .
+                                ($associate->address->street ?? '') . ' ' .
+                                ($associate->address->barangay->name ?? '') . ' ' .
+                                ($associate->address->city->name ?? '') . ' ' .
+                                ($associate->address->province->name ?? '')
+                            );
+                        @endphp
                         <tr 
                             data-name="{{ strtolower($associate->full_name) }}"
                             data-email="{{ strtolower($associate->email) }}"
                             data-specialty="{{ strtolower($associate->specialty) }}"
                             data-clinic="{{ strtolower($associate->clinic->name ?? 'No Clinic') }}"
+                            data-address="{{ strtolower($fullAddress) }}"
                         >
                             <td>{{ $associate->full_name }}</td>
                             <td>{{ $associate->email }}</td>
@@ -44,13 +56,7 @@
                                 <i class="bi bi-telephone-fill me-1"></i>{{ $associate->contact_no }}<br>
                                 <i class="bi bi-phone-fill me-1"></i>{{ $associate->mobile_no }}
                             </td>
-                            <td>
-                                {{ optional($associate->address)->house_no }}
-                                {{ optional($associate->address)->street }}<br>
-                                {{ optional($associate->address->barangay)->name ?? '' }}
-                                {{ optional($associate->address->city)->name ?? '' }}
-                                {{ optional($associate->address->province)->name ?? '' }}
-                            </td>
+                            <td>{{ $fullAddress }}</td>
                             <td>
                                 @if ($associate->is_active)
                                     <span class="badge bg-success">Active</span>
@@ -68,7 +74,7 @@
                                     data-email="{{ $associate->email }}"
                                     data-contact="{{ $associate->contact_no }} / {{ $associate->mobile_no }}"
                                     data-specialty="{{ $associate->specialty }}"
-                                    data-address="{{ optional($associate->address)->house_no }} {{ optional($associate->address)->street }} {{ optional($associate->address->barangay)->name ?? '' }} {{ optional($associate->address->city)->name ?? '' }} {{ optional($associate->address->province)->name ?? '' }}">
+                                    data-address="{{ $fullAddress }}">
                                     <i class="bi bi-eye"></i>
                                 </a>
 
