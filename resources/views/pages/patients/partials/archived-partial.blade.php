@@ -58,7 +58,7 @@
                                 <!-- Restore Button -->
                                 <button type="button" class="btn btn-outline-success btn-sm restore-patient-btn"
                                     data-id="{{ $patient->patient_id }}" onclick="event.stopPropagation();">
-                                    <i class="bi bi-trash"></i>
+                                        <i class="bi bi-archive"></i>
                                 </button>
 
                                 <!-- Delete Button -->
