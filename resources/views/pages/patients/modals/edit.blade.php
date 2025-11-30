@@ -246,7 +246,7 @@
                             <i class="bi bi-arrow-left me-1"></i> Back
                         </button>
                         <button type="button" id="edit_nextBtn" class="btn btn-primary">
-                            <i class="bi bi-arrow-right ms-1"></i>Next
+                            <i class="bi bi-arrow-right me-1"></i>Next
                         </button>
                         <button type="submit" id="edit_submitBtn" class="btn btn-success d-none">
                             <i class="bi bi-upload me-1"></i> Update
