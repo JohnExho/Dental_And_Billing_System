@@ -103,7 +103,7 @@
                 </div>
 
                 <!-- Footer -->
-                <div class="modal-footer bg-light d-flex justify-content-between">
+                <div class="modal-footer bg-light">
                     <button type="button" class="btn btn-outline-secondary px-2" data-bs-dismiss="modal">
                         <i class="bi bi-x-lg me-2"></i>Cancel
                     </button>
