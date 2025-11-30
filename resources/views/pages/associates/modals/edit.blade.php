@@ -38,7 +38,7 @@
                             </div>
 
                             <!-- Contact -->
-                            <h6 class="text-muted mt-3">☎️ Contact</h6>
+                            <h6 class="text-muted mt-3"><i class="bi bi-telephone me-2 text-primary"></i>Contact</h6>
                             <div class="row">
                                 <div class="col-md-12 mb-3">
                                     <label for="edit_specialty" class="form-label">Specialty</label>
