@@ -19,7 +19,7 @@
                         <!-- Left Column -->
                         <div class="col-md-6">
                             <!-- associate Name -->
-                            <h6 class="text-muted mt-2">👤 associate Name</h6>
+                            <h6 class="text-muted mt-2"><i class="bi bi-person me-2 text-primary"></i>Associate Name</h6>
                             <div class="row">
                                 <div class="col-md-4 mb-3">
                                     <label for="edit_first_name" class="form-label">First Name</label>
