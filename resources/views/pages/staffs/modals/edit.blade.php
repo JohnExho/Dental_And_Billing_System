@@ -119,8 +119,8 @@
 
                 <!-- Footer -->
                 <div class="modal-footer">
-                    <button type="submit" class="btn btn-primary"><i class="bi bi-save me-2"></i>Update Staff</button>
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal"><i class="bi bi-x-lg me-2"></i>Close</button>
+                    <button type="submit" class="btn btn-primary"><i class="bi bi-save me-2"></i>Update Staff</button>
                 </div>
             </form>
         </div>
