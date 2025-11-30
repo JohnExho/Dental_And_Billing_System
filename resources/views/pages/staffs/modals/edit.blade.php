@@ -106,7 +106,7 @@
 
                             </div>
                             <!-- Account Status -->
-                            <h6 class="text-muted mt-3"><i class="bi bi-lightning-charge me-2 text-primary">Account Status</h6>
+                            <h6 class="text-muted mt-3">⚡ Account Status</h6>
                             <div class="form-check form-switch mb-3">
                                 <input class="form-check-input" type="checkbox" id="edit_is_active" name="is_active"
                                     value="1">
