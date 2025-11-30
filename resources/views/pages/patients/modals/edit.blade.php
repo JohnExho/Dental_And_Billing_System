@@ -237,7 +237,7 @@
                 </div>
 
                 <!-- Footer -->
-                <div class="modal-footer bg-light d-flex justify-content-between">
+                <div class="modal-footer bg-light">
                     <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">
                         <i class="bi bi-x-circle me-1"></i> Cancel
                     </button>
@@ -246,7 +246,7 @@
                             <i class="bi bi-arrow-left me-1"></i> Back
                         </button>
                         <button type="button" id="edit_nextBtn" class="btn btn-primary">
-                            Next <i class="bi bi-arrow-right ms-1"></i>
+                            <i class="bi bi-arrow-right ms-1"></i>Next
                         </button>
                         <button type="submit" id="edit_submitBtn" class="btn btn-success d-none">
                             <i class="bi bi-upload me-1"></i> Update
