@@ -9,7 +9,7 @@
 
                 <!-- Header -->
                 <div class="modal-header">
-                    <h5 class="modal-title">✏️ Edit Associate</h5>
+                    <h5 class="modal-title"><i class="bi bi-pencil-square me-2 text-primary"></i>Edit Associate</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
 
