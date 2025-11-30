@@ -41,11 +41,11 @@
 
                 <!-- Footer -->
                 <div class="modal-footer bg-light">
-                    <button type="submit" class="btn btn-primary">
-                        <i class="bi bi-save me-2"></i>Update Tooth
-                    </button>
                     <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">
                         <i class="bi bi-x-lg me-2"></i>Close
+                    </button>
+                    <button type="submit" class="btn btn-primary">
+                        <i class="bi bi-save me-2"></i>Update Tooth
                     </button>
                 </div>
             </form>
