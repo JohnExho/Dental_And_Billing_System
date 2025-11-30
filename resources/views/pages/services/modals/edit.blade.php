@@ -10,7 +10,7 @@
                 <!-- Header -->
                 <div class="modal-header bg-warning text-dark">
                     <h5 class="modal-title d-flex align-items-center">
-                        ✏️ Edit Service
+                        <i class="bi bi-pencil-square me-2 text-primary"></i>Edit Service
                     </h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                 </div>
@@ -44,12 +44,12 @@
                 </div>
 
                 <!-- Footer -->
-                <div class="modal-footer bg-light d-flex justify-content-between">
+                <div class="modal-footer bg-light">
                     <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">
-                        ✖️ Close
+                        <i class="bi bi-x-lg me-2"></i>Close
                     </button>
                     <button type="submit" class="btn btn-primary">
-                        💾 Update Service
+                        <i class="bi bi-save me-2"></i>Update Service
                     </button>
                 </div>
             </form>
