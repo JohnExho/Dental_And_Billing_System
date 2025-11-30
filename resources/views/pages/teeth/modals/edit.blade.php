@@ -10,7 +10,7 @@
                 <!-- Header -->
                 <div class="modal-header bg-warning text-dark">
                     <h5 class="modal-title d-flex align-items-center">
-                        ✏️ Edit Tooth
+                        <i class="bi bi-pencil-square me-2 text-primary"></i>Edit Tooth
                     </h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
@@ -42,10 +42,10 @@
                 <!-- Footer -->
                 <div class="modal-footer bg-light d-flex justify-content-between">
                     <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">
-                        ✖️ Close
+                        <i class="bi bi-x-lg me-2"></i>Close
                     </button>
                     <button type="submit" class="btn btn-primary">
-                        💾 Update Tooth
+                        <i class="bi bi-save me-2"></i>Update Tooth
                     </button>
                 </div>
             </form>
