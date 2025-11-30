@@ -106,7 +106,7 @@
 
                             </div>
                             <!-- Account Status -->
-                            <h6 class="text-muted mt-3">⚡ Account Status</h6>
+                            <h6 class="text-muted mt-3"><i class="bi bi-lightning-charge me-2 text-primary">Account Status</h6>
                             <div class="form-check form-switch mb-3">
                                 <input class="form-check-input" type="checkbox" id="edit_is_active" name="is_active"
                                     value="1">
@@ -119,7 +119,7 @@
 
                 <!-- Footer -->
                 <div class="modal-footer">
-                    <button type="submit" class="btn btn-primary"><i class="bi bi-save me-2">Update Staff</button>
+                    <button type="submit" class="btn btn-primary">💾 Update Staff</button>
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal"><i class="bi bi-x-lg me-2"></i>Close</button>
                 </div>
             </form>
