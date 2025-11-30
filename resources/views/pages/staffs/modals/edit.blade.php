@@ -1,25 +1,3 @@
-<style>
-    /* --- ADDED: Custom wider modal so icons won't overlap --- */
-    #edit-staff-modal .modal-dialog {
-        max-width: 95% !important; /* increased from modal-xl */
-    }
-
-    /* Optional: increase modal body spacing */
-    #edit-staff-modal .modal-body {
-        padding: 25px !important; /* More breathing room */
-    }
-
-    /* Optional: prevent label + emoji icon overlap */
-    #edit-staff-modal h6.text-muted {
-        font-size: 15px;
-        font-weight: 600;
-        display: flex;
-        align-items: center;
-        gap: 6px; /* space between emoji + text */
-    }
-</style>
-
-
 <!-- Edit Staff Modal -->
 <div class="modal fade" id="edit-staff-modal" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog modal-xl">
