@@ -25,7 +25,7 @@ class WaitlistController extends Controller
         $this->guard = Auth::guard('account');
     }
 
-    public function index()
+    public function index(Request $request)
     {
         $clinicId = session('clinic_id');
 
@@ -41,6 +41,14 @@ class WaitlistController extends Controller
 
         if (session()->has('clinic_id') && $clinicId = session('clinic_id')) {
             $query->where('clinic_id', $clinicId);
+        }
+
+        // Filter by account_id if requested
+        $filterByAccount = $request->get('filter_by_account', false);
+        $authAccount = $this->guard->user();
+        
+        if ($filterByAccount && $authAccount) {
+            $query->where('account_id', $authAccount->account_id);
         }
 
         $waitlist = $query->paginate(8);

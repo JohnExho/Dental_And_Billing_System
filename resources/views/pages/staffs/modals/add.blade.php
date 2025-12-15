@@ -187,11 +187,11 @@
                 </div>
 
                 <div class="modal-footer bg-light">
-                    <button type="submit" class="btn btn-primary">
-                        <i class="bi bi-save me-1"></i> Save Staff
-                    </button>
                     <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">
                         <i class="bi bi-x-circle me-1"></i> Cancel
+                    </button>
+                    <button type="submit" class="btn btn-primary">
+                        <i class="bi bi-save me-1"></i> Save Staff
                     </button>
                 </div>
             </form>

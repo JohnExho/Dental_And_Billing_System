@@ -103,12 +103,12 @@
                 </div>
 
                 <!-- Footer -->
-                <div class="modal-footer bg-light d-flex justify-content-between">
+                <div class="modal-footer bg-light">
                     <button type="button" class="btn btn-outline-secondary px-2" data-bs-dismiss="modal">
-                        ✖️ Cancel
+                        <i class="bi bi-x-lg me-2"></i>Cancel
                     </button>
                     <button type="submit" class="btn btn-success px-2">
-                        💾 Update Medicine
+                        <i class="bi bi-save me-2"></i>Update Medicine
                     </button>
                 </div>
             </form>

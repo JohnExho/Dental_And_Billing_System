@@ -9,7 +9,7 @@
 
                 <!-- Header -->
                 <div class="modal-header">
-                    <h5 class="modal-title">✏️ Edit Staff</h5>
+                    <h5 class="modal-title"><i class="bi bi-pencil-square me-2 text-primary"></i>Edit Staff</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
 
@@ -19,7 +19,7 @@
                         <!-- Left Column -->
                         <div class="col-md-6">
                             <!-- Staff Name -->
-                            <h6 class="text-muted mt-2">👤 Staff Name</h6>
+                            <h6 class="text-muted mt-2"><i class="bi bi-person me-2 text-primary"></i>Staff Name</h6>
                             <div class="row">
                                 <div class="col-md-4 mb-3">
                                     <label for="edit_first_name" class="form-label">First Name</label>
@@ -38,7 +38,7 @@
                             </div>
 
                             <!-- Contact -->
-                            <h6 class="text-muted mt-3">☎️ Contact</h6>
+                            <h6 class="text-muted mt-3"><i class="bi bi-telephone me-2 text-primary"></i>Contact</h6>
                             <div class="row">
                                 <div class="col-md-12 mb-3">
                                     <label for="edit_email" class="form-label">Email</label>
@@ -60,7 +60,7 @@
                         <!-- Right Column -->
                         <div class="col-md-6">
                             <!-- Address -->
-                            <h6 class="text-muted mt-2">📍 Address</h6>
+                            <h6 class="text-muted mt-2"><i class="bi bi-geo-alt me-2 text-primary"></i>Address</h6>
                             <div class="row">
                                 <div class="col-md-3 mb-3">
                                     <label for="edit_house_no" class="form-label">House No.</label>
@@ -106,7 +106,7 @@
 
                             </div>
                             <!-- Account Status -->
-                            <h6 class="text-muted mt-3">⚡ Account Status</h6>
+                            <h6 class="text-muted mt-3"><i class="bi bi-lightning-charge me-2 text-primary"></i>Account Status</h6>
                             <div class="form-check form-switch mb-3">
                                 <input class="form-check-input" type="checkbox" id="edit_is_active" name="is_active"
                                     value="1">
@@ -119,8 +119,8 @@
 
                 <!-- Footer -->
                 <div class="modal-footer">
-                    <button type="submit" class="btn btn-primary">💾 Update Staff</button>
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">✖️ Close</button>
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal"><i class="bi bi-x-lg me-2"></i>Close</button>
+                    <button type="submit" class="btn btn-primary"><i class="bi bi-save me-2"></i>Update Staff</button>
                 </div>
             </form>
         </div>

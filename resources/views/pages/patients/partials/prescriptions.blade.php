@@ -1,8 +1,13 @@
 <div class="card border-0 shadow-sm">
     <div class="card-header bg-info d-flex justify-content-between align-items-center">
-        <h6 class="mb-0 fw-bold text-primary">
-            <i class="bi bi-capsule me-2"></i> Prescriptions
-        </h6>
+        <div class="d-flex align-items-center gap-2">
+            <h6 class="mb-0 fw-bold text-primary">
+                <i class="bi bi-capsule me-2"></i> Prescriptions
+            </h6>
+            <button id="filter-prescription-btn" class="btn btn-sm btn-outline-light" title="Toggle: Show only my prescriptions">
+                <i class="bi bi-funnel"></i> My Prescriptions
+            </button>
+        </div>
 
         <!-- Add Prescription Button -->
         <button class="btn btn-sm btn-primary" data-bs-toggle="modal" data-bs-target="#add-prescription-modal">
@@ -83,6 +88,33 @@
 
 <script>
     document.addEventListener('DOMContentLoaded', function() {
+        // Filter by account toggle for prescriptions
+        const filterBtn = document.getElementById('filter-prescription-btn');
+        const url = new URL(window.location);
+        const isFilterActive = url.searchParams.get('filter_prescription') === '1';
+        
+        if (isFilterActive) {
+            filterBtn.classList.remove('btn-outline-light');
+            filterBtn.classList.add('btn-light');
+        }
+        
+        filterBtn.addEventListener('click', function() {
+            const url = new URL(window.location);
+            const isActive = url.searchParams.get('filter_prescription') === '1';
+            
+            if (isActive) {
+                url.searchParams.delete('filter_prescription');
+                filterBtn.classList.remove('btn-light');
+                filterBtn.classList.add('btn-outline-light');
+            } else {
+                url.searchParams.set('filter_prescription', '1');
+                filterBtn.classList.remove('btn-outline-light');
+                filterBtn.classList.add('btn-light');
+            }
+            
+            window.location.href = url.toString();
+        });
+
         // Delete button handling
         document.querySelectorAll('.delete-prescription-btn').forEach(btn => {
             btn.addEventListener('click', function(e) {

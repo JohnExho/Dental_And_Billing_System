@@ -76,8 +76,8 @@
                 </div>
 
                 <div class="modal-footer">
-                    <button type="submit" class="btn btn-danger">Delete medicine</button>
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn btn-danger">Delete medicine</button>
                 </div>
             </form>
         </div>

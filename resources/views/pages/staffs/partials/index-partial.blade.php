@@ -1,3 +1,12 @@
+<style>
+    .sortable {
+        cursor: pointer;
+        user-select: none;
+    }
+    .sort-icon {
+        margin-left: 5px;
+    }
+</style>
 <div class="card-body p-0">
     @if ($staffs->isEmpty())
         <p class="p-3 mb-0 text-danger text-center">
@@ -10,28 +19,45 @@
             <table class="table table-hover align-middle mb-0">
                 <thead class="table-light">
                     <tr>
-                        <th>Name</th>
-                        <th>Email</th>
-                        <th>Mobile</th>
+                        <th class="sortable" data-column="name" data-order="asc">
+                            Name <span class="sort-icon bi bi-arrow-down-up"></span>
+                        </th>
+                        <th class="sortable" data-column="email" data-order="asc">
+                            Email <span class="sort-icon bi bi-arrow-down-up"></span>
+                        </th>
+                        <th>
+                            Mobile
+                        </th>
                         <th>Contact</th>
-                        <th>Address</th>
+                        <th class="sortable" data-column="address" data-order="asc">
+                            Address <span class="sort-icon bi bi-arrow-down-up"></span>
+                        </th>
                         <th>Status</th>
                         <th class="text-end">Actions</th>
                     </tr>
                 </thead>
-                <tbody>
-                    @forelse ($staffs as $staff)
-                        <tr>
+                <tbody id="staffs-tbody">
+                    @foreach ($staffs as $staff)
+                        @php
+                            $fullAddress = trim(
+                                ($staff->address->house_no ?? '') . ' ' .
+                                ($staff->address->street ?? '') . ' ' .
+                                ($staff->address->barangay->name ?? '') . ' ' .
+                                ($staff->address->city->name ?? '') . ' ' .
+                                ($staff->address->province->name ?? '')
+                            );
+                        @endphp
+                        <tr 
+                            data-name="{{ strtolower($staff->full_name) }}"
+                            data-email="{{ strtolower($staff->email) }}"
+                            data-mobile="{{ strtolower($staff->mobile_no ?? '') }}"
+                            data-address="{{ strtolower($fullAddress) }}"
+                        >
                             <td>{{ $staff->full_name }}</td>
                             <td>{{ $staff->email }}</td>
                             <td>{{ $staff->mobile_no ?? 'N/A' }}</td>
                             <td>{{ $staff->contact_no ?? 'N/A' }}</td>
-                            <td>
-                                {{ optional($staff->address)->house_no }} {{ optional($staff->address)->street }}<br>
-                                {{ optional($staff->address->barangay)->name ?? '' }}
-                                {{ optional($staff->address->city)->name ?? '' }}
-                                {{ optional($staff->address->province)->name ?? '' }}
-                            </td>
+                            <td>{{ $fullAddress }}</td>
                             <td>
                                 @if ($staff->is_active)
                                     <span class="badge bg-success">Active</span>
@@ -41,23 +67,26 @@
                             </td>
 
                             <td class="text-end">
+                                <!-- Info Button -->
                                 <a role="button" class="btn btn-sm btn-outline-primary" data-bs-toggle="modal"
-                                    data-bs-target="#staff-detail-modal" data-first-name="{{ $staff->first_name }}"
+                                    data-bs-target="#staff-detail-modal"
+                                    data-first-name="{{ $staff->first_name }}"
                                     data-middle-name="{{ $staff->middle_name }}"
-                                    data-last-name="{{ $staff->last_name }}" data-email="{{ $staff->email }}"
+                                    data-last-name="{{ $staff->last_name }}"
+                                    data-email="{{ $staff->email }}"
                                     data-contact="{{ $staff->contact_no }} / {{ $staff->mobile_no }}"
-                                    data-address="{{ optional($staff->address)->house_no }} {{ optional($staff->address)->street }} {{ optional($staff->address->barangay)->name ?? '' }} {{ optional($staff->address->city)->name ?? '' }} {{ optional($staff->address->province)->name ?? '' }}">
+                                    data-address="{{ $fullAddress }}">
                                     <i class="bi bi-eye"></i>
                                 </a>
-
-
 
                                 <!-- Edit Button -->
                                 <button type="button" class="btn btn-sm btn-outline-secondary" data-bs-toggle="modal"
                                     data-bs-target="#edit-staff-modal" onclick="event.stopPropagation();"
-                                    data-id="{{ $staff->account_id }}" data-first_name="{{ $staff->first_name }}"
+                                    data-id="{{ $staff->account_id }}"
+                                    data-first_name="{{ $staff->first_name }}"
                                     data-middle_name="{{ $staff->middle_name }}"
-                                    data-last_name="{{ $staff->last_name }}" data-email="{{ $staff->email }}"
+                                    data-last_name="{{ $staff->last_name }}"
+                                    data-email="{{ $staff->email }}"
                                     data-contact_no="{{ $staff->contact_no }}"
                                     data-mobile_no="{{ $staff->mobile_no }}"
                                     data-house_no="{{ optional($staff->address)->house_no }}"
@@ -79,33 +108,50 @@
                                 </button>
                             </td>
                         </tr>
-                    @empty
-                        <tr>
-                            <td colspan="9" class="text-center text-warning">
-                                No staffs found.
-                            </td>
-                        </tr>
-                    @endforelse
+                    @endforeach
                 </tbody>
             </table>
         </div>
     @endif
 </div>
-<script>
-    document.addEventListener('DOMContentLoaded', function() {
-        document.querySelectorAll('.delete-staff-btn').forEach(btn => {
-            btn.addEventListener('click', function(e) {
-                e.stopPropagation();
-                const staffId = this.dataset.id;
-                document.getElementById('delete_staff_id').value = staffId;
 
-                const deleteModalEl = document.getElementById('delete-staff-modal');
-                const deleteModal = new bootstrap.Modal(deleteModalEl);
-                deleteModal.show();
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const tableBody = document.getElementById('staffs-tbody');
+
+    // Sorting
+    document.querySelectorAll('.sortable').forEach(header => {
+        header.addEventListener('click', () => {
+            const column = header.dataset.column;
+            const order = header.dataset.order === 'asc' ? 'desc' : 'asc';
+            header.dataset.order = order;
+
+            const rows = Array.from(tableBody.querySelectorAll('tr'));
+            rows.sort((a, b) => {
+                const valA = (a.dataset[column] || '').toLowerCase();
+                const valB = (b.dataset[column] || '').toLowerCase();
+                if (valA < valB) return order === 'asc' ? -1 : 1;
+                if (valA > valB) return order === 'asc' ? 1 : -1;
+                return 0;
             });
+            rows.forEach(row => tableBody.appendChild(row));
         });
     });
+
+    // Delete buttons
+    document.querySelectorAll('.delete-staff-btn').forEach(btn => {
+        btn.addEventListener('click', function(e) {
+            e.stopPropagation();
+            const staffId = this.dataset.id;
+            document.getElementById('delete_staff_id').value = staffId;
+            const deleteModalEl = document.getElementById('delete-staff-modal');
+            const deleteModal = new bootstrap.Modal(deleteModalEl);
+            deleteModal.show();
+        });
+    });
+});
 </script>
+
 @include('pages.staffs.modals.info')
 @include('pages.staffs.modals.edit')
 @include('pages.staffs.modals.delete')

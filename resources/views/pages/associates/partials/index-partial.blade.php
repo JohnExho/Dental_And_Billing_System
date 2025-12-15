@@ -1,3 +1,13 @@
+<style>
+    .sortable {
+        cursor: pointer;
+        user-select: none;
+    }
+    .sort-icon {
+        margin-left: 5px;
+    }
+</style>
+
 <div class="card-body p-0">
     @if ($associates->isEmpty())
         <p class="p-3 mb-0 text-danger text-center">
@@ -10,19 +20,44 @@
             <table class="table table-hover align-middle mb-0">
                 <thead class="table-light">
                     <tr>
-                        <th>Name</th>
-                        <th>Email</th>
-                        <th>Specialty</th>
-                        <th>Clinic</th>
+                        <th class="sortable" data-column="name" data-order="asc">
+                            Name <span class="sort-icon bi bi-arrow-down-up"></span>
+                        </th>
+                        <th class="sortable" data-column="email" data-order="asc">
+                            Email <span class="sort-icon bi bi-arrow-down-up"></span>
+                        </th>
+                        <th class="sortable" data-column="specialty" data-order="asc">
+                            Specialty <span class="sort-icon bi bi-arrow-down-up"></span>
+                        </th>
+                        <th class="sortable" data-column="clinic" data-order="asc">
+                            Clinic <span class="sort-icon bi bi-arrow-down-up"></span>
+                        </th>
                         <th>Contact</th>
-                        <th>Address</th>
+                        <th class="sortable" data-column="address" data-order="asc">
+                            Address <span class="sort-icon bi bi-arrow-down-up"></span>
+                        </th>
                         <th>Status</th>
                         <th class="text-end">Actions</th>
                     </tr>
                 </thead>
-                <tbody>
-                    @forelse ($associates as $associate)
-                        <tr>
+                <tbody id="associates-tbody">
+                    @foreach ($associates as $associate)
+                        @php
+                            $fullAddress = trim(
+                                ($associate->address->house_no ?? '') . ' ' .
+                                ($associate->address->street ?? '') . ' ' .
+                                ($associate->address->barangay->name ?? '') . ' ' .
+                                ($associate->address->city->name ?? '') . ' ' .
+                                ($associate->address->province->name ?? '')
+                            );
+                        @endphp
+                        <tr 
+                            data-name="{{ strtolower($associate->full_name) }}"
+                            data-email="{{ strtolower($associate->email) }}"
+                            data-specialty="{{ strtolower($associate->specialty) }}"
+                            data-clinic="{{ strtolower($associate->clinic->name ?? 'No Clinic') }}"
+                            data-address="{{ strtolower($fullAddress) }}"
+                        >
                             <td>{{ $associate->full_name }}</td>
                             <td>{{ $associate->email }}</td>
                             <td>{{ $associate->specialty }}</td>
@@ -31,13 +66,7 @@
                                 <i class="bi bi-telephone-fill me-1"></i>{{ $associate->contact_no }}<br>
                                 <i class="bi bi-phone-fill me-1"></i>{{ $associate->mobile_no }}
                             </td>
-                                <td>
-                                    {{ optional($associate->address)->house_no }}
-                                    {{ optional($associate->address)->street }}<br>
-                                    {{ optional($associate->address->barangay)->name ?? '' }}
-                                    {{ optional($associate->address->city)->name ?? '' }}
-                                    {{ optional($associate->address->province)->name ?? '' }}
-                                </td>
+                            <td>{{ $fullAddress }}</td>
                             <td>
                                 @if ($associate->is_active)
                                     <span class="badge bg-success">Active</span>
@@ -46,18 +75,18 @@
                                 @endif
                             </td>
                             <td class="text-end">
+                                <!-- Info Button -->
                                 <a role="button" class="btn btn-sm btn-outline-primary" data-bs-toggle="modal"
                                     data-bs-target="#associate-detail-modal"
                                     data-first-name="{{ $associate->first_name }}"
                                     data-middle-name="{{ $associate->middle_name }}"
-                                    data-last-name="{{ $associate->last_name }}" data-email="{{ $associate->email }}"
+                                    data-last-name="{{ $associate->last_name }}"
+                                    data-email="{{ $associate->email }}"
                                     data-contact="{{ $associate->contact_no }} / {{ $associate->mobile_no }}"
                                     data-specialty="{{ $associate->specialty }}"
-                                    data-address="{{ optional($associate->address)->house_no }} {{ optional($associate->address)->street }} {{ optional($associate->address->barangay)->name ?? '' }} {{ optional($associate->address->city)->name ?? '' }} {{ optional($associate->address->province)->name ?? '' }}">
+                                    data-address="{{ $fullAddress }}">
                                     <i class="bi bi-eye"></i>
                                 </a>
-
-
 
                                 <!-- Edit Button -->
                                 <button type="button" class="btn btn-sm btn-outline-secondary" data-bs-toggle="modal"
@@ -65,7 +94,8 @@
                                     data-id="{{ $associate->associate_id }}"
                                     data-first_name="{{ $associate->first_name }}"
                                     data-middle_name="{{ $associate->middle_name }}"
-                                    data-last_name="{{ $associate->last_name }}" data-email="{{ $associate->email }}"
+                                    data-last_name="{{ $associate->last_name }}"
+                                    data-email="{{ $associate->email }}"
                                     data-contact_no="{{ $associate->contact_no }}"
                                     data-mobile_no="{{ $associate->mobile_no }}"
                                     data-house_no="{{ optional($associate->address)->house_no }}"
@@ -77,8 +107,7 @@
                                     data-barangay_id="{{ optional($associate->address)->barangay_id }}"
                                     data-barangay_name="{{ optional($associate->address->barangay)->name }}"
                                     data-is_active="{{ $associate->is_active }}"
-                                    data-specialty="{{ $associate->specialty }}"
-                                    >
+                                    data-specialty="{{ $associate->specialty }}">
                                     <i class="bi bi-pencil-square"></i>
                                 </button>
 
@@ -89,13 +118,7 @@
                                 </button>
                             </td>
                         </tr>
-                    @empty
-                        <tr>
-                            <td colspan="9" class="text-center text-warning">
-                                No associates found.
-                            </td>
-                        </tr>
-                    @endforelse
+                    @endforeach
                 </tbody>
             </table>
         </div>
@@ -103,20 +126,42 @@
 </div>
 
 <script>
-    document.addEventListener('DOMContentLoaded', function() {
-        document.querySelectorAll('.delete-associate-btn').forEach(btn => {
-            btn.addEventListener('click', function(e) {
-                e.stopPropagation();
-                const associateId = this.dataset.id;
-                document.getElementById('delete_associate_id').value = associateId;
+document.addEventListener('DOMContentLoaded', function() {
+    const tableBody = document.getElementById('associates-tbody');
 
-                const deleteModalEl = document.getElementById('delete-associate-modal');
-                const deleteModal = new bootstrap.Modal(deleteModalEl);
-                deleteModal.show();
+    // Sorting
+    document.querySelectorAll('.sortable').forEach(header => {
+        header.addEventListener('click', () => {
+            const column = header.dataset.column;
+            const order = header.dataset.order === 'asc' ? 'desc' : 'asc';
+            header.dataset.order = order;
+
+            const rows = Array.from(tableBody.querySelectorAll('tr'));
+            rows.sort((a, b) => {
+                const valA = (a.dataset[column] || '').toLowerCase();
+                const valB = (b.dataset[column] || '').toLowerCase();
+                if (valA < valB) return order === 'asc' ? -1 : 1;
+                if (valA > valB) return order === 'asc' ? 1 : -1;
+                return 0;
             });
+            rows.forEach(row => tableBody.appendChild(row));
         });
     });
+
+    // Delete buttons
+    document.querySelectorAll('.delete-associate-btn').forEach(btn => {
+        btn.addEventListener('click', function(e) {
+            e.stopPropagation();
+            const associateId = this.dataset.id;
+            document.getElementById('delete_associate_id').value = associateId;
+            const deleteModalEl = document.getElementById('delete-associate-modal');
+            const deleteModal = new bootstrap.Modal(deleteModalEl);
+            deleteModal.show();
+        });
+    });
+});
 </script>
+
 @include('pages.associates.modals.info')
 @include('pages.associates.modals.edit')
 @include('pages.associates.modals.delete')

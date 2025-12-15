@@ -44,6 +44,7 @@ class Patient extends Model
         'weight',
         'height',
         'school',
+        'is_archived',
     ];
 
     protected $casts = [
@@ -63,6 +64,7 @@ class Patient extends Model
         'weight' => 'encrypted',
         'height' => 'encrypted',
         'school' => 'encrypted',
+        'is_archived' => 'boolean',
     ];
 
     protected $appends = ['full_name', 'full_address']; // optional: auto-include in JSON

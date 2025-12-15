@@ -165,7 +165,7 @@ return new class extends Migration
             $table->text('weight')->nullable();
             $table->text('height')->nullable();
             $table->text('school')->nullable();
-
+            $table->boolean('is_archived')->default(false)->index();
             $table->timestamps();
             $table->softDeletes();
 

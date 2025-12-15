@@ -1,8 +1,13 @@
 <div class="card border-0 shadow-sm">
     <div class="card-header bg-info d-flex justify-content-between align-items-center">
-        <h6 class="mb-0 fw-bold text-primary">
-            <i class="bi bi-receipt me-2"></i> Bills
-        </h6>
+        <div class="d-flex align-items-center gap-2">
+            <h6 class="mb-0 fw-bold text-primary">
+                <i class="bi bi-receipt me-2"></i> Bills
+            </h6>
+            <button id="filter-bill-btn" class="btn btn-sm btn-outline-light" title="Toggle: Show only my bills">
+                <i class="bi bi-funnel"></i> My Bills
+            </button>
+        </div>
     </div>
 
     <div class="card-body p-0">
@@ -101,6 +106,33 @@
 @include('pages.billing.modals.delete')
 <script>
     document.addEventListener('DOMContentLoaded', function() {
+        // Filter by account toggle for bills
+        const filterBtn = document.getElementById('filter-bill-btn');
+        const url = new URL(window.location);
+        const isFilterActive = url.searchParams.get('filter_bill') === '1';
+        
+        if (isFilterActive) {
+            filterBtn.classList.remove('btn-outline-light');
+            filterBtn.classList.add('btn-light');
+        }
+        
+        filterBtn.addEventListener('click', function() {
+            const url = new URL(window.location);
+            const isActive = url.searchParams.get('filter_bill') === '1';
+            
+            if (isActive) {
+                url.searchParams.delete('filter_bill');
+                filterBtn.classList.remove('btn-light');
+                filterBtn.classList.add('btn-outline-light');
+            } else {
+                url.searchParams.set('filter_bill', '1');
+                filterBtn.classList.remove('btn-outline-light');
+                filterBtn.classList.add('btn-light');
+            }
+            
+            window.location.href = url.toString();
+        });
+
         // Handle delete bill buttons
         document.querySelectorAll('.delete-bill-btn').forEach(btn => {
             btn.addEventListener('click', function(e) {

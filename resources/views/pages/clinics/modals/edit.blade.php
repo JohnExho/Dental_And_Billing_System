@@ -55,7 +55,7 @@
                 <input type="hidden" name="clinic_id" id="edit_clinic_id">
 
                 <div class="modal-header">
-                    <h5 class="modal-title">Edit Clinic</h5>
+                    <h5 class="modal-title"><i class="bi bi-pencil-square me-2 text-primary"></i>Edit Clinic</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
 
@@ -76,7 +76,7 @@
                             </div>
 
                             <!-- Contact -->
-                            <h6 class="text-muted mt-3">☎️ Contact</h6>
+                            <h6 class="text-muted mt-3"><i class="bi bi-telephone me-2 text-primary"></i>Contact</h6>
                             <div class="column">
                                 <div class="col-md-15 mb-3">
                                     <label for="edit_specialty" class="form-label">Specialty</label>
@@ -103,7 +103,7 @@
                             </div>
 
                             <!-- Address -->
-                            <h6 class="text-muted mt-3">📍 Address</h6>
+                            <h6 class="text-muted mt-3"><i class="bi bi-geo-alt me-2 text-primary"></i>Address</h6>
                             <div class="row">
                                 <div class="col-md-3 mb-3">
                                     <label for="edit_house_no" class="form-label">House No.</label>
@@ -195,8 +195,8 @@
                 </div>
 
                 <div class="modal-footer">
-                    <button type="submit" class="btn btn-primary">💾Update Clinic</button>
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">✖️Close</button>
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal"><i class="bi bi-x-lg me-2"></i>Close</button>
+                    <button type="submit" class="btn btn-primary"><i class="bi bi-save me-2"></i>Update Clinic</button>
                 </div>
             </form>
         </div>

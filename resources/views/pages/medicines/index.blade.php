@@ -15,6 +15,10 @@
     box-shadow: 0 6px 12px rgba(0,0,0,0.15) !important;
 }
 
+.btn.btn-light.btn-sm:hover i {
+    transform: rotate(90deg);
+}
+
 /* Active */
 .btn.btn-light:active {
     background: #d0d4d8 !important;

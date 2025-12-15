@@ -26,9 +26,14 @@
 
 <div class="card border-0 shadow-sm">
     <div class="card-header bg-info d-flex justify-content-between align-items-center">
-        <h6 class="mb-0 fw-bold text-primary">
-            <i class="bi bi-journal-text me-2"></i> Progress Notes
-        </h6>
+        <div class="d-flex align-items-center gap-2">
+            <h6 class="mb-0 fw-bold text-primary">
+                <i class="bi bi-journal-text me-2"></i> Progress Notes
+            </h6>
+            <button id="filter-progress-btn" class="btn btn-sm btn-outline-light" title="Toggle: Show only my notes">
+                <i class="bi bi-funnel"></i> My Notes
+            </button>
+        </div>
 
         <!-- Add Note Button -->
         <button class="btn btn-sm btn-primary" data-bs-toggle="modal" data-bs-target="#add-progress-note-modal">
@@ -94,6 +99,33 @@
 @include('pages.progress-notes.modals.info')
 <script>
     document.addEventListener('DOMContentLoaded', function() {
+        // Filter by account toggle for progress notes
+        const filterBtn = document.getElementById('filter-progress-btn');
+        const url = new URL(window.location);
+        const isFilterActive = url.searchParams.get('filter_progress') === '1';
+        
+        if (isFilterActive) {
+            filterBtn.classList.remove('btn-outline-light');
+            filterBtn.classList.add('btn-light');
+        }
+        
+        filterBtn.addEventListener('click', function() {
+            const url = new URL(window.location);
+            const isActive = url.searchParams.get('filter_progress') === '1';
+            
+            if (isActive) {
+                url.searchParams.delete('filter_progress');
+                filterBtn.classList.remove('btn-light');
+                filterBtn.classList.add('btn-outline-light');
+            } else {
+                url.searchParams.set('filter_progress', '1');
+                filterBtn.classList.remove('btn-outline-light');
+                filterBtn.classList.add('btn-light');
+            }
+            
+            window.location.href = url.toString();
+        });
+
         document.querySelectorAll('.delete-progress-note-btn').forEach(btn => {
             btn.addEventListener('click', function(e) {
                 e.stopPropagation();

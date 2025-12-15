@@ -37,32 +37,52 @@ class PatientController extends Controller
         $this->guard = Auth::guard('account');
     }
 
-    public function index()
-    {
-        $clinicId = session('clinic_id');
+public function index(Request $request)
+{
+    $clinicId = session('clinic_id');
 
-        if (! $clinicId) {
-            return redirect(route('staff.dashboard'))->with('error', 'Select a clinic first.');
-        }
-
-        $query = Patient::query();
-
-        if ($clinicId) {
-            $query->where('clinic_id', $clinicId);
-        }
-
-        $patientCount = $query->count(); // ✅ Count after filter
-
-        $patients = $query->with([
-            'clinic',
-            'account',
-            'address.barangay',
-            'address.city',
-            'address.province',
-        ])->latest()->paginate(8);
-
-        return view('pages.patients.index', compact('patients', 'clinicId', 'patientCount'));
+    if (! $clinicId) {
+        return redirect(route('staff.dashboard'))->with('error', 'Select a clinic first.');
     }
+
+    $query = Patient::query();
+
+    // Filter by clinic
+    $query->where('clinic_id', $clinicId);
+
+    // Exclude archived patients
+    $query->where('is_archived', 0);
+
+    // Filter by account if requested
+    $filterByAccount = $request->get('filter_by_account', false);
+    $authAccount = $this->guard->user();
+    
+    if ($filterByAccount && $authAccount) {
+        $query->where('account_id', $authAccount->account_id);
+    }
+
+    $isArchived = $request->get('archived') == 1;
+
+    if ($isArchived) {
+        $query->where('is_archived', 1);
+    } else {
+        $query->where('is_archived', 0);
+    }
+
+    // Count results after all filters
+    $patientCount = $query->count();
+
+    // Fetch data with relationships
+    $patients = $query->with([
+        'clinic',
+        'account',
+        'address.barangay',
+        'address.city',
+        'address.province',
+    ])->latest()->paginate(8);
+
+    return view('pages.patients.index', compact('patients', 'clinicId', 'patientCount'));
+}
 
     public function create(Request $request)
     {
@@ -475,42 +495,73 @@ class PatientController extends Controller
         if (! $patient->clinic_id || $patient->clinic_id != $clinicId) {
             return redirect()->route('patients')->with('error', 'Patient does not belong to your clinic.');
         }
-        // Fetch progress notes for this patient
-        $progressNotes = Note::with(['account', 'clinic'])
-            ->where('patient_id', $patientId)
-            ->where('note_type', 'progress')
-            ->latest()
-            ->paginate(8);
 
-        $bills = Bill::with([
+        $authAccount = $this->guard->user();
+
+        // Fetch progress notes for this patient
+        $progressNotesQuery = Note::with(['account', 'clinic'])
+            ->where('patient_id', $patientId)
+            ->where('note_type', 'progress');
+        
+        if ($request->get('filter_progress') === '1' && $authAccount) {
+            $progressNotesQuery->where('account_id', $authAccount->account_id);
+        }
+        
+        $progressNotes = $progressNotesQuery->latest()->paginate(8);
+
+        // Fetch bills
+        $billsQuery = Bill::with([
             'billItems.service',
-            'billItems.teeth', // Load the many-to-many teeth relationship
+            'billItems.teeth',
             'account',
             'patient',
-        ])->where('patient_id', $patientId)->paginate(8);
+        ])->where('patient_id', $patientId);
+        
+        if ($request->get('filter_bill') === '1' && $authAccount) {
+            $billsQuery->where('account_id', $authAccount->account_id);
+        }
+        
+        $bills = $billsQuery->paginate(8);
 
-        $recalls = Recall::with(['account'])
-            ->where('patient_id', $patientId)
-            ->latest()
-            ->paginate(8);
+        // Fetch recalls
+        $recallsQuery = Recall::with(['account'])
+            ->where('patient_id', $patientId);
+        
+        if ($request->get('filter_recall') === '1' && $authAccount) {
+            $recallsQuery->where('account_id', $authAccount->account_id);
+        }
+        
+        $recalls = $recallsQuery->latest()->paginate(8);
 
-        $treatments = Treatment::with([
+        // Fetch treatments
+        $treatmentsQuery = Treatment::with([
             'account',
             'clinic',
             'visit',
-            'bill.billItemTooths' => fn ($q) => $q->whereNull('deleted_at'), // 🚀 ignore deleted pivot rows
-            'bill.billItemTooths.tooth',
+            'billItem.service',
+            'billItem.billItemTooths' => fn ($q) => $q->whereNull('deleted_at'),
+            'billItem.billItemTooths.tooth.clinicPrices' => fn ($q) => $q->where('clinic_id', $clinicId),
+            'notes',
         ])
             ->where('patient_id', $patientId)
-            ->where('clinic_id', $clinicId)
-            ->latest()
-            ->paginate(8);
+            ->where('clinic_id', $clinicId);
+        
+        if ($request->get('filter_treatment') === '1' && $authAccount) {
+            $treatmentsQuery->where('account_id', $authAccount->account_id);
+        }
+        
+        $treatments = $treatmentsQuery->latest()->paginate(8);
 
-        $prescriptions = Prescription::with(['account', 'clinic', 'visit'])
+        // Fetch prescriptions
+        $prescriptionsQuery = Prescription::with(['account', 'clinic', 'visit'])
             ->where('patient_id', $patientId)
-            ->where('clinic_id', $clinicId)
-            ->latest()
-            ->paginate(8);
+            ->where('clinic_id', $clinicId);
+        
+        if ($request->get('filter_prescription') === '1' && $authAccount) {
+            $prescriptionsQuery->where('account_id', $authAccount->account_id);
+        }
+        
+        $prescriptions = $prescriptionsQuery->latest()->paginate(8);
 
         return view('pages.patients.specific', compact('patient', 'progressNotes', 'bills', 'recalls', 'treatments', 'prescriptions'));
     }
@@ -534,4 +585,61 @@ class PatientController extends Controller
 
         return response()->json($patients);
     }
+
+    public function archive(Request $request)
+    {
+        $patient = Patient::findOrFail($request->patient_id);
+        $patient->is_archived = true;
+        $patient->save();
+
+        return redirect()->back()->with('success', 'Patient archived successfully.');
+    }
+
+    public function unarchive(Request $request)
+    {
+        $patient = Patient::findOrFail($request->patient_id);
+        $patient->is_archived = false;
+        $patient->save();
+
+        return redirect()->back()->with('success', 'Patient unarchived successfully.');
+    }
+
+    public function archived(Request $request)
+{
+    $clinicId = session('clinic_id');
+
+    if (!$clinicId) {
+        return redirect(route('staff.dashboard'))->with('error', 'Select a clinic first.');
+    }
+
+    $query = Patient::query();
+
+    // Filter by clinic
+    $query->where('clinic_id', $clinicId);
+
+    // Only archived patients
+    $query->where('is_archived', 1);
+
+    // Filter by account if requested
+    $filterByAccount = $request->get('filter_by_account', false);
+    $authAccount = $this->guard->user();
+    
+    if ($filterByAccount && $authAccount) {
+        $query->where('account_id', $authAccount->account_id);
+    }
+
+    // Count results after all filters
+    $patientCount = $query->count();
+
+    // Fetch data with relationships
+    $patients = $query->with([
+        'clinic',
+        'account',
+        'address.barangay',
+        'address.city',
+        'address.province',
+    ])->latest()->paginate(8);
+
+    return view('pages.patients.archived', compact('patients', 'clinicId', 'patientCount'));
+}
 }
