@@ -6,7 +6,7 @@
 
 
 <head>
-    <link rel="stylesheet" href="{{ 'resources/css/index.blade.css' }}">
+    {{-- <link rel="stylesheet" href="{{ 'resources/css/index.blade.css' }}"> --}}
 </head>
 
 @php
