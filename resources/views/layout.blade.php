@@ -14,7 +14,7 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flag-icons/css/flag-icons.min.css"/>
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-    <link rel="icon" href="{{ asset('/public/favicon.ico') }}">
+    <link rel="icon" href="{{ asset('favicon.ico') }}">
     @stack('styles')
     <style>
         /* main-content shifts when sidebar is present by default */

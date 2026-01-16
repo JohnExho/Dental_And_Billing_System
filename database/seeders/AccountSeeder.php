@@ -58,7 +58,7 @@ class AccountSeeder extends Seeder
             'mobile_no' => $faker->phoneNumber,
             'contact_no' => $faker->phoneNumber,
             'password' => Hash::make('secret123'),
-            'role' => 'guest',
+            'role' => 'staff',
             'is_active' => true,
             'otp_hash' => null,
             'otp_expires_at' => null,

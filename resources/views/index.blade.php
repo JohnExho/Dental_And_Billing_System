@@ -5,9 +5,7 @@
 @section("content")
 
 
-<head>
-    <link rel="stylesheet" href="{{ 'resources/css/index.blade.css' }}">
-</head>
+@vite(['resources/css/index.blade.css'])
 
 @php
         session()->forget(['successes', 'clinic_id', 'qr_access']);
@@ -20,7 +18,7 @@
         <!-- Left Panel -->
         <div class="login-left">
             <div class="login-header">
-                <img src="{{ asset('public/images/dayao.jpg') }}" alt="Logo" class="logo">
+                <img src="{{ asset('images/dayao.jpg') }}" alt="Logo" class="logo">
                 <h3>Dayao</h3>
                 <p class="subtitle">Dental Home</p>
                 <small class="tagline">A Happy Patient is our Ultimate Goal</small>
@@ -62,7 +60,7 @@
 
         <!-- Right Panel -->
         <div class="login-right">
-            <img src="{{ asset('public/images/teethpicture.jpg') }}" alt="Dentist">
+            <img src="{{ asset('images/teethpicture.jpg') }}" alt="Dentist">
         </div>
     </div>
 </div>

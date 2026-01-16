@@ -72,9 +72,9 @@
 
 
         </div>
-        {{-- <div class="mt-3 px-3">
+        <div class="mt-3 px-3">
             {{ $services->links('vendor.pagination.bootstrap-5') }}
-        </div> --}}
+        </div>
         {{-- Modal lives outside the container but still inside content --}}
         @include('pages.services.modals.add')
         <script>

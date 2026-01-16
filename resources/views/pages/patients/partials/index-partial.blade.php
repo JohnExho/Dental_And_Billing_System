@@ -44,12 +44,12 @@
                     @foreach ($patients as $patient)
                         @php
                             $defaultProfile = match ($patient->sex) {
-                                'male' => asset('public/images/defaults/male.png'),
-                                'female' => asset('public/images/defaults/female.png'),
-                                default => asset('public/images/defaults/other.png'),
+                                'male' => asset('images/defaults/male.png'),
+                                'female' => asset('images/defaults/female.png'),
+                                default => asset('images/defaults/other.png'),
                             };
                             $profileUrl = $patient->profile_picture
-                                ? asset('public/storage/' . $patient->profile_picture)
+                                ? asset('storage/' . $patient->profile_picture)
                                 : $defaultProfile;
                         @endphp
 
@@ -223,10 +223,10 @@
             tr.dataset.searchAddress = (patient.full_address || '').toLowerCase();
 
             const defaultProfile = (patient.sex === 'male')
-                ? '{{ asset("public/images/defaults/male.png") }}'
+                ? '{{ asset("images/defaults/male.png") }}'
                 : (patient.sex === 'female')
-                    ? '{{ asset("public/images/defaults/female.png") }}'
-                    : '{{ asset("public/images/defaults/other.png") }}';
+                    ? '{{ asset("images/defaults/female.png") }}'
+                    : '{{ asset("images/defaults/other.png") }}';
 
             const profileUrl = patient.profile_picture ? `/storage/${patient.profile_picture}` : defaultProfile;
 

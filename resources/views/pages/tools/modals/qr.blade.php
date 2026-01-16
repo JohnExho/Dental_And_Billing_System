@@ -5,7 +5,7 @@
 
                 @if ($qr)
                     <div class="text-center">
-                        <img src="{{ asset('public/storage/' . $qr->qr_code) }}" alt="QR Code" class="img-fluid mb-3"
+                        <img src="{{ asset('storage/' . $qr->qr_code) }}" alt="QR Code" class="img-fluid mb-3"
                             style="max-width: 250px">
 
 

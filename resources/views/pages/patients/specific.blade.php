@@ -90,13 +90,13 @@
             <div class="card-header text-white position-relative" style="background-color: #0D6EFD;">
                 @php
                     $defaultProfile = match ($patient->sex) {
-                        'male' => asset('public/images/defaults/male.png'),
-                        'female' => asset('public/images/defaults/female.png'),
-                        default => asset('public/images/defaults/other.png'),
+                        'male' => asset('images/defaults/male.png'),
+                        'female' => asset('images/defaults/female.png'),
+                        default => asset('images/defaults/other.png'),
                     };
 
             $profileUrl = $patient->profile_picture
-                ? asset('public/storage/' . $patient->profile_picture)
+                ? asset('storage/' . $patient->profile_picture)
                 : $defaultProfile;
                                 @endphp
 

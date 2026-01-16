@@ -117,28 +117,28 @@ class ReportController extends Controller
 
         $forecastedWaitlistValue = Cache::remember('forecasted_waitlist_' . ($clinicId ?? 'all'), 600, function () use ($clinicId, $context) {
             return json_decode(
-                file_get_contents('http://api.chomply.online/forecastwaitlist?clinic_id='.($clinicId ?? ''), false, $context),
+                file_get_contents('http://127.0.0.1:5000/forecastwaitlist?clinic_id='.($clinicId ?? ''), false, $context),
                 true
             );
         });
 
         $forecastedRevenueValue = Cache::remember('forecasted_revenue_' . ($clinicId ?? 'all'), 600, function () use ($clinicId, $context) {
             return json_decode(
-                file_get_contents('http://api.chomply.online/forecastrevenue?clinic_id='.($clinicId ?? ''), false, $context),
+                file_get_contents('http://127.0.0.1:5000/forecastrevenue?clinic_id='.($clinicId ?? ''), false, $context),
                 true
             );
         });
 
         $forecastedLocationValue = Cache::remember('forecasted_location', 600, function () use ($context) {
             return json_decode(
-                file_get_contents('http://api.chomply.online/forecastlocation', false, $context),
+                file_get_contents('http://127.0.0.1:5000/forecastlocation', false, $context),
                 true
             );
         });
 
         $forecastedTreatmentValue = Cache::remember('forecasted_treatment_' . ($clinicId ?? 'all'), 600, function () use ($clinicId, $context) {
             return json_decode(
-                file_get_contents('http://api.chomply.online/forecasttreatment?clinic_id='.($clinicId ?? ''), false, $context),
+                file_get_contents('http://127.0.0.1:5000/forecasttreatment?clinic_id='.($clinicId ?? ''), false, $context),
                 true
             );
         });
